@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "es2020",
+    "target": "es5",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "strict": true,
+    "lib": [
+      "ES2021.String",
+      "dom",
+      "dom.iterable",
+    ]
+  },
+  "include": ["./src/**/*.ts", "./src/**/*.html"],
+  "files": ["typings.d.ts"]
+}

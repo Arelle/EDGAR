@@ -1,0 +1,4 @@
+// Edgar(tm) Renderer was created by staff of the U.S. Securities and Exchange Commission.  Data and content created by government employees within the scope of their employment are not subject to domestic copyright protection. 17 U.S.C. 105.
+function accMenu(){$('#menu ul').hide();$('#menu li a').click(function(){$(this).next().slideToggle('normal')});$('#menu li ul li a.xbrlviewer').first().css('background-color','#C1CDCD');$('#menu_cat0').trigger('click')}
+$(document).ready(function(){accMenu()});function unHighlightAllMenuItems(){$('#menu li ul li a.xbrlviewer').css('background-color','#F5F5EB')}
+function highlightAllMenuItems(){$('#menu li ul li a.xbrlviewer').css('background-color','#C1CDCD')}
