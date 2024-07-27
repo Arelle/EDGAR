@@ -720,3 +720,25 @@ def buildFTValidationsFile(cntlr):
     from .FtValidations import FtValidations
     FTV = FtValidations(cntlr, feeTaggingAttachmentDocumentTypePattern)
     FTV.generateValidations()
+
+def getLatestTaxonomyFamily(modelXbrl, name):
+    latest_version = None
+    if not modelXbrl:
+        # keeping this hard coded version just for debugging purposes.
+        # This plugin is called via loadFromOIM plugin so it should have
+        # a modelXbrl when called.
+        class taxonomyFamily:
+            def __init__(self, name):
+                self.family = name.lower()
+                self.namespace = f"http://xbrl.sec.gov/{self.family}/2024"
+                self.href = f"https://xbrl.sec.gov/{self.family}/2024/{self.family}-2024.xsd"
+        latest_version = taxonomyFamily(name)
+    else:
+        for family in modelXbrl.modelManager.disclosureSystem.familyHrefs.get(name, []):
+            prefix = family.namespace.split("/")[-2]
+            if not latest_version and prefix == name.lower():
+                latest_version = family
+            else:
+                if prefix == name.lower() and family.version > latest_version.version:
+                    latest_version = family
+    return latest_version

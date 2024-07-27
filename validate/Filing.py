@@ -2400,16 +2400,17 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     for index, axisQN in enumerate(axesQNs):
                         currentAxisKey = axesKeys[index]
                         axisContexts = {}
-                        for name in names:
-                            found = False
-                            for f in modelXbrl.factsByDimMemQname(axisQN):
-                                if ftName(f) == name:
-                                    if validation.endswith("value") and not f.xValue in value:
-                                        continue
-                                    found = True
-                                    break
-                            if not found:
-                                sevMessage(sev, subType=submissionType, modelObject=None, tag=ftName(name), axis=axisQN, value=value)
+                        if not sev.get("if-axis-exist") or (sev.get("if-axis-exist") and modelXbrl.factsByDimMemQname(axisQN)):
+                            for name in names:
+                                found = False
+                                for f in modelXbrl.factsByDimMemQname(axisQN):
+                                    if ftName(f) == name:
+                                        if validation.endswith("value") and not f.xValue in value:
+                                            continue
+                                        found = True
+                                        break
+                                if not found:
+                                    sevMessage(sev, subType=submissionType, modelObject=None, tag=ftName(name), axis=axisQN, value=value)
                 elif validation == "skip-if-absent":
                     #if efmSection == "ft.r011Flg":
                     #    print("trace") # uncomment for debug tracing specific validation rules

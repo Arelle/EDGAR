@@ -1,0 +1,23 @@
+{
+    "root": true,
+    "plugins": ["@typescript-eslint"],
+    "extends":
+    [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "env":
+    {
+        "browser": true,
+        "es2021": true
+    },
+    "rules":
+    {
+        "prefer-const": "warn",
+        "no-extra-boolean-cast": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+
+        //this needs to stay off until we have good types across the app 
+        "@typescript-eslint/no-explicit-any": "off"
+    }
+}
