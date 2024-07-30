@@ -149,6 +149,16 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     filing.strExplainSkippedFacts()
 
     if len(filing.unusedFactSet) > 0:
+        # It's unknown at this moment (2024-07-30) what conditions there are
+        # that would not raise any other validation warning (esp. efm.26.1)
+        # and yet leave facts un rendered.  This is under investigation today.
+        for unusedFact in filing.unusedFactSet:
+            concept = unusedFact.concept
+            context = unusedFact.context
+            modelXbrl.warning(("EXG.7.3"), f"Fact {concept.qname} in context {context.id} was not selected for presentation in any presentation group."
+                                + f" Ensure that the period [{context.startDatetime} - {context.endDatetime}]" 
+                                + " aligns to other facts in the same group, and that all the fact's dimension members are presented."
+                                ,file=filing.entrypoint)
         filing.handleUncategorizedCube(xlWriter)
         controller.nextUncategorizedFileNum -= 1
 
