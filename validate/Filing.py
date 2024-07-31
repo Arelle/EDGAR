@@ -3035,7 +3035,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         elements=", ".join(sorted(set(f.qname.localName for f in facts))))
                 del facts
         if unexpectedRedactElts:
-            modelXbrl.error("EFM.17Ad-27.disallowedRedact",
+            modelXbrl.error("EFM.disallowedRedact",
                 _("Submission type %(subType)s has %(countRedacts)s disallowed -sec-ix-redact styles."),
                 edgarCode="dq-17Ad-27-Disallowed-Redact",
                 modelObject=unexpectedRedactElts, subType=submissionType, countRedacts=len(unexpectedRedactElts))
