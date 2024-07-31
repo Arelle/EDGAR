@@ -2400,7 +2400,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     for index, axisQN in enumerate(axesQNs):
                         currentAxisKey = axesKeys[index]
                         axisContexts = {}
-                        if not sev.get("if-axis-exist") or (sev.get("if-axis-exist") and modelXbrl.factsByDimMemQname(axisQN)):
+                        if not sev.get("if-axis-exist") or modelXbrl.factsByDimMemQname(axisQN):
                             for name in names:
                                 found = False
                                 for f in modelXbrl.factsByDimMemQname(axisQN):

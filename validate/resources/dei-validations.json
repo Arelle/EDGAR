@@ -2540,8 +2540,8 @@
     },
     {
         "sub-types": ["@SD"],
-        "xbrl-names": ["rxp:AlternativeReportingRegime"],
-        "where": {"rxp:AlternativeReportingRegime": ["!not!", "EU Directives", "U.K.'s Reports on Payments to Governments Regulations", "Norway's Regulations on Country-by-Country Reporting", "Canada's ESTMA"]},
+        "xbrl-names": ["rxp:*"],
+        "where": {"rxp:AlternativeReportingRegime": ["!not!", "EU", "UK", "NO", "CA"]},
         "bind-if-absent": true,
         "efm": "6.5.58.02",
         "validation": "fdepflag-present",
