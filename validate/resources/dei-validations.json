@@ -2540,7 +2540,7 @@
     },
     {
         "sub-types": ["@SD"],
-        "xbrl-names": ["rxp:AlternativeReportingRegime"],
+        "xbrl-names": ["rxp:*"],
         "where": {"rxp:AlternativeReportingRegime": ["!not!", "EU", "UK", "NO", "CA"]},
         "bind-if-absent": true,
         "efm": "6.5.58.02",
