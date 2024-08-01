@@ -149,16 +149,25 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     filing.strExplainSkippedFacts()
 
     if len(filing.unusedFactSet) > 0:
-        # It's unknown at this moment (2024-07-30) what conditions there are
-        # that would not raise any other validation warning (esp. efm.26.1)
-        # and yet leave facts un rendered.  This is under investigation today.
+        # Although there are likely other edge cases that can cause this
+        # situation without any other warnings, one of them is when the fact
+        # has dimension members that aren't presented in the same ELR as the
+        # concept itself.
         for unusedFact in filing.unusedFactSet:
             concept = unusedFact.concept
             context = unusedFact.context
-            modelXbrl.warning(("EXG.7.3"), f"Fact {concept.qname} in context {context.id} was not selected for presentation in any presentation group."
-                                + f" Ensure that the period [{context.startDatetime} - {context.endDatetime}]" 
-                                + " aligns to other facts in the same group, and that all the fact's dimension members are presented."
-                                ,file=filing.entrypoint)
+            if len(context.segDimValues) == 0:
+                modelXbrl.warning(("EXG.7.3.UncategorizedFact")
+                                  ,_(f"{concept.qname} in context {context.id} was not selected in any presentation group.")
+                                  ,file=filing.entrypoint
+                                  ,modelObject=unusedFact)
+            else:
+                dimStr = contextDimString(context)
+                modelXbrl.warning(("EXG.7.3.UncategorizedDimensionedFact")
+                                  ,_(f"{concept.qname} in context {context.id} was not selected in any presentation group."
+                                     + f" Ensure that its dimension members {dimStr} are presented.")
+                                  ,file=filing.entrypoint
+                                  ,modelObject=unusedFact)
         filing.handleUncategorizedCube(xlWriter)
         controller.nextUncategorizedFileNum -= 1
 
@@ -166,6 +175,18 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     controller.logDebug("Filing finish {:.3f} secs.".format(time.time() - _funStartedAt)); _funStartedAt = time.time()
     return filing.reportSummaryList
 
+def contextDimString(context) -> str:
+    """Temporary OIM-ish description of axes and their members"""
+    dq = "\""
+    sp = " "
+    comma = ","
+    colon = ":"
+    lcurl = "{"
+    rcurl = "}"
+    pairs = []
+    for v in context.segDimValues.values():
+         pairs.append(dq + v.xAttributes["dimension"].sValue + dq + colon + sp + dq + v.stringValue + dq)
+    return lcurl + (comma+sp).join(pairs) + rcurl
 
 
 
