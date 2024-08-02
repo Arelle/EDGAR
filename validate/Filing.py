@@ -1770,6 +1770,21 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         if matchingPair not in found:
                                             sevMessage(sev, ftContext=ftContext(currentAxisKey, otherGroupData["refFact"]), otherftContext=ftContext(currentAxisKey, groupData["refFact"]))
                                             found.append(matchingPair)
+                elif validation == "item-facts-dependency" and "itemsList" in val.params: # don't validate if no itemList (e.g. stand alone)
+                    factsFound = False
+                    eloItem = sev.get("elo-item", )
+                    namespace = sev.get("namespace", "")
+                    pattern = re.compile(sev.get("facts-namespace", ""))
+                    for f in modelXbrl.facts:
+                        if pattern.match(f.elementNamespaceURI):
+                            factsFound = True
+                            if eloItem not in val.params["itemsList"]:
+                                sev = sev.copy()
+                                sev["severityVerb"] = "should not"
+                                sevMessage(sev, subType=submissionType, modelObject=f, item=eloItem, namespace=namespace, itemVerb="is not")
+                            break # we can stop processing other facts
+                    if eloItem in val.params["itemsList"] and not factsFound:
+                        sevMessage(sev, subType=submissionType, modelObject=modelXbrl, item=eloItem, namespace=namespace, itemVerb="is")
                 # type-specific validations
                 elif len(names) == 0:
                     pass # no name entries if all dei names of this validation weren't in the loaded dei taxonomy (i.e., pre 2019)
