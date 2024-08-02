@@ -567,13 +567,13 @@
     {
         "sub-types": ["@8-K"],
         "xbrl-names": [],
-        "efm": "6.5.21",
+        "efm": "6.5.77",
         "facts-namespace": ".*sec.gov/cyd/.*",
         "elo-item": "1.05",
         "validation": "item-facts-dependency",
         "source": "both",
         "dei/cover": "dei",
-        "namespace": "CYD"
+        "namespace": "Cybersecurity Disclosure (CYD) taxonomy"
     },
     {
         "sub-types": ["@8-K"],
@@ -3067,7 +3067,7 @@
 		"dq-{efmSection}-{tags}-{otherTags}-Exclusive-Dependency": "In submission type {subType}, one of {tags} {severityVerb} have a value if one of {otherTags} has a value in context {contextID}.",
         "dq-{efmSection}-{tags}-Mutual-Dependency": "In submission type {subType}, all of {tags} {severityVerb} have a value if any of them has a value in context {contextID}.",
         "dq-{efmSection}-{tag}-{headerTag}-Dependency": "In submission type {subType}, {tag} {severityVerb} have a value if and only if header element {headerTag} is provided.",
-        "dq-{namespace}-{item}-Dependency": "In submission type {subType}, {namespace} fact {severityVerb} be present if item {item} {itemVerb} provided in the submission header.",
+        "dq-{namespace}-{item}-Dependency": "In submission type {subType}, a {namespace} fact {severityVerb} be included if item {item} is present in the submission header.",
 		"dq-{efmSection}-{tag}-{headerTag}-Dependent-Value": "In submission type {subType}, when {tag} has a value {value}, header element {headerTag} {severityVerb} have a value {otherValue}.",
 		"dq-{efmSection}-{tag}-Security-Axes": "In submission type {subType}, {tag} {severityVerb} have values without axes if a single non-ADR member, otherwise in separate contexts by axis member, but not both, in contexts {contextIDs}.",
 		"dq-0514-Hidden-Cover-Page-Fact-Not-Referenced": "Submission type {subType} has {n} cover page fact(s) in ix:hidden that were not referenced by any -sec-ix-hidden style property: (namesOfTags).",

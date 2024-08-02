@@ -1778,13 +1778,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     for f in modelXbrl.facts:
                         if pattern.match(f.elementNamespaceURI):
                             factsFound = True
-                            if eloItem not in val.params["itemsList"]:
-                                sev = sev.copy()
-                                sev["severityVerb"] = "should not"
-                                sevMessage(sev, subType=submissionType, modelObject=f, item=eloItem, namespace=namespace, itemVerb="is not")
                             break # we can stop processing other facts
                     if eloItem in val.params["itemsList"] and not factsFound:
-                        sevMessage(sev, subType=submissionType, modelObject=modelXbrl, item=eloItem, namespace=namespace, itemVerb="is")
+                        sevMessage(sev, subType=submissionType, modelObject=modelXbrl, item=eloItem, namespace=namespace)
                 # type-specific validations
                 elif len(names) == 0:
                     pass # no name entries if all dei names of this validation weren't in the loaded dei taxonomy (i.e., pre 2019)
