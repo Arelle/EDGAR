@@ -680,6 +680,8 @@ class Filing(object):
             for cube in element.inCubes.values():
                 # the None in the tuple is only to handle periodStartLabels and periodEndLabels later on
                 cube.factMemberships += [(fact, axisMemberLookupDict, None)]
+                if not hasattr(fact,'inCubes'): fact.inCubes = set()
+                fact.inCubes.add(cube)
                 cube.hasElements.add(fact.concept)
                 if fact.unit is not None:
                     cube.unitAxis[fact.unit.id] = fact.unit
@@ -1060,6 +1062,18 @@ class Filing(object):
         minToKeep = math.floor(.25*minFacts)
         for col in visibleColumns:
             if col.startEndContext.numMonths < maxMonths and len(col.factList) < minToKeep:
+                preserveColumn = False
+                for fact in col.factList:
+                    appearsInOtherColumn = False
+                    for otherCol in remainingVisibleColumns:
+                        if otherCol != col and fact in otherCol.factList:
+                            appearsInOtherColumn = True
+                            break
+                    appearsInOtherReport = (len(fact.inCubes) > 1)
+                    preserveColumn = (not appearsInOtherColumn and not appearsInOtherReport)
+                    break
+                if preserveColumn:
+                    continue # to next column, cannot remove this one
                 self.modelXbrl.info("info",
                                     _("Columns in cash flow \"%(presentationGroup)s\" have maximum duration %(maxDuration)s months and at least %(minNumValues)s "
                                       "values. Shorter duration columns must have at least one fourth (%(minToKeep)s) as many values. "
@@ -1067,23 +1081,16 @@ class Filing(object):
                                     modelObject=self.modelXbrl.modelDocument, presentationGroup=report.shortName,
                                     maxDuration=maxMonths, minNumValues=minFacts, minToKeep=minToKeep, startEndContext=col.startEndContext,
                                     months=col.startEndContext.numMonths, numValues=len(col.factList))
+                # first kick this fact out of report.embedding.factAxisMemberGroupList, our defacto list of facts
+                report.embedding.factAxisMemberGroupList = \
+                        [FAMG for FAMG in report.embedding.factAxisMemberGroupList if FAMG.fact != fact]
+                try:
+                    self.usedOrBrokenFactDefDict[fact].remove(report.embedding)
+                except KeyError:
+                    pass
                 col.hide()
                 didWeHideAnyCols = True
                 remainingVisibleColumns.remove(col)
-                for fact in col.factList:
-                    appearsInOtherColumn = False
-                    for otherCol in remainingVisibleColumns:
-                        if fact in otherCol.factList:
-                            appearsInOtherColumn = True
-                            break
-                    if not appearsInOtherColumn:
-                        # first kick this fact out of report.embedding.factAxisMemberGroupList, our defacto list of facts
-                        report.embedding.factAxisMemberGroupList = \
-                                [FAMG for FAMG in report.embedding.factAxisMemberGroupList if FAMG.fact != fact]
-                        try:
-                            self.usedOrBrokenFactDefDict[fact].remove(report.embedding)
-                        except KeyError:
-                            pass
 
         if didWeHideAnyCols:
             Utils.hideEmptyRows(report.rowList)
@@ -1102,12 +1109,12 @@ class Filing(object):
         nonStatementElementsAndElementMemberPairs = set()
         for cube in sortedCubeList:
             if not cube.noFactsOrAllFactsSuppressed and len(cube.embeddingList) == 1 and not cube.embeddingList[0].isEmbeddingOrReportBroken:
-                if cube.cubeType == 'statement' and not cube.isStatementOfEquity:
+                if cube.cubeType == 'statement':
                     statementCubesList += [cube]
                 else:
                     nonStatementElementsAndElementMemberPairs.update(cube.embeddingList[0].hasElementsAndElementMemberPairs)
 
-        for i, cube in enumerate(statementCubesList):
+        for i, cube in filter(lambda c: not c[1].isStatementOfEquity, enumerate(statementCubesList)):
             # initialize to all the non statement elements and non statement element member pairs
             elementQnamesInOtherReportsAndElementQnameMemberPairs = nonStatementElementsAndElementMemberPairs.copy()
             # now add other statements
