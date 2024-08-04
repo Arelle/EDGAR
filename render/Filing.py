@@ -16,6 +16,7 @@ from arelle.ModelDtsObject import ModelConcept
 from arelle.ModelObject import ModelObject
 from arelle.XmlUtil import collapseWhitespace
 from arelle.XmlValidateConst import VALID, VALID_NO_CONTENT
+from arelle.XbrlConst import parentChild
 from lxml import etree
 
 from . import Cube, Embedding, Report, PresentationGroup, Summary, Utils, Xlout
@@ -152,20 +153,22 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
         # Although there are likely other edge cases that can cause this
         # situation without any other warnings, one of them is when the fact
         # has dimension members that aren't presented in the same ELR as the
-        # concept itself.
+        # concept itself, another is when not all the axes have defaults.
         for unusedFact in filing.unusedFactSet:
             concept = unusedFact.concept
             context = unusedFact.context
+            baseSets = factAppearsInParentChildBaseSets(unusedFact) # base sets are defined in XBRL 2.1.
             if len(context.segDimValues) == 0:
                 modelXbrl.warning(("EXG.7.3.UncategorizedFact")
-                                  ,_(f"{concept.qname} in context {context.id} was not selected in any presentation group.")
+                                  ,_(f"{concept.qname} in context {context.id} was not selected in any presentation group."
+                                     + f" Ensure there is a default member for axes in presentation roles {baseSets}")
                                   ,file=filing.entrypoint
                                   ,modelObject=unusedFact)
             else:
-                dimStr = contextDimString(context)
+                dims = contextDims(context)
                 modelXbrl.warning(("EXG.7.3.UncategorizedDimensionedFact")
                                   ,_(f"{concept.qname} in context {context.id} was not selected in any presentation group."
-                                     + f" Ensure that its dimension members {dimStr} are presented.")
+                                     + f" Ensure that its dimension members {dims} are presented in presentation roles {baseSets}.")
                                   ,file=filing.entrypoint
                                   ,modelObject=unusedFact)
         filing.handleUncategorizedCube(xlWriter)
@@ -175,20 +178,18 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     controller.logDebug("Filing finish {:.3f} secs.".format(time.time() - _funStartedAt)); _funStartedAt = time.time()
     return filing.reportSummaryList
 
-def contextDimString(context) -> str:
-    """Temporary OIM-ish description of axes and their members"""
-    dq = "\""
-    sp = " "
-    comma = ","
-    colon = ":"
-    lcurl = "{"
-    rcurl = "}"
-    pairs = []
-    for v in context.segDimValues.values():
-         pairs.append(dq + v.xAttributes["dimension"].sValue + dq + colon + sp + dq + v.stringValue + dq)
-    return lcurl + (comma+sp).join(pairs) + rcurl
+def factAppearsInParentChildBaseSets (fact) -> set:
+    appearsInRsets = set()
+    for k, rset in fact.modelXbrl.relationshipSets.items():
+        arcrole, *roleURIs = k
+        if arcrole == parentChild:
+            relationshipTargetConcepts = rset.modelRelationshipsTo
+            if fact.concept in relationshipTargetConcepts and bool(rset.linkrole):
+                appearsInRsets.add(rset.linkrole)
+    return appearsInRsets
 
-
+def contextDims(context) -> dict:
+    return {v.xAttributes["dimension"].sValue : v.stringValue for v in context.segDimValues.values()}
 
 class Filing(object):
     def __init__(self, controller, modelXbrl, outputFolderName, transform, suplSuffix, rFilePrefix, altFolder, altTransform, altSuffix, zipDir):
