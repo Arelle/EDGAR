@@ -2400,7 +2400,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     for index, axisQN in enumerate(axesQNs):
                         currentAxisKey = axesKeys[index]
                         axisContexts = {}
-                        if not sev.get("if-axis-exist") or (sev.get("if-axis-exist") and modelXbrl.factsByDimMemQname(axisQN)):
+                        if not sev.get("if-axis-exist") or modelXbrl.factsByDimMemQname(axisQN):
                             for name in names:
                                 found = False
                                 for f in modelXbrl.factsByDimMemQname(axisQN):
@@ -2517,7 +2517,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 if f1 is not None and documentPeriodEndDateFact is not None and f1.xValid >= VALID and documentPeriodEndDateFact.xValid >= VALID:
                     d = ModelValue.dateunionDate(documentPeriodEndDateFact.xValue)# is an end date, convert back to a start date without midnight part
                     if f1.xValue.month != d.month or f1.xValue.day != d.day:
-                        modelXbrl.warning("EFM.6.05.58", 
+                        modelXbrl.warning("EFM.6.05.58",
                             _("The financial period %(reportingPeriod)s does not match the fiscal year end %(fyEndDate)s."),
                             edgarCode="rxp-0558-Fiscal-Year-End-Date-Value",
                             modelObject=(f1,documentPeriodEndDateFact), fyEndDate=f1.value, reportingPeriod=documentPeriodEndDateFact.value)
@@ -2528,9 +2528,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 hypDimRelSet = modelXbrl.relationshipSet(XbrlConst.hypercubeDimension)
                 hasHypRelSet = modelXbrl.relationshipSet(XbrlConst.all)
                 domMemRelSet = modelXbrl.relationshipSet(XbrlConst.domainMember)
-                
-                aggregates = [rxp.Royalties, rxp.Fees, rxp.ProductionEntitlements, 
-                              rxp.Dividends, rxp.Bonuses, rxp.InfrastructureImprovements, 
+
+                aggregates = [rxp.Royalties, rxp.Fees, rxp.ProductionEntitlements,
+                              rxp.Dividends, rxp.Bonuses, rxp.InfrastructureImprovements,
                               rxp.CommunityAndSocial, rxp.OtherPayments, rxp.Taxes]
                 def stdLabel(qn):
                     try:
@@ -2551,7 +2551,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     rxpAendDatetime = dateTime(documentPeriodEndDateFact.xValue, addOneDay=True)
                     rxpAstartDatetime = rxpAendDatetime.replace(year=rxpAendDatetime.year-1)
                     hasRxpAwithCurAndYr = False
-                
+
                 for cntxFacts in cntxEqualFacts.values():
                     qnameFacts = dict((f.qname,f) for f in cntxFacts)
                     context = cntxFacts[0].context
@@ -2756,7 +2756,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                           "EFM.{}Facts".format(jsonObjType),
                           "Extracted {} facts returned as json parameter".format(jsonObjType),
                           modelXbrl=modelXbrl,
-                          json=allowableJsonCharsForEdgar(json.dumps(jsonParam)))
+                          json=allowableJsonCharsForEdgar(json.dumps(jsonParam)),
+                          messageCodes=("EFM.feeFacts", "EFM.coverFacts"))
             if testEnvJsonFile:
                 with open(testEnvJsonFile, "w") as fh:
                     fh.write(allowableJsonCharsForEdgar(json.dumps(jsonParam, indent=3)))
@@ -3035,7 +3036,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         elements=", ".join(sorted(set(f.qname.localName for f in facts))))
                 del facts
         if unexpectedRedactElts:
-            modelXbrl.error("EFM.17Ad-27.disallowedRedact",
+            modelXbrl.error("EFM.disallowedRedact",
                 _("Submission type %(subType)s has %(countRedacts)s disallowed -sec-ix-redact styles."),
                 edgarCode="dq-17Ad-27-Disallowed-Redact",
                 modelObject=unexpectedRedactElts, subType=submissionType, countRedacts=len(unexpectedRedactElts))
@@ -3787,12 +3788,12 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         def r6facts():
                             for n in rule["names"]:
                                 for f in modelXbrl.factsByLocalName.get(n,()):
-                                    if f.context is not None:
+                                    if f.context is not None and f.context.endDatetime is not None and f.context.startDatetime is not None:
                                         yield f
                             for n in ("{http://www.xbrl.org/dtr/type/non-numeric}textBlockItemType",
                                       "{http://www.xbrl.org/dtr/type/2020-01-21}textBlockItemType"):
                                 for f in modelXbrl.factsByDatatype(True, qname(n)):
-                                    if f.context is not None:
+                                    if f.context is not None and f.context.endDatetime is not None and f.context.startDatetime is not None:
                                         yield f
                         for f in r6facts():
                             durationDays = (f.context.endDatetime - f.context.startDatetime).days
@@ -3907,7 +3908,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             elif dqcRuleName == "DQC.US.0036" and hasDocPerEndDateFact:
                 for id, rule in dqcRule["rules"].items():
                     for f in modelXbrl.factsByLocalName.get(rule["name"],()):
-                        if f.context is not None and abs((f.xValue + ONE_DAY - f.context.endDatetime).days) > 1: # was 3
+                        if f.context is not None and f.xValid >= VALID and abs((f.xValue + ONE_DAY - f.context.endDatetime).days) > 1: # was 3
                             modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                               modelObject=f, name=f.qname.localName,
                                               endDate=XmlUtil.dateunionValue(f.context.endDatetime, subtractOneDay=True),
@@ -4937,7 +4938,11 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             modelXbrl.warning(f"{dqcRuleName}.{id}",
                               f"Validation was unable to complete rule {dqcRuleName} due to an internal error.  This is not considered an error in the filing.",
                               modelObject=modelXbrl)
-            modelXbrl.debug("arelle:dqcrtException", _("DQCRT Exception traceback: {}").format(traceback.format_exception(*sys.exc_info())))
+            modelXbrl.debug(
+                "arelle:dqcrtException",
+                _("An unexpected exception occurred in DQCRT"),
+                traceback=traceback.format_exception(*sys.exc_info())
+            )
 
     val.modelXbrl.profileActivity("... DQCRT checks", minTimeToShow=0.1)
     del val.summationItemRelsSetAllELRs

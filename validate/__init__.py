@@ -884,6 +884,7 @@ __pluginInfo__ = {
     'import': ('EDGAR/transform',), # SEC inline can use SEC transformations
     'author': authorLabel,
     'copyright': copyrightLabel,
+    'aliases': ('validate/EFM', ),
     # classes of mount points (required)
     'DisclosureSystem.Types': dislosureSystemTypes,
     'DisclosureSystem.ConfigURL': disclosureSystemConfigURL,
