@@ -81,7 +81,7 @@ def sevMessageArgValue(x, pf=None): # pf is prototype Fact if any
             x = x[14:]
         elif not nonQuotedStringPatterns.match(x):
             x = '"' + x + '"'
-    return str(x)
+    return str(x).encode("ascii" ,"xmlcharrefreplace").decode("ascii")
 
 def logMsg(msg):
     return re.sub(r"{(\w+)}", r"%(\1)s", msg.replace("%","%%")) # replace {...} args with %(...)s args for modelXbrl.log functionality
@@ -1770,6 +1770,17 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         if matchingPair not in found:
                                             sevMessage(sev, ftContext=ftContext(currentAxisKey, otherGroupData["refFact"]), otherftContext=ftContext(currentAxisKey, groupData["refFact"]))
                                             found.append(matchingPair)
+                elif validation == "item-facts-dependency" and "itemsList" in val.params: # don't validate if no itemList (e.g. stand alone)
+                    factsFound = False
+                    eloItem = sev.get("elo-item", )
+                    namespace = sev.get("namespace", "")
+                    pattern = re.compile(sev.get("facts-namespace", ""))
+                    for f in modelXbrl.facts:
+                        if pattern.match(f.elementNamespaceURI):
+                            factsFound = True
+                            break # we can stop processing other facts
+                    if eloItem in val.params["itemsList"] and not factsFound:
+                        sevMessage(sev, subType=submissionType, modelObject=modelXbrl, item=eloItem, namespace=namespace)
                 # type-specific validations
                 elif len(names) == 0:
                     pass # no name entries if all dei names of this validation weren't in the loaded dei taxonomy (i.e., pre 2019)
@@ -2487,7 +2498,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                               ixEscape=False,
                                               ixContinuation=(f.elementQname == XbrlConst.qnIXbrl11NonNumeric),
                                               ixResolveUris=False,
-                                              strip=True)), storeDbInnerTextTruncate) # transforms are whitespace-collapse, otherwise it is preserved.
+                                              strip=True)).encode("ascii" ,"xmlcharrefreplace").decode("ascii"), storeDbInnerTextTruncate) # transforms are whitespace-collapse, otherwise it is preserved.
                             if storeDbAction:
                                 for k, v in storeDbAction.items():
                                     storeDbActions.setdefault(storeDbObject,{}).setdefault(_axisKey,{})[k] = getStoreDBValue(k, v, otherFact=f)
