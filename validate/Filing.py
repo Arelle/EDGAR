@@ -81,7 +81,7 @@ def sevMessageArgValue(x, pf=None): # pf is prototype Fact if any
             x = x[14:]
         elif not nonQuotedStringPatterns.match(x):
             x = '"' + x + '"'
-    return str(x)
+    return str(x).encode("ascii" ,"xmlcharrefreplace").decode("ascii")
 
 def logMsg(msg):
     return re.sub(r"{(\w+)}", r"%(\1)s", msg.replace("%","%%")) # replace {...} args with %(...)s args for modelXbrl.log functionality
@@ -2498,7 +2498,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                               ixEscape=False,
                                               ixContinuation=(f.elementQname == XbrlConst.qnIXbrl11NonNumeric),
                                               ixResolveUris=False,
-                                              strip=True)), storeDbInnerTextTruncate) # transforms are whitespace-collapse, otherwise it is preserved.
+                                              strip=True)).encode("ascii" ,"xmlcharrefreplace").decode("ascii"), storeDbInnerTextTruncate) # transforms are whitespace-collapse, otherwise it is preserved.
                             if storeDbAction:
                                 for k, v in storeDbAction.items():
                                     storeDbActions.setdefault(storeDbObject,{}).setdefault(_axisKey,{})[k] = getStoreDBValue(k, v, otherFact=f)
