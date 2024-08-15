@@ -42,6 +42,8 @@
         "  source: inline or both",
         "  dei/cover: cover - warning if inline and not visible, COVER - error if inline and not visible, dei - no visibility requirement for inline",
         "  elo-match-message: optional, overrides elo match message, default is dq-0540-{tag}-Value",
+        "  facts-namespace: optional regex, use with item-facts-dependency validation to specify namespace facts should belong to.",
+        "  elo-item: optional string, use with item-facts-dependency validation. The elo item that should be selected when facts in namespace are present.",
         "  comment: optional, comment string",
         "",
         "The messages object contains messages which may be referenced by validations",
@@ -362,7 +364,7 @@
         "dei/cover": "dei"
     },
     {
-        "sub-types": ["@6-K", "@SP 15D2", "@RR", "@N-346", "@SDR", "@SD", "@SBSEF-EXHIBITS"],
+        "sub-types": ["@6-K", "@SP 15D2", "@RR", "@N-346", "@SDR", "@SD"],
         "xbrl-names": "DocumentPeriodEndDate",
         "elo-name": "periodOfReport",
         "efm": "6.5.20",
@@ -561,6 +563,17 @@
         "validation": "e503",
         "source": "inline",
         "dei/cover": "dei"
+    },
+    {
+        "sub-types": ["@8-K"],
+        "xbrl-names": [],
+        "efm": "6.5.77",
+        "facts-namespace": ".*sec.gov/cyd/.*",
+        "elo-item": "1.05",
+        "validation": "item-facts-dependency",
+        "source": "both",
+        "dei/cover": "dei",
+        "namespace": "Cybersecurity Disclosure (CYD) taxonomy"
     },
     {
         "sub-types": ["@8-K"],
@@ -2852,6 +2865,11 @@
 			"severity": "error",
 			"validation": "Exclusive dependency between fact and item 5.03"
 		},
+        "item-facts-dependency": {
+			"message": "dq-{namespace}-{item}-Dependency",
+			"severity": "warning",
+			"validation": "Exclusive dependency between fact in namespace and ELO item submission header"
+		},
 		"ws": {
 			"message": "dq-{efmSection}-{tags}-Exclusive-Value",
 			"severity": "error",
@@ -3049,6 +3067,7 @@
 		"dq-{efmSection}-{tags}-{otherTags}-Exclusive-Dependency": "In submission type {subType}, one of {tags} {severityVerb} have a value if one of {otherTags} has a value in context {contextID}.",
         "dq-{efmSection}-{tags}-Mutual-Dependency": "In submission type {subType}, all of {tags} {severityVerb} have a value if any of them has a value in context {contextID}.",
         "dq-{efmSection}-{tag}-{headerTag}-Dependency": "In submission type {subType}, {tag} {severityVerb} have a value if and only if header element {headerTag} is provided.",
+        "dq-{namespace}-{item}-Dependency": "In submission type {subType}, a {namespace} fact {severityVerb} be included if item {item} is present in the submission header.",
 		"dq-{efmSection}-{tag}-{headerTag}-Dependent-Value": "In submission type {subType}, when {tag} has a value {value}, header element {headerTag} {severityVerb} have a value {otherValue}.",
 		"dq-{efmSection}-{tag}-Security-Axes": "In submission type {subType}, {tag} {severityVerb} have values without axes if a single non-ADR member, otherwise in separate contexts by axis member, but not both, in contexts {contextIDs}.",
 		"dq-0514-Hidden-Cover-Page-Fact-Not-Referenced": "Submission type {subType} has {n} cover page fact(s) in ix:hidden that were not referenced by any -sec-ix-hidden style property: (namesOfTags).",

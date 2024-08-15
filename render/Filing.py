@@ -411,7 +411,7 @@ class Filing(object):
                 if len(factSet) > 1:
                     def factSortKey (fact):
                         if getattr(fact,"xValid", 0) < VALID:
-                            return ("", "", "")
+                            return ("", "", 0)
                         if fact.isNumeric:
                             if fact.isNil: discriminator = float("INF") # Null values always last
                             elif fact.decimals is None: discriminator = 0 # Can happen with invalid xbrl
@@ -421,7 +421,7 @@ class Filing(object):
                             elif fact.xmlLang in ('en-US','en-us'): discriminator = 'aa-AA' # en-US comes first.  en-us is canonical form
                             elif fact.xmlLang is None: discriminator = 'aa-AA' # no lang means en-US
                             else: discriminator = fact.xmlLang # followed by all others
-                        return (fact.contextID,discriminator,fact.sourceline) # sourceLine is the tiebreaker
+                        return (fact.contextID,discriminator,fact.sourceline or 0) # sourceLine is the tiebreaker
                     sortedFactList = sorted(factSet, key = factSortKey)
                     while len(sortedFactList) > 0:
                         firstFact = sortedFactList.pop(0)
