@@ -271,6 +271,7 @@ def edgarRendererCmdLineOptionExtender(parser, *args, **kwargs):
     parser.add_option("--noRenderingWithError", action="store_true", dest="noRenderingWithError", help=_("Prevent rendering action when exhibit instance validation encountered error(s), blocking R file and extracted xml instance generation for that exhibit instance."))
     parser.add_option("--keepFilingOpen", dest="keepFilingOpen", action="store_true", help=SUPPRESS_HELP) # block closing filing in filingEnd
     parser.add_option("--iXBRLViewerStub", dest="iXBRLViewerStub", action="store_true", help=SUPPRESS_HELP) # generate iXBRL Viewer Stub if plugin is present
+    parser.add_option("--confidentialityDocList", dest="confidentialityDocList", action="store", help=SUPPRESS_HELP) # treat referencing report as confidential, pipe-separated list of schema and graphics files
 
 
 class EdgarRenderer(Cntlr.Cntlr):
@@ -906,6 +907,8 @@ class EdgarRenderer(Cntlr.Cntlr):
             if getattr(doc, "securityClassification", None):
                 # note for SBSEF confidential reports have only one ix doc so whole report is treated confidential
                 report.securityClassification = doc.securityClassification
+            if any((f in report.reportedFiles) for f in (options.confidentialityDocList or "").split("|")):
+                report.securityClassification = "confidential"
         # block closing filesource when modelXbrl closes because it's used by filingEnd (and may be an archive)
         modelXbrl.closeFileSource = False
         modelXbrl.profileStat(_("EdgarRenderer process instance {}").format(report.basenames[0]))
@@ -1820,6 +1823,7 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
             labelLang = cntlr.labelLang, # emulate cmd line labelLang
             keepFilingOpen = True, # closed by CntrlWinMain
             iXBRLViewerStub = cntlr.showiXBRLViewer.get(), # generates iXBRLViewerStub
+            confidentialityDocList = None, # not used for GUI operation
         )
         if modelXbrl.modelDocument.type in ModelDocument.Type.TESTCASETYPES:
             modelXbrl.efmOptions = options  # save options in testcase's modelXbrl
