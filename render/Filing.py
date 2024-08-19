@@ -191,6 +191,7 @@ def factAppearsInParentChildBaseSets (fact) -> set:
 def contextDims(context) -> dict:
     return {v.xAttributes["dimension"].sValue : v.stringValue for v in context.segDimValues.values()}
 
+
 class Filing(object):
     def __init__(self, controller, modelXbrl, outputFolderName, transform, suplSuffix, rFilePrefix, altFolder, altTransform, altSuffix, zipDir):
         self.modelXbrl = modelXbrl
