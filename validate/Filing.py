@@ -1776,7 +1776,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     namespace = sev.get("namespace", "")
                     pattern = re.compile(sev.get("facts-namespace", ""))
                     for f in modelXbrl.facts:
-                        if pattern.match(f.elementNamespaceURI):
+                        if pattern.match(f.qname.namespaceURI):
                             factsFound = True
                             break # we can stop processing other facts
                     if eloItem in val.params["itemsList"] and not factsFound:
