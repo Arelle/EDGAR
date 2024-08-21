@@ -11,6 +11,7 @@ import regex as re
 from collections import defaultdict
 import arelle.ModelObject
 from . import Utils
+from arelle.XmlUtil import dateunionValue
 Filing = None
 
 class Cube(object):
@@ -322,6 +323,21 @@ class Cube(object):
                 # Contexts that aren't in a complete movement are removed (do not survive).
                 sortedList.remove(contextID)
                 self.controller.logDebug("Context {} was not part of a complete Movement".format(contextID))
+                modelXbrl = self.filing.modelXbrl
+                context = contextID.context
+                affectedFacts = [x[0].qname for x in self.factMemberships if x[0].context == context and len(x[0].inCubes)==1]
+                if bool(affectedFacts):
+                    prettyPeriod = {True:lambda c: dateunionValue(c.instantDatetime, subtractOneDay=True),
+                                    False: lambda c: dateunionValue(c.startDatetime) + "/" + dateunionValue(c.endDatetime, subtractOneDay=True)
+                                    }[context.isInstantPeriod](context)
+                    modelXbrl.warning("EXG.7.3.FactsNotInMovements",
+                        _("Facts %(affectedFacts)s will not be displayed in %(presentationGroup)s" +
+                          " because period %(prettyPeriod)s of %(id)s does not align with other movements."),
+                        modelObject=modelXbrl.modelDocument
+                        ,presentationGroup=self.shortName
+                        ,affectedFacts=affectedFacts
+                        ,prettyPeriod=prettyPeriod
+                        ,id=context.id)
         return sortedList # from SurvivorsOfMovementAnalysis
 
 
