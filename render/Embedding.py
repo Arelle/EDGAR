@@ -661,9 +661,10 @@ class Embedding(object):
             return False
         group = self.cube.linkroleUri
         cells = int(n/1000000000)
-        self.controller.logWarn(f"Presentation group {group} with {axes} axes could have more than {cells} billion cells.  "
-                                +"Split up this presentation group and see EXG, Rendering, to see how to reduce the number of combinations by selecting "
-                                +"fewer members for each axis.",
+        self.controller.logWarn(f"Presentation group {group} with {axes} axes could have more than {cells} billion cells."
+                                +" Split it up and see [EXG 7.3 Fact Selection]"
+                                +" to see how to reduce the number of combinations by selecting"
+                                +" fewer members for each axis.",
                                 messageCode="EXG.rendering.tooManyDimensions"
                                 )
         return True

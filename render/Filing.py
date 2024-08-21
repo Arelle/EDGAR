@@ -16,6 +16,7 @@ from arelle.ModelDtsObject import ModelConcept
 from arelle.ModelObject import ModelObject
 from arelle.XmlUtil import collapseWhitespace
 from arelle.XmlValidateConst import VALID, VALID_NO_CONTENT
+from arelle.XbrlConst import parentChild
 from lxml import etree
 
 from . import Cube, Embedding, Report, PresentationGroup, Summary, Utils, Xlout
@@ -149,6 +150,27 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     filing.strExplainSkippedFacts()
 
     if len(filing.unusedFactSet) > 0:
+        # Although there are likely other edge cases that can cause this
+        # situation without any other warnings, one of them is when the fact
+        # has dimension members that aren't presented in the same ELR as the
+        # concept itself, another is when not all the axes have defaults.
+        for unusedFact in filing.unusedFactSet:
+            concept = unusedFact.concept
+            context = unusedFact.context
+            baseSets = factAppearsInParentChildBaseSets(unusedFact) # base sets are defined in XBRL 2.1.
+            if len(context.segDimValues) == 0:
+                modelXbrl.warning(("EXG.7.3.UncategorizedFact")
+                                  ,_(f"{concept.qname} in context {context.id} was not selected in any presentation group."
+                                     + f" Ensure there is a default member for axes in presentation roles {baseSets}")
+                                  ,file=filing.entrypoint
+                                  ,modelObject=unusedFact)
+            else:
+                dims = contextDims(context)
+                modelXbrl.warning(("EXG.7.3.UncategorizedDimensionedFact")
+                                  ,_(f"{concept.qname} in context {context.id} was not selected in any presentation group."
+                                     + f" Ensure that its dimension members {dims} are presented in presentation roles {baseSets}.")
+                                  ,file=filing.entrypoint
+                                  ,modelObject=unusedFact)
         filing.handleUncategorizedCube(xlWriter)
         controller.nextUncategorizedFileNum -= 1
 
@@ -156,7 +178,18 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     controller.logDebug("Filing finish {:.3f} secs.".format(time.time() - _funStartedAt)); _funStartedAt = time.time()
     return filing.reportSummaryList
 
+def factAppearsInParentChildBaseSets (fact) -> set:
+    appearsInRsets = set()
+    for k, rset in fact.modelXbrl.relationshipSets.items():
+        arcrole, *roleURIs = k
+        if arcrole == parentChild:
+            relationshipTargetConcepts = rset.modelRelationshipsTo
+            if fact.concept in relationshipTargetConcepts and bool(rset.linkrole):
+                appearsInRsets.add(rset.linkrole)
+    return appearsInRsets
 
+def contextDims(context) -> dict:
+    return {v.xAttributes["dimension"].sValue : v.stringValue for v in context.segDimValues.values()}
 
 
 class Filing(object):
@@ -649,6 +682,8 @@ class Filing(object):
             for cube in element.inCubes.values():
                 # the None in the tuple is only to handle periodStartLabels and periodEndLabels later on
                 cube.factMemberships += [(fact, axisMemberLookupDict, None)]
+                if not hasattr(fact,'inCubes'): fact.inCubes = set()
+                fact.inCubes.add(cube)
                 cube.hasElements.add(fact.concept)
                 if fact.unit is not None:
                     cube.unitAxis[fact.unit.id] = fact.unit
@@ -1029,6 +1064,18 @@ class Filing(object):
         minToKeep = math.floor(.25*minFacts)
         for col in visibleColumns:
             if col.startEndContext.numMonths < maxMonths and len(col.factList) < minToKeep:
+                preserveColumn = False
+                for fact in col.factList:
+                    appearsInOtherColumn = False
+                    for otherCol in remainingVisibleColumns:
+                        if otherCol != col and fact in otherCol.factList:
+                            appearsInOtherColumn = True
+                            break
+                    appearsInOtherReport = (len(fact.inCubes) > 1)
+                    preserveColumn = (not appearsInOtherColumn and not appearsInOtherReport)
+                    break
+                if preserveColumn:
+                    continue # to next column, cannot remove this one
                 self.modelXbrl.info("info",
                                     _("Columns in cash flow \"%(presentationGroup)s\" have maximum duration %(maxDuration)s months and at least %(minNumValues)s "
                                       "values. Shorter duration columns must have at least one fourth (%(minToKeep)s) as many values. "
@@ -1036,23 +1083,16 @@ class Filing(object):
                                     modelObject=self.modelXbrl.modelDocument, presentationGroup=report.shortName,
                                     maxDuration=maxMonths, minNumValues=minFacts, minToKeep=minToKeep, startEndContext=col.startEndContext,
                                     months=col.startEndContext.numMonths, numValues=len(col.factList))
+                # first kick this fact out of report.embedding.factAxisMemberGroupList, our defacto list of facts
+                report.embedding.factAxisMemberGroupList = \
+                        [FAMG for FAMG in report.embedding.factAxisMemberGroupList if FAMG.fact != fact]
+                try:
+                    self.usedOrBrokenFactDefDict[fact].remove(report.embedding)
+                except KeyError:
+                    pass
                 col.hide()
                 didWeHideAnyCols = True
                 remainingVisibleColumns.remove(col)
-                for fact in col.factList:
-                    appearsInOtherColumn = False
-                    for otherCol in remainingVisibleColumns:
-                        if fact in otherCol.factList:
-                            appearsInOtherColumn = True
-                            break
-                    if not appearsInOtherColumn:
-                        # first kick this fact out of report.embedding.factAxisMemberGroupList, our defacto list of facts
-                        report.embedding.factAxisMemberGroupList = \
-                                [FAMG for FAMG in report.embedding.factAxisMemberGroupList if FAMG.fact != fact]
-                        try:
-                            self.usedOrBrokenFactDefDict[fact].remove(report.embedding)
-                        except KeyError:
-                            pass
 
         if didWeHideAnyCols:
             Utils.hideEmptyRows(report.rowList)
@@ -1071,12 +1111,12 @@ class Filing(object):
         nonStatementElementsAndElementMemberPairs = set()
         for cube in sortedCubeList:
             if not cube.noFactsOrAllFactsSuppressed and len(cube.embeddingList) == 1 and not cube.embeddingList[0].isEmbeddingOrReportBroken:
-                if cube.cubeType == 'statement' and not cube.isStatementOfEquity:
+                if cube.cubeType == 'statement':
                     statementCubesList += [cube]
                 else:
                     nonStatementElementsAndElementMemberPairs.update(cube.embeddingList[0].hasElementsAndElementMemberPairs)
 
-        for i, cube in enumerate(statementCubesList):
+        for i, cube in filter(lambda c: not c[1].isStatementOfEquity, enumerate(statementCubesList)):
             # initialize to all the non statement elements and non statement element member pairs
             elementQnamesInOtherReportsAndElementQnameMemberPairs = nonStatementElementsAndElementMemberPairs.copy()
             # now add other statements
