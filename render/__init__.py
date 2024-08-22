@@ -1466,8 +1466,8 @@ class EdgarRenderer(Cntlr.Cntlr):
                                     self.transformFilingSummary(filing, rootETree, self.summaryXslt, dissemReportsFolder, "FilingSummary.htm" + dissemSuffix, True, "Public Filing Data", zipDir="dissem/")
                         elif self.isWorkstationFirstPass: # redact filing summary
                             filing.writeFile(join(dissemReportsFolder, "FilingSummary.xml.delete"), b"")
-                        if self.xlWriter and self.hasXlout:
-                            if numDisseminatedReports > 0:
+                        if self.hasXlout:
+                            if self.xlWriter and numDisseminatedReports > 0:
                                 _startedAt = time.time()
                                 self.xlWriter.save(suffix=dissemSuffix, zipDir="dissem/")
                                 self.xlWriter.close()
