@@ -4646,7 +4646,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 immaterialDifferenceFlag = "ImmaterialDifferenceFlag" in modelXbrl.factsByLocalName
                 durationFactNames = set(f.concept.name
                                         for f in modelXbrl.factsByPeriodType("duration")
-                                        if f.xValid >= VALID and f.concept.isMonetary and isStandardUri(val, f.concept.modelDocument.uri) and "average" not in f.concept.name.lower())
+                                        if f.xValid >= VALID and f.concept.isMonetary and isStandardUri(val, f.concept.modelDocument.uri) and "average" not in f.concept.name.lower() 
+                                            and '//xbrl.sec.gov/oef/' not in f.concept.qname.namespaceURI)
                 # aggreate bound facts by local name & dims for period sleuthing
                 def checkPerFacts(*facts):
                     minDec = leastDecimals(facts)
