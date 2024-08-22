@@ -5,6 +5,61 @@ This file was created by staff of the U.S. Securities and Exchange Commission.
 Data and content created by government employees within the scope of their employment
 are not subject to domestic copyright protection. 17 U.S.C. 105.
 -->
+	<!-- OEF 2024q3 -->
+	<Loc>
+		<Family>OEF</Family>
+		<Version>2024q3</Version>
+		<Href>https://xbrl.sec.gov/oef/2024q3/oef-2024q3.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Schema</FileTypeName>
+		<Elements>1</Elements>
+		<Namespace>http://xbrl.sec.gov/oef/2024q3</Namespace>
+		<Prefix>oef</Prefix>
+	</Loc>
+
+	<Loc>
+		<Family>OEF</Family>
+		<Version>2024q3</Version>
+		<Href>https://xbrl.sec.gov/oef/2024q3/oef-2024q3_cal.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Entry Point</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://xbrl.sec.gov/oef-cal/2024q3</Namespace>
+		<Prefix>oef-cal</Prefix>
+	</Loc>
+
+	<Loc>
+		<Family>OEF</Family>
+		<Version>2024q3</Version>
+		<Href>https://xbrl.sec.gov/oef/2024q3/oef-2024q3_lab.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Entry Point</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://xbrl.sec.gov/oef-lab/2024q3</Namespace>
+		<Prefix>oef-lab</Prefix>
+	</Loc>
+
+	<Loc>
+		<Family>OEF</Family>
+		<Version>2024q3</Version>
+		<Href>https://xbrl.sec.gov/oef/2024q3/oef-rr-2024q3.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Entry Point</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://xbrl.sec.gov/oef-rr/2024q3</Namespace>
+		<Prefix>oef-rr</Prefix>
+	</Loc>
+
+	<Loc>
+		<Family>OEF</Family>
+		<Version>2024q3</Version>
+		<Href>https://xbrl.sec.gov/oef/2024q3/oef-sr-2024q3.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Entry Point</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://xbrl.sec.gov/oef-sr/2024q3</Namespace>
+		<Prefix>oef-sr</Prefix>
+	</Loc>
       <!-- CYD 2024 -->
     <Loc>
         <Family>CYD</Family>
