@@ -403,7 +403,7 @@ def filingStart(cntlr, options, filesource, entrypointFiles, sourceZipStream=Non
                     elif i > 0 and primaryIndex < 0 and not submissionType and attachmentDocumentType and not attachmentDocumentType.startswith("EX"):
                         # no submissionType but attachmentDocType doesn't start with EX, can be primary
                         primaryIndex = i
-                    
+
             # ensure any ixds is first entrypoint
             if ixdsIndex > 0:
                 entrypointFiles.insert(0, entrypointFiles.pop(ixdsIndex))
