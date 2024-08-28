@@ -35,10 +35,11 @@ export const FactsGeneral = {
 			return;
 		}
 		const fact = FactMap.getByID(element.getAttribute('data-id') as string);
+		console.log('fact', fact)
 		if (fact) {
 			FactMap.setIsSelected(fact.id);
 			const currentInstance = Constants.getInstanceFiles.find(element => element.current);
-			const currentXHTML = currentInstance?.xhtmls.find(element => element.current);
+			const currentXHTML = currentInstance?.docs.find(element => element.current);
 			if (fact.file) {
 				if (currentXHTML?.slug !== fact.file) {
 					ConstantsFunctions.changeInlineFiles(fact.file);
@@ -99,11 +100,8 @@ export const FactsGeneral = {
 
 		const docNameElem = document.createElement('small');
 		const currentInstance = Constants.getInstanceFiles.find(element => element.current);
-		const currentXHTML = currentInstance?.xhtmls.find(element => element.current);
+		const currentXHTML = currentInstance?.docs.find(element => element.current);
 		docNameElem.setAttribute('class', `${currentXHTML?.slug === factInfo?.file ? 'text-primary' : 'text-success'}`);
-		if (factInfo.name == "us-gaap:AssetsCurrent") {
-			console.log('factInfo', factInfo)
-		}
 		const docNameText = document.createTextNode(factInfo?.file ? factInfo.file : 'Unknown Location');
 		docNameElem.appendChild(docNameText);
 
@@ -142,7 +140,6 @@ export const FactsGeneral = {
 			} else {
 				return current.id;
 			}
-
 		}).filter(Boolean).concat(hiddenFacts);
 	}
 

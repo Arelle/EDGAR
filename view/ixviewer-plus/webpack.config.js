@@ -13,10 +13,28 @@ module.exports = (env = { copy: true, analyze: false }, argv = { mode: `producti
   const forWorkstation = argv.env.domain === 'workstation';
   const distPath = argv.env.distPath; // call like this: npm run build-dev --env distPath=./foobar
   const publicPath = argv.env.publicPath; // call like this: npm run build-dev --env publicPath=/my-branch-name/
+
+  let resolvedPath = '';
+  // For prod webpack seems to fail with dynamically passed in publicPath
+  // undefined for dev && !ws (served from memory)
+  if (forWorkstation) {
+    resolvedPath = publicPath || '/AR/ixviewer-plus/';
+  } else if (forProd) {
+    if (publicPath) {
+      resolvedPath = publicPath;
+    } else {
+      resolvedPath = argv.env.flat ? '' : ('/ixviewer-plus/');
+    }
+    if (distPath) console.log('building to distPath:', distPath)
+    if (publicPath || argv.env.flat) console.log('will serve on publicPath:', resolvedPath)
+  } else {
+    resolvedPath = undefined;
+  }
+
   return {
     mode: argv.mode,
 
-    entry: { "ix-viewer": "./src/ts/index.ts" },
+    entry: { "ix-viewer" : "./src/ts/index.ts" },
 
     devServer: { devMiddleware: { writeToDisk: true } },
 
@@ -63,12 +81,7 @@ module.exports = (env = { copy: true, analyze: false }, argv = { mode: `producti
         forProd
           ? `[name].bundle.[contenthash].min.js`
           : `[name].bundle.js`,
-      publicPath: 
-        forWorkstation
-        ? publicPath || '/AR/ixviewer-plus/' 
-        : forProd 
-          ? ('/ixviewer-plus/') : publicPath || undefined, // For prod webpack seems to fail with dynamically passed in publicPath
-          // undefined for dev && !ws (served from memory)
+      publicPath: resolvedPath, 
       path: forWorkstation // maybe figure out how to integrate version from constants.ts in to dist name
         ? path.resolve(__dirname, distPath || `./dist-ws`)
         : path.resolve(__dirname, distPath || `./dist`)

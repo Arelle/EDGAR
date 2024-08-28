@@ -164,6 +164,7 @@ export interface Tag {
 }
 
 export interface Calculation {
+    label?: string;
     order: number | null;
     parentTag: null | string;
     weight: number | null;

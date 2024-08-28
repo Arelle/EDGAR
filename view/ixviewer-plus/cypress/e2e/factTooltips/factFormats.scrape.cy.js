@@ -1,4 +1,5 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus'
+// import { filings } from '../../dataPlus/enrichedFilingsPlus.mjs'
+import { filings } from '../../dataPlus/standardFilings.js'
 import _ from 'lodash'
 
 const logProgress = false

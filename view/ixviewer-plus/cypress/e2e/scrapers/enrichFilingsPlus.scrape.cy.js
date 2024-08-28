@@ -29,7 +29,7 @@ describe.skip('enrich filings with formType and FactCount', () => {
 				if ($elem.text()) {
 					// cy.log($elem.text());
 					// console.log($elem.text());
-					filing.formType = $elem.text()
+					filing.formType || filing.submissionType = $elem.text()
 				}
 			})
 
@@ -38,7 +38,7 @@ describe.skip('enrich filings with formType and FactCount', () => {
 			// 	if ($elem.text()) {
 			// 		cy.log($elem.text());
 			// 		console.log($elem.text());
-			// 		filing.ticker = $elem.text()
+			// 		filing?.ticker = $elem.text()
 			// 	}
 			// })
 

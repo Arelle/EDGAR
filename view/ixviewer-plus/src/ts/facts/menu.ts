@@ -19,7 +19,6 @@ export const FactsMenu = {
 			return;
 		}
 
-
 		if (event.target && (event.target as HTMLElement).classList && (event.target as HTMLElement).classList.contains('disabled')) {
 			return;
 		}
@@ -27,6 +26,9 @@ export const FactsMenu = {
 
 	},
 
+	/**
+	 * @Description passes filtered fact set to Pagination.init()
+	 */
 	prepareForPagination: () => {
 		let enabledFacts;
 		if (Object.keys(UserFiltersState.getUserSearch).length === 0) {
@@ -35,8 +37,11 @@ export const FactsMenu = {
 			enabledFacts = FactMap.getEnabledHighlightedFacts();
 		}
 		const enabledFactsArray = FactsGeneral.specialSort(enabledFacts);
-		Pagination.init(enabledFactsArray, ('#facts-menu-list-pagination .pagination'),
-			('#facts-menu-list-pagination .list-group'), true);
-
+		Pagination.init(
+			enabledFactsArray,
+			('#facts-menu-list-pagination .pagination'),
+			('#facts-menu-list-pagination .list-group'),
+			true
+		);
 	}
 };

@@ -42,7 +42,7 @@ export const buildSectionsArrayFlatter = (filingSummary: FilingSummary, metaLink
     const addFactProps = (section: Section) => {
         section.fact = getFactAttrsFromAnchorProps(section) || undefined;
         const mrFact = section.fact;
-        if (mrFact?.file  && mrFact?.ancestors && mrFact?.name) {
+        if (mrFact?.file && mrFact?.ancestors && mrFact?.name) {
             // if an ancestor is a fact name eg "sbs:SbsefOrglStrDescTextBlock", need to dress as name attribute
             const handleSpecialAncestors = mrFact.ancestors.map((a: string) => {
                 if (a.includes(':')) {
@@ -79,7 +79,7 @@ export const buildSectionsArrayFlatter = (filingSummary: FilingSummary, metaLink
     return sectionsArray || [];
 }
 
-const getFactAttrsFromAnchorProps = (section: Section) => {
+export const getFactAttrsFromAnchorProps = (section: Section) => {
     let fact: SectionFact | null = {};
     fact.instance = section.instance; // number
     // fact.menuCat = metaReport.menuCat;
@@ -94,6 +94,7 @@ const getFactAttrsFromAnchorProps = (section: Section) => {
         fact.file = section.firstAnchor.baseRef;
         fact.ancestors = section.firstAnchor.ancestors;
     } else {
+        console.warn(`no linkable fact for section ${section.shortName} (no anchor data)`)
         /* DOC: "As I recall, the reason for the anchors computed during rendering was that 
                 some internal rendering process detail gets lost that neither filing summary.xml 
                 nor metalinks.json could preserve (I think it had to do with how chrome will insert 
@@ -163,29 +164,27 @@ const mapCategoryName = (input: string, isStandard: boolean) => {
     }
 };
 
-
 export function fetchText(url: string, init?: RequestInit): Promise<string | never>
 {
     return fetch(url, init).then((response) =>
     {
-        if(response.status >= 200 && response.status <= 299)
+        if (response.status >= 200 && response.status <= 299)
             return response.text();
         else
             throw new Error(response.status.toString());
     });
 }
+
 export function fetchJson<T = any>(url: string, init?: RequestInit): Promise<T | never>
 {
     return fetch(url, init).then((response) =>
     {
-        if(response.status >= 200 && response.status <= 299)
+        if (response.status >= 200 && response.status <= 299)
             return response.json();
         else
             throw new Error(response.status.toString());
     });
 }
-
-
 
 export function setScaleInfo(scale: string | number | undefined): string | null
 {
