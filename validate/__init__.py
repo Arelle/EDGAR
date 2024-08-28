@@ -562,7 +562,7 @@ def filingValidate(cntlr, options, filesource, entrypointFiles, sourceZipStream=
 
         # EDGAR will not accept an Inline XBRL document that includes a separate instance document in the submission process.
         if hasInline and hasInstance:
-            efmFiling.error("EFM.5.02.05", "You can not attach a xBRL-XML Instance document and an Inline XBRL document on the same Submission.")
+            efmFiling.error("EFM.5.02.05", "You can not attach an Instance XBRL document and an Inline XBRL document on the same Submission.")
 
         if len(_attachmentDocumentTypeReports) > 1:
             efmFiling.error("EFM.6.03.08",
