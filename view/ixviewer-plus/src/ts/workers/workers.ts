@@ -8,7 +8,11 @@ import { FetchAndMerge } from '../fetch-merge/fetch-merge';
 self.onmessage = ({ data }) =>
 {
     const fetchAndMerge = new FetchAndMerge(data);
-    fetchAndMerge.init()
-        .then(data => self.postMessage(data))
+    fetchAndMerge.fetch()
+        .then((data) => self.postMessage(data))
+        .then(() => fetchAndMerge.facts())
+        .then((data) => self.postMessage(data))
+        .then(() => fetchAndMerge.merge())
+        .then((data) => self.postMessage(data))
         .catch((e) => setTimeout(() => { throw new Error(JSON.stringify(e)) }));
 };

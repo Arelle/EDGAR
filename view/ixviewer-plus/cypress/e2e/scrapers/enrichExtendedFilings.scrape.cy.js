@@ -22,14 +22,14 @@ const enrichedFilings = []
 describe.skip('enrich filings with formType and FactCount', () => {
 
 	filingsSample.forEach((filing, index, array) => {
-		it(`${filing.ticker || filing.docName}`, () => {
+		it(`${filing?.ticker || filing.docName}`, () => {
 			cy.visit(filing.secUrl)
 
 			// get formType
 			cy.get('[name="dei:DocumentType"]', { timeout: 10000 }).first().then(($elem) => {
 				if ($elem.text()) {
 					cy.log($elem.text());
-					filing.formType = $elem.text()
+					filing.formType || filing.submissionType = $elem.text()
 				}
 			})
 

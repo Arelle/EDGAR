@@ -72,7 +72,7 @@ export const Sections =
 
     handleSectionLinkClick: (event: MouseEvent | KeyboardEvent) => {
         const eventTarget = event.target instanceof Element ? event.target : null;
-        if(!eventTarget)
+        if (!eventTarget)
         {
             console.error(`Not a valid Section Link: ${event.target}`);
             return;
@@ -88,7 +88,7 @@ export const Sections =
         for(let sect of sections)
         {
             const selectorForInlineFact = eventTarget?.getAttribute('inline-fact-selector');
-            if(sect.inlineFactSelector == selectorForInlineFact)
+            if (sect.inlineFactSelector == selectorForInlineFact)
             {
                 targetSectionData = sect;
                 break;
@@ -119,7 +119,7 @@ export const Sections =
 
         const section = sectionInCurrentInstance ? { id } : { name, contextRef };
         const action = targetSectionData ? () => scrollToSection(targetSectionData) : () => scrollToFact(section);
-        if(sectionInCurrentInstance)
+        if (sectionInCurrentInstance)
         {
             action();
         }
@@ -261,6 +261,11 @@ export const Sections =
             const doc = parser.parseFromString(htmlString, 'text/html')
             const elem = doc.querySelector('body > div') as HTMLElement
             document.getElementById("tagged-sections")?.appendChild(elem);
+        }
+
+        const numOfInstancesWithSections = new Set(sections.map(sect => sect.instanceHtm)).size;
+        if (numOfInstancesWithSections <= 1) {
+            document.getElementById("sections-settings-btn")?.classList.add('d-none');
         }
 
         sections.forEach((section: Section, index: number) => {

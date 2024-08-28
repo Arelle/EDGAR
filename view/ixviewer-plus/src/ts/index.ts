@@ -18,8 +18,8 @@ import { Logger, ILogObj } from "tslog";
     new SetCustomCSS();
     const startPerformance = performance.now();
     App.init(false, (formLoaded: boolean) => {
-        console.log(`Version: ${Constants.version} (${Constants.featureSet})`)
-        console.log(`CSS Mode: ${(document.compatMode=="CSS1Compat"?"Standards 🎉":"Quirks 😢")}`)
+        console.log(`Version: ${Constants.version} (${Constants.featureSet})`);
+        console.log(`CSS Mode: ${(document.compatMode=="CSS1Compat" ? "Standards 🎉" : "Quirks 😢")}`);
 
         if (formLoaded) {
             App.initialSetup();
@@ -30,11 +30,13 @@ import { Logger, ILogObj } from "tslog";
                     FactsGeneral.goToInlineFact(new Event(''), tempDiv);
                 });
             }
-            Errors.updateMainContainerHeight(false)
+
+            Errors.updateMainContainerHeight(false);
             removeHideClassFromSidebars();
         } else {
             ErrorsMajor.formNotLoaded();
         }
+
         const endPerformance = performance.now();
         if (DEBUGCSS) {
             // ErrorsMajor.debug();
@@ -48,12 +50,13 @@ import { Logger, ILogObj } from "tslog";
         // }
     });
 
-    const removeHideClassFromSidebars = () => {
-        // fact and sections sidebars must in dom to be populated, but we want visibility none during load.
+    const removeHideClassFromSidebars = () =>
+    {
+        // fact and sections sidebars must be in DOM to be populated, but we want visibility-none during load.
         document.querySelector('.sidebar-container-right')?.classList.remove('hide'); // Facts Sidebar
         document.querySelector('.help-sidebar')?.classList.remove('hide');
         document.querySelector('.sections-sidebar')?.classList.remove('hide');
         document.getElementById('sections-menu')?.classList.remove('show');
         document.getElementById('facts-menu')?.classList.remove('show');
-    }
+    };
 })();

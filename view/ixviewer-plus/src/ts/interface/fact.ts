@@ -20,7 +20,7 @@ export interface SingleFact {
     footnote: null | string;
     isEnabled: boolean;
     isHighlight: boolean;
-    references: Array<Reference | null>;
+    references: Array<ReferenceAsArray> | null;
     calculations: Array<Calculation[]>;
     labels: LabelElement[];
     xbrltype: string;
@@ -96,20 +96,37 @@ export interface LabelElement {
     "Negated Total Label"?: string;
 }
 
-
+// TODO: ask knowledge bearers if we maybe we create distint orders for each taxonomy body (fasb, sec, etc...) as they each probably have their own properties.
 export interface Reference {
-    Name: string;
-    Paragraph?: string;
     Publisher: string;
-    Section?: string;
-    SubTopic?: string;
-    Topic?: string;
-    URI?: string;
-    Subparagraph?: string;
+    Name: string;
     Number?: string;
-    Subsection?: string;
+    IssueDate?: string;
+    Chapter?: string,
     Article?: string;
+    Note?: string;
+    Section?: string;
+    Subsection?: string;
+    Topic?: string;
+    SubTopic?: string;
+    Paragraph?: string;
+    Subparagraph?: string;
+    Clause?: string,
+    Subclause?: string,
+    Example?: string,
+    Page?: string,
+    Exhibit?: string,
+    Footnote?: string,
     Sentence?: string;
+    URI?: string;
+    URIDate?: string,
+}
+
+interface RefProp {
+    string: string,
+}
+export interface ReferenceAsArray {
+    ReferenceMember: Array<RefProp>
 }
 
 export interface SegmentClass {

@@ -27,7 +27,6 @@ export const UserFiltersGeneral = {
     },
 
     setEnabledFacts: () => {
-
         const foundFactsArray = Array.from(document.getElementById('dynamic-xbrl-form')!.querySelectorAll('[contextref]'));
         foundFactsArray.forEach((current) => {
             if (UserFiltersGeneral.getAllFilteredData.indexOf(current) >= 0) {
@@ -41,18 +40,14 @@ export const UserFiltersGeneral = {
 
     resetAllFilteredData: () => {
         const foundFacts = document.getElementById('dynamic-xbrl-form')!.querySelectorAll('[contextref]');
-
         const foundFactsArray = Array.prototype.slice.call(foundFacts);
-
         UserFiltersGeneral.getAllFilteredData = foundFactsArray;
     },
 
     getAllFilteredData: null,
 
     updateCurrentFiltersDropdown: () => {
-
         if (UserFiltersGeneral.getCurrentTagsFilter) {
-
             document.getElementById('current-filters-dropdown')?.classList.remove('d-none');
             const div = document.createElement('div');
             const a = document.createElement('a');
@@ -83,12 +78,10 @@ export const UserFiltersGeneral = {
             document.getElementById('current-filters-tags')!.innerHTML = dropdownHtml;
         }
         if (!UserFiltersGeneral.getCurrentTagsFilter) {
-
             document.getElementById('current-filters-tags')!.innerHTML = '';
         }
 
         if (UserFiltersGeneral.getCurrentDataFilter) {
-
             document.getElementById('current-filters-dropdown')?.classList.remove('d-none');
             let dropdownHtml = '<a onclick="UserFiltersGeneral.resetDataFilter();" class="dropdown-item click">';
             dropdownHtml += '<label><i class="fas fa-times mr-1"></i>';
@@ -97,12 +90,10 @@ export const UserFiltersGeneral = {
             document.getElementById('current-filters-data')!.innerHTML = dropdownHtml;
         }
         if (!UserFiltersGeneral.getCurrentDataFilter) {
-
             document.getElementById('current-filters-data')!.innerHTML = '';
         }
 
         if (!UserFiltersGeneral.getCurrentTagsFilter && !UserFiltersGeneral.getCurrentDataFilter) {
-
             document.getElementById('current-filters-dropdown')?.classList.add('d-none');
         }
     },
@@ -167,13 +158,11 @@ export const UserFiltersGeneral = {
     },
 
     emptyMoreFilters: () => {
-
         UserFiltersMoreFiltersPeriodSetUp.filtersSet = false;
         UserFiltersMoreFiltersMeasureSetUp.filtersSet = false;
         UserFiltersMoreFiltersAxesSetUp.filtersSet = false;
         UserFiltersMoreFiltersMembersSetUp.filtersSet = false;
         UserFiltersMoreFiltersScaleSetUp.filtersSet = false;
-
     }
 
 };

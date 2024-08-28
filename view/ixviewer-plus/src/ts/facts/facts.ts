@@ -17,13 +17,12 @@ import { ConstantsFunctions } from "../constants/functions";
 export const Facts = {
 	updateFactCount: () => {
 		const factCount = FactMap.getFactCount();
-		FactsTable.update();
-		const factTotalElementsArray = Array.from(document.querySelectorAll(
-			".fact-total-count"
-		));
+		// FactsTable.update();
+		const instanceFactCountElems = Array.from(document.querySelectorAll(".fact-total-count"));
+
 		Constants.getHtmlOverallFactsCount = factCount;
 
-		factTotalElementsArray.forEach((current) => {
+		instanceFactCountElems.forEach((instanceFactCntElem) => {
 			if (Constants.getHtmlOverallFactsCount === "0") {
 				document.getElementById("facts-menu")?.setAttribute("disabled", 'true');
 				document.getElementById("facts-menu")?.classList.add("disabled");
@@ -31,22 +30,20 @@ export const Facts = {
 				document.getElementById("facts-menu")?.removeAttribute("disabled");
 				document.getElementById("facts-menu")?.classList.remove("disabled");
 			}
-			current.textContent = Constants.getHtmlOverallFactsCount;
+			instanceFactCntElem.textContent = Constants.getHtmlOverallFactsCount;
 		});
 
 		// do the slugs too:
-		const factSlugsElementsArray = Array.from(document.querySelectorAll(
-			"[filing-slug]"
-		));
-		factSlugsElementsArray.forEach((current) => {
-			if (current) {
+		const factSlugsElementsArray = Array.from(document.querySelectorAll("[filing-slug]"));
+		factSlugsElementsArray.forEach((docSlug) => {
+			if (docSlug) {
 				const filingLoaded = Constants.getInlineFiles.find(element => {
-					if (element.slug === current.getAttribute('filing-slug')) {
+					if (element.slug === docSlug.getAttribute('filing-slug')) {
 						return element;
 					}
 				});
 				if (filingLoaded.loaded) {
-					current.innerHTML = FactMap.getFactCountForFile(current.getAttribute('filing-slug'), true);
+					docSlug.innerHTML = FactMap.getFactCountForFile(docSlug.getAttribute('filing-slug'), true);
 				}
 			}
 		});
@@ -90,7 +87,7 @@ export const Facts = {
 			Facts.clickEvent(event, element);
 		});
 
-		element.addEventListener("mouseenter", (event: MouseEvent) => {
+		element.addEventListener("mouseover", (event: MouseEvent) => {
 			Facts.enterElement(event, element);
 		});
 
@@ -101,7 +98,7 @@ export const Facts = {
 	},
 
 	inViewPort: (unobserveAfter = false) => {
-		const factSelector = '[id^=fact-identifier-], [continued-main-fact-id], [data-link], [xhtml-change]'
+		const factSelector = '[id^=fact-identifier-], [continued-main-fact-id], [data-link], [xhtml-change]';
 		const allFactIdentifiers = Array.from(document?.getElementById('dynamic-xbrl-form')?.querySelectorAll(factSelector) || []);
 
 		const observer = new IntersectionObserver(entries => {
@@ -306,8 +303,6 @@ export const Facts = {
 			period.append(periodText);
 			popoverHTML.append(period);
 			const info = document.createElement('div');
-			const infoText = document.createTextNode('Click for additional information.');
-			info.append(infoText);
 			popoverHTML.append(info);
 			const popover = new bootstrap.Popover(element.parentElement as HTMLElement, { html: true, content: popoverHTML });
 			popover.show();

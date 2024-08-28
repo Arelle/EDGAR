@@ -27,7 +27,7 @@ export const ConstantsFunctions = {
 		let viewType = 'Inline Viewer';
 		const searchParams = HelpersUrl.returnURLParamsAsObject(window.location.search);
 		// need to test on arelle local gui...
-		const iframes = document.querySelectorAll('iframe').length
+		const iframes = document.querySelectorAll('iframe').length;
 		const appIsInIframe = (window.parent.document == document) && iframes;
 		if (appIsInIframe && searchParams.title) {
 			viewType = searchParams.title;
@@ -95,7 +95,7 @@ export const ConstantsFunctions = {
 
 		Constants.getInstanceFiles.forEach((instanceFile) => {
 			instanceFile.current = instanceFile.instance === instanceIndex ? true : false;
-			instanceFile.xhtmls.forEach((xhtml, index) => {
+			instanceFile.docs.forEach((xhtml, index) => {
 				if (targetInstanceFile) {
 					if (instanceFile.instance === instanceIndex && targetInstanceFile === xhtml.slug) {
 						xhtml.current = true;
@@ -107,25 +107,24 @@ export const ConstantsFunctions = {
 				}
 			});
 		});
-		const needToLoadInstance = Constants.getInstanceFiles[instanceIndex].xhtmls.some(element => !element.loaded);
+
+		const needToLoadInstance = Constants.getInstanceFiles[instanceIndex].docs.some(element => !element.loaded);
 		if (needToLoadInstance) {
 			// not loaded, go get the requested instance
-			App.init(true, () => {
-				App.additionalSetup();
-				callback(true);
+			App.init(true, (success: boolean) => {
+				if (success) App.additionalSetup();
+				callback(success);
 			});
 		} else {
 			// already loaded, just update the DOM and update FlexSearch
-			const currentInstance = Constants.getInstanceFiles.find(element => element.current);
-			const inlineFileSlug = currentInstance?.xhtmls.find(element => element.current)?.slug;
-			if (inlineFileSlug == null) return;
-			HelpersUrl.init(inlineFileSlug, () => {
-				const input = {
-					instance: Constants.getInstanceFiles
-				}
-				App.handleFetchAndMerge(input, true);
-				App.additionalSetup();
-				callback(true);
+			const activeInstance = Constants.getInstanceFiles.find(element => element.current);
+			const inlineFileSlug = activeInstance?.docs.find(element => element.current)?.slug;
+			if (inlineFileSlug == null || activeInstance == null) return;
+
+			HelpersUrl.init(inlineFileSlug, () =>
+			{
+				App.loadFromMemory(activeInstance);
+				return callback(true);
 			});
 		}
 	},

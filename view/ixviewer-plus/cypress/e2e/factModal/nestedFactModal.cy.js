@@ -1,22 +1,20 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus'
-import { selectors } from "../../utils/selectors"
-const filing = filings[0]
+import { selectors } from "../../utils/selectors";
 
 describe(`Nested Fact Modal`, () => {
-    it('Should show only fact or nested-fact modal, not both', () => {
+    it('Should show only fact modal or nested-fact modal, not both', () => {
         cy.visitFiling(null, "0001013762-23-000425", "ea185980ex99-1_inspiratech.htm#");
         
         // normal fact
-        cy.get('#fact-identifier-74').first().click()
+        cy.get('#fact-identifier-7').first().click();
         cy.get(selectors.factModal).should('be.visible');
         
         // nested fact parent
-        cy.get('#fact-identifier-189').click()
+        cy.get('#fact-identifier-168').click();
         cy.get(selectors.factModal).should('not.be.visible');
         cy.get(selectors.nestedFactModal).should('be.visible');
         
         // click normal fact again
-        cy.get('#fact-identifier-74').first().click()
+        cy.get('#fact-identifier-7').first().click();
         cy.get(selectors.factModal).should('be.visible');
         cy.get(selectors.nestedFactModal).should('not.be.visible');
     })

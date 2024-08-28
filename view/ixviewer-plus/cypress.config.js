@@ -1,5 +1,4 @@
 import { defineConfig } from "cypress"
-import { urls } from './cypress/dataPlus/domains'
 
 const domains = {
   local: 'local',
@@ -16,7 +15,9 @@ export default defineConfig({
     domain: domains.local,
     skipScrapers: true,
     limitNumOfFilingsForTestRun: true, // Good for doing a health check of all tests
-    limitOfFilingsToTest: 3,
+    limitOfFilingsToTest: 1,
+    targetFilingAccessionNum: null,
+    filingsSet: 'standard', // standard, experimental (todo), set200 (todo), or all(todo) (standard + experimental)
   },
   e2e: {
     setupNodeEvents(on, config) {
@@ -25,7 +26,7 @@ export default defineConfig({
     screenshotOnRunFailure: false,
     numTestsKeptInMemory: 1,
     "browser": 'chrome',
-    experimentalMemoryManagement: false,
+    experimentalMemoryManagement: true,
     video: false,
     defaultCommandTimeout: 12000,
     requestTimeout: 12000,

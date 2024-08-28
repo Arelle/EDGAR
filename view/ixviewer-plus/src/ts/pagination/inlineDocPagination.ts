@@ -3,7 +3,7 @@ import { Constants } from "../constants/constants";
 
 const toPrev = () => {
     const currentInstance = Constants.getInstanceFiles.find(element => element.current);
-    const currentXHTML = currentInstance?.xhtmls.find(element => element.current);
+    const currentXHTML = currentInstance?.docs.find(element => element.current);
 
     // e.g section[filing-url="ea185980-6k_inspiratech.htm"]
     const inlineDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);
@@ -36,7 +36,7 @@ const toPrev = () => {
 
 const toNext = () => {
     const currentInstance = Constants.getInstanceFiles.find(element => element.current);
-    const currentXHTML = currentInstance?.xhtmls.find(element => element.current);
+    const currentXHTML = currentInstance?.docs.find(element => element.current);
 
     const inlineDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);
     const viewHieght = (document.getElementById('dynamic-xbrl-form') as HTMLElement).offsetHeight;
@@ -81,40 +81,43 @@ const toTop = () => {
 }
 
 export const toBottomOfInlineDoc = () => {
-    const formElement = document.getElementById('dynamic-xbrl-form');
+    const formElement = document.getElementById("dynamic-xbrl-form") as HTMLElement;
     // (formElement as HTMLElement).scrollTop = (formElement as HTMLElement).scrollHeight as number;
-    (formElement as HTMLElement).scrollTo({top: (formElement as HTMLElement).scrollHeight, behavior: 'smooth'});
+    formElement?.scrollTo({top: formElement.scrollHeight, behavior: 'smooth'});
     Scroll.removeAnchorTag();
 }
 
-export const buildInlineDocPagination = () => {
-    const paginationHtmlString = `<nav class="doc-pagination">
-        <ul id="html-pagination" class="pagination pagination-sm mb-0">
-            <li class="page-item">
-                <a class="page-link text-body" href="#" tabindex="13" id="to-top-btn">
-                    <i class="fas fa-lg fa-angle-double-left"></i>
-                </a>
-            </li>
-            <li class="page-item">
-                <a class="page-link text-body" href="#" tabindex="13" id="to-prev-btn">
-                    <i class="fas fa-lg fa-angle-left"></i>
-                </a>
-            </li>
-            <li class="page-item ">
-                <a class="page-link text-body" href="#" tabindex="13" id="to-next-btn">
-                    <i class="fas fa-lg fa-angle-right"></i>
-                </a>
-            </li>
-            <li class="page-item ">
-                <a class="page-link text-body" href="#" tabindex="13" id="to-bottom-btn">
-                    <i class="fas fa-lg fa-angle-double-right"></i>
-                </a>
-            </li>
-        </ul>
-    </nav>`;
+export const buildInlineDocPagination = () =>
+{
+    const paginationHtmlString =
+        `<nav class="doc-pagination">
+            <ul id="html-pagination" class="pagination pagination-sm mb-0">
+                <li class="page-item">
+                    <a class="page-link text-body" href="#" tabindex="13" id="to-top-btn">
+                        <i class="fas fa-lg fa-angle-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-body" href="#" tabindex="13" id="to-prev-btn">
+                        <i class="fas fa-lg fa-angle-left"></i>
+                    </a>
+                </li>
+                <li class="page-item ">
+                    <a class="page-link text-body" href="#" tabindex="13" id="to-next-btn">
+                        <i class="fas fa-lg fa-angle-right"></i>
+                    </a>
+                </li>
+                <li class="page-item ">
+                    <a class="page-link text-body" href="#" tabindex="13" id="to-bottom-btn">
+                        <i class="fas fa-lg fa-angle-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>`;
+
     const paginationParser = new DOMParser();
-    const paginationElemDoc = paginationParser.parseFromString(paginationHtmlString, 'text/html')
-    const paginationContents = paginationElemDoc.querySelector('nav') as HTMLElement
+    const paginationElemDoc = paginationParser.parseFromString(paginationHtmlString, 'text/html');
+    const paginationContents = paginationElemDoc.querySelector('nav') as HTMLElement;
 
     return paginationContents;
 }

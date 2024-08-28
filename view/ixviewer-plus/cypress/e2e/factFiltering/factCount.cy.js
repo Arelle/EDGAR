@@ -1,22 +1,21 @@
-// import { enrichedFilings } from "../../data/enrichedFilingsPlus_400_Tue_Sep_26_2023_1758"
-import { filings } from '../../dataPlus/enrichedFilingsPlus'
-import { selectors } from "../../utils/selectors"
+import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
+import { selectors } from "../../utils/selectors.mjs"
+
+let filingsSample = getFilingsSample(Cypress.env);
 
 /*
 npx cypress run --spec 'cypress/e2e/factCount.cy.js'
 */
 
-let filingsSample = filings
-if (Cypress.env('limitNumOfFilingsForTestRun')) {
-    filingsSample = filings.slice(0, Cypress.env('limitOfFilingsToTest'))
-}
-
 describe(`Fact Count`, () => {
     filingsSample.forEach((filing) => {
 		it(`fact count for ${filing.docName} should match`, () => {
             cy.visitHost(filing)
-			cy.get(selectors.factCountBadge, {timeout: 15000})
-                .should('contain.text', filing.factCount.toLocaleString("en-US"))
+            // // give app 15 secs per 1000 facts to load.
+            // const timeout = filing.factCount > 1000 ? filing.factCount * 15 : 15000
+
+			cy.get(selectors.factCountBadge, {timeout: filing.timeout})
+                .should('contain.text', Number(filing.factCount).toLocaleString("en-US"))
         })
     })
 })

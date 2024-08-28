@@ -23,7 +23,7 @@ export const FormInformation = {
     xbrlZip: () =>
     {
         //Handle Workstation case
-        if(HelpersUrl.isWorkstation())
+        if (HelpersUrl.isWorkstation())
         {
             const url = window.parent.location.href;
             const params = new URLSearchParams(window.parent.location.search);
@@ -43,7 +43,7 @@ export const FormInformation = {
         const url = HelpersUrl.getExternalFile || "";
         const [_, beginning, CIK, filingID] = [...url.matchAll(/(.*Archives\/edgar\/data)\/([0-9]+|no-cik)\/([0-9-]+)\//g)].shift() || [];
 
-        if(!filingID)
+        if (!filingID)
         {
             console.error("Invalid filing path - cannot create zip link");
             document.getElementById('form-information-zip')?.classList.add('disabled');
@@ -51,7 +51,7 @@ export const FormInformation = {
         }
 
         let zipFileName = filingID;
-        if(zipFileName?.indexOf('-') < 0)
+        if (zipFileName?.indexOf('-') < 0)
             zipFileName = filingID.substring(0, 10) + "-" + filingID.substring(10, 12) + "-" + filingID.substring(12, 18);
 
         zipFileName += "-xbrl.zip";
@@ -61,7 +61,7 @@ export const FormInformation = {
     },
 
     xbrlHtml: () => {
-        const currentXHTML = Constants.getInstanceFiles.find(element => element.current)?.xhtmls.find(element => element.current);
+        const currentXHTML = Constants.getInstanceFiles.find(element => element.current)?.docs.find(element => element.current);
         document.getElementById('form-information-html')?.setAttribute('href', currentXHTML?.url || "#");
     },
 
