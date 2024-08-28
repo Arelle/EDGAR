@@ -17,6 +17,16 @@
         This application relies heavily on JavaScript -- you
         will need to allow JavaScript to use this application.
     </noscript>
+
+    <div id="loading-animation"
+         class="d-flex justify-content-center align-items-center"
+         style="position: absolute; height: 100vh; width: 100vw; background-color: #EEEB; z-index: 20;">
+        <div class="d-flex align-items-center">
+            <div class="spinner-grow me-2" style="height: 50px; width: 50px;" role="status"></div>
+            <span>Loading...</span>
+        </div>
+    </div>
+
     <div id="topNavs" class="w-100 border-bottom">
         <nav class="navbar navbar-expand-md navbar-dark navbar-height bg-sec pl-0">
             <button class="navbar-toggler ml-1" type="button" data-test="" data-bs-toggle="collapse"
@@ -60,18 +70,19 @@
                             <span class="sr-only sr-only-focusable">Sections</span>
                         </a>
                     </li>
-                    <li class="nav-item my-auto ml-1 mr-1">
+                    <li class="nav-item my-auto mx-1">
                         <form id="global-search-form" data-test="global-search-form"
-                            class="my-2 my-lg-0 input-group disabled" novalidate="true">
+                            class="input-group disabled" novalidate="true">
                             <div class="input-group">
-                                <button data-name="global-search-options"
-                                    class="dropdown btn btn-outline-light disabled" type="button"
+                                <button id="global-search-options"
+                                    data-name="global-search-options"
+                                    class="dropdown btn btn-outline-light disabled nav-search-btn" type="button"
                                     data-bs-toggle="dropdown" tabindex="3">
                                     <i class="nav-loading fas fa-cog" title="Additional Search Options">
                                         <span class="sr-only sr-only-focusable">Additional Search Options</span>
                                     </i>
                                 </button>
-                                <div class="dropdown-menu px-2">
+                                <div class="dropdown-menu px-2" style="top: 37px">
                                     <div class="form-check">
                                         <label class="form-check-label mb-0">
                                             <input disabled="true" class="form-check-input meta-required"
@@ -119,17 +130,17 @@
                                     </div>
                                 </div>
 
-                                <input type="text" class="form-control disabled" id="global-search"
+                                <input type="text" class="form-control disabled focus-inner" id="global-search"
                                     data-test="global-search" placeholder="Search Facts" disabled="true"
                                     aria-label="Search all Facts and highlight them accordingly." tabindex="4" />
 
                                 <button id="search-btn-clear" data-name="global-search-clear"
-                                    class="btn btn-outline-light disabled" type="button" tabindex="5">
+                                    class="btn btn-outline-light nav-search-btn disabled" type="button" tabindex="5">
                                     <i class="nav-loading fas fa-times-circle" title="Clear Search"></i>
                                     <span class="sr-only sr-only-focusable">
                                         Clear Search</span>
                                 </button>
-                                <button class="btn btn-outline-light disabled" type="submit" tabindex="6">
+                                <button id="submit-search" class="btn btn-outline-light nav-search-btn disabled" type="submit" tabindex="6">
                                     <i class="nav-loading fas fa-search" title="Submit Search"></i>
                                     <span class="sr-only sr-only-focusable">
                                         Submit Search</span>
@@ -239,7 +250,7 @@
                             <span class="sr-only sr-only-focusable">More Filters</span>
                             <span title="Total active filters." class="badge text-bg-secondary"></span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-width">
+                        <div class="dropdown-menu more-filters-dropdown-menu-width" style="max-height: 90vh; overflow: auto">
                             <div class="accordion" id="more-filters-accordion">
                                 <form class="mb-0" data-test="more-filters-form">
                                     <div class="mx-1">
@@ -255,7 +266,7 @@
                                                 </span>
                                             </a>
                                         </div>
-                                        <div id="user-filters-periods" class="collapse height-200 overflow-y-auto"
+                                        <div id="user-filters-periods" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
                                             <!-- Below is populated dynamically VIA JS -->
                                             <div class="list-group list-group-flush"></div>
@@ -276,7 +287,7 @@
                                                 </span>
                                             </a>
                                         </div>
-                                        <div id="user-filters-measures" class="collapse height-200 overflow-y-auto"
+                                        <div id="user-filters-measures" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
                                             <!-- Below is populated dynamically VIA JS -->
                                             <div class="list-group list-group-flush"></div>
@@ -297,7 +308,7 @@
                                                 </span>
                                             </a>
                                         </div>
-                                        <div id="user-filters-axis" class="collapse height-200 overflow-y-auto"
+                                        <div id="user-filters-axis" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
                                             <div class="list-group list-group-flush d-none">
                                                 <div
@@ -348,7 +359,7 @@
                                                 </span>
                                             </a>
                                         </div>
-                                        <div id="user-filters-members" class="collapse height-200 overflow-y-auto"
+                                        <div id="user-filters-members" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
                                             <div class="list-group list-group-flush d-none">
                                                 <div
@@ -400,7 +411,7 @@
                                                 </span>
                                             </a>
                                         </div>
-                                        <div id="user-filters-scales" class="collapse height-200 overflow-y-auto"
+                                        <div id="user-filters-scales" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
                                             <!-- Below is populated dynamically VIA JS -->
                                             <div class="list-group list-group-flush"></div>
@@ -419,7 +430,7 @@
                                                     class="badge text-bg-secondary">2</span>
                                             </a>
                                         </div>
-                                        <div id="user-filters-balances" class="collapse height-200 overflow-y-auto"
+                                        <div id="user-filters-balances" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
                                             <div class="d-flex justify-content-between align-items-center w-100 px-2">
                                                 <div class="form-check">
@@ -451,7 +462,7 @@
                         class="nav-item d-none my-auto ml-1">
                         <a href="#" id="current-filters-reset-all" data-name="current-filters-reset"
                             class="nav-link dropdown-toggle text-danger disabled click" tabindex="11" accesskey="7">
-                            <i class="nav-loading fas fa-redo"></i>
+                            <i class="nav-loading fas fa-redo flip-x"></i>
                             <span class="d-md-none d-lg-inline">Reset All
                                 Filters</span>
                         </a>
@@ -481,6 +492,12 @@
         </nav>
         <ul id="tabs-container" class="nav nav-pills tabs-container position-relative nav-underline justify-content-center z-10">
             <!-- tabs are dynamically loaded by JS.  See src\ts\links\index.ts -->
+
+            <!-- show a progress bar in this space while the app loads -->
+            <div id="loading" class="progress position-fixed w-100" style="height: 20px;" role="progressbar" aria-label="Loading" aria-valuenow="0">
+                <div class="progress-bar progress-bar-striped progress-bar-animated w-10"></div>
+                <span class="position-fixed text-center w-100">Processing Inline Facts...</span>
+            </div>
         </ul>
     </div>
 
@@ -494,7 +511,7 @@
                         <div class="d-flex align-items-center">
                             <h5 class="sections-header-label">Tagged Sections</h5>
                             <span id="sections-search-additional" class="input-group-prepend">
-                                <button class="dropdown btn sections-settings-btn" type="button" data-bs-toggle="dropdown" tabindex="2" data-cy="sections-filter-btn">
+                                <button id="sections-settings-btn" class="dropdown btn sections-settings-btn" type="button" data-bs-toggle="dropdown" tabindex="2" data-cy="sections-filter-btn">
                                     <i class="nav-loading fas fa-filter"></i>
                                 </button>
                                 <div class="dropdown-menu px-2" id="sections-filters" data-cy="sections-filters">
@@ -992,6 +1009,7 @@
                             <!-- auto-scroll-y-facts -->
                             <div class="list-group list-group-flush overflow-x-auto overflow-auto w-100 facts-scrollable"></div>
                         </div>
+                        <div id="noFactsMsg" class="m-4 text-center">There are no facts in the selected instance that match the current search and filters.</div>
                     </div>
                 </div>
             </div>

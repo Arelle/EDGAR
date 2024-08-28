@@ -1,55 +1,49 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus'
-import { selectors } from "../../utils/selectors"
-const filing = filings[0]
+// import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
+import { selectors } from "../../utils/selectors.mjs"
 
-// describe(`Fact Modal ${filing.ticker || filing.docName} ${filing.formType}`, () => {
+// let filingsSample = getFilingsSample(Cypress.env);
+const filing = {
+    "docPath": "14693/000001469323000155/bfb-20231002.htm",
+    "docName": "bfb-20231002",
+    "localUrl": "http://localhost:3000/ix.xhtml?doc=./Archives/edgar/data/no-cik/0000014693-23-000155/bfb-20231002.htm",
+    "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/14693/000001469323000155/bfb-20231002.htm",
+    "dev1Url": "http://172.18.85.157:8082/ixviewer-ix-dev/ix.xhtml?doc=../../ixdocs/WebContent/documents/0000014693-23-000155/bfb-20231002.htm",
+    "dev2Url": "http://172.18.85.158:8082/ix3/ixviewer3/ix.xhtml?doc=../../ixdocs/WebContent/documents/0000014693-23-000155/bfb-20231002.htm",
+    "formType": "8-K",
+    "factCount": 31,
+    "timeout": 12000,
+};
+
 describe(`Fact Modal`, () => {
     it('should be able to move with arrow icon', () => {
         cy.visitHost(filing)
 
         let originalPos = {}
-        let subsequentPos = {}
 
-        // cy.get(selectors.search).type('10-k')
-        // cy.get(selectors.submitSearchButton).click()
-        // cy.get(selectors.factSidebarHeaderNumberBadge).click()
-        // cy.get(selectors.factsHeader).then($el => cy.wrap($el).click())
-        cy.wait(2000)
-        cy.get(selectors.factsHeader).click()
+        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
 
-        cy.get('a[data-id="fact-identifier-2"]', {timeout: 10000}).then($el => cy.wrap($el).click())
+        cy.get('a[data-id^="fact-identifier-"]', {timeout: 10000}).first().then($el => cy.wrap($el).click())
         cy.get(selectors.factModal).then(($modal) => {
             originalPos = $modal.position()
         })
 
         cy.get(selectors.factModalDrag)
-            .should('exist')
-            .trigger('mousedown', { which: 1 }) // which: 1   means mouse1 or left mouse, might be default
-            .trigger('mousemove', { which: 1, pageX: -200, pageY: -200 }) // pagex, y are relative to original location, so moves up and left
+            .trigger('mousedown', { which: 1, force: true }) // which: 1   means mouse1 or left mouse, might be default
+            .trigger('mousemove', { which: 1, pageX: 20, pageY: 20, force: true }) // pagex, y are relative to original location, so moves up and left
             .trigger('mouseup', { force: true })
-
+            
         cy.get(selectors.factModal).then(($modal) => {
-            subsequentPos = $modal.position()
-            let width = $modal.width()
-            cy.log('width', width)
-            expect(originalPos).not.deep.eq(subsequentPos)
-            // cy.log('originalPos', originalPos)
-            // cy.log('subsequentPos', subsequentPos)
+            expect($modal.position()).not.deep.eq(originalPos)
         })
     })
 
     it('should show copy-able content with copy icon', () => {
         cy.visitHost(filing)
 
-        // cy.get(selectors.search).type('10-k')
-        // cy.get(selectors.submitSearchButton).click()
-        //cy.wait(2000)
-        cy.get(selectors.factsHeader).click()
+        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
 
-        // cy.get(selectors.factInFactBrowser).click()
-        cy.get('a[data-id="fact-identifier-2"]').click()
+        cy.get('a[data-id^="fact-identifier-"]').first().click()
 
-        // cy.get(selectors.factModalToggleCopyContent).click()
         cy.get(selectors.factModalCopyableContent).should('have.css', 'display', 'none')
         cy.get(selectors.factModalToggleCopyContent).click()
         cy.get(selectors.factModalCopyableContent).should('have.css', 'display', 'block')
@@ -67,7 +61,7 @@ describe(`Fact Modal`, () => {
 
     it('Fact modal box copy contents should not change if you click the copy button multiple times', () => {
         cy.visitHost(filing)
-        cy.get('#fact-identifier-4').click()
+        cy.get('#fact-identifier-4', { timeout: filing.timeout }).click()
         cy.get(selectors.factModalToggleCopyContent).click()
         cy.get(selectors.factModalCopyableContentEXP).then(($copyBox) => {
             const copyText = $copyBox.text()
@@ -88,13 +82,9 @@ describe(`Fact Modal`, () => {
         let originalHeight = {}
         let subsequentHeight = {}
 
-        // cy.get(selectors.search).type('10-k')
-        // cy.get(selectors.submitSearchButton).click()
-        cy.wait(2000)
-        cy.get(selectors.factsHeader).click()
+        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
 
-        // cy.get(selectors.factInFactBrowser).click()
-        cy.get('a[data-id="fact-identifier-2"]').click()
+        cy.get('a[data-id^="fact-identifier-"]').first().click()
 
         cy.get(selectors.factModal)
             .then(($modal) => {
@@ -116,14 +106,10 @@ describe(`Fact Modal`, () => {
     it('should close when close icon clicked', () => {
         cy.visitHost(filing)
 
-        // cy.get(selectors.search).type('10-k')
-        // cy.get(selectors.submitSearchButton).click()
-        cy.wait(2000)
-        cy.get(selectors.factsHeader).click()
+        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
 
         cy.get(selectors.factModal).should('have.css', 'display', 'none')
-        // cy.get(selectors.factInFactBrowser).click()
-        cy.get('a[data-id="fact-identifier-2"]').click()
+        cy.get('a[data-id^="fact-identifier-"]').first().click()
         
         cy.get(selectors.factModal).should('have.css', 'display', 'block')
         cy.get(selectors.factModalClose).click()
@@ -132,12 +118,9 @@ describe(`Fact Modal`, () => {
 
     it('should be navigable via carousel controls', () => {
         cy.visitHost(filing)
-        // cy.get(selectors.search).type('10-k')
-        // cy.get(selectors.submitSearchButton).click()
-        cy.wait(2000)
-        cy.get(selectors.factsHeader).click()
-        // cy.get(selectors.factInFactBrowser).click()
-        cy.get('a[data-id="fact-identifier-2"]').click()
+
+        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
+        cy.get('a[data-id^="fact-identifier-"]').first().click()
 
         let x = [1, 2, 3, 4]
 
@@ -160,12 +143,9 @@ describe(`Fact Modal`, () => {
 
     it('should be able to click "breadcrumbs" to navigate carousel', () => {
         cy.visitHost(filing)
-        // cy.get(selectors.search).type('10-k')
-        // cy.get(selectors.submitSearchButton).click()
-        cy.wait(2000)
-        cy.get(selectors.factsHeader).click()
-        // cy.get(selectors.factInFactBrowser).click()
-        cy.get('a[data-id="fact-identifier-2"]').click()
+
+        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
+        cy.get('a[data-id^="fact-identifier-"]').first().click()
 
         let x = [1, 2, 3, 4]
 
@@ -188,7 +168,7 @@ describe(`Fact Modal`, () => {
         cy.visitHost(filing)
 
         // fact 1
-        cy.get('#fact-identifier-2').click()
+        cy.get('#fact-identifier-2', { timeout: filing.timeout }).click()
         cy.get(selectors.factModalJump).click()
         
         cy.get('div[id="facts-menu"] a[data-id="fact-identifier-2"]')
@@ -203,16 +183,5 @@ describe(`Fact Modal`, () => {
             .should('be.visible')
             .should('have.attr', 'selected-fact', 'true')
         cy.get(selectors.factModalClose).click()
-
-        // test 6 more random facts
-        // for (let fact =  4; fact < 10; fact += 1) {
-        //     cy.get(`#fact-identifier-${fact}`).click()
-        //     cy.get(selectors.factSideBarClose).click()
-        //     cy.get(selectors.factModalJump).click()
-        //     cy.get(`div[id="facts-menu"] a[data-id="fact-identifier-${fact}"]`)
-        //         .should('be.visible')
-        //         .should('have.attr', 'selected-fact', 'true')
-        //     cy.get(selectors.factModalClose).click()
-        // }
     })
 })

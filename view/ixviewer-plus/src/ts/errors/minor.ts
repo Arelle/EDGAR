@@ -24,7 +24,25 @@ export const ErrorsMinor = {
 	},
 
 	factNotFound: () => {
+		console.log('factNotFound')
 		const content = document.createTextNode('Inline XBRL cannot locate the requested fact.');
+
+		const element = document.createElement('div');
+		element.setAttribute('class', 'alert-height alert alert-warning alert-dismissable show mb-0');
+		element.appendChild(content);
+		
+		const closeBtn = Errors.createBsCloseBtn();
+		element.appendChild(closeBtn);
+
+		document.getElementById('error-container')?.appendChild(element);
+
+		Errors.updateMainContainerHeight();
+	},
+
+
+	factNotInSearch: () => {
+		console.log('factNotInSearch')
+		const content = document.createTextNode('Fact not found in current search and filter results.');
 
 		const element = document.createElement('div');
 		element.setAttribute('class', 'alert-height alert alert-warning alert-dismissable show mb-0');

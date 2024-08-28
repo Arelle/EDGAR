@@ -7,6 +7,7 @@ export const FactMap: {
     init: (mapOfFacts: Map<string, unknown>) => void,
     setHighlightedFacts: (arrayOfIDs: Array<string>) => void,
     setEnabledFacts: (arrayOfIDs: Array<string>) => void,
+    resetEnabledFacts: () => void,
     getAllMeasures: () => Array<string>,
     getAllAxis: () => Array<string>,
     getByID: (id: string) => Facts | void,
@@ -14,6 +15,8 @@ export const FactMap: {
     getEnabledHighlightedFacts: () => Array<{ id: string, isAdditional: boolean }>,
     getFactCountForFile: (input: string, returnAsString: boolean) => string | number,
     getFactCount: () => string,
+    getTextFactCount: () => number,
+    getNumberFactCount: () => number,
     getFullFacts: () => Array<SingleFact>,
     getByNameContextRef: (name: string, contextRef: string) => SingleFact | null,
     getByName: (name: string) => string,
@@ -36,6 +39,11 @@ export const FactMap: {
                 FactMap.map.set(entry[1].id, entry[1]);
             }
         });
+    },
+
+    asArray: () => {
+        const mapArr = Array.from([...FactMap.map]);
+        return mapArr.map(f => f[1]);
     },
 
     setHighlightedFacts: (arrayOfIDs) => {
@@ -255,25 +263,33 @@ export const FactMap: {
 
         return toReturn.length.toString()
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-
     },
 
-    getFactCountForFile: (input: string, returnAsString = false) => {
+    getTextFactCount: () => {
+        const textFacts = FactMap.asArray().filter((fact) => {
+            return fact.isTextOnly;
+        })
+        return textFacts.length;
+    },
+
+    getNumberFactCount: () => {
+        const numFacts = FactMap.asArray().filter((fact) => {
+            return fact.isAmountsOnly;
+        })
+        return numFacts.length;
+    },
+
+    getFactCountForFile: (docSlug: string, returnAsString = false) => {
         const includeHighlights = Object.keys(UserFiltersState.getUserSearch).length !== 0;
         const toReturn = Array.from(new Map([...FactMap.map]), (entry) => {
-            if (entry[1].file === input) {
+            if (entry[1].file === docSlug) {
                 if (includeHighlights) {
                     if (entry[1].isEnabled && entry[1].isHighlight) {
-                        return {
-                            file: entry[1].file
-                        };
+                        return { file: entry[1].file };
                     }
                 } else {
                     if (entry[1].isEnabled) {
-                        return {
-                            file: entry[1].file
-                        };
+                        return { file: entry[1].file };
                     }
                 }
             }
@@ -320,7 +336,7 @@ export const FactMap: {
                 acc.push({ name: current.name, data: [{ period_dates: current.period_dates, value: current.value }] });
             }
             return acc;
-        }, []).filter(element => {
+        }, [])?.filter(element => {
             //const data = new Set();
             element.data = element.data.map(nestedElement => {
                 const data = new Set();

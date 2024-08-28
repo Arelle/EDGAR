@@ -46,15 +46,15 @@ export const UserFiltersState = {
         // 0 = All
         // 1 = Standard Only
         // 2 = Custom Only
+        if (current === null) return;
         if (UserFiltersState.getTagsRadios && enabledFact) {
             switch (UserFiltersState.getTagsRadios) {
                 case 2: {
                     // Custom Only
 
                     if (!current.hasAttribute('isCustomOnly')) {
-                        current.setAttribute('isCustomOnly',
-                            (current.getAttribute('name').split(':')[0].toLowerCase() === Constants.getMetaCustomPrefix) ? true
-                                : false);
+                        const isCustomTag = current.getAttribute('name').split(':')[0].toLowerCase() === Constants.getMetaCustomPrefix;
+                        current.setAttribute('isCustomOnly', isCustomTag ? 'true' : 'false');
                     }
 
                     if (current.hasAttribute('isCustomOnly') && current.getAttribute('isCustomOnly') === 'true') {
@@ -65,9 +65,8 @@ export const UserFiltersState = {
                 case 1: {
                     // Standard Only
                     if (!current.hasAttribute('isStandardOnly')) {
-                        current.setAttribute('isStandardOnly',
-                            (current.getAttribute('name').split(':')[0].toLowerCase() !== Constants.getMetaCustomPrefix) ? true
-                                : false);
+                        const isStandardPrefix = current.getAttribute('name').split(':')[0].toLowerCase() !== Constants.getMetaCustomPrefix;
+                        current.setAttribute('isStandardOnly', isStandardPrefix ? 'true' : 'false');
                     }
 
                     if (current.hasAttribute('isStandardOnly') && current.getAttribute('isStandardOnly') === 'true') {
@@ -85,7 +84,6 @@ export const UserFiltersState = {
     },
 
     periods: (current: HTMLElement, enabledFact: boolean) => {
-
         if (UserFiltersState.getPeriod.length && enabledFact) {
 
             for (let i = 0; i < UserFiltersState.getPeriod.length; i++) {
@@ -99,7 +97,6 @@ export const UserFiltersState = {
     },
 
     measures: (current: HTMLElement, enabledFact: boolean) => {
-
         if (UserFiltersState.getMeasure.length && enabledFact) {
 
             if (current.hasAttribute('unitref')) {
@@ -131,7 +128,6 @@ export const UserFiltersState = {
     },
 
     members: (current: HTMLElement, enabledFact: boolean) => {
-
         if (UserFiltersState.getMembers.length && enabledFact) {
             for (let i = 0; i < UserFiltersState.getMembers.length; i++) {
                 for (let k = 0; k < UserFiltersState.getMembers[i]['parentID'].length; k++) {
@@ -160,7 +156,8 @@ export const UserFiltersState = {
         return enabledFact;
     },
 
-    types: (current: HTMLElement, enabledFact: boolean) => {
+    types: (current: HTMLElement | null, enabledFact: boolean) => {
+        if (current == null) return;
         if (UserFiltersState.getType.length && enabledFact) {
             for (let i = 0; i < UserFiltersState.getType.length; i++) {
                 if (current.hasAttribute('name') && current.getAttribute('name').split(':').length === 2) {

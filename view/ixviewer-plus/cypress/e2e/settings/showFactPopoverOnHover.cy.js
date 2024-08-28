@@ -1,13 +1,15 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus'
-import { selectors } from "../../utils/selectors"
-const filing = filings[0]
+import { selectors } from "../../utils/selectors.mjs"
+import { getFilingsSample, getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
+
+const filing = getByAccessionNum('000080786323000002');
+
 
 describe(`Settings Show Popover on Hover`, () => {
-    it(`${filing.ticker || filing.docName} ${filing.formType}`, () => {
+    it(`${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
         cy.visitHost(filing)
 
         // popover shouldn't show when setting off (default)
-        cy.get('[id="fact-identifier-10"]').trigger('mouseenter')
+        cy.get('[id="fact-identifier-2"]', {timeout: filing.timeout}).first().trigger('mouseover')
         cy.get('div[id^="popover"]')
             .should('not.exist')
 
@@ -17,9 +19,9 @@ describe(`Settings Show Popover on Hover`, () => {
         cy.get(selectors.hoverForQuickInfoSelect).should('contain.text', 'On')
         cy.get(selectors.settingsClose).click()
         // trigger hover
-        cy.get('[id="fact-identifier-10"]').trigger('mouseenter')
+        cy.get('[id="fact-identifier-2"]').first().trigger('mouseover')
+        cy.wait(200)
         cy.get('div[id^="popover"]')
             .should('exist')
-            // .should('contain.text', 'NV')
     })
 })

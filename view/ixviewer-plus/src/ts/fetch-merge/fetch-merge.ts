@@ -1,15 +1,15 @@
 import * as cheerio from 'cheerio';
 import { Logger, ILogObj } from 'tslog';
 import * as convert from 'xml-js';
-import { cleanSubstring } from '../helpers/utils';
-import { SingleFact } from '../interface/fact';
-import { All, ErrorResponse, FetchMergeArgs } from '../interface/fetch-merge';
+import { cleanSubstring, isTruthy } from '../helpers/utils';
+import { Reference, SingleFact } from '../interface/fact';
+import { All, ErrorResponse, FMResponse, FetchMergeArgs } from '../interface/fetch-merge';
 import { FilingSummary } from '../interface/filing-summary';
 import { FormInformation } from '../interface/form-information';
 import { UnitsAdditional } from '../interface/instance';
 import { Context, DeiAmendmentFlagAttributes, Instance, LinkFootnote, LinkFootnoteArc, LinkLOC, Units } from '../interface/instance';
 import { InstanceFile, MetaLinks, MetaLinksResponse, XhtmlFileMeta } from '../interface/instance-file';
-import { Meta, Section } from '../interface/meta';
+import { Calculation, Meta, Section } from '../interface/meta';
 import { UrlParams } from '../interface/url-params';
 import { XhtmlPrepData, XhtmlPrepResponse } from '../workers/xhtml-worker';
 import { buildSectionsArrayFlatter, fetchJson, fetchText, setScaleInfo } from './merge-data-utils';
@@ -43,7 +43,7 @@ export class FetchAndMerge
         this.std_ref = input.std_ref;
     }
 
-    public async init(): Promise<All>
+    public async fetch(): Promise<FMResponse>
     {
         /**
          * Description
@@ -51,9 +51,9 @@ export class FetchAndMerge
          * @param Boolean initialLoad=false
          * @returns Promise<void | ErrorResponse>
          */
-        const XHTMLandInstance = () => {
-            return Promise.all([this.fetchXHTML(), this.fetchInstanceXml()]).then(async ([xhtml, instXml]) => {
-                const errors = [...xhtml, instXml].filter((element): element is ErrorResponse =>
+        const docsAndInstance = () => {
+            return Promise.all([this.fetchDocs(), this.fetchInstanceXml()]).then(async ([docs, instXml]) => {
+                const errors = [...docs, instXml].filter((element): element is ErrorResponse =>
                     element ? Object.prototype.hasOwnProperty.call(element, 'error') : false);
 
                 if (errors.length) {
@@ -62,13 +62,14 @@ export class FetchAndMerge
                 }
 
                 //At this point, neither of the responses had errors, so we can safely cast them
-                xhtml = xhtml as Array<{ xhtml: string }>;
+                docs = docs as Array<{ xhtml: string }>;
                 instXml = instXml as Instance;
 
-                xhtml.forEach((current: { xhtml: string }, index) => {
-                    this.activeInstance.xhtmls[index].loaded = true;
-                    this.activeInstance.xhtmls[index].xhtml = current.xhtml;
-                });
+                docs.filter((doc): doc is { xhtml: string } => "xhtml" in doc)
+                    .forEach((doc, index) => {
+                        this.activeInstance.docs[index].loaded = true;
+                        this.activeInstance.docs[index].xhtml = doc.xhtml;
+                    });
 
                 this.activeInstance.xml = instXml;
             });
@@ -82,13 +83,13 @@ export class FetchAndMerge
                     let messages = [];
                     for(let response of [ml, fs])
                     {
-                        if("error" in response && response.error)
+                        if ("error" in response && response.error)
                         {
                             messages.push(response.messages);
                             error = true;
                         }
                     }
-                    if(error)
+                    if (error)
                     {
                         throw { all: { error, messages: messages.flat() } };
                     }
@@ -106,21 +107,20 @@ export class FetchAndMerge
                 });
         };
 
-        
         /** Sets each instance's `xmlUrl` to the correct value  */
         const getInstanceXmlUrlFromFilingSummary = (filingSummary: FilingSummary, instances: InstanceFile[]) => {
             const filingSummaryReports = filingSummary.MyReports.Report;
-            const instanceHtmSlugs: string[] = []; // stored in filing summary as foo.htm
+        
+            //track which HTML slugs we've seen already
+            const instanceHtmSlugs = new Set<string>;  // stored in filing summary as foo.htm
             filingSummaryReports.forEach((r) => {
-                if (r._attributes?.instance) {
-                    const reportInstanceHtmSlug = r._attributes.instance;
-                    if (!instanceHtmSlugs.includes(reportInstanceHtmSlug)) {
-                        instanceHtmSlugs.push(reportInstanceHtmSlug);
+                const reportInstanceHtmSlug = r._attributes?.instance;
+                if (reportInstanceHtmSlug && !instanceHtmSlugs.has(reportInstanceHtmSlug)) {
+                    instanceHtmSlugs.add(reportInstanceHtmSlug);
 
-                        // add xmlUrls to instances
-                        const metaInstanceModel = instances?.filter((inst) => inst.instanceHtm.includes(reportInstanceHtmSlug))[0];
-                        metaInstanceModel.xmlUrl = this.params.metalinks.replace('MetaLinks.json', reportInstanceHtmSlug.replace('.htm', '_htm.xml'));
-                    }
+                    // add xmlUrls to instances
+                    const [metaInstanceModel] = instances.filter((inst) => inst.instanceHtm.includes(reportInstanceHtmSlug));
+                    metaInstanceModel.xmlUrl = this.params.metalinks.replace('MetaLinks.json', reportInstanceHtmSlug.replace('.htm', '_htm.xml'));
                 }
             });
 
@@ -130,30 +130,56 @@ export class FetchAndMerge
             }
         }
 
-
         try
         {
             let metalinks: (MetaLinks & { instances: InstanceFile[]}) | null = null;
             this.activeInstance = this.instances.filter((element) => element.current)[0];
             const initialLoad = this.activeInstance == null;
 
-            if(initialLoad)
+            if (initialLoad)
             {
                 const [meta, summ] = await MetaAndSummary();
                 getInstanceXmlUrlFromFilingSummary(summ, meta.instances);
                 
                 // iterate over FilingSummary.xml Reports to build sections, adding data from metalinks
                 this.sections = buildSectionsArrayFlatter(summ, Object.values(meta.sections), this.metaVersion || "");
+                this.setSectionGroupType(this.sections);
 
                 metalinks = meta;
+                this.instances = metalinks!.instances;
             }
 
-            await XHTMLandInstance();
-            await this.mergeAllResponses(initialLoad);
+            await docsAndInstance();
+
+            return { xhtml: this.activeInstance.docs.filter((x) => x.current)[0].xhtml };
+        }
+        catch(e)
+        {
+            this.errorHandling(e);
+        }
+    }
+
+    public async facts(): Promise<FMResponse>
+    {
+        try
+        {
+            return { facts: this.buildFactMap() };
+        }
+        catch(e)
+        {
+            this.errorHandling(e);
+        }
+    }
+
+    public async merge(): Promise<All>
+    {
+        try
+        {
+            await this.mergeAllResponses();
 
             const all =
             {
-                instance: (initialLoad ? metalinks!.instances : this.instances),
+                instance: this.instances,
                 sections: this.sections,
                 std_ref: this.std_ref,
             }
@@ -162,18 +188,21 @@ export class FetchAndMerge
         }
         catch(e)
         {
-            console.error(e);
-
-            if(!!e && typeof e == "object" && "all" in e)
-                throw e as All;
-            else if(e instanceof Error)
-                throw { all: { error: true, messages: [e.message] } };
-            else
-                throw { all: { error: true, messages: [JSON.stringify(e)] } };
+            this.errorHandling(e);
         }
     }
 
+    private errorHandling(e: unknown): never
+    {  
+        console.error(e);
 
+        if (!!e && typeof e == "object" && "all" in e)
+            throw e as All;
+        else if (e instanceof Error)
+            throw { all: { error: true, messages: [e.message] } };
+        else
+            throw { all: { error: true, messages: [JSON.stringify(e)] } };
+    }
 
     private decodeWorkstationXmlInHtml(isWorkstation: boolean, html: string, closingXml: string) {
         if (!isWorkstation) return html; // not running on SEC EDGAR workstation which encodes xml in HTML
@@ -199,14 +228,14 @@ export class FetchAndMerge
 
     /**
      * Description
-     * @returns {any} => current .htm file (xhtml file)
+     * @returns {any} => current .htm file (xhtml file) || "Doc"
      */
-    private fetchXHTML(): Promise<Array<{ xhtml: string } | ErrorResponse>> {
-        const promises = this.activeInstance?.xhtmls?.map((current: { url: string }) => {
+    private fetchDocs(): Promise<Array<{ xhtml: string } | ErrorResponse>> {
+        const promises = this.activeInstance?.docs?.map((doc: { url: string }) => {
             return new Promise<{ xhtml: string } | ErrorResponse>((resolve) => {
                 //TODO: use `HelpersUrl.isWorkstation` instead
-                const isWorkstation = current.url.includes("DisplayDocument.do?");
-                let ixvUrl = current.url;
+                const isWorkstation = doc.url.includes("DisplayDocument.do?");
+                let ixvUrl = doc.url;
                 if (isWorkstation) {
                     if (Object.prototype.hasOwnProperty.call(this.params, 'redline') && this.params.redline) {
                         ixvUrl = ixvUrl.replace('.htm', '_ix2.htm');
@@ -236,8 +265,7 @@ export class FetchAndMerge
             });
         });
 
-
-        if(!promises)
+        if (!promises)
             return Promise.resolve([{ error: true, messages: ["Issue fetching XHTMLs"] }]);
         else
             return Promise.all(promises);
@@ -303,7 +331,7 @@ export class FetchAndMerge
                                 metaInstance: Object.assign(instData),
                                 instanceHtm: currentInstance,
                                 xmlUrl: null as any,
-                                xhtmls: xhtmls,
+                                docs: xhtmls,
                                 formInformation: {} as FormInformation,
                                 xmlSlugs: [],
                             };
@@ -311,7 +339,8 @@ export class FetchAndMerge
                             return instFile;
                         });
 
-                        const meta: MetaLinks = { ...data, instance: instanceObjects[0], sections, version: data.version, meta: {} as Meta, inlineFiles: [] };
+                        const [instance] = instanceObjects.filter(({ current }) => current);
+                        const meta: MetaLinks = { ...data, instance, sections, version: data.version, meta: {} as Meta, inlineFiles: [] };
                         resolve(Object.assign(meta, { instances: instanceObjects }));
                     } else {
                         // this may occur when transferring a filing from one domain to another.  Not sure how to fix...
@@ -331,7 +360,7 @@ export class FetchAndMerge
 
         //TODO: use the new `isWorkstation` func in HelpersUrl instead
         const isWorkstation = filingSummXmlUrl.includes("DisplayDocument.do?");
-        if(isWorkstation && this.params.redline)
+        if (isWorkstation && this.params.redline)
         {
             filingSummXmlUrl = filingSummXmlUrl.replace('FilingSummary.xml', 'PrivateFilingSummary.xml');
         }
@@ -351,7 +380,7 @@ export class FetchAndMerge
 
     private fetchInstanceXml(): Promise<Instance | ErrorResponse> {
         let xmlUrl = this.activeInstance?.xmlUrl;
-        if(!xmlUrl) return Promise.reject({ error: true, messages: ["Issue fetching XML URLs"] });
+        if (!xmlUrl) return Promise.reject({ error: true, messages: ["Issue fetching XML URLs"] });
         
         const isWorkstation = xmlUrl.includes("DisplayDocument.do?");
         if (isWorkstation) {
@@ -384,20 +413,27 @@ export class FetchAndMerge
             .catch((error) => ({ error: true, messages: [`${error}; could not find "XML Instance Data"`] }));
     }
 
-    private async mergeAllResponses(initialLoad: boolean): Promise<void> {
-        if(!this?.activeInstance?.xml) throw new Error("Error: Active Instance has no XML data");
+    private buildFactMap(): Map<string, SingleFact>
+    {
+        if (!this?.activeInstance?.xml) throw new Error("Error: Active Instance has no XML data");
 
-        this.activeInstance.map = this.buildInitialFactMap(this.activeInstance.xml, this.activeInstance.xhtmls[0].slug);
-        if (initialLoad) {
-            this.sections = this.extractSections(); // not sure what this was for, except maybe adding .groupType
-        }
-        this.activeInstance.formInformation = this.extractFormInformation(this.activeInstance.metaInstance);
+        // why set to index [0] ? !!!
+        // will this break on multidoc? !!!
+        this.activeInstance.map = this.buildInitialFactMap(this.activeInstance.xml, this.activeInstance.docs[0].slug);
         this.enrichFactMapWithMetalinksData();
-        this.customPrefix = this.activeInstance.metaInstance.nsprefix?.toLowerCase() || null;
-        await this.prepareXHTMLForCurrentInstance();
+
+        return this.activeInstance.map;
     }
 
-    private buildInitialFactMap(instanceXml: Instance, fileSlug: string) {
+    private async mergeAllResponses(): Promise<void>
+    {
+        this.activeInstance.formInformation = this.extractFormInformation(this.activeInstance.metaInstance);
+        this.customPrefix = this.activeInstance.metaInstance.nsprefix?.toLowerCase() || null;
+        await this.prepareDocsForCurrentInstance();
+    }
+
+    private buildInitialFactMap(instanceXml: Instance, docSlug: string) {
+        console.log('docSlug', docSlug)
         const getInstancePrefix = (instance: Instance) => {
             const options = Object.keys(instance).filter(element => element.endsWith(':xbrl'))[0];
             return options ? options.split(':')[0] : false;
@@ -424,43 +460,38 @@ export class FetchAndMerge
         this.setSegmentData(context);
         this.setMeasureText(unit);
 
-        const map = new Map();
+        const factMap = new Map();
 
         let factCounter = 0;
-        for (let key in instance[xbrlKey]) {
-            /* example set of keys on instance.xbrl
+        for (let tagName in instance[xbrlKey]) {
+            const factElem = instance[xbrlKey][tagName];
+            /* example set of tagNames on instance.xbrl
                 _attributes
                 link:schemaRef
                 context
                 unit
-                dei:AmendmentFlag
                 dei:DocumentPeriodEndDate
-                dei:DocumentFiscalPeriodFocus
-                dei:EntityCentralIndexKey
-                dei:CurrentFiscalYearEndDate
-                dei:EntityEmergingGrowthCompany
                 dei:DocumentType
-                dei:DocumentFiscalYearFocus
                 dei:EntityRegistrantName
                 dei:EntityCommonStockSharesOutstanding
                 i09203gd:Content4
                 link:footnoteLink
             */
-            if (Array.isArray(instance[xbrlKey][key])) { // this first block might handle multi instance filings.
-                instance[xbrlKey][key].forEach((current: { _attributes: DeiAmendmentFlagAttributes; _text: string; }) => {
-                    const attributes = { ...current._attributes };
+            if (Array.isArray(factElem)) {
+                factElem.forEach((factEl: { _attributes: DeiAmendmentFlagAttributes; _text: string; }) => {
+                    const attributes = { ...factEl._attributes };
                     const id = attributes.id ? attributes.id : `fact-identifier-${factCounter}`;
                     delete attributes.id;
-                    map.set(id, {
+                    factMap.set(id, {
                         ...attributes,
-                        name: key,
+                        name: tagName,
                         ix: id,
                         id: `fact-identifier-${factCounter++}`,
-                        value: this.isFactHTML(current._text) ? this.updateValueToRemoveIDs(current._text) : current._text,
-                        isAmountsOnly: this.isFactAmountsOnly(current._text),
-                        isTextOnly: !this.isFactAmountsOnly(current._text),
-                        isNegativeOnly: this.isFactNegativeOnly(current._text),
-                        isHTML: this.isFactHTML(current._text),
+                        value: this.isFactHTML(factEl._text) ? this.updateValueToRemoveIDs(factEl._text) : factEl._text,
+                        isAmountsOnly: this.isFactAmountsOnly(factEl._text),
+                        isTextOnly: !this.isFactAmountsOnly(factEl._text),
+                        isNegativeOnly: this.isFactNegativeOnly(factEl._text),
+                        isHTML: this.isFactHTML(factEl._text),
                         period: this.setPeriodInfo(attributes.contextRef, context),
                         period_dates: this.setPeriodDatesInfo(attributes.contextRef, context),
                         segment: this.setSegmentInfo(attributes.contextRef, context),
@@ -473,26 +504,26 @@ export class FetchAndMerge
                         isHighlight: false,
                         isSelected: false,
                         filter: {
-                            content: this.getTextFromHTML(current._text),
+                            content: this.getTextFromHTML(factEl._text),
                         },
-                        file: fileSlug
+                        file: docSlug
                     });
                 });
             } else {
-                const attributes = { ...instance[xbrlKey][key]._attributes };
+                const attributes = { ...factElem._attributes };
                 const id = attributes.id ? attributes.id : `fact-identifier-${factCounter}`;
                 delete attributes.id;
 
-                map.set(id, {
+                factMap.set(id, {
                     ...attributes,
-                    name: key,
+                    name: tagName,
                     ix: id,
                     id: `fact-identifier-${factCounter++}`,
-                    value: this.isFactHTML(instance[xbrlKey][key]._text) ? this.updateValueToRemoveIDs(instance[xbrlKey][key]._text) : instance[xbrlKey][key]._text,
-                    isAmountsOnly: this.isFactAmountsOnly(instance[xbrlKey][key]._text),
-                    isTextOnly: !this.isFactAmountsOnly(instance[xbrlKey][key]._text),
-                    isNegativeOnly: this.isFactNegativeOnly(instance[xbrlKey][key]._text),
-                    isHTML: this.isFactHTML(instance[xbrlKey][key]._text),
+                    value: this.isFactHTML(factElem._text) ? this.updateValueToRemoveIDs(factElem._text) : factElem._text,
+                    isAmountsOnly: this.isFactAmountsOnly(factElem._text),
+                    isTextOnly: !this.isFactAmountsOnly(factElem._text),
+                    isNegativeOnly: this.isFactNegativeOnly(factElem._text),
+                    isHTML: this.isFactHTML(factElem._text),
                     period: this.setPeriodInfo(attributes.contextRef, context),
                     period_dates: this.setPeriodDatesInfo(attributes.contextRef, context),
                     segment: this.setSegmentInfo(attributes.contextRef, context),
@@ -505,26 +536,23 @@ export class FetchAndMerge
                     isHighlight: false,
                     isSelected: false,
                     filter: {
-                        content: this.getTextFromHTML(instance[xbrlKey][key]._text),
+                        content: this.getTextFromHTML(factElem._text),
                     },
-                    file: fileSlug
+                    file: docSlug
                 });
             }
         }
-        return map;
+        return factMap;
     }
 
-    private extractSections() {
-        return this.sections.map((section) => {
+    private setSectionGroupType(sections: Section[]): Section[]
+    {
+        // groupType is used in Metalinks v2.1 (and presumably earlier) and was replaced by menuCat in 2.2
+        if (Number(this.metaVersion) < 2.2) return sections;
 
-            // groupType is used in Metalinks v2.1 (and presumably earlier) and was replaced by menuCat in 2.2
-            if (Number(this.metaVersion) >= 2.2) {
-                if (section.menuCat) {
-                    section.groupType = section.menuCat;
-                } 
-            }
-            return section;
-        });
+        this.sections.forEach((section) => section.groupType = section.menuCat);
+
+        return sections;
     }
 
     private extractFormInformation(meta: Meta): FormInformation {
@@ -541,13 +569,13 @@ export class FetchAndMerge
     private enrichFactMapWithMetalinksData() {
         this.activeInstance?.map.forEach((currentFact: SingleFact) => {
             /* 
-                @Doc: Fact 'tags' in metalinks.json vs fact 'names' in instance and xhtmls files
+                @Doc: Fact 'tags' in metalinks.json vs fact 'names' in instance and doc files
                 facts are stored in metalinks.json under instance[<instanceName>].tags
                 Not sure why they are called 'tags'
                 Tags in xbrl speak are 'concepts', which are also qNames.
                 Some tag names look like: 
                     dei_AmendmentDescription
-                They have underscores, but in the instance and xhtml files they have colons:
+                They have underscores, but in the instance and doc files they have colons:
                     dei:AmendmentDescription
             */
             const factNameTag = currentFact.name.replace(':', '_');
@@ -560,7 +588,7 @@ export class FetchAndMerge
                 including references via any member [name] */
                 if (factObjectMl.auth_ref) {
 
-                    let references = factObjectMl.auth_ref.map((authRef) => {
+                    let referenceKeys = factObjectMl.auth_ref.map((authRef) => {
                         return authRef;
                     });
 
@@ -577,12 +605,14 @@ export class FetchAndMerge
                             }
                         }).filter(Boolean)[0];
 
-                        references = references.concat(dimensions).concat(axis);
+                        referenceKeys = referenceKeys.concat(dimensions).concat(axis);
                     }
 
-                    currentFact.references = [...new Set(references)]
+                    const references = [...new Set(referenceKeys)]
                         .map((current) => this.std_ref[current])
                         .filter(Boolean);
+                    currentFact.references = references.length ? references : null;
+
 
                     // this order specifically for Fact References
                     // any other key => value will be ignored and not shown to the user
@@ -590,12 +620,15 @@ export class FetchAndMerge
                         `Publisher`,
                         `Name`,
                         `Number`,
+                        `IssueDate`, // listed in xbrl book but not sure if I should add
                         `Chapter`,
                         `Article`,
-                        `Number`,
+                        `Note`,
                         `Exhibit`,
                         `Section`,
                         `Subsection`,
+                        `Topic`,
+                        `SubTopic`,
                         `Paragraph`,
                         `Subparagraph`,
                         `Sentence`,
@@ -605,21 +638,25 @@ export class FetchAndMerge
                         `Footnote`,
                         `URI`,
                         `URIDate`,
+                        `role`,
                     ];
 
-                    currentFact.references = currentFact.references.map((singleReference) => {
-                        return Object.keys(singleReference)
-                            .reduce((accumulator, current) => {
-                                const index = requiredOrder.findIndex(element => element === current);
-                                if (index !== -1) {
-                                    const returnObject = {};
-                                    returnObject[current] = singleReference[current];
-                                    accumulator[index] = returnObject;
-                                }
-                                return accumulator;
-                            }, new Array(Object.keys(singleReference).length).fill(null))
-                            .filter(Boolean);
-                    });
+                    if (currentFact.references) {
+                        const refsWithOrderedProps = currentFact.references.map((singleReference: Reference) => {
+                            return Object.keys(singleReference)
+                                .reduce((accumulator, current) => {
+                                    const index = requiredOrder.findIndex(element => element === current);
+                                    if (index !== -1) {
+                                        const returnObject = {};
+                                        returnObject[current] = singleReference[current];
+                                        accumulator[index] = returnObject;
+                                    }
+                                    return accumulator;
+                                }, new Array(Object.keys(singleReference).length).fill(null))
+                                .filter(Boolean);
+                        });
+                        currentFact.references = refsWithOrderedProps;
+                    }
                 }
 
                 // add calculations (if any) to each individual fact
@@ -627,7 +664,7 @@ export class FetchAndMerge
                     const tempFactCalculation = factObjectMl.calculation;
                     currentFact.calculations = [];
                     for (const factCalculationProp in tempFactCalculation) {
-                        const result = this.sections?.map(sectionElement => {
+                        const result: Calculation[] = this.sections?.map(sectionElement => {
                             if (sectionElement.role === factCalculationProp) {
                                 /*
                                     Walter comment: "Although I traced the root cause to a problem in entry point sbsef-fex, still, 
@@ -637,20 +674,23 @@ export class FetchAndMerge
                                 return [
                                     {
                                         label: 'Section',
-                                        value: sectionElement.longName
+                                        value: sectionElement.longName,
                                     },
                                     {
                                         label: 'Weight',
-                                        value: this.getCalculationWeight(tempFactCalculation[factCalculationProp].weight || 0)
+                                        value: this.getCalculationWeight(tempFactCalculation[factCalculationProp].weight || 0),
                                     },
                                     {
-                                        'label': 'Parent',
-                                        value: this.getCalculationParent(tempFactCalculation[factCalculationProp].parentTag || "")
-                                    }
+                                        label: 'Parent',
+                                        value: this.getCalculationParent(tempFactCalculation[factCalculationProp].parentTag || ""),
+                                    },
                                 ];
                             }
-                        }).filter(Boolean);
-                        currentFact.calculations = currentFact.calculations.concat(result);
+                        })
+                        .filter(isTruthy);
+
+                        //As usual, this is pushing the wrong type onto the array, but it's been working so why fix it  :eyeroll:
+                        currentFact.calculations.push(...result as any);
                     }
                 } else {
                     currentFact.calculations = [];
@@ -703,15 +743,15 @@ export class FetchAndMerge
         });
     }
 
-    private prepareXHTMLForCurrentInstance(): Promise<void>
+    private prepareDocsForCurrentInstance(): Promise<void>
     {
         const isWorkstation = this.params.doc.includes("DisplayDocument.do?");
-        const promises = this.activeInstance.xhtmls.map((current) =>
+        const promises = this.activeInstance.docs.map((doc) =>
             new Promise<Map<string, SingleFact>>((resolve) =>
             {
                 const workerData: XhtmlPrepData =
                 {
-                    current,
+                    current: doc,
                     facts: this.activeInstance.map,
                     isWorkstation,
                     absolute: this.absolute,
@@ -725,7 +765,7 @@ export class FetchAndMerge
                 worker.onmessage = (event: MessageEvent<XhtmlPrepResponse>) =>
                 {
                     const { facts, xhtml } = event.data;
-                    current.xhtml = xhtml;
+                    doc.xhtml = xhtml;
                     resolve(facts);
                 };
             }));
@@ -744,7 +784,6 @@ export class FetchAndMerge
             });
     }
 
-
     private updateValueToRemoveIDs(input: string) {
         const $ = cheerio.load(input, { xml: false });
         $('[id]').each(function () {
@@ -756,6 +795,8 @@ export class FetchAndMerge
     }
 
     private isFactAmountsOnly(input: string) {
+        // TODO: shouldn't this rely on a set of concepts like fractional, nonFracational, or format?
+        // currently the concept dei:DocumentFiscalYearFocus with value 2023 registers as isAmountsOnly erroneously
         return /^-?\d+\d*$/.test(input);
     }
 
@@ -974,7 +1015,7 @@ export class FetchAndMerge
                     result = this.accumulateFootnote(childNode, result);
                 })
             }
-            else if(key.substring(0,6) == "xhtml:") {
+            else if (key.substring(0,6) == "xhtml:") {
                 result = this.accumulateFootnote(value, result);
             }
         });
@@ -1069,9 +1110,9 @@ export class FetchAndMerge
     }
 
     private getCalculationWeight(weight: number) {
-        if(weight > 0)
+        if (weight > 0)
             return `Added to parent(${weight.toFixed(2)})`;
-        else if(weight < 0)
+        else if (weight < 0)
             return `Substracted from parent(${weight.toFixed(2)})`;
         else
             return 'Not Available.';

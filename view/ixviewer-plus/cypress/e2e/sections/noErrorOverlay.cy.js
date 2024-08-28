@@ -1,10 +1,7 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus';
-import { selectors } from '../../utils/selectors';
+import { selectors } from "../../utils/selectors.mjs"
+import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
 
-let filingsSample = filings;
-if (Cypress.env('limitNumOfFilingsForTestRun')) {
-    filingsSample = filings.slice(0, Cypress.env('limitOfFilingsToTest'));
-}
+let filingsSample = getFilingsSample(Cypress.env);
 
 describe(`Load and section click results in no error overlay`, () => {
     it(`Doc with space in name should create valid selectors`, () => {
@@ -19,9 +16,9 @@ describe(`Load and section click results in no error overlay`, () => {
     });
 
     filingsSample.forEach((filing) => {
-        it(`${filing.ticker || filing.docName} ${filing.formType}`, () => {
+        it(`Sections - no error overlay | ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
             cy.visitHost(filing);
-            cy.get(selectors.sectionsHeader).click();
+            cy.get(selectors.sectionsHeader, { timeout: filing.timeout }).click({ timeout: filing.timeout });
 
             cy.get(selectors.sectionsLinks).first((sectionLink) => {                    
                 cy.get(sectionLink).click();

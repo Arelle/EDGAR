@@ -1,17 +1,12 @@
-// import { enrichedFilingsUniqueFormTypes } from '../data/enrichedFilingsUniqueFormTypes.js'
-import { filings } from '../../dataPlus/enrichedFilingsPlus.mjs'
 import { selectors } from "../../utils/selectors.mjs"
+import { getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
 
-const filing = filings[0]
+const filing = getByAccessionNum('000080786323000002');
 
-/*
-npx cypress run --spec 'cypress/e2e/menu/menuHelp.cy.js' --env "domain=dev1"
-*/
-
-describe(`Menu Help for ${filing.docName} ${filing.formType}`, () => {
+describe(`Menu Help for ${filing.docName} ${filing.formType || filing.submissionType}`, () => {
     it('should show help info', () => {
         cy.visitHost(filing)
-        cy.get(selectors.menu).click({force: true})
+        cy.get(selectors.menu, { timeout: filing.timeout }).click({force: true})
         cy.get(selectors.helpLink).click({force: true})
 
         cy.get(selectors.gettingStarted).click({force: true})

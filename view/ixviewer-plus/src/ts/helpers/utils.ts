@@ -34,7 +34,7 @@ export const xmlToDom = (xmlNode: Node): Node | null => {
         const element = document.createElement(xmlNode.nodeName)
 
         // add attributes
-        if(xmlNode instanceof Element)
+        if (xmlNode instanceof Element)
         {
             for(let attr of xmlNode.attributes)
             {
@@ -89,7 +89,7 @@ export const findAllTagTypeInMarkupString = (markup: string, openTag: string, cl
 
 export function ixScrollTo(sectionElem: HTMLElement): void
 {
-    if(elemNearBottom(sectionElem))
+    if (elemNearBottom(sectionElem))
     {
         toBottomOfInlineDoc();
     }
@@ -109,14 +109,14 @@ export function ixScrollTo(sectionElem: HTMLElement): void
 function elemNearBottom(target: HTMLElement, parentElem?: HTMLElement, scrollableParent?: HTMLElement): boolean {
     if (!parentElem) {
         const currentInstance = Constants.getInstanceFiles.find(element => element.current);
-        const currentXHTML = currentInstance?.xhtmls.find(element => element.current);
+        const currentXHTML = currentInstance?.docs.find(element => element.current);
         if (currentXHTML?.slug) {
             parentElem = document.querySelector<HTMLElement>(`section[filing-url="${currentXHTML?.slug}"]`) || undefined;
         }
     }
     if (!scrollableParent) {
         const currentInstance = Constants.getInstanceFiles.find(element => element.current);
-        const currentXHTML = currentInstance?.xhtmls.find(element => element.current);
+        const currentXHTML = currentInstance?.docs.find(element => element.current);
         if (currentXHTML?.slug) {
             scrollableParent = document.getElementById('dynamic-xbrl-form') || undefined;
         }
@@ -138,4 +138,9 @@ function elemNearBottom(target: HTMLElement, parentElem?: HTMLElement, scrollabl
     }
 
     return distTopOfTargetToTopOfScrollableParent > parentHt - viewHeight;
+}
+
+export function isTruthy<T>(t: T): t is NonNullable<T>
+{
+    return Boolean(t);
 }

@@ -5,6 +5,13 @@ import _ from 'lodash'
 
 // node cypress/utils/enrichExtendedFilingsWithScrapedData.js
 
+/*
+    TODO:
+    [ ] build scraper for metalinks.json and add to filing object
+    [ ] build scraper for filingSummary.xml and add to filing object
+    [ ] maybe scrape and store dei_DocumentPeriodEndDate from metalinks as well (or dei_DocumentFiscalPeriodFocus)
+*/
+
 const enrichedFilings = []
 
 extendedFilings.forEach(extFiling =>  {

@@ -45,9 +45,14 @@ Cypress.Commands.add('visitFiling', (cik, filingId, htmlFile) =>
     return cy.visitHost({ localUrl, dev1Url, dev2Url, secUrl, testSecUrl });
 });
 
-Cypress.Commands.add('visitHost', (filing, host, timeout=15000) =>
+Cypress.Commands.add('visitHost', (filing) =>
 {
-    switch(host || Cypress.env('domain'))
+    // give app 15 secs per 1000 facts to load.
+    let timeout = 15000;
+    if (filing?.factCount > 1000 && filing.timeout) {
+        timeout = filing.timeout;
+    }
+    switch(Cypress.env('domain'))
     {
         case 'local':
             return cy.visit(filing.localUrl, { timeout });
@@ -70,6 +75,7 @@ Cypress.Commands.add('requestFilingSummaryPerHost', (filing) => {
         case 'local':
             FilingSummaryUrl = filing.localUrl.replace(filing.docName + '.htm', 'FilingSummary.xml')
             FilingSummaryUrl = FilingSummaryUrl.replace('ix.xhtml?doc=./', '')
+            FilingSummaryUrl = FilingSummaryUrl.replace('ix.xhtml?doc=/', '')
             cy.request(FilingSummaryUrl)
             break
         case 'sec':
@@ -140,23 +146,12 @@ Cypress.Commands.add('checkAttr', (selector, attrName, attrVal) => {
         .should('eq', attrVal)
 })
 
-/* things to try
-[x] retry
-[x] recursion
-[x] flatter
-[x] lots of waits
-*/
 Cypress.Commands.add('onClickShouldScrollDown', ($clickTarget) => {
     // find scroll pos in viewer elem
     let prevScrollPos = 0;
-    cy.log('onClickShouldScrollDown')
     cy.get('div[id="dynamic-xbrl-form"]', {timeout: 2000}).then($viewerElem => {
         prevScrollPos = $viewerElem.scrollTop();
-        cy.log('scrollTop')
-
         cy.get($clickTarget).click().then(() => {
-            cy.log('expect')
-
             cy.expect($viewerElem.scrollTop()).to.be.gt(prevScrollPos)
             prevScrollPos = $viewerElem.scrollTop()
         })

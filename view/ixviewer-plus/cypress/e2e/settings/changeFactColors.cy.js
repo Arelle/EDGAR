@@ -1,10 +1,12 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus'
-import { selectors } from "../../utils/selectors"
+import { filings } from '../../dataPlus/enrichedFilingsPlus.mjs'
+import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
+import { selectors } from "../../utils/selectors.mjs"
+
+let filingsSample = getFilingsSample(Cypress.env);
 const filingWithId = filings.filter(f => {
     return f["id"] == "0001096906-23-001881"
 })
 const filing = filingWithId[0]
-console.log('filing', filing)
 
 const expectColorVals = (actualColorVals, expectedColorVals, moe = 3) => {
     // TODO: removed moe since we're passing in literal vals to invoke now.
@@ -32,7 +34,7 @@ const expectColorVals = (actualColorVals, expectedColorVals, moe = 3) => {
     }
 }
 
-describe.skip(`Change Fact link and bg colors ${filing.ticker || filing.docName} ${filing.formType}`, () => {
+describe.skip(`Change Fact link and bg colors ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
     // Test is highly dependent on screen size so a change in screen size may break these tests.
     // improvement: query expected color from div.picker_sample
 
@@ -67,7 +69,7 @@ describe.skip(`Change Fact link and bg colors ${filing.ticker || filing.docName}
         // cy.get(selectors.searchResultsColorPicker).click('center')
         // cy.get(selectors.searchResultsColorPickerSave).click()
         cy.get(selectors.settingsClose).click()
-        cy.get(selectors.search).type(filing.formType)
+        cy.get(selectors.search).type(filing.formType || filing.submissionType)
         cy.get(selectors.submitSearchButton).click()
 
         cy.get('[highlight-fact="true"]')

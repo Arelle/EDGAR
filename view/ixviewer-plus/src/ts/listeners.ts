@@ -127,6 +127,15 @@ export class Listeners {
         document.getElementById('search-btn-clear')?.addEventListener("keyup", () => {
             Search.clear();
         });
+        
+        const searchOptions = document.querySelectorAll('input[name="search-options"]');
+        searchOptions.forEach(opt => {
+            ["keyup", "click"].forEach(action => {
+                opt.addEventListener(action, () => {
+                    Search.submit();
+                });
+            })
+        })
 
         document.getElementById('hover-option-select')?.addEventListener("change", (event: Event) => {
             ModalsSettings.hoverOption(event);

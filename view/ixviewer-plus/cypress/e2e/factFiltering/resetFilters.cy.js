@@ -1,22 +1,18 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus'
-// import { filings } from '../../dataPlus/filingsWithUrls'
+import { getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
 import { selectors } from "../../utils/selectors"
 
-// const filteredFilings = filings.filter(filing => filing.secUrl == 'https://www.sec.gov/ix?doc=https://www.sec.gov/Archives/edgar/data/4457/000000445723000052/uhal-20230331.htm')
-
-const filing = filings[0]
+const filing = getByAccessionNum("000080786323000002")
 
 describe(`Reset Filters`, () => {
     let initialFactCount = 0
 
     // Select
-    it(`should clear filters ${filing.ticker || filing.docName} ${filing.formType}`, () => {
+    it(`should clear filters ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
         cy.visitHost(filing)
-        cy.get(selectors.factCountClock).should('not.exist')
+        cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
 
         cy.get(selectors.factCountBadge).invoke('text').then(text => {
             initialFactCount = Number(text.replace(',', ''))
-            cy.log('text', text)
 
             // add amounts filter
             cy.get(selectors.dataFiltersButton).click()
