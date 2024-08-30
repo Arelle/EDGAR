@@ -171,22 +171,25 @@ for t in ("schemaRef", "linkbaseRef", "roleRef", "arcroleRef", "loc", "arc"):
     tagsWithNoContent.add(f"{{http://www.xbrl.org/2003/linkbase}}{t}")
 tagsWithNoContent.add("{http://www.xbrl.org/2013/inlineXBRL}relationship")
 
+
 def uncloseSelfClosedTags(doc):
-    doc.parser.set_element_class_lookup(None) # modelXbrl class features are already closed now, block class lookup
+    doc.parser.set_element_class_lookup(None)  # modelXbrl class features are already closed now, block class lookup
     for e in doc.xmlRootElement.iter():
         # check if no text, no children and not self-closable element for EDGAR
         if (e.text is None and (not e.getchildren())
             and e.tag not in tagsWithNoContent
             # also skip ix elements which are nil
-            and not (e.get("{http://www.w3.org/2001/XMLSchema-instance}nil") in ("true","1") and e.tag.startswith("{http://www.xbrl.org/2013/inlineXBRL}"))):
-            e.text = "" # prevents self-closing tag with etree.tostring for zip and dissem folders
+            and not (e.get("{http://www.w3.org/2001/XMLSchema-instance}nil") in ("true", "1") and e.tag.startswith("{http://www.xbrl.org/2013/inlineXBRL}"))):
+            e.text = ""  # prevents self-closing tag with etree.tostring for zip and dissem folders
+
 
 def allowableBytesForEdgar(bytestr):
     # encode xml-legal ascii bytes not acceptable to EDGAR
     return re.sub(b"[\\^\x7F]", lambda m: b"&#x%X;" % ord(m[0]), bytestr)
 
+
 def serializeXml(xmlRootElement):
-    initialComment = b'' # tostring drops initial comments
+    initialComment = b''  # tostring drops initial comments
     node = xmlRootElement
     while node.getprevious() is not None:
         node = node.getprevious()
@@ -199,10 +202,11 @@ def serializeXml(xmlRootElement):
             serXml = serXml[:i] + initialComment + serXml[i:]
     return allowableBytesForEdgar(serXml)
 
-
 ###############
 
-logParamEscapePattern = re.compile("[{]([^}]*)[}](?![}])") # match a java {{xxx} pattern to connvert to python escaped {{xxx}}
+
+logParamEscapePattern = re.compile("[{]([^}]*)[}](?![}])")  # match a java {{xxx} pattern to connvert to python escaped {{xxx}}
+
 
 def edgarRendererCmdLineOptionExtender(parser, *args, **kwargs):
     parser.add_option("-o", "--output", dest="zipOutputFile",
@@ -269,9 +273,9 @@ def edgarRendererCmdLineOptionExtender(parser, *args, **kwargs):
     # always use a buffering log handler (even if file or std out)
     parser.add_option("--logToBuffer", action="store_true", dest="logToBuffer", default=True, help=SUPPRESS_HELP)
     parser.add_option("--noRenderingWithError", action="store_true", dest="noRenderingWithError", help=_("Prevent rendering action when exhibit instance validation encountered error(s), blocking R file and extracted xml instance generation for that exhibit instance."))
-    parser.add_option("--keepFilingOpen", dest="keepFilingOpen", action="store_true", help=SUPPRESS_HELP) # block closing filing in filingEnd
-    parser.add_option("--iXBRLViewerStub", dest="iXBRLViewerStub", action="store_true", help=SUPPRESS_HELP) # generate iXBRL Viewer Stub if plugin is present
-    parser.add_option("--confidentialityDocList", dest="confidentialityDocList", action="store", help=SUPPRESS_HELP) # treat referencing report as confidential, pipe-separated list of schema and graphics files
+    parser.add_option("--keepFilingOpen", dest="keepFilingOpen", action="store_true", help=SUPPRESS_HELP)  # block closing filing in filingEnd
+    parser.add_option("--iXBRLViewerStub", dest="iXBRLViewerStub", action="store_true", help=SUPPRESS_HELP)  # generate iXBRL Viewer Stub if plugin is present
+    parser.add_option("--confidentialityDocList", dest="confidentialityDocList", action="store", help=SUPPRESS_HELP)  # treat referencing report as confidential, pipe-separated list of schema and graphics files
 
 
 class EdgarRenderer(Cntlr.Cntlr):
@@ -289,15 +293,15 @@ class EdgarRenderer(Cntlr.Cntlr):
         self.ErrorMsgs = []
         self.entrypoint = None  # Contains the absolute path of the instance, inline, zip, or folder.
         self.entrypointFolder = None  # Contains absolute folder of instance, inline, or zip; equal to entrypoint if a folder.
-        self.nextFileNum = 1 # important for naming file numbers for multi-instance filings
+        self.nextFileNum = 1  # important for naming file numbers for multi-instance filings
         self.nextUncategorizedFileNum = 9999
         self.nextBarChartFileNum = 0
         self.xlWriter = None
         self.excelXslt = None
         self.createdFolders = []
         self.success = True
-        self.labelLangs = ['en-US','en-GB'] # list by WcH 7/14/2017, priority of label langs, en-XX always falls back to en anyway
-        if not hasattr(cntlr, "editedIxDocs"): # in GUI mode may be initialized in 'ModelDocument.Discover' before this class init
+        self.labelLangs = ['en-US', 'en-GB']  # list by WcH 7/14/2017, priority of label langs, en-XX always falls back to en anyway
+        if not hasattr(cntlr, "editedIxDocs"):  # in GUI mode may be initialized in 'ModelDocument.Discover' before this class init
             cntlr.editedIxDocs = {}
             cntlr.editedModelXbrls = set()
             cntlr.redlineIxDocs = {}
@@ -320,9 +324,6 @@ class EdgarRenderer(Cntlr.Cntlr):
                 self.logInfo(_("Option {0}={1}").format(optName, optValue))
             IoManager.logConfigFile(self, options, messageCode='info')
 
-
-
-
     def retrieveDefaultREConfigParams(self, options):
         # defaultValueDict contains the default strings for
         # when there are no config file and no command line arguments.
@@ -344,7 +345,7 @@ class EdgarRenderer(Cntlr.Cntlr):
         self.defaultValueDict['failFile'] = 'errorLog.log'
         self.defaultValueDict['filingsFolder'] = 'Filings'
         self.defaultValueDict['htmlReportFormat'] = 'Complete'
-        self.defaultValueDict['internetConnectivity'] = 'online' # HF change to online default 'offline'
+        self.defaultValueDict['internetConnectivity'] = 'online'  # HF change to online default 'offline'
         self.defaultValueDict['noEquity'] = str(False)
         self.defaultValueDict['processingFolder'] = 'Processing'
         self.defaultValueDict['processingFrequency'] = '10'
@@ -371,8 +372,8 @@ class EdgarRenderer(Cntlr.Cntlr):
         # The configDict holds the values as they were read from the config file.
         # Only options that appear with a value that is not None in defaultValueDict are recognized.
         self.configDict = defaultdict(lambda:None)
-        configLocation = IoManager.getConfigFile(self,options)
-        if configLocation is None: # Although it is odd not to have a config file, it is not an error.
+        configLocation = IoManager.getConfigFile(self, options)
+        if configLocation is None:  # Although it is odd not to have a config file, it is not an error.
             self.logDebug(_("No config file"))
         else:
             self.logDebug(_("Extracting info from config file {}".format(os.path.basename(configLocation))))
@@ -383,8 +384,8 @@ class EdgarRenderer(Cntlr.Cntlr):
                         value = child.text.strip()
                         if value == '': value = None
                         self.configDict[child.tag] = value
-                    elif len(child.text.strip()) > 0: # Extra tags with no content are ignored
-                        #message = ErrorMgr.getError('UNSUPPORTED_CONFIG_TAG').format(child.text, child.tag)
+                    elif len(child.text.strip()) > 0:  # Extra tags with no content are ignored
+                        # message = ErrorMgr.getError('UNSUPPORTED_CONFIG_TAG').format(child.text, child.tag)
                         self.logWarn("Found value {} for unsupported configuration tag {}".format(child.text, child.tag))
 
     def initializeReOptions(self, options, setCntlrOptions=False):
@@ -394,31 +395,31 @@ class EdgarRenderer(Cntlr.Cntlr):
             value = next((x
                           for x in [init, self.configDict[prop], self.defaultValueDict[prop]]
                           if x is not None), None)
-            if type(value)==str and not cs: value = value.casefold()
+            if type(value) == str and not cs: value = value.casefold()
             setattr(self, prop, value)
             if rangeList is not None and value not in [x.casefold() for x in rangeList]:
-                raise Exception("Unknown {} '{}' not in {} (case insensitive) on command line or config file.".format(prop,value,rangeList))
+                raise Exception("Unknown {} '{}' not in {} (case insensitive) on command line or config file.".format(prop, value, rangeList))
             self.logDebug("{}=\t{}".format(prop, value))
             return value
 
         # options applicable to rendering in either mode:
-        options.renderingService = setProp('renderingService', options.renderingService, rangeList=['Instance','Daemon'])
+        options.renderingService = setProp('renderingService', options.renderingService, rangeList=['Instance', 'Daemon'])
         options.reportFormat = setProp('reportFormat', options.reportFormat, rangeList=['Html', 'Xml', 'HtmlAndXml', 'None'])
-        options.htmlReportFormat = setProp('htmlReportFormat', options.htmlReportFormat, rangeList=['Complete','Fragment'])
-        options.zipOutputFile = setProp('zipOutputFile', options.zipOutputFile,cs=True)
-        options.sourceList = " ".join(setProp('sourceList', options.sourceList,cs=True).split()).split(',')
-        self.sourceDict={}
+        options.htmlReportFormat = setProp('htmlReportFormat', options.htmlReportFormat, rangeList=['Complete', 'Fragment'])
+        options.zipOutputFile = setProp('zipOutputFile', options.zipOutputFile, cs=True)
+        options.sourceList = " ".join(setProp('sourceList', options.sourceList, cs=True).split()).split(',')
+        self.sourceDict = {}
         # Parse comma and colon separated list a:b b:c, d:e:f into a dictionary {'a': ('b b','c'), 'd': ('e','f') }:
         for source in options.sourceList:
             if (len(source) > 0):
-                s = source.split(':') # we must accommodate spaces in tokens separated by colons
+                s = source.split(':')  # we must accommodate spaces in tokens separated by colons
                 if (len(s) != 3):
-                    self.logWarn("Ignoring bad token {} in {}".format(s,options.sourceList))
-                else: # we do not accommodate general URL's in the 'original' field.
+                    self.logWarn("Ignoring bad token {} in {}".format(s, options.sourceList))
+                else:  # we do not accommodate general URL's in the 'original' field.
                     instance = " ".join(s[0].split())
                     doctype = " ".join(s[1].split())
                     original = " ".join(s[2].split())
-                    self.sourceDict[instance]=(doctype,original)
+                    self.sourceDict[instance] = (doctype, original)
 
         # These options have to be passed back to arelle via the options object
         # HF, removed:     options.internetConnectivity = setProp('internetConnectivity',options.internetConnectivity, rangeList=['online','offline'])
@@ -444,8 +445,8 @@ class EdgarRenderer(Cntlr.Cntlr):
         options.includeLogsInSummaryDissem = setFlag('includeLogsInSummaryDissem', options.includeLogsInSummaryDissem)
         options.processXsltInBrowser = setFlag('processXsltInBrowser', options.processXsltInBrowser)
         self.summaryHasLogEntries = False
-        options.saveTargetInstance = setFlag('saveTargetInstance',options.saveTargetInstance)
-        options.saveTargetFiling = setFlag('saveTargetFiling',options.saveTargetFiling)
+        options.saveTargetInstance = setFlag('saveTargetInstance', options.saveTargetInstance)
+        options.saveTargetFiling = setFlag('saveTargetFiling', options.saveTargetFiling)
         # note that delete processed filings is only relevant when the input had to be unzipped.
         options.deleteProcessedFilings = setFlag('deleteProcessedFilings', options.deleteProcessedFilings)
         options.debugMode = setFlag('debugMode', options.debugMode)
@@ -465,11 +466,11 @@ class EdgarRenderer(Cntlr.Cntlr):
             options.validateEFM = self.validateEFM
 
         def setFolder(folder, init, searchPythonPath=False):
-            if searchPythonPath: # if the folder is not an absolute path, we want to look for it relative to the python path.
-                value= next((IoManager.absPathOnPythonPath(self,x)
+            if searchPythonPath:  # if the folder is not an absolute path, we want to look for it relative to the python path.
+                value = next((IoManager.absPathOnPythonPath(self, x)
                              for x in [init, self.configDict[folder], self.defaultValueDict[folder]]
                              if x is not None), None)
-            else: # otherwise interpret the folder as being relative to some subsequent processing location.
+            else:  # otherwise interpret the folder as being relative to some subsequent processing location.
                 value = next((x
                               for x in [init, self.configDict[folder], self.defaultValueDict[folder]]
                               if x is not None), None)
@@ -478,35 +479,34 @@ class EdgarRenderer(Cntlr.Cntlr):
             return getattr(self, folder)
 
         options.processingFolder = setFolder('processingFolder', options.processingFolder)
-        self.processInZip = True # bool(options.processingFolder)
+        self.processInZip = True  # bool(options.processingFolder)
         if options.noReportOutput:
             options.reportsFolder = self.reportsFolder = self.initialReportsFolder = None
         else:
             options.reportsFolder = setFolder('reportsFolder', options.reportsFolder)
             # keep initial reports folder, may be relative, if so reset on each new filing
             self.initialReportsFolder = self.reportsFolder
-            self.reportInZip = True # bool(options.reportsFolder)
-        options.resourcesFolder = setFolder('resourcesFolder', options.resourcesFolder,searchPythonPath=True)
-
+            self.reportInZip = True  # bool(options.reportsFolder)
+        options.resourcesFolder = setFolder('resourcesFolder', options.resourcesFolder, searchPythonPath=True)
 
         def setResourceFile(file, init, errstr):
             setattr(self, file, None)
             value = next((x
                           for x in [init, self.configDict[file], self.defaultValueDict[file]]
                           if x is not None), None)
-            if value is not None and type(value)==str and len(value)>0:
+            if value is not None and type(value) == str and len(value) > 0:
                 if not isdir(self.resourcesFolder):
                     # It is possible to specify a bad resources folder, but then not actually need it;
                     # that is why the test for its presence is here and not earlier.
                     raise Exception("Cannot locate resources folder '{}'".format(self.resourcesFolder))
-                value = os.path.join(self.resourcesFolder,value)
+                value = os.path.join(self.resourcesFolder, value)
                 setattr(self, file, value)
                 if value is not None and not isfile(value):
                     raise Exception(_(errstr).format(value))
             self.logDebug("{}=\t{}".format(file, value))
             return value
 
-        #setResourceFile('reportXslt', options.reportXslt, 'INVALID_CONFIG_REPORTXSLT')
+        # setResourceFile('reportXslt', options.reportXslt, 'INVALID_CONFIG_REPORTXSLT')
         options.reportXslt = setResourceFile('reportXslt', options.reportXslt, "Cannot find report xslt {}")
         options.reportXsltDissem = setResourceFile('reportXsltDissem', options.reportXsltDissem, "Cannot find dissemination report xslt {}")
         # Report XSLT is required when reportFormat contains 'Html'.
@@ -514,13 +514,13 @@ class EdgarRenderer(Cntlr.Cntlr):
             raise Exception('No {} specified when {}={} requires it.'.format('reportXslt', 'reportFormat', self.reportFormat))
 
         # Summary XSLT is optional, but do report if you can't find it.
-        #setResourceFile('summaryXslt', options.summaryXslt, 'INVALID_CONFIG_SUMMARYXSLT')
+        # setResourceFile('summaryXslt', options.summaryXslt, 'INVALID_CONFIG_SUMMARYXSLT')
         options.summaryXslt = setResourceFile('summaryXslt', options.summaryXslt, "Cannot find summary xslt {}")
         options.summaryXsltDissem = setResourceFile('summaryXsltDissem', options.summaryXsltDissem, "Cannot find dissemination summary xslt {}")
         options.renderingLogsXslt = setResourceFile('renderingLogsXslt', options.renderingLogsXslt, "Cannot find rendering logs xslt {}")
 
         # Excel XSLT is optional, but do report if you can't find it.
-        #setResourceFile('excelXslt', options.excelXslt, 'INVALID_CONFIG_EXCELXSLT')
+        # setResourceFile('excelXslt', options.excelXslt, 'INVALID_CONFIG_EXCELXSLT')
         # if options.excelXslt is "True" from web interface, it has no no string value, e.g., &excelXslt (looks like True here)
         options.excelXslt = setResourceFile('excelXslt', "" if options.excelXslt == True else options.excelXslt, "Cannot find excel xslt {}")
 
@@ -530,7 +530,7 @@ class EdgarRenderer(Cntlr.Cntlr):
         _lang = options.labelLang or self.modelManager.defaultLang
         if _lang in self.labelLangs:
             self.labelLangs.remove(_lang)
-        self.labelLangs.insert(0, _lang) # ensure system lang is at start of langs list (highest priority)
+        self.labelLangs.insert(0, _lang)  # ensure system lang is at start of langs list (highest priority)
 
         # modelXbrl's must be closed by filingEnd
         options.keepOpen = True
@@ -542,18 +542,18 @@ class EdgarRenderer(Cntlr.Cntlr):
         self.htmlReportFormat = options.htmlReportFormat
         self.zipOutputFile = options.zipOutputFile
         self.sourceList = options.sourceList
-        self.sourceDict={}
+        self.sourceDict = {}
         # Parse comma and colon separated list a:b b:c, d:e:f into a dictionary {'a': ('b b','c'), 'd': ('e','f') }:
         for source in options.sourceList:
             if (len(source) > 0):
-                s = source.split(':') # we must accommodate spaces in tokens separated by colons
+                s = source.split(':')  # we must accommodate spaces in tokens separated by colons
                 if (len(s) != 3):
-                    self.logWarn("Ignoring bad token {} in {}".format(s,options.sourceList))
-                else: # we do not accommodate general URL's in the 'original' field.
+                    self.logWarn("Ignoring bad token {} in {}".format(s, options.sourceList))
+                else:  # we do not accommodate general URL's in the 'original' field.
                     instance = " ".join(s[0].split())
                     doctype = " ".join(s[1].split())
                     original = " ".join(s[2].split())
-                    self.sourceDict[instance]=(doctype,original)
+                    self.sourceDict[instance] = (doctype, original)
 
         # These options have to be passed back to arelle via the options object
         # HF, removed:     options.internetConnectivity = setProp('internetConnectivity',options.internetConnectivity, rangeList=['online','offline'])
@@ -585,14 +585,14 @@ class EdgarRenderer(Cntlr.Cntlr):
         self.validateEFM = options.validateEFM
 
         self.processingFolder = options.processingFolder
-        self.processInZip = True # bool(options.processingFolder)
-        self.reportsFolder = options.reportsFolder # dynamically changed to relative of processing instance unless absolute
+        self.processInZip = True  # bool(options.processingFolder)
+        self.reportsFolder = options.reportsFolder  # dynamically changed to relative of processing instance unless absolute
         # keep initial reports folder, may be relative, if so reset on each new filing
         self.initialReportsFolder = self.reportsFolder
-        self.reportInZip = True # bool(options.reportsFolder)
+        self.reportInZip = True  # bool(options.reportsFolder)
         self.resourcesFolder = options.resourcesFolder
 
-        #setResourceFile('reportXslt', options.reportXslt, 'INVALID_CONFIG_REPORTXSLT')
+        # setResourceFile('reportXslt', options.reportXslt, 'INVALID_CONFIG_REPORTXSLT')
         self.reportXslt = options.reportXslt
         self.reportXsltDissem = options.reportXsltDissem
         # Report XSLT is required when reportFormat contains 'Html'.
@@ -600,13 +600,13 @@ class EdgarRenderer(Cntlr.Cntlr):
             raise Exception('No {} specified when {}={} requires it.'.format('reportXslt', 'reportFormat', self.reportFormat))
 
         # Summary XSLT is optional, but do report if you can't find it.
-        #setResourceFile('summaryXslt', options.summaryXslt, 'INVALID_CONFIG_SUMMARYXSLT')
+        # setResourceFile('summaryXslt', options.summaryXslt, 'INVALID_CONFIG_SUMMARYXSLT')
         self.summaryXslt = options.summaryXslt
         self.summaryXsltDissem = options.summaryXsltDissem
         self.renderingLogsXslt = options.renderingLogsXslt
 
         # Excel XSLT is optional, but do report if you can't find it.
-        #setResourceFile('excelXslt', options.excelXslt, 'INVALID_CONFIG_EXCELXSLT')
+        # setResourceFile('excelXslt', options.excelXslt, 'INVALID_CONFIG_EXCELXSLT')
         self.excelXslt = options.excelXslt
 
         self.logMessageTextFile = options.logMessageTextFile
@@ -617,7 +617,6 @@ class EdgarRenderer(Cntlr.Cntlr):
     def initializeReSinglesOptions(self, options):
         # At the moment there are not any options relevant only for single-instance mode.
         return
-
 
     def initializeReDaemonOptions(self, options):
         self.logDebug("Daemon Options:")
@@ -656,20 +655,21 @@ class EdgarRenderer(Cntlr.Cntlr):
     @property
     def renderMode(self):
         return self.renderingService.casefold()
+
     @property
     def isSingles(self):
         return self.renderingService.casefold() == 'instance'
+
     @property
     def isDaemon(self):
         return self.renderingService.casefold() == 'daemon'
-
 
     def daemonDequeueInputZip(self, options):  # returns the location of zip ready to unpack
         # upon exit, options.entrypoint is set to absolute location of the zip file after the move,
         # and self.processingFolder is set to absolute location of where it should be processed.
         inputFileSource = None
         zipfound = False
-        options.entrypointFile = None # no entrypoint file(s)
+        options.entrypointFile = None  # no entrypoint file(s)
         # check for next filing in input folder
         # as usual, self.{some}Folder is absolute, while options.{some}Folder is what was specified in the input.
         self.originalProcessingFolder = os.path.join(getcwd(), self.processingFolder)
@@ -678,7 +678,7 @@ class EdgarRenderer(Cntlr.Cntlr):
             for file in sorted(os.listdir(self.filingsFolder), key=lambda file: os.stat(join(self.filingsFolder, file)).st_mtime):
                 if not zipfound and Utils.isZipFilename(file):
                     inputFileSource = join(self.filingsFolder, file)
-                    self.processingFolder = IoManager.createNewFolder(self,self.originalProcessingFolder,file)
+                    self.processingFolder = IoManager.createNewFolder(self, self.originalProcessingFolder, file)
                     # reportsFolder = normpath(join(self.processingFolder,options.reportsFolder))
                     processingFileSource = join(self.processingFolder, file)
                     if not exists(inputFileSource): continue  # it got deleted before we could process it.
@@ -689,7 +689,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                         zipfound = True
                     except IOError as err:
                         self.logError(str(err))
-                        #self.logError(_(ErrorMgr.getError('FILING_MOVE_ERROR').format(self.processingFolder)))
+                        # self.logError(_(ErrorMgr.getError('FILING_MOVE_ERROR').format(self.processingFolder)))
                         self.logError(_("Could not remove {}").format(self.processingFolder))
                         try: removedirs(self.processingFolder)
                         except IOError: continue
@@ -697,7 +697,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                     options.zipOutputFile = join(self.processingFolder, "-out".join(os.path.splitext(file)))
                     options.doneFile = join(self.archiveFolder, file)
                     # self.failFile = join(self.errorsFolder,file)
-                    if self.createdFolders: # pass to filing processing any created folders
+                    if self.createdFolders:  # pass to filing processing any created folders
                         options.daemonCreatedFolders = self.createdFolders
                     break
             # no more files.
@@ -705,7 +705,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                 sleep = self.processingFrequency
                 self.logDebug(_("Sleeping for " + sleep + " seconds. "))
                 time.sleep(float(sleep))
-                self.cntlr.logHandler.flush() # flush log buffer (if any)
+                self.cntlr.logHandler.flush()  # flush log buffer (if any)
         return
 
     def setProcessingFolder(self, filesource, entryPointFile=None):
@@ -714,12 +714,12 @@ class EdgarRenderer(Cntlr.Cntlr):
                 self.processingFolder = os.path.dirname(filesource.basefile)
             else:
                 _url = filesource.url
-                #filesource.url may have an inline document set, trim it off
+                # filesource.url may have an inline document set, trim it off
                 for pluginXbrlMethod in pluginClassMethods("InlineDocumentSet.Url.Separator"):
                     inlineDocSetSeparator = pluginXbrlMethod()
                     _url = _url.partition(inlineDocSetSeparator)[0]
                 self.processingFolder = os.path.dirname(_url)
-        if entryPointFile and os.path.exists(entryPointFile): # for testcase, is different than filesource, which points to testcase
+        if entryPointFile and os.path.exists(entryPointFile):  # for testcase, is different than filesource, which points to testcase
             if not (filesource and filesource.isOpen and filesource.isArchive and entryPointFile.startswith(filesource.basefile)):
                 self.processingFolder = os.path.dirname(entryPointFile)
 
@@ -736,7 +736,7 @@ class EdgarRenderer(Cntlr.Cntlr):
             IoManager.handleFolder(self, self.archiveFolder, False, self.totalClean)
             if self.errorsFolder is not None:  # You might not have an errors folder.
                 IoManager.handleFolder(self, self.errorsFolder, False, self.totalClean)
-            self.daemonDequeueInputZip(options) # loop, waiting for an input to process, then returns and processes input as if --file specified the input
+            self.daemonDequeueInputZip(options)  # loop, waiting for an input to process, then returns and processes input as if --file specified the input
 
     def isRunningUnderTestcase(self):
         return (getattr(self.cntlr.modelManager.loadedModelXbrls[0], "modelDocument", None) is not None and
@@ -750,17 +750,17 @@ class EdgarRenderer(Cntlr.Cntlr):
         # Set default config params; overwrite with command line args if necessary
         self.retrieveDefaultREConfigParams(options)
         # Initialize the folders and objects required in both modes.
-        if options.sourceList is None: # options is none on first GUI run testcase variation
+        if options.sourceList is None:  # options is none on first GUI run testcase variation
             self.initializeReOptions(options)
-        else: # options previously initialized
+        else:  # options previously initialized
             self.copyReAttrOptions(options)
         # Transfer daemonCreatedFilders to this EdgarRenderer to deal with at filingEnd
         if hasattr(options, "daemonCreatedFolders"):
             self.createdFolders.extend(options.daemonCreatedFolders)
-            del options.daemonCreatedFolders # don't pass to any subsequent independent filing if any
+            del options.daemonCreatedFolders  # don't pass to any subsequent independent filing if any
         mdlMgr = cntlr.modelManager
         self.disclosureSystem = mdlMgr.disclosureSystem
-        self.validatedForEFM = ("esef" in self.disclosureSystem.names or # prevent EFM validation messages for "esef" validations
+        self.validatedForEFM = ("esef" in self.disclosureSystem.names or  # prevent EFM validation messages for "esef" validations
                                 (not cntlr.hasGui and mdlMgr.validateDisclosureSystem and getattr(mdlMgr.disclosureSystem, "EFMplugin", False))
                                 )
         self.instanceSummaryList = []
@@ -769,7 +769,7 @@ class EdgarRenderer(Cntlr.Cntlr):
         self.otherXbrlList = []
         self.supplementList = []
         self.supplementalFileList = []
-        self.renderedFiles = filing.renderedFiles # filing-level rendered files
+        self.renderedFiles = filing.renderedFiles  # filing-level rendered files
         self.setProcessingFolder(filing.filesource)
         self.abortedDueToMajorError = False
         if self.isDaemon:
@@ -786,10 +786,10 @@ class EdgarRenderer(Cntlr.Cntlr):
         # strip on error if preceding primary inline instance had no error and exhibitType strips on error
         stripExhibitOnError = self.success and bool(
                               filing.exhibitTypesStrippingOnErrorPattern.match(attachmentDocumentType or ""))
-        errorCountDuringValidation = sum(1 for e in modelXbrl.errors if isinstance(e, str) and not e.startswith("DQC.")) # don't count assertion results dict if formulas ran
+        errorCountDuringValidation = sum(1 for e in modelXbrl.errors if isinstance(e, str) and not e.startswith("DQC."))  # don't count assertion results dict if formulas ran
         success = True
         if errorCountDuringValidation > 0:
-            if self.abortOnMajorError: # HF renderer raises exception on major errors: self.modelManager.abortOnMajorError:
+            if self.abortOnMajorError:  # HF renderer raises exception on major errors: self.modelManager.abortOnMajorError:
                 self.logFatal(_("Not attempting to render after {} validation errors").format(
                     errorCountDuringValidation))
                 self.abortedDueToMajorError = True
@@ -799,7 +799,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                 if not self.isRunningUnderTestcase():
                     success = False
         modelXbrl.profileActivity()
-        self.setProcessingFolder(modelXbrl.fileSource, report.filepaths[0]) # use first of possibly multi-doc IXDS files
+        self.setProcessingFolder(modelXbrl.fileSource, report.filepaths[0])  # use first of possibly multi-doc IXDS files
         # if not reportZip and reportsFolder is relative, make it relative to source file location (on first report)
         if (success or not self.noRenderingWithError) and not filing.reportZip and self.initialReportsFolder and self.loopnum == 0:
             if not os.path.isabs(self.initialReportsFolder):
@@ -811,14 +811,14 @@ class EdgarRenderer(Cntlr.Cntlr):
                     # try cache directory locating reportsFolder where the entry point instance is in cache
                     if os.path.exists(_dir) and os.access(_dir, os.W_OK | os.X_OK):
                         self.reportsFolder = os.path.join(_dir, self.initialReportsFolder)
-                    else: # a temp directory
-                        self.reportsFolder = tempfile.mkdtemp(prefix="EdgarRenderer_") # Mac or Windows temp directory
+                    else:  # a temp directory
+                        self.reportsFolder = tempfile.mkdtemp(prefix="EdgarRenderer_")  # Mac or Windows temp directory
             IoManager.handleFolder(self, self.reportsFolder, True, self.totalClean)
-        self.renderedFiles = report.renderedFiles # report-level rendered files
+        self.renderedFiles = report.renderedFiles  # report-level rendered files
         RefManager.RefManager(self.resourcesFolder).loadAddedUrls(modelXbrl, self)  # do this after validation.
         self.loopnum += 1
         try:
-            if success or not self.noRenderingWithError: # no instance errors from prior validation workflow
+            if success or not self.noRenderingWithError:  # no instance errors from prior validation workflow
                 # recheck for errors
                 if (stripExhibitOnError and sum(1 for e in modelXbrl.errors if isinstance(e, str)) > 0):
                     success = False
@@ -829,7 +829,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                     doc = ixdsHtmlRootElt.modelDocument
                     hasIdAssignedFact = False
                     for e in ixdsHtmlRootElt.iter(doc.ixNStag + "nonNumeric", doc.ixNStag + "nonFraction", doc.ixNStag + "fraction"):
-                        if getattr(e, "xValid", 0) >= VALID and not e.id: # id is optional on facts but required for ixviewer-plus and arelle inline viewers
+                        if getattr(e, "xValid", 0) >= VALID and not e.id:  # id is optional on facts but required for ixviewer-plus and arelle inline viewers
                             id = f"ixv-{e.objectIndex}"
                             if id in doc.idObjects or id in modelXbrl.ixdsEltById:
                                 for i in range(1000):
@@ -842,10 +842,10 @@ class EdgarRenderer(Cntlr.Cntlr):
                             modelXbrl.ixdsEltById[id] = e
                             hasIdAssignedFact = True
                     if (hasIdAssignedFact or self.isWorkstationFirstPass) and self.reportsFolder:
-                        self.cntlr.editedIxDocs[doc.basename] = doc # causes it to be rewritten out
+                        self.cntlr.editedIxDocs[doc.basename] = doc  # causes it to be rewritten out
                         self.cntlr.editedModelXbrls.add(modelXbrl)
         except Utils.RenderingException as ex:
-            success = False # error message provided at source where exception was raised
+            success = False  # error message provided at source where exception was raised
             self.logDebug(_("RenderingException after {} validation errors: {}").format(errorCountDuringValidation, ex))
         except Exception as ex:
             success = False
@@ -867,15 +867,15 @@ class EdgarRenderer(Cntlr.Cntlr):
                 if Utils.isImageFilename(reportedFile):
                     self.supplementalFileList.append(reportedFile)
                     self.supplementList.append(reportedFile)
-                #elif reportedFile.endswith(".htm"): # the non-inline primary document isn't known to Arelle yet in EDGAR
+                # elif reportedFile.endswith(".htm"): # the non-inline primary document isn't known to Arelle yet in EDGAR
                 #    self.inlineList.append(reportedFile)
                 elif reportedFile not in report.basenames:
                     self.otherXbrlList.append(reportedFile)
-        self.renderedFiles = filing.renderedFiles # filing-level rendered files
+        self.renderedFiles = filing.renderedFiles  # filing-level rendered files
         if not success:
             if stripExhibitOnError:
-                filing.reports.remove(report) # remove stripped report from filing (so it won't be in zip)
-                filing.strippedFiles[attachmentDocumentType] |= report.reportedFiles # strip files not referenced from unstripped reports
+                filing.reports.remove(report)  # remove stripped report from filing (so it won't be in zip)
+                filing.strippedFiles[attachmentDocumentType] |= report.reportedFiles  # strip files not referenced from unstripped reports
             else:
                 self.success = False
         # remove any inline invalid facts, assign and note if any missing IDs
@@ -900,10 +900,10 @@ class EdgarRenderer(Cntlr.Cntlr):
                     else:
                         e.tag = "{http://www.w3.org/1999/xhtml}span"
                     hasEditedFact = True
-            for e in elementsToRemove: # remove ix hidden invalid elements
+            for e in elementsToRemove:  # remove ix hidden invalid elements
                 e.getparent().remove(e)
             if hasEditedFact:
-                self.cntlr.editedIxDocs[doc.basename] = doc # causes it to be rewritten out
+                self.cntlr.editedIxDocs[doc.basename] = doc  # causes it to be rewritten out
             if getattr(doc, "securityClassification", None):
                 # note for SBSEF confidential reports have only one ix doc so whole report is treated confidential
                 report.securityClassification = doc.securityClassification
@@ -922,7 +922,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                         r"\$\((\w+)\)", r"%(\1)s", msgElt.text.strip())
             except Exception as ex:
                 self.logDebug(_("Exception loading logMessageText file, traceback: {}").format(traceback.format_exception(*sys.exc_info())))
-                self.logMessageText.clear() # don't leave possibly erroneous messages text entries
+                self.logMessageText.clear()  # don't leave possibly erroneous messages text entries
 
     def formatLogMessage(self, logRec):
         logHandler = self.cntlr.logHandler
@@ -931,21 +931,21 @@ class EdgarRenderer(Cntlr.Cntlr):
             href = ref.get("href")
             if href:
                 fileLines[href.partition("#")[0]].add(ref.get("sourceLine", 0))
-        _text = logHandler.format(logRec) # sets logRec.file
+        _text = logHandler.format(logRec)  # sets logRec.file
         if hasattr(logHandler.formatter, "fileLines"):
             _fileLines = logHandler.formatter.fileLines(logRec)
             if _fileLines:
-                _text += " - " + _fileLines # default if no {refSources} or other in the ArelleMessagesText
+                _text += " - " + _fileLines  # default if no {refSources} or other in the ArelleMessagesText
         try:
             # try edgarCode and if not there, try messageCode
-            if isinstance(logRec.args,dict) and logRec.args.get("edgarCode") in self.logMessageText:
+            if isinstance(logRec.args, dict) and logRec.args.get("edgarCode") in self.logMessageText:
                 _msgText = self.logMessageText[logRec.args.get("edgarCode")]
             elif logRec.messageCode in self.logMessageText:
                 _msgText = self.logMessageText[logRec.messageCode]
             else:
                 return _text
-            _msgParams = logParamEscapePattern.findall(_msgText) # finds all parameters
-            _msgArgs = logRec.args.copy() # duplicate functinoality of ArelleMessageWrapper.java
+            _msgParams = logParamEscapePattern.findall(_msgText)  # finds all parameters
+            _msgArgs = logRec.args.copy()  # duplicate functinoality of ArelleMessageWrapper.java
             _refNum = 0
             _fileLines = defaultdict(set)
             for _ref in logRec.refs:
@@ -962,7 +962,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                                 _msgArgs["refLine"] = _sourceLine
                         else:
                             _source = _fileName
-                        if "refSource" not in _msgArgs: # first only
+                        if "refSource" not in _msgArgs:  # first only
                             _msgArgs["refSource"] = _source
                             _msgArgs["refUrl"] = _fileName
                         else:
@@ -974,12 +974,12 @@ class EdgarRenderer(Cntlr.Cntlr):
                         _fileLines[_fileName].add(_sourceLine)
             if logRec.refs:
                 _msgArgs["refSources"] = Cntlr.logRefsFileLines(logRec.refs)
-            _text = logParamEscapePattern.sub(r"{\1}", # substitute java {{x} into py {{x}}} but leave {{x}} as it was
+            _text = logParamEscapePattern.sub(r"{\1}",  # substitute java {{x} into py {{x}}} but leave {{x}} as it was
                     _msgText
-                    ).format(**_msgArgs) # now uses {...} parameters in arelleMessagesText
+                    ).format(**_msgArgs)  # now uses {...} parameters in arelleMessagesText
         except KeyError:
-            pass # not replacable messageCode or a %(xxx)s format arg was not in the logRec arcs or it's a $() java function reference
-        except ValueError as err: # error inn { ... } parameters specification
+            pass  # not replacable messageCode or a %(xxx)s format arg was not in the logRec arcs or it's a $() java function reference
+        except ValueError as err:  # error inn { ... } parameters specification
             self.logDebug("Message format string error {} in string {}".format(err, logRec.messageCode))
         return _text
 
@@ -987,7 +987,7 @@ class EdgarRenderer(Cntlr.Cntlr):
         summary_transform = etree.XSLT(etree.parse(xsltFile))
         trargs = {"asPage": etree.XSLT.strparam('true'),
                   "accessionNumber": "'{}'".format(getattr(filing, "accessionNumber", "")),
-                  "resourcesFolder": "'{}'".format(self.resourcesFolder.replace("\\","/")),
+                  "resourcesFolder": "'{}'".format(self.resourcesFolder.replace("\\", "/")),
                   "processXsltInBrowser": etree.XSLT.strparam(str(self.processXsltInBrowser).lower()),
                   "includeLogs": etree.XSLT.strparam(str(includeLogs).lower()),
                   "includeExcel": etree.XSLT.strparam("true" if (self.excelXslt) else "false")}
@@ -999,14 +999,13 @@ class EdgarRenderer(Cntlr.Cntlr):
     def filingEnd(self, cntlr, options, filesource, filing, sourceZipStream=None, *args, **kwargs):
         # note that filesource is None if there were no instances
         if self.abortedDueToMajorError:
-            self.success = False # major errors detected
+            self.success = False  # major errors detected
 
         # logMessageText needed for successful and unsuccessful termination
         self.loadLogMessageText()
 
         # iXBRLViewer plugin is present if there's a generate method
         generateiXBRLViewerStub = iXBRLViewerInterface.hasIXBRLViewerPlugin(cntlr) and options.iXBRLViewerStub
-
 
         # GUI operation with redact or redline present requires dissem outputs without new suffixes
         privateFilesNotDisseminated = set()
@@ -1024,7 +1023,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                 publicRefDocs |= report.reportedFiles
         strippedFiles = set()
         for s in filing.strippedFiles.values():
-            s -= publicRefDocs # don't strip files which are still referenced by unstripped public reports
+            s -= publicRefDocs  # don't strip files which are still referenced by unstripped public reports
             strippedFiles |= s
         privateFilesNotDisseminated |= privateRefDocs - publicRefDocs
         hasPrivateData = bool(cntlr.redactTgtElts) or bool(cntlr.redlineIxDocs) or bool(privateFilesNotDisseminated)
@@ -1043,20 +1042,21 @@ class EdgarRenderer(Cntlr.Cntlr):
                         reportXsltDissem = None
                     self.logDebug("Excel XSLT transform {:.3f} secs.".format(time.time() - _xsltStartedAt))
                 # R files can be produced after knowing if any instance had private data
-                self.nextFileNum = 1 # important for naming file numbers for multi-instance filings
+                self.nextFileNum = 1  # important for naming file numbers for multi-instance filings
                 self.nextUncategorizedFileNum = 9999
                 self.nextBarChartFileNum = 0
-                rFilePrefix="Private" if hasPrivateData and self.isWorkstationFirstPass else None
+                rFilePrefix = "Private" if hasPrivateData and self.isWorkstationFirstPass else None
                 targetDocumentSuffix = ("_ht2." if hasPrivateData else "_ht1.") if self.isWorkstationFirstPass else "_htm."
                 for report in filing.reports:
-                    Inline.saveTargetDocumentIfNeeded(self, options, report.modelXbrl, filing, suffix=targetDocumentSuffix) # save extracted xml from inline reports
-                    Filing.mainFun(self, report.modelXbrl, self.reportsFolder, transform=reportXslt, rFilePrefix=rFilePrefix) # dissem suffix
+                    Inline.saveTargetDocumentIfNeeded(self, options, report.modelXbrl, filing, suffix=targetDocumentSuffix)  # save extracted xml from inline reports
+                    Filing.mainFun(self, report.modelXbrl, self.reportsFolder, transform=reportXslt, rFilePrefix=rFilePrefix)  # dissem suffix
                 if self.xlWriter and self.hasXlout:
                     _startedAt = time.time()
                     self.xlWriter.save()
                     self.xlWriter.close()
                     self.xlWriter = None
                     self.logDebug("Excel saving complete {:.3f} secs.".format(time.time() - _startedAt))
+
                 def copyResourceToReportFolder(filename):
                     source = join(self.resourcesFolder, filename)
                     if self.reportZip:
@@ -1066,8 +1066,9 @@ class EdgarRenderer(Cntlr.Cntlr):
                         if not exists(target) and filesource is not None:
                             os.makedirs(self.reportsFolder, exist_ok=True)
                             file = filesource.file(source, binary=True)[0]  # returned in a tuple
-                            filing.writeFile(target, file.read()) # shutil.copyfile(source, target)
+                            filing.writeFile(target, file.read())  # shutil.copyfile(source, target)
                             self.renderedFiles.add(filename)
+
                 _startedAt = time.time()
                 if 'html' in (self.reportFormat or "").casefold() or self.summaryXslt is not None:
                     copyResourceToReportFolder("Show.js")
@@ -1086,11 +1087,11 @@ class EdgarRenderer(Cntlr.Cntlr):
                     uncloseSelfClosedTags(doc)
                     if filename not in inputsToCopyToOutputList and filename not in strippedFiles:
                         inputsToCopyToOutputList.append(filename)
-                if inputsToCopyToOutputList and filing.entrypointfiles: # filesource will be not None
+                if inputsToCopyToOutputList and filing.entrypointfiles:  # filesource will be not None
                     # any redline containing files will still have the redline markups, as these files are for workstation or GUI viewing
                     _xbrldir = os.path.dirname(filing.entrypointfiles[0]["file"].partition('#')[0])  # strip any # or IXDS suffix
                     # files to copy are in zip archive
-                    for filename in set(inputsToCopyToOutputList): # set() to deduplicate if multiple references
+                    for filename in set(inputsToCopyToOutputList):  # set() to deduplicate if multiple references
                         _filepath = os.path.join(_xbrldir, filename)
                         if filename in cntlr.editedIxDocs:
                             serializedDoc = serializeXml(cntlr.editedIxDocs[filename].xmlRootElement)
@@ -1108,7 +1109,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                             if filesource.isArchive and filesource.baseurl == _xbrldir:
                                 # filename may not include parent directories within the zip
                                 for f in filesource.dir:
-                                    if f.endswith(filename): # use this dir in the zip
+                                    if f.endswith(filename):  # use this dir in the zip
                                         _filepath = os.path.join(_xbrldir, f)
                                         break
                             with filesource.file(_filepath, binary=True)[0] as fout:  # returned in a tuple
@@ -1125,10 +1126,10 @@ class EdgarRenderer(Cntlr.Cntlr):
 
                 # temporary work-around to create SDR summaryDict
                 if not self.sourceDict and any(
-                        report.deiDocumentType # HF: believe condition wrong: and report.documentType.endswith(" SDR")
-                        for report in filing.reports): # filesource will not be None
+                        report.deiDocumentType  # HF: believe condition wrong: and report.documentType.endswith(" SDR")
+                        for report in filing.reports):  # filesource will not be None
                     for report in filing.reports:
-                        for i, basename in enumerate(report.basenames): # has multiple entries for multi-document IXDS
+                        for i, basename in enumerate(report.basenames):  # has multiple entries for multi-document IXDS
                             filepath = report.filepaths[i]
                             if report.isInline:
                                 self.sourceDict[basename] = (report.deiDocumentType, basename)
@@ -1154,7 +1155,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                         dissemReportsFolder = os.path.join(self.reportsFolder, "dissem")
                         os.makedirs(dissemReportsFolder, exist_ok=True)
                     if dissemReportsFolder:
-                        redactTgtElts = dict((c.id, c) for c in cntlr.redactTgtElts) # id's assigned during report processing but not necessarily available at load time
+                        redactTgtElts = dict((c.id, c) for c in cntlr.redactTgtElts)  # id's assigned during report processing but not necessarily available at load time
                         removableCntxs = set()
                         removableUnits = set()
                         hasRedactedContinuation = False
@@ -1163,7 +1164,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                         for f in redactTgtElts.values():
                             if isinstance(f, ModelFact):
                                 if f.id in redactTgtElts:
-                                    f.xValid = NONE # take out of active model
+                                    f.xValid = NONE  # take out of active model
                                     removableCntxs.add(f.context)
                                     if f.unit is not None:
                                         removableUnits.add(f.unit)
@@ -1174,12 +1175,12 @@ class EdgarRenderer(Cntlr.Cntlr):
                             modelXbrl = report.modelXbrl
                             report.redactedContinuationSources = redactedContinuationSources = set()
                             # bypass continuedAt's to redacted elements
-                            if redactTgtElts: # if any redacted continued at elements
+                            if redactTgtElts:  # if any redacted continued at elements
                                 for ixdsHtmlRootElt in getattr(modelXbrl, "ixdsHtmlElements", ()):
                                     hasEditedCont = False
                                     for e in ixdsHtmlRootElt.getroottree().iterfind(".//{http://www.xbrl.org/2013/inlineXBRL}*[@continuedAt]"):
                                         contAt = e.get("continuedAt", None)
-                                        while contAt in redactTgtElts: # may be multiple continuations in redacted sections
+                                        while contAt in redactTgtElts:  # may be multiple continuations in redacted sections
                                             nextContAtElt = redactTgtElts[contAt]
                                             if nextContAtElt is not None:
                                                 contAt = nextContAtElt.get("continuedAt")
@@ -1202,26 +1203,26 @@ class EdgarRenderer(Cntlr.Cntlr):
                                             hasEditedCont = True
                                             for refsAttr in ("fromRefs", "toRefs"):
                                                 refs = (ref for refs in e.get(refsAttr) if ref not in cntlr.redactTgtElts)
-                                                if refs: # any refs remain
+                                                if refs:  # any refs remain
                                                     e.set(' '.join(refs))
                                                 else:
-                                                    e.getparent().remove(e) # remove this relationship
+                                                    e.getparent().remove(e)  # remove this relationship
                                                     break
-                                    if removableCntxs: # check for orphaned contexts
+                                    if removableCntxs:  # check for orphaned contexts
                                         for e in ixdsHtmlRootElt.iter("{http://www.xbrl.org/2003/instance}context"):
                                             if e in removableCntxs and not any((f.id not in redactTgtElts) for f in modelXbrl.facts if isinstance(f, ModelFact) and f.context == e):
-                                                e.getparent().remove(e) # remove this context
+                                                e.getparent().remove(e)  # remove this context
                                                 e.modelXbrl.contexts.pop(e.id, None)
                                                 hasEditedCont = True
-                                    if removableUnits: # check for orphaned units
+                                    if removableUnits:  # check for orphaned units
                                         for e in ixdsHtmlRootElt.iter("{http://www.xbrl.org/2003/instance}unit"):
                                             if e in removableUnits and not any((f.id not in redactTgtElts) for f in modelXbrl.facts if isinstance(f, ModelFact) and f.unit == e):
-                                                e.getparent().remove(e) # remove this context
+                                                e.getparent().remove(e)  # remove this context
                                                 e.modelXbrl.units.pop(e.id, None)
                                                 hasEditedCont = True
                                     if hasEditedCont:
                                         doc = ixdsHtmlRootElt.modelDocument
-                                        cntlr.redlineIxDocs[doc.basename] = doc # causes it to be rewritten out
+                                        cntlr.redlineIxDocs[doc.basename] = doc  # causes it to be rewritten out
                                         cntlr.editedModelXbrls.add(report.modelXbrl)
                                         revalidateXbrl = True
                             if redactTgtEltContent:
@@ -1250,23 +1251,23 @@ class EdgarRenderer(Cntlr.Cntlr):
                         for reportedFile, doc in cntlr.redlineIxDocs.items():
                             edgarRendererRemoveRedlining(doc)
                             uncloseSelfClosedTags(doc)
-                            cntlr.editedIxDocs[reportedFile] = doc # add to editedIxDocs for output in dissem zip and dissem folder
+                            cntlr.editedIxDocs[reportedFile] = doc  # add to editedIxDocs for output in dissem zip and dissem folder
                         for report in filing.reports:
                             modelXbrl = report.modelXbrl
                             # rebuild redacted continuation chains
                             if hasRedactedContinuation:
                                 for f in modelXbrl.facts:
                                     if (f.get("continuedAt") or f in report.redactedContinuationSources) and hasattr(f, "_ixValue") and f.xValid >= VALID:
-                                        del f._ixValue # force rebuilding continuation chain value
+                                        del f._ixValue  # force rebuilding continuation chain value
                                         f.xValid = UNVALIDATED
                                         xmlValidate(f.modelXbrl, f, ixFacts=True)
                                 for rel in modelXbrl.relationshipSet("XBRL-footnotes").modelRelationships:
                                     f = rel.toModelObject
                                     if isinstance(f, ModelInlineFootnote):
-                                        del f._ixValue # force rebuilding continuation chain value
+                                        del f._ixValue  # force rebuilding continuation chain value
                                         xmlValidate(f.modelXbrl, f, ixFacts=True)
                                 revalidateXbrl = True
-                            report.redactedContinuationSources.clear() # deref
+                            report.redactedContinuationSources.clear()  # deref
                         if cntlr.redlineIxDocs:
                             self.logInfo(f"Revalidating xhtml{', xbrl and EFM ' if revalidateXbrl else ' '}after redline removal or redaction")
                         for report in filing.reports:
@@ -1285,7 +1286,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                         self.logDebug("RenderingLogs XSLT transform {:.3f} secs.".format(time.time() - _startedAt))
                         IoManager.writeHtmlDoc(filing, result, self.reportZip, self.reportsFolder, 'RenderingLogs.htm')
                         self.renderedFiles.add("RenderingLogs.htm")
-                    if self.summaryXslt and len(self.summaryXslt) > 0 :
+                    if self.summaryXslt and len(self.summaryXslt) > 0:
                         _startedAt = time.time()
                         self.transformFilingSummary(filing, rootETree, self.summaryXslt, self.reportsFolder,
                                                     "PrivateFilingSummary.htm" if hasPrivateData and self.isWorkstationFirstPass else "FilingSummary.htm",
@@ -1333,7 +1334,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                             xbrlZip = zipfile.ZipFile(zipStream, 'w', zipfile.ZIP_DEFLATED, True)
                             for report in filing.reports:
                                 if not getattr(report, "isNotDisseminated", False):
-                                    for filepath in report.filepaths: # may be multi-document IXDS (even in different directories)
+                                    for filepath in report.filepaths:  # may be multi-document IXDS (even in different directories)
                                         _xbrldir = os.path.dirname(filepath)
                                         for reportedFile in sorted(report.reportedFiles):
                                             if reportedFile not in xbrlZip.namelist():
@@ -1377,11 +1378,11 @@ class EdgarRenderer(Cntlr.Cntlr):
                             else:
                                 dissemFilePath = join(dissemReportsFolder, reportedFile) + dissemSuffix
                                 filing.writeFile(dissemFilePath, ix)
-                                if self.isWorkstationFirstPass: # save redacted as .ht1 for workstation
+                                if self.isWorkstationFirstPass:  # save redacted as .ht1 for workstation
                                     filePath = join(self.reportsFolder, reportedFile).replace(".htm", "_ix1.htm")
                                     filing.writeFile(filePath, ix)
-                            ix = None # dereference
-                    if self.isWorkstationFirstPass: # mark file for deleting from dissemination in workstation
+                            ix = None  # dereference
+                    if self.isWorkstationFirstPass:  # mark file for deleting from dissemination in workstation
                         for reportedFile in (privateFilesNotDisseminated | strippedFiles):
                             if self.reportZip:
                                 self.reportZip.writestr("dissem/" + reportedFile + ".delete", b"")
@@ -1403,9 +1404,9 @@ class EdgarRenderer(Cntlr.Cntlr):
                         modelXbrl = report.modelXbrl
                         if modelXbrl in cntlr.editedModelXbrls:
                             if not getattr(report, "isNotDisseminated", False):
-                                if self.isWorkstationFirstPass: # save redacted as .ht1 for workstation
+                                if self.isWorkstationFirstPass:  # save redacted as .ht1 for workstation
                                     Inline.saveTargetDocumentIfNeeded(self, options, modelXbrl, filing, suffix="_ht1.")
-                                    Inline.saveTargetDocumentIfNeeded(self, options, modelXbrl, filing) # EDGAR dissemination file goes in report folder so it gets into EDGAR database
+                                    Inline.saveTargetDocumentIfNeeded(self, options, modelXbrl, filing)  # EDGAR dissemination file goes in report folder so it gets into EDGAR database
                                 else:
                                     Inline.saveTargetDocumentIfNeeded(self, options, modelXbrl, filing, altFolder=dissemReportsFolder, suplSuffix=dissemSuffix, zipDir="dissem/")
                         elif hasattr(modelXbrl, "ixTargetFilename"):
@@ -1423,7 +1424,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                                 if filesource.isArchive and filesource.baseurl == _xbrldir:
                                     # filename may not include parent directories within the zip
                                     for f in filesource.dir:
-                                        if f.endswith(filename): # use this dir in the zip
+                                        if f.endswith(filename):  # use this dir in the zip
                                             _filepath = os.path.join(_xbrldir, f)
                                             break
                                 with filesource.file(_filepath, binary=True)[0] as fout:  # returned in a tuple
@@ -1435,11 +1436,10 @@ class EdgarRenderer(Cntlr.Cntlr):
                             else:
                                 filing.writeFile(os.path.join(dissemReportsFolder, basename), serializedDoc)
 
-
                     # reissue R files and excel after validation
                     if hasPrivateData:
                         # dissemination and Arelle GUI redacted R file
-                        self.nextFileNum = 1 # important for naming file numbers for multi-instance filings
+                        self.nextFileNum = 1  # important for naming file numbers for multi-instance filings
                         self.nextUncategorizedFileNum = 9999
                         self.nextBarChartFileNum = 0
                         self.instanceSummaryList = []
@@ -1447,16 +1447,16 @@ class EdgarRenderer(Cntlr.Cntlr):
                         for report in filing.reports:
                             if not getattr(report, "isNotDisseminated", False):
                                 if self.isWorkstationFirstPass:
-                                    Filing.mainFun(self, report.modelXbrl, dissemReportsFolder, transform=reportXsltDissem, suplSuffix=dissemSuffix, # dissem suffix, Arelle GUI
-                                                   altFolder=self.reportsFolder, altTransform=reportXslt) # workstation redacted R file
-                                else: # Arelle GUI operation
-                                    Filing.mainFun(self, report.modelXbrl, dissemReportsFolder, transform=reportXslt, zipDir="dissem/") # no suffix, Arelle GUI
+                                    Filing.mainFun(self, report.modelXbrl, dissemReportsFolder, transform=reportXsltDissem, suplSuffix=dissemSuffix,  # dissem suffix, Arelle GUI
+                                                   altFolder=self.reportsFolder, altTransform=reportXslt)  # workstation redacted R file
+                                else:  # Arelle GUI operation
+                                    Filing.mainFun(self, report.modelXbrl, dissemReportsFolder, transform=reportXslt, zipDir="dissem/")  # no suffix, Arelle GUI
                                 numDisseminatedReports += 1
                         summary = Summary.Summary(self)
                         rootETree = summary.buildSummaryETree()
-                        summary.removeSummaryLogs() # produce filing summary without logs
+                        summary.removeSummaryLogs()  # produce filing summary without logs
                         if numDisseminatedReports > 0:
-                            if self.isWorkstationFirstPass: # workstation needs redacted filing summary
+                            if self.isWorkstationFirstPass:  # workstation needs redacted filing summary
                                 IoManager.writeXmlDoc(filing, rootETree, self.reportZip, self.reportsFolder, 'FilingSummary.xml')
                                 if self.summaryXslt:
                                     self.transformFilingSummary(filing, rootETree, self.summaryXslt, self.reportsFolder, "FilingSummary.htm", True, "Public Filing Data")
@@ -1464,7 +1464,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                                 IoManager.writeXmlDoc(filing, rootETree, self.reportZip, dissemReportsFolder, 'FilingSummary.xml' + dissemSuffix, zipDir="dissem/")
                                 if self.summaryXslt:
                                     self.transformFilingSummary(filing, rootETree, self.summaryXslt, dissemReportsFolder, "FilingSummary.htm" + dissemSuffix, True, "Public Filing Data", zipDir="dissem/")
-                        elif self.isWorkstationFirstPass: # redact filing summary
+                        elif self.isWorkstationFirstPass:  # redact filing summary
                             filing.writeFile(join(dissemReportsFolder, "FilingSummary.xml.delete"), b"")
                         if self.hasXlout:
                             if self.xlWriter and numDisseminatedReports > 0:
@@ -1473,7 +1473,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                                 self.xlWriter.close()
                                 self.xlWriter = None
                                 self.logDebug("Excel saving complete {:.3f} secs.".format(time.time() - _startedAt))
-                            elif self.isWorkstationFirstPass: # remove first pass excel report
+                            elif self.isWorkstationFirstPass:  # remove first pass excel report
                                 filing.writeFile(join(dissemReportsFolder, "Financial_Report.xlsx.delete"), b"")
                         # generate supplemental AllReports and other such outputs at this time
                         for supplReport in pluginClassMethods("EdgarRenderer.FilingEnd.SupplementalReport"):
@@ -1490,7 +1490,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                             self.logDebug("Write meta files for dissemination complete")
                     elif self.isWorkstationFirstPass:
                         if len(filing.reports) >= 1:
-                            summary.removeSummaryLogs() # produce filing summary without logs
+                            summary.removeSummaryLogs()  # produce filing summary without logs
                             IoManager.writeXmlDoc(filing, rootETree, self.reportZip, dissemReportsFolder, 'FilingSummary.xml' + dissemSuffix, zipDir="dissem/")
                         else:
                             # remove filing summary
@@ -1498,29 +1498,29 @@ class EdgarRenderer(Cntlr.Cntlr):
                 if "EdgarRenderer/__init__.py#filingEnd" in filing.arelleUnitTests:
                     raise arelle.PythonUtil.pyNamedObject(filing.arelleUnitTests["EdgarRenderer/__init__.py#filingEnd"], "EdgarRenderer/__init__.py#filingEnd")
 
-                if self.isDaemon: # save file in Archives
+                if self.isDaemon:  # save file in Archives
                     try:
                         if self.reportZip:
-                            self.reportZip.close() # must be closed before moving
-                        result = IoManager.move_clobbering_file(self.zipOutputFile, # remove -out from output zip
-                                                                os.path.join(self.deliveryFolder, os.path.basename(self.zipOutputFile)[:-8] + ".zip") )
+                            self.reportZip.close()  # must be closed before moving
+                        result = IoManager.move_clobbering_file(self.zipOutputFile,  # remove -out from output zip
+                                                                os.path.join(self.deliveryFolder, os.path.basename(self.zipOutputFile)[:-8] + ".zip"))
                         IoManager.move_clobbering_file(options.entrypointFile, self.doneFile)
                         if self.deleteProcessedFilings:
                             for folder in self.createdFolders:
-                                shutil.rmtree(folder,ignore_errors=True)
-                            del self.createdFolders[:] # prevent any other use of created folders
+                                shutil.rmtree(folder, ignore_errors=True)
+                            del self.createdFolders[:]  # prevent any other use of created folders
                         self.logDebug(_("Successfully post-processed to {}.").format(result))
                     except OSError as err:
-                        #self.logError(_(ErrorMgr.getError('POST_PROCESSING_ERROR').format(err)))
+                        # self.logError(_(ErrorMgr.getError('POST_PROCESSING_ERROR').format(err)))
                         self.logError(_("Failure: Post-processing I/O or OS error: {}").format(err))
                         self.success = False
             except Exception as ex:
                 action = "complete validation" if options.noReportOutput else "produce output"
                 self.logWarn(_("The rendering engine was unable to {} due to an internal error.  This is not considered an error in the filing.").format(action))
                 self.logDebug(_("Exception in filing end processing, traceback: {}").format(traceback.format_exception(*sys.exc_info())))
-                self.success = False # force postprocessingFailure
+                self.success = False  # force postprocessingFailure
 
-        cntlr.editedIxDocs.clear() # deref modelXbrls even if unsuccessful
+        cntlr.editedIxDocs.clear()  # deref modelXbrls even if unsuccessful
         cntlr.redlineIxDocs.clear()
         cntlr.editedModelXbrls.clear()
         cntlr.redactTgtElts.clear()
@@ -1534,7 +1534,7 @@ class EdgarRenderer(Cntlr.Cntlr):
         # close filesource (which may have been an archive), regardless of success above
         filesource.close()
 
-        if not self.success and self.isDaemon: # not successful
+        if not self.success and self.isDaemon:  # not successful
             self.postprocessFailure(filing.options)
 
     '''
@@ -1620,19 +1620,19 @@ class EdgarRenderer(Cntlr.Cntlr):
 
     def postprocessFailure(self, options):
         if self.isSingles:
-            #message = ErrorMgr.getError('CANNOT_PROCESS_INPUT_FILE').format(self.entrypoint)
+            # message = ErrorMgr.getError('CANNOT_PROCESS_INPUT_FILE').format(self.entrypoint)
             self.logError("Cannot process input file {}.".format(self.entrypoint), file=__file__ + ' postprocessFailure')
         else:
             try:
                 if self.reportZip:
-                    self.reportZip.close() # must be closed before moving
+                    self.reportZip.close()  # must be closed before moving
                 # In daemon mode, write an error log file looking somewhat like the one from RE2 and named the same.
                 # Separately, create a zero-length "fail file" for the sole purpose of signaling status.
                 if self.failFile is not None:
                     open(self.failFile, 'w').close()
                 errlogpath = join(self.deliveryFolder, os.path.basename(self.zipOutputFile)[:-8] + '_errorLog.txt')
                 if isfile(errlogpath): os.remove(errlogpath)
-                #self.logError(_(ErrorMgr.getError('CANNOT_PROCESS_ZIP_FILE')).format(options.entrypoint))
+                # self.logError(_(ErrorMgr.getError('CANNOT_PROCESS_ZIP_FILE')).format(options.entrypoint))
                 self.logDebug(_("Cannot process zip file {}; moving to fail folder.").format(options.entrypointFile))
                 IoManager.move_clobbering_file(options.entrypointFile, self.errorsFolder)
                 print(self.deliveryFolder + " " + errlogpath)
@@ -1643,27 +1643,24 @@ class EdgarRenderer(Cntlr.Cntlr):
                     '''
                     logHandler = self.cntlr.logHandler
                     logMessageText = self.logMessageText
-                    for logRec in getattr(logHandler, "logRecordBuffer", ()): # non buffered handlers don't keep log records (e.g., log to print handler)
+                    for logRec in getattr(logHandler, "logRecordBuffer", ()):  # non buffered handlers don't keep log records (e.g., log to print handler)
                         if logRec.levelno > logging.INFO:
                             print(self.formatLogMessage(logRec), file=f)
                     f.close()
 
-
             except OSError as err:
-                #self.logError(_(ErrorMgr.getError('POST_PROCESSING_ERROR').format(err)))
+                # self.logError(_(ErrorMgr.getError('POST_PROCESSING_ERROR').format(err)))
                 self.logError(_("Failure: Post-processing I/O or OS error: {}").format(err))
-
-
 
     def addToLog(self, message, messageArgs={}, messageCode='error', file=MODULENAME, level=logging.DEBUG):
         if self.entrypoint is not None and len(self.instanceList + self.inlineList) > 1:
-            message += ' --' + (self.entrypoint.url if isinstance(self.entrypoint,FileSource.FileSource) else self.entrypoint)
+            message += ' --' + (self.entrypoint.url if isinstance(self.entrypoint, FileSource.FileSource) else self.entrypoint)
         message = message.encode('utf-8', 'replace').decode('utf-8')
         if level >= logging.INFO:
             self.ErrorMsgs.append(Utils.Errmsg(messageCode, message))
 
         # dereference non-string messageArg values
-        messageArgs = dict((k,str(v)) for k,v in messageArgs.items())
+        messageArgs = dict((k, str(v)) for k, v in messageArgs.items())
 
         if (self.modelManager and getattr(self.modelManager, 'modelXbrl', None)):
             self.modelManager.modelXbrl.log(logging.getLevelName(level), messageCode, message, **messageArgs)
@@ -1690,44 +1687,55 @@ class EdgarRenderer(Cntlr.Cntlr):
     def logFatal(self, message, messageArgs={}, file=None, messageCode='fatal'):
         self.addToLog(str(message), messageArgs=messageArgs, file=None, level=logging.FATAL, messageCode=messageCode)
 
+
 def edgarRendererCheckIfDaemonStartup(cntlr, options, sourceZipStream=None, *args, **kwargs):
     """ starts up EdgarRenderer when run as a Deamon (no input files selected) """
     EdgarRenderer(cntlr).checkIfDaemonStartup(options)
-    iXBRLViewerInterface.hasIXBRLViewerPlugin(cntlr) # block iXBRLViewerPlugin actions if the plugin is utilized
+    iXBRLViewerInterface.hasIXBRLViewerPlugin(cntlr)  # block iXBRLViewerPlugin actions if the plugin is utilized
+
 
 def edgarRendererFilingStart(cntlr, options, entrypointFiles, filing, *args, **kwargs):
     """ prepares EdgarRenderer for a series of muiltple instances """
     EdgarRenderer(cntlr).filingStart(cntlr, options, entrypointFiles, filing)
 
+
 def edgarRendererXbrlRun(cntlr, options, modelXbrl, filing, report, *args, **kwargs):
     """ processes a single instance """
     filing.edgarRenderer.processInstance(options, modelXbrl, filing, report)
+
 
 def edgarRendererFilingEnd(cntlr, options, filesource, filing, *args, **kwargs):
     """ ends processing of a filing (after all intances have been processed) """
     filing.edgarRenderer.filingEnd(cntlr, options, filesource, filing, *args, **kwargs)
 
+
 def edgarRendererGuiViewMenuExtender(cntlr, viewMenu, *args, **kwargs):
     # persist menu selections for showing filing data and tables menu
-    from tkinter import Menu, BooleanVar # must only import if GUI present (no tkinter on GUI-less servers)
+    from tkinter import Menu, BooleanVar  # must only import if GUI present (no tkinter on GUI-less servers)
     erViewMenu = Menu(cntlr.menubar, tearoff=0)
     viewMenu.add_cascade(label=_("Edgar Renderer"), menu=erViewMenu, underline=0)
+
     def setShowFilingData(self, *args):
         cntlr.config["edgarRendererShowFilingData"] = cntlr.showFilingData.get()
         cntlr.saveConfig()
         erViewMenu.entryconfig("Show Redlining and Redactions", state="normal" if cntlr.showFilingData.get() else "disabled")
+
     def setRedlineMode(self, *args):
         cntlr.config["edgarRendererRedlineMode"] = cntlr.redlineMode.get()
         cntlr.saveConfig()
+
     def setShowTablesMenu(self, *args):
         cntlr.config["edgarRendererShowTablesMenu"] = cntlr.showTablesMenu.get()
         cntlr.saveConfig()
+
     def setValidateBeforeRendering(self, *args):
         cntlr.config["edgarRendererValidateBeforeRendering"] = cntlr.showTablesMenu.get()
         cntlr.saveConfig()
+
     def setShowiXBRLViewer(self, *args):
         cntlr.config["edgarRendererShowiXBRLViewer"] = cntlr.showiXBRLViewer.get()
         cntlr.saveConfig()
+
     cntlr.showFilingData = BooleanVar(value=cntlr.config.get("edgarRendererShowFilingData", True))
     cntlr.showFilingData.trace("w", setShowFilingData)
     erViewMenu.add_checkbutton(label=_("Show Filing Data"), underline=0, variable=cntlr.showFilingData, onvalue=True, offvalue=False)
@@ -1748,25 +1756,27 @@ def edgarRendererGuiViewMenuExtender(cntlr, viewMenu, *args, **kwargs):
     else:
         cntlr.showiXBRLViewer = BooleanVar(value=False)
 
+
 def edgarRendererGuiStartLogging(modelXbrl, mappedUri, normalizedUri, filepath, isEntry=False, namespace=None, **kwargs):
     """ start logging for EdgarRenderer when using GUI """
     if isEntry and modelXbrl.modelManager.cntlr.hasGui:
-        modelXbrl.modelManager.cntlr.logHandler.startLogBuffering() # accumulate validation and rendering warnings and errors
-    return False # called for class 'ModelDocument.IsPullLoadable'
+        modelXbrl.modelManager.cntlr.logHandler.startLogBuffering()  # accumulate validation and rendering warnings and errors
+    return False  # called for class 'ModelDocument.IsPullLoadable'
+
 
 def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
     """ run EdgarRenderer using GUI interactions for a single instance or testcases """
     if cntlr.hasGui and modelXbrl.modelDocument:
         from arelle.ValidateFilingText import referencedFiles
         parameters = modelXbrl.modelManager.formulaOptions.parameterValues
-        _combinedReports = not cntlr.showTablesMenu.get() # use mustard menu
+        _combinedReports = not cntlr.showTablesMenu.get()  # use mustard menu
         if "summaryXslt" in parameters and "reportXslt" in parameters:
             _reportXslt = parameters["reportXslt"][1]
             _summaryXslt = parameters["summaryXslt"][1]
             _ixRedline = "ixRedline" in parameters and parameters["ixRedline"][1] == "true"
         else:
-            _reportXslt =  ('InstanceReport.xslt', 'InstanceReportTable.xslt')[_combinedReports]
-            _summaryXslt = ('Summarize.xslt', '')[_combinedReports] # no FilingSummary.htm for Rall.htm production
+            _reportXslt = ('InstanceReport.xslt', 'InstanceReportTable.xslt')[_combinedReports]
+            _summaryXslt = ('Summarize.xslt', '')[_combinedReports]  # no FilingSummary.htm for Rall.htm production
             _ixRedline = cntlr.redlineMode.get()
         if not hasattr(cntlr, "editedIxDocs"):
             cntlr.editedIxDocs = {}
@@ -1779,51 +1789,51 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
         showViewer = cntlr.showFilingData.get() or cntlr.showiXBRLViewer.get()
         # may use GUI mode to process a single instance or test suite
         options = PythonUtil.attrdict(# simulate options that CntlrCmdLine provides
-            configFile = os.path.join(os.path.dirname(__file__), 'conf', 'config_for_instance.xml'),
-            renderingService = 'Instance',
-            reportFormat = "None" if isNonEFMorGFMinline else "Html", # for Rall temporarily override report format to force only xml file output
-            htmlReportFormat = None,
-            zipOutputFile = None,
-            sourceList = None, # after initialization this is an iterable string, not a None
-            internetConnectivity = None,
-            totalClean = True, # force clean output folder
-            noEquity = None,
-            auxMetadata = None,
-            copyInlineFilesToOutput = True, # needed for ixviewer
-            copyXbrlFilesToOutput = None,
-            zipXbrlFilesToOutput = None,
-            includeLogsInSummary = (True if "includeLogsInSummary" in parameters else
+            configFile=os.path.join(os.path.dirname(__file__), 'conf', 'config_for_instance.xml'),
+            renderingService='Instance',
+            reportFormat="None" if isNonEFMorGFMinline else "Html",  # for Rall temporarily override report format to force only xml file output
+            htmlReportFormat=None,
+            zipOutputFile=None,
+            sourceList=None,  # after initialization this is an iterable string, not a None
+            internetConnectivity=None,
+            totalClean=True,  # force clean output folder
+            noEquity=None,
+            auxMetadata=None,
+            copyInlineFilesToOutput=True,  # needed for ixviewer
+            copyXbrlFilesToOutput=None,
+            zipXbrlFilesToOutput=None,
+            includeLogsInSummary=(True if "includeLogsInSummary" in parameters else
                                     False if "noLogsInSummary" in parameters else
-                                    True), # default for GUI logger now validates with log buffer
-            includeLogsInSummaryDissem = True if "includeLogsInSummaryDissem" in parameters else False,
-            processXsltInBrowser = False, # both options can work with GUI, unsure about future browser XSLT support
-            saveTargetInstance = None,
-            saveTargetFiling = None,
-            deleteProcessedFilings = None,
-            debugMode = None,
-            validate = None,
-            utrValidate = None,
-            validateEFM = None,
-            abortOnMajorError = False, # inherited
-            noRenderingWithError = False,
-            processingFolder = None,
-            processInZip = None,
-            reportsFolder = "out" if showViewer else None, # default to reports subdirectory of source input
-            noReportOutput = None if showViewer else True,
-            reportInZip = None,
-            resourcesFolder = None,
-            reportXslt = _reportXslt,
-            reportXsltDissem = parameters["reportXsltDissem"][1] if "reportXsltDissem" in parameters else None,
-            summaryXslt = _summaryXslt,
-            summaryXsltDissem = parameters["summaryXslt"][1] if "summaryXslt" in parameters else None,
-            renderingLogsXslt = ('RenderingLogs.xslt', None)[_combinedReports],
-            excelXslt = ('InstanceReport_XmlWorkbook.xslt', None)[_combinedReports],
-            logMessageTextFile = None,
-            logFile = None, # from cntlrCmdLine but need to simulate for GUI operation
-            labelLang = cntlr.labelLang, # emulate cmd line labelLang
-            keepFilingOpen = True, # closed by CntrlWinMain
-            iXBRLViewerStub = cntlr.showiXBRLViewer.get(), # generates iXBRLViewerStub
-            confidentialityDocList = None, # not used for GUI operation
+                                    True),  # default for GUI logger now validates with log buffer
+            includeLogsInSummaryDissem=True if "includeLogsInSummaryDissem" in parameters else False,
+            processXsltInBrowser=False,  # both options can work with GUI, unsure about future browser XSLT support
+            saveTargetInstance=None,
+            saveTargetFiling=None,
+            deleteProcessedFilings=None,
+            debugMode=None,
+            validate=None,
+            utrValidate=None,
+            validateEFM=None,
+            abortOnMajorError=False,  # inherited
+            noRenderingWithError=False,
+            processingFolder=None,
+            processInZip=None,
+            reportsFolder="out" if showViewer else None,  # default to reports subdirectory of source input
+            noReportOutput=None if showViewer else True,
+            reportInZip=None,
+            resourcesFolder=None,
+            reportXslt=_reportXslt,
+            reportXsltDissem=parameters["reportXsltDissem"][1] if "reportXsltDissem" in parameters else None,
+            summaryXslt=_summaryXslt,
+            summaryXsltDissem=parameters["summaryXslt"][1] if "summaryXslt" in parameters else None,
+            renderingLogsXslt=('RenderingLogs.xslt', None)[_combinedReports],
+            excelXslt=('InstanceReport_XmlWorkbook.xslt', None)[_combinedReports],
+            logMessageTextFile=None,
+            logFile=None,  # from cntlrCmdLine but need to simulate for GUI operation
+            labelLang=cntlr.labelLang,  # emulate cmd line labelLang
+            keepFilingOpen=True,  # closed by CntrlWinMain
+            iXBRLViewerStub=cntlr.showiXBRLViewer.get(),  # generates iXBRLViewerStub
+            confidentialityDocList=None,  # not used for GUI operation
         )
         if modelXbrl.modelDocument.type in ModelDocument.Type.TESTCASETYPES:
             modelXbrl.efmOptions = options  # save options in testcase's modelXbrl
@@ -1842,29 +1852,32 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
                     if ixDoc.type == ModelDocument.Type.INLINEXBRL:
                         _ixdsFiles.append({"file":instanceModelDocument.uri})
                 entrypointFiles.append({"ixds":_ixdsFiles,
-                                        "file":instanceModelDocument.uri}) # for filingEnd to find directory
+                                        "file":instanceModelDocument.uri})  # for filingEnd to find directory
                 entrypointFiles.append({})
             else:
                 if instanceModelDocument.type == ModelDocument.Type.INLINEXBRL:
                     hasInlineReport = True
                 entrypointFiles.append({"file":instanceModelDocument.uri})
+
         def guiWriteFile(filepath, data):
             outdir = os.path.dirname(filepath)
-            if not os.path.exists(outdir): # may be a subdirectory of out dir
+            if not os.path.exists(outdir):  # may be a subdirectory of out dir
                 os.makedirs(outdir)
             with io.open(filepath, "wb" if isinstance(data, bytes) else "wt") as fh:
                 fh.write(data)
+
         def guiReadFile(filepath, binary):
             return modelXbrl.fileSource.file(filepath, binary)
-        filing = PythonUtil.attrdict( # simulate filing
-            filesource = modelXbrl.fileSource,
-            reportZip = None,
-            entrypointfiles = entrypointFiles,
-            renderedFiles = set(),
-            strippedFiles = defaultdict(set),
-            reports = reports,
-            hasInlineReport = hasInlineReport,
-            arelleUnitTests = {},
+
+        filing = PythonUtil.attrdict(# simulate filing
+            filesource=modelXbrl.fileSource,
+            reportZip=None,
+            entrypointfiles=entrypointFiles,
+            renderedFiles=set(),
+            strippedFiles=defaultdict(set),
+            reports=reports,
+            hasInlineReport=hasInlineReport,
+            arelleUnitTests={},
             writeFile=guiWriteFile,
             readFile=guiReadFile,
             exhibitTypesStrippingOnErrorPattern=kwargs.get("exhibitTypesStrippingOnErrorPattern"),
@@ -1884,6 +1897,7 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
                 reportedFiles.add(instanceModelDocument.basename)
             reportedFiles |= referencedFiles(instanceModelXbrl)
             sourceDir = instanceModelDocument.filepathdir
+
             def addRefDocs(doc):
                 if doc.type == ModelDocument.Type.INLINEXBRLDOCUMENTSET:
                     for ixDoc in doc.referencesDocument.keys():
@@ -1891,31 +1905,32 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
                             addRefDocs(ixDoc)
                 for refDoc in doc.referencesDocument.keys():
                     if refDoc.filepath and refDoc.filepath.startswith(sourceDir):
-                        reportedFile = refDoc.filepath[len(sourceDir)+1:]
+                        reportedFile = refDoc.filepath[len(sourceDir) + 1:]
                         if reportedFile not in reportedFiles:
                             reportedFiles.add(reportedFile)
                             addRefDocs(refDoc)
+
             addRefDocs(instanceModelDocument)
             instDocs = ([instanceModelDocument] if instanceModelDocument.type != ModelDocument.Type.INLINEXBRLDOCUMENTSET
-                        else [])+ [ixDoc
+                        else []) + [ixDoc
                                    for ixDoc in sorted(instanceModelDocument.referencesDocument.keys(), key=lambda d: d.objectIndex)
                                    if ixDoc.type == ModelDocument.Type.INLINEXBRL]
             uri = instanceModelDocument.uri
             if instanceModelDocument.type == ModelDocument.Type.INLINEXBRLDOCUMENTSET:
-                uri = instanceModelDocument.targetDocumentPreferredFilename.replace(".xbrl",".htm")
-            report = PythonUtil.attrdict( # simulate report
-                modelXbrl = instanceModelXbrl,
-                isInline = instanceModelDocument.type in (ModelDocument.Type.INLINEXBRL, ModelDocument.Type.INLINEXBRLDOCUMENTSET),
-                reportedFiles = reportedFiles,
-                renderedFiles = set(),
-                entryPoint = {"file": uri},
-                url = uri,
-                filepaths = [doc.filepath for doc in instDocs],
-                basenames = [doc.basename for doc in instDocs],
-                deiDocumentType = None
+                uri = instanceModelDocument.targetDocumentPreferredFilename.replace(".xbrl", ".htm")
+            report = PythonUtil.attrdict(# simulate report
+                modelXbrl=instanceModelXbrl,
+                isInline=instanceModelDocument.type in (ModelDocument.Type.INLINEXBRL, ModelDocument.Type.INLINEXBRLDOCUMENTSET),
+                reportedFiles=reportedFiles,
+                renderedFiles=set(),
+                entryPoint={"file": uri},
+                url=uri,
+                filepaths=[doc.filepath for doc in instDocs],
+                basenames=[doc.basename for doc in instDocs],
+                deiDocumentType=None
             )
             reports.append(report)
-            del instDocs # dereference
+            del instDocs  # dereference
             if "setReportAttrs" in kwargs:
                 kwargs["setReportAttrs"](report, instanceModelXbrl)
             if cntlr.validateBeforeRendering.get():
@@ -1928,7 +1943,7 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
         edgarRendererFilingEnd(cntlr, options, modelXbrl.fileSource, filing)
         if filing.get("hasPrivateFilesNotDisseminated", False):
             hasRedactOrRedlineElts = True
-        cntlr.logHandler.endLogBuffering() # block other GUI processes from using log buffer
+        cntlr.logHandler.endLogBuffering()  # block other GUI processes from using log buffer
         '''
         The usual "mustard menu" output uses jquery to locally load the R files.
         It does not seem to work in local browsers.
@@ -1976,14 +1991,14 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
                     _localhostDissem = LocalViewer.init(cntlr, reportsFolder + "/dissem")
                 import webbrowser
                 openingUrl = openingUrlDissem = None
-                if isNonEFMorGFMinline: # for non-EFM/GFM open ix viewer directly
+                if isNonEFMorGFMinline:  # for non-EFM/GFM open ix viewer directly
                     filingSummaryTree = etree.parse(os.path.join(edgarRenderer.reportsFolder, "FilingSummary.xml"))
                     for reportElt in filingSummaryTree.iter(tag="Report"):
                         if reportElt.get("instance"):
                             openingUrl = f"ix?doc=/{_localhost.rpartition('/')[2]}/{reportElt.get('instance')}&xbrl=true"
                             if hasRedactOrRedlineElts:
                                 openingUrlDissem = f"ix?doc=/{_localhostDissem.rpartition('/')[2]}{reportElt.get('instance')}&xbrl=true"
-                if not openingUrl: # open SEC Mustard Menu
+                if not openingUrl:  # open SEC Mustard Menu
                     openingUrl = ("FilingSummary.htm", "Rall.htm")[_combinedReports]
                     if hasRedactOrRedlineElts:
                         openingUrlDissem = ("FilingSummary.htm", "Rall.htm")[_combinedReports]
@@ -1995,6 +2010,8 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
                 if cntlr.showiXBRLViewer.get() and filing.hasInlineReport:
                     webbrowser.open(url="{}/ixbrlviewer.xhtml{}".format(_localhost,
                             "?redline=true" if (_ixRedline and hasRedactOrRedlineElts) else ""))
+
+
 def testcaseVariationExpectedSeverity(modelTestcaseVariation, *args, **kwargs):
     # allow severity to appear on any variation sub-element (such as result)
     _severity = XmlUtil.descendantAttr(modelTestcaseVariation, None, "error", "severity")
@@ -2002,16 +2019,20 @@ def testcaseVariationExpectedSeverity(modelTestcaseVariation, *args, **kwargs):
         return _severity.upper()
     return None
 
-def savesTargetInstance(*args, **kwargs): # EdgarRenderer implements its own target instance saver
+
+def savesTargetInstance(*args, **kwargs):  # EdgarRenderer implements its own target instance saver
     return True
 
+
 redliningPattern = re.compile(r"(.*;)?\s*-sec-ix-(redline|redact)\s*:\s*true(?:\s*;)?[\s;]*([\w.-].*)?$")
+
+
 def edgarRendererDetectRedlining(modelDocument, *args, **kwargs):
     cntlr = modelDocument.modelXbrl.modelManager.cntlr
     foundMatchInDoc = False
     if modelDocument.type == ModelDocument.Type.INLINEXBRL and (not cntlr.hasGui or cntlr.redlineMode.get()):
         for e in modelDocument.xmlRootElement.getroottree().iterfind(".//{http://www.w3.org/1999/xhtml}*[@style]"):
-            rlMatch = redliningPattern.match(e.get("style",""))
+            rlMatch = redliningPattern.match(e.get("style", ""))
             if rlMatch:
                 if not hasattr(cntlr, "editedIxDocs"):
                     cntlr.editedIxDocs = {}
@@ -2028,15 +2049,16 @@ def edgarRendererDetectRedlining(modelDocument, *args, **kwargs):
                     for c in e.iterancestors("{http://www.xbrl.org/2013/inlineXBRL}*"):
                         cntlr.redactTgtEltContent.add(c)
 
+
 def edgarRendererRemoveRedlining(modelDocument, *args, **kwargs):
     # strip redlining from modelDocument
     matchedElts = []
     for e in modelDocument.xmlRootElement.getroottree().iterfind(".//{http://www.w3.org/1999/xhtml}*[@style]"):
-        rlMatch = redliningPattern.match(e.get("style",""))
+        rlMatch = redliningPattern.match(e.get("style", ""))
         if rlMatch:
-            matchedElts.append(e) # can't prune tree while iterating through it
+            matchedElts.append(e)  # can't prune tree while iterating through it
     for e in matchedElts:
-        rlMatch = redliningPattern.match(e.get("style",""))
+        rlMatch = redliningPattern.match(e.get("style", ""))
         if rlMatch:
             isRedact = rlMatch.group(2) == "redact"
             cleanedStyle = (rlMatch.group(1) or "") + (rlMatch.group(3) or "")
@@ -2051,7 +2073,7 @@ def edgarRendererRemoveRedlining(modelDocument, *args, **kwargs):
                     if e0 is None:
                         e0 = e.getparent()
                         prop = "text"
-                    if not isRedact: # redline - move children to parent
+                    if not isRedact:  # redline - move children to parent
                         if e.text:
                             setattr(e0, prop, (getattr(e0, prop) or "") + e.text)
                         for eChild in e.getchildren():
@@ -2062,6 +2084,7 @@ def edgarRendererRemoveRedlining(modelDocument, *args, **kwargs):
                         setattr(e0, prop, (getattr(e0, prop) or "") + e.tail)
                     e.getparent().remove(e)
 
+
 __pluginInfo__ = {
     'name': 'Edgar Renderer',
     'version': VERSION,
@@ -2070,7 +2093,7 @@ __pluginInfo__ = {
     'author': 'U.S. SEC Employees and Mark V Systems Limited',
     'copyright': '(c) Portions by SEC Employees not subject to domestic copyright, otherwise (c) Copyright 2015 Mark V Systems Limited, All rights reserved.',
     'aliases': ('EdgarRenderer',),
-    'import': ('EDGAR/validate', 'inlineXbrlDocumentSet'), # import dependent modules
+    'import': ('EDGAR/validate', 'inlineXbrlDocumentSet'),  # import dependent modules
     # add Edgar Renderer options to command line & web service options
     'CntlrCmdLine.Options': edgarRendererCmdLineOptionExtender,
     # startup for Daemon mode (polls for filings folder's oldest input zip file)

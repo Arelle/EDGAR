@@ -21,7 +21,8 @@ SFile = 'FilingSummary' + ".xml"
 INSTANCE = arelle.ModelDocument.Type.INSTANCE
 INLINEXBRL = arelle.ModelDocument.Type.INLINEXBRL
 
-FilingSummaryCompletionMessage = "Write filing summary complete" # Marker for the end of previous rendering.
+FilingSummaryCompletionMessage = "Write filing summary complete"  # Marker for the end of previous rendering.
+
 
 def mergeCountDicts(iterable, dictAttribute=None, key=None):
     'Return a dictionary merged from a collection of dictionaries, with values summed.'
@@ -35,13 +36,14 @@ def mergeCountDicts(iterable, dictAttribute=None, key=None):
             if (key is None or k == key): newdict[k] += v
     return newdict
 
-def analyzeFactsInCubes(filing): # void
+
+def analyzeFactsInCubes(filing):  # void
     controller = filing.controller
     # run always (HF): if not controller.auxMetadata: return
     factCubeCount = controller.factCubeCount = defaultdict(lambda:0)
     factHasHtmlAnchor = controller.factHasHtmlAnchor = defaultdict(set)
     roleHasHtmlAnchor = controller.roleHasHtmlAnchor = defaultdict(set)
-    for role,cube in filing.cubeDict.items():
+    for role, cube in filing.cubeDict.items():
         for embedding in cube.embeddingList:
             report = embedding.report
             if report is None: continue
@@ -52,23 +54,23 @@ def analyzeFactsInCubes(filing): # void
                     if row.cellList[i] is None: continue
                     f = row.cellList[i].fact
                     if f is not None:
-                        factCubeCount[f] += 1 # count how many cubes each fact rendered in, for inline navigation.
+                        factCubeCount[f] += 1  # count how many cubes each fact rendered in, for inline navigation.
                         if f.concept.isTextBlock:
-                            for e in f.iter('*'): # for some reason iter('a') does not work.
-                                if e.localName=='a' and \
+                            for e in f.iter('*'):  # for some reason iter('a') does not work.
+                                if e.localName == 'a' and \
                                     not 'href' in e.attrib and \
                                     ('id' in e.attrib \
                                         or 'name' in e.attrib):
                                         atts = e.elementAttributesStr
-                                        roleHasHtmlAnchor[cube.linkroleUri].add((str(f.qname),f.contextID,f.xmlLang,atts))
-                                        factHasHtmlAnchor[f].add((f,cube,atts,e.sourceline))
+                                        roleHasHtmlAnchor[cube.linkroleUri].add((str(f.qname), f.contextID, f.xmlLang, atts))
+                                        factHasHtmlAnchor[f].add((f, cube, atts, e.sourceline))
     messages = []
     for s in factHasHtmlAnchor.values():
         for v in s:
             messages += [v]
-    for v in sorted(messages,key=lambda x: x[3]): # Messages should be ordered by line number in source doc.
-        (f,cube,atts,line) = v
-        filing.modelXbrl.debug("debug", # NOTE FOR INLINE IMPLEMENTATION should be cascade of error detected by XhtmlValidate.py
+    for v in sorted(messages, key=lambda x: x[3]):  # Messages should be ordered by line number in source doc.
+        (f, cube, atts, line) = v
+        filing.modelXbrl.debug("debug",  # NOTE FOR INLINE IMPLEMENTATION should be cascade of error detected by XhtmlValidate.py
                                _("Fact %(fact)s in context %(context)s "
                                  "in \"%(cube)s\" has an HTML anchor (%(anchor)s) that "
                                  "may restrict with usability of the Inline XBRL source document. "
@@ -76,17 +78,19 @@ def analyzeFactsInCubes(filing): # void
                                modelObject=f, fact=f.qname, context=f.contextID,
                                cube=cube.shortName, anchor=atts)
 
+
 class Summary(object):
     """The Summary object represents the FilingSummary.xml file, of which there only one.
     This is different than the InstanceSummary object, representing the summary information from
     one instance.  As of 10/2022 only Form SDR can multiple instances appear in a single FilingSummary.xml."""
+
     def __init__(self, controller):
         self.controller = controller
         self.rootETree = None
         self.eTreeLogsElement = None
         self.reportFormat = controller.reportFormat
         self.instanceSummaryList = controller.instanceSummaryList
-        self.reportsFolder = controller.reportsFolder # may be null when no optput is desired
+        self.reportsFolder = controller.reportsFolder  # may be null when no optput is desired
         self.summaryList = controller.instanceSummaryList
         self.entrypoint = controller.entrypoint
         summaries = self.instanceSummaryList
@@ -120,19 +124,19 @@ class Summary(object):
         for s in summaries:  # Uniquify the references across all instances
             qnameSet = qnameSet.union(s.qnameInUseSet)
             refSet = refSet.union(s.refSet)
-        self.elementCount = self.keyStandard+self.keyCustom
+        self.elementCount = self.keyStandard + self.keyCustom
         self.qnameSet = qnameSet
         self.refSet = refSet
         self.referencePositionDict = dict()
-        for i, r in enumerate(sorted(list(refSet))): # WcH 6/20/2016 stabilize output ordering.
+        for i, r in enumerate(sorted(list(refSet))):  # WcH 6/20/2016 stabilize output ordering.
             self.referencePositionDict[r] = i
-        self.edgarDocType = next((s.edgarDocType for s in summaries if bool(s.edgarDocType)),None)
+        self.edgarDocType = next((s.edgarDocType for s in summaries if bool(s.edgarDocType)), None)
         return
 
     @property
     def menuStyle(self):
         if self.hasRR: return 'RiskReturn'
-        if self.hasOef and self.edgarDocType is not None and re.match(r'485[AB]POS|485BXT|497|N-1A(/A)?',str(self.edgarDocType)):
+        if self.hasOef and self.edgarDocType is not None and re.match(r'485[AB]POS|485BXT|497|N-1A(/A)?', str(self.edgarDocType)):
             return 'RiskReturn'
         if self.hasVip: return 'Prospectus'
         if self.hasFeeExhibit: return 'FeeExhibit'
@@ -193,15 +197,15 @@ class Summary(object):
                 SubElement(logs, 'Log', type=errmsg.msgCode.title()).text = errmsg.msg
             '''
             numShownMessages = 0
-            _lastSummaryWritten = -1 # find the end of the last filing summary write operation.
-            _buffer = getattr(self.controller.cntlr.logHandler,"logRecordBuffer",[])
+            _lastSummaryWritten = -1  # find the end of the last filing summary write operation.
+            _buffer = getattr(self.controller.cntlr.logHandler, "logRecordBuffer", [])
             for i, logRec in enumerate(_buffer):
                 m = getattr(logRec, 'message', getattr(logRec, 'msg', ''))
 #                if len(m) == 0 or bool(re.match('.*complete.*',m)):
 #                    print("WHY not '"+m+"'")
                 if m == FilingSummaryCompletionMessage:
                     _lastSummaryWritten = i
-            for i, logRec in enumerate(_buffer): # non buffered handlers don't keep log records (e.g., log to print handler)
+            for i, logRec in enumerate(_buffer):  # non buffered handlers don't keep log records (e.g., log to print handler)
                 if i > _lastSummaryWritten and logRec.levelno > logging.INFO:
                     if numShownMessages == 0:
                         logs = SubElement(self.rootETree, 'Logs')
@@ -212,7 +216,7 @@ class Summary(object):
                     _text = self.controller.formatLogMessage(logRec)
                     SubElement(logs, 'Log', type=logRec.levelname.title()).text = _text
                     numShownMessages += 1
-                    self.eTreeLogsElement = logs # for removal on dissem pass if needed
+                    self.eTreeLogsElement = logs  # for removal on dissem pass if needed
 
         inputFilesEtree = SubElement(self.rootETree, 'InputFiles')
         inputFileList = []
@@ -225,12 +229,12 @@ class Summary(object):
             _modelXbrl = _filing.modelXbrl
             _filing.isDefinitelyFs = _filing.isDefinitelyFs or any(isStatement(r.longName) for r in summary.reportSummaryList)
             _filing.isDefinitelyNotFs = not _filing.isDefinitelyFs and _filing.isNcsr
-            #_displayUri = _modelXbrl.displayUri
-            #_uriDir = _modelXbrl.uriDir
+            # _displayUri = _modelXbrl.displayUri
+            # _uriDir = _modelXbrl.uriDir
             for k, v in summary.dts.items():
                 for rl, _files in v.items():
                     if k not in ['inline', 'instance'] and rl not in ['local']: continue
-                    for priDocFile in (True, False): # put primary document first (for multi-doc IXDS)
+                    for priDocFile in (True, False):  # put primary document first (for multi-doc IXDS)
                         for _file in _files:
                             _file = os.path.basename(_file)
                             if _file in inputFileList: continue
@@ -238,21 +242,21 @@ class Summary(object):
                             inputFileList.append(_file)
                             s = SubElement(inputFilesEtree, 'File')
                             s.text = _file
-                            if k in ['inline','instance']:
+                            if k in ['inline', 'instance']:
                                 # yes, a single .htm file can appear in more than one IXDS.
                                 if _edgarDocType is not None:
-                                    s.set('doctype',_edgarDocType)
+                                    s.set('doctype', _edgarDocType)
                                 elif _file in sourceDict and bool(sourceDict[_file][0]):
-                                    s.set('doctype',sourceDict[_file][0])
+                                    s.set('doctype', sourceDict[_file][0])
                                 else:
                                     # print('how did we get here? _file={}, sourceDict={}'.format(_file,sourceDict),file=sys.stderr)
-                                    s.set('doctype','(Source)')
-                                for p in ['isShr','isDefinitelyFs','isDefinitelyNotFs','isFeeExhibit',''
-                                                 ,'isIfrs','isN1a','isN2Prospectus','isN3N4N6','isNcsr'
-                                                 ,'isOEF','isOnlyDei','isProxy','isRR','isRRorOEF','isRxp'
-                                                 ,'isOnlyShr','isSdr','isUsgaap','isVip']: # isOnlyShr!!!  contains(.,'F-SR') or contains(.,'EX-26')])"/>
-                                    if getattr(_filing,p,False):
-                                        s.set(p,'true')
+                                    s.set('doctype', '(Source)')
+                                for p in ['isShr', 'isDefinitelyFs', 'isDefinitelyNotFs', 'isFeeExhibit', ''
+                                                 , 'isIfrs', 'isN1a', 'isN2Prospectus', 'isN3N4N6', 'isNcsr'
+                                                 , 'isOEF', 'isOnlyDei', 'isProxy', 'isRR', 'isRRorOEF', 'isRxp'
+                                                 , 'isOnlyShr', 'isSdr', 'isUsgaap', 'isVip']:  # isOnlyShr!!!  contains(.,'F-SR') or contains(.,'EX-26')])"/>
+                                    if getattr(_filing, p, False):
+                                        s.set(p, 'true')
                                 if _file in sourceDict and sourceDict[_file][1] is not None:
                                     s.set('original', os.path.basename(sourceDict[_file][1]))
                                 elif _file in self.controller.inlineList:
@@ -262,9 +266,9 @@ class Summary(object):
         for file in self.controller.supplementalFileList:
             SubElement(supplementalFilesEtree, 'File').text = str(file)
         baseTaxonomiesEtree = SubElement(self.rootETree, 'BaseTaxonomies')
-        for ns, count in sorted(self.namespacesFactsCount.items(), key=lambda i: i[0]): # sort on namespace only
-            if count > 0: # the count dictionary could have standard namespaces that had zero facts.
-                SubElement(baseTaxonomiesEtree,'BaseTaxonomy',attrib={"items":str(count)}).text = str(ns)
+        for ns, count in sorted(self.namespacesFactsCount.items(), key=lambda i: i[0]):  # sort on namespace only
+            if count > 0:  # the count dictionary could have standard namespaces that had zero facts.
+                SubElement(baseTaxonomiesEtree, 'BaseTaxonomy', attrib={"items":str(count)}).text = str(ns)
         hasPresentationLinkbase = next((True for s in self.instanceSummaryList
                                         if s.hasPresentationLinkbase), False)
         hasCalculationLinkbase = next((True for s in self.instanceSummaryList
@@ -275,32 +279,33 @@ class Summary(object):
     def removeSummaryLogs(self):
         if self.eTreeLogsElement is not None:
             self.rootETree.remove(self.eTreeLogsElement)
-            self.eTreeLogsElement = None # dereference
+            self.eTreeLogsElement = None  # dereference
 
     def writeMetaFiles(self, reportsFolder, zipDir="", suplSuffix="", prefix=""):
+
         def innerWriteMetaFiles(reportsFolder, zipDir="", suplSuffix="", prefix=""):
             roots = OrderedDict()
             roots['version'] = metaversion
-            instance = roots['instance'] = OrderedDict() # preserve instances order
-            refs = roots['std_ref'] = OrderedDict() # preserve pairs order
+            instance = roots['instance'] = OrderedDict()  # preserve instances order
+            refs = roots['std_ref'] = OrderedDict()  # preserve pairs order
             pairs = [(i, ref) for ref, i in self.referencePositionDict.items()]
             pairs.sort(key=lambda x: x[0])
             for pair in pairs:
                 i, ref = pair
-                rDict = refs['r'+str(i)] = OrderedDict() # preserve references order
-                for (att, val) in ref:  rDict[att] = val
+                rDict = refs['r' + str(i)] = OrderedDict()  # preserve references order
+                for (att, val) in ref: rDict[att] = val
             for s in self.summaryList:
-                root = instance[' '.join(s.dtsroots)] = OrderedDict() # preserve order
+                root = instance[' '.join(s.dtsroots)] = OrderedDict()  # preserve order
                 if s.customPrefix is not None: root['nsprefix'] = s.customPrefix
                 if s.customNamespace is not None: root['nsuri'] = s.customNamespace
                 root['dts'] = s.dts
                 root['keyStandard'] = s.primaryCountDict[False]
                 root['keyCustom'] = s.primaryCountDict[True]
-                root['axisStandard'] =s.axisInUseCountDict[False]
-                root['axisCustom'] =s.axisInUseCountDict[True]
-                root['memberStandard'] =s.memberCountDict[False]
-                root['memberCustom'] =s.memberCountDict[True]
-                root['hidden'] = {'total' : sum(s.hiddenCountDict.values())}
+                root['axisStandard'] = s.axisInUseCountDict[False]
+                root['axisCustom'] = s.axisInUseCountDict[True]
+                root['memberStandard'] = s.memberCountDict[False]
+                root['memberCustom'] = s.memberCountDict[True]
+                root['hidden'] = {'total': sum(s.hiddenCountDict.values())}
                 for ns, n in s.hiddenCountDict.items(): root['hidden'][ns] = n
                 root['contextCount'] = s.contextCount
                 root['entityCount'] = s.entityCount
@@ -310,20 +315,20 @@ class Summary(object):
                 # the term 'base taxonomies' is a legacy name and 'namespace - fact counts' more descriptive
                 # nevertheless use 'base taxonomies' for consistency with filing summary xml file.
                 root['baseTaxonomies'] = OrderedDict()
-                for k,v in sorted(filter(lambda x: x[1] >0,s.namespacesFactsCount.items()),key=lambda x: x[1],reverse=True):
+                for k, v in sorted(filter(lambda x: x[1] > 0, s.namespacesFactsCount.items()), key=lambda x: x[1], reverse=True):
                     root['baseTaxonomies'][k] = v
-                reportDict = root['report'] = OrderedDict() # preserve creation order
+                reportDict = root['report'] = OrderedDict()  # preserve creation order
                 isDefault = True
                 if hasattr(s, 'rrSectionFacts'):
                     for i, anchor in enumerate(s.rrSectionFacts):
                         if (isDefault):
                             anchor['isDefault'] = 'true'
                             isDefault = False
-                        reportDict['S' + str(i+1)] = anchor
-                if True: # change this line to "else:" to not clutter rr inline outputs.
-                    for i,r in enumerate(s.reportSummaryList):
+                        reportDict['S' + str(i + 1)] = anchor
+                if True:  # change this line to "else:" to not clutter rr inline outputs.
+                    for i, r in enumerate(s.reportSummaryList):
                         report = reportDict[r.baseNameBeforeExtension] = OrderedDict()
-                        report['role']=r.role
+                        report['role'] = r.role
                         report['longName'] = r.longName
                         report['shortName'] = r.shortName
                         report['isDefault'] = str(isDefault).casefold()
@@ -347,23 +352,23 @@ class Summary(object):
                         report['order'] = r.order
                         report['firstAnchor'] = r.firstAnchor
                         report['uniqueAnchor'] = r.uniqueAnchor
-                        for (qname,context,lang,atts) in r.htmlAnchors:
+                        for (qname, context, lang, atts) in r.htmlAnchors:
                             if ('htmlAnchors' not in report): report['htmlAnchors'] = []
-                            report['htmlAnchors'] += [{'qname':qname,'context':context,'lang':lang,'attributes':atts}]
+                            report['htmlAnchors'] += [{'qname':qname, 'context':context, 'lang':lang, 'attributes':atts}]
 
-                for _tagName, tagAa in sorted(s.tagDict.items(), key=lambda i: i[0]): # sort on tag names
+                for _tagName, tagAa in sorted(s.tagDict.items(), key=lambda i: i[0]):  # sort on tag names
                     qname = '{' + tagAa['nsuri'] + '}' + tagAa['localname']
                     numList = []
                     for r in (s.qnameReferenceDict.get(qname) or []):
                         numList += [self.referencePositionDict[r]]
                     numList.sort()
-                    tagAa['auth_ref'] = ['r'+str(num) for num in numList]
+                    tagAa['auth_ref'] = ['r' + str(num) for num in numList]
                 root['tag'] = s.tagDict
             if self.controller.reportZip or self.controller.reportsFolder is not None:
                 file = io.StringIO()
             else:
                 file = None
-            IoManager.writeJsonDoc(roots,file,sort_keys=False) # preserve order, don't sort
+            IoManager.writeJsonDoc(roots, file, sort_keys=False)  # preserve order, don't sort
             self.controller.renderedFiles.add(EJson)
             if file is not None:
                 file.seek(0)
@@ -373,12 +378,15 @@ class Summary(object):
                     self.controller.writeFile(os.path.join(reportsFolder, prefix + EJson + suplSuffix), file.read())
                 file.close()
                 del file  # dereference
-        innerWriteMetaFiles(reportsFolder, zipDir, suplSuffix, prefix or "") # if exception is raised, must be caught by caller in EdgarRenderer.filingEnd()
+
+        innerWriteMetaFiles(reportsFolder, zipDir, suplSuffix, prefix or "")  # if exception is raised, must be caught by caller in EdgarRenderer.filingEnd()
+
 
 class InstanceSummary(object):
     """The InstanceSummary object represents the summary information from one instance.
     It differs from the Summary object which represents the FilingSummary.xml.
     As of 10/2022, only for Form SDR can multiple instances appear in a single FilingSummary.xml."""
+
     def __init__(self, filing, modelXbrl):
         self.hasPresentationLinkbase = []
         self.hasCalculationLinkbase = []
@@ -430,27 +438,27 @@ class InstanceSummary(object):
         # collect the statistics.
         self.filing = filing
         self.modelXbrl = modelXbrl
-        self.dts = defaultdict(lambda: defaultdict(list)) # self.dts['instance']['local'] returns a list
+        self.dts = defaultdict(lambda: defaultdict(list))  # self.dts['instance']['local'] returns a list
         self.hasStdNamespace = set()
         self.hasRRorOEF = self.hasOef = self.hasRR = self.hasVip = self.hasFeeExhibit = False
 
-        self.edgarDocType = getattr(modelXbrl,'efmIxdsType',
+        self.edgarDocType = getattr(modelXbrl, 'efmIxdsType',
                                     next((f.xValue for f in modelXbrl.factsByLocalName["DocumentType"]
                                          if (f.xValue is not None and f.context is not None and not f.context.hasSegment))
-                                          ,None))
+                                          , None))
 
-        for uri,doc in sorted(modelXbrl.urlDocs.items(), key=lambda i: i[0]): # change to url from discovery order. i[1].objectIndex
+        for uri, doc in sorted(modelXbrl.urlDocs.items(), key=lambda i: i[0]):  # change to url from discovery order. i[1].objectIndex
             if doc.type == arelle.ModelDocument.Type.INLINEXBRLDOCUMENTSET:
                 targetDocumentPreferredFilename = getattr(doc, "targetDocumentPreferredFilename", None)
                 if targetDocumentPreferredFilename:
                     self.targetDocumentFile = os.path.splitext(os.path.basename(targetDocumentPreferredFilename))[0]
-                continue # ignore ixds manifest
+                continue  # ignore ixds manifest
             if not doc.inDTS:
-                continue # ignore non-DTS documents (e.g., reference and documentation labels imported by rendering
+                continue  # ignore non-DTS documents (e.g., reference and documentation labels imported by rendering
             isLocal = (uri not in filing.controller.disclosureSystem.standardTaxonomiesDict
                        and uri.startswith(filing.controller.processingFolder))
-            (f,rl) = (uri,'remote')
-            if isLocal: (f,rl) = (os.path.basename(uri),'local')
+            (f, rl) = (uri, 'remote')
+            if isLocal: (f, rl) = (os.path.basename(uri), 'local')
             doctype = 'supplemental'
             if doc.xmlRootElement.localName == 'xbrl':
                 doctype = 'instance'
@@ -485,7 +493,7 @@ class InstanceSummary(object):
             elif doc.xmlRootElement.localName == 'linkbase':
                 self.otherXbrlFiles += [f]
                 doctype = 'linkbase'
-                for child in doc.xmlRootElement.iterchildren('{'+arelle.XbrlConst.link+'}*'):
+                for child in doc.xmlRootElement.iterchildren('{' + arelle.XbrlConst.link + '}*'):
                     if child.localName.endswith('Link'):
                         doctype = child.localName
                         if (isLocal):
@@ -493,14 +501,14 @@ class InstanceSummary(object):
                                 self.hasPresentationLinkbase = True
                             elif (doctype == 'calculationLink'):
                                 self.hasCalculationLinkbase = True
-                        break # currently in EDGAR each file can have only kind of link.
+                        break  # currently in EDGAR each file can have only kind of link.
             else:
                 modelXbrl.debug("debug",
                                   _("Unknown XML doctype %(doctype)s in file %(file)s."),
                                   modelObject=doc, doctype=doc.xmlRootElement.localName, file=uri)
             self.dts[doctype][rl] += [f]
         self.dtsroots = self.instanceFiles + [f
-                                              for priDocFile in (True, False) # put primary doc first
+                                              for priDocFile in (True, False)  # put primary doc first
                                               for f in self.inlineFiles
                                               if priDocFile ^ (os.path.splitext(os.path.basename(f))[0] != self.targetDocumentFile)]
 
@@ -515,7 +523,7 @@ class InstanceSummary(object):
 
         for c in contextSet:
             for s in c.segDimValues.values():
-                segmentSet.update([(s.dimension,s.member)])
+                segmentSet.update([(s.dimension, s.member)])
                 if s.dimension is not None: conceptInUseSet.add(s.dimension)
                 if s.member is not None: conceptInUseSet.add(s.member)
             entitySet.update({itag.text for itag in c.iter(tag=arelle.XbrlConst.qnXbrliIdentifier.clarkNotation)})
@@ -527,7 +535,6 @@ class InstanceSummary(object):
                 segmentsInUseSet.add(segment)
                 memberInUseSet.add(segment.memberQname)
                 axisInUseSet.add(segment.dimensionQname)
-
 
         self.contextCount = len(contextSet)
         self.contextInUseCount = len(contextsInUseSet)
@@ -572,8 +579,8 @@ class InstanceSummary(object):
 
         # Assume for the moment that every concept in the presentation link base connects eventually to some fact
         # TODO: use graph traversal instead.
-        conceptInUseSet = conceptInUseSet.union({concept for concept in parentChildRelationshipSet.modelRelationshipsFrom.keys() if isinstance(concept,ModelConcept)})
-        conceptInUseSet = conceptInUseSet.union({concept for concept in parentChildRelationshipSet.modelRelationshipsTo.keys() if isinstance(concept,ModelConcept)})
+        conceptInUseSet = conceptInUseSet.union({concept for concept in parentChildRelationshipSet.modelRelationshipsFrom.keys() if isinstance(concept, ModelConcept)})
+        conceptInUseSet = conceptInUseSet.union({concept for concept in parentChildRelationshipSet.modelRelationshipsTo.keys() if isinstance(concept, ModelConcept)})
 
         # Do not add a concept just because it has a label or a reference.
         conceptLabelRelationshipSet = modelXbrl.relationshipSet(arelle.XbrlConst.conceptLabel)
@@ -590,22 +597,22 @@ class InstanceSummary(object):
                 for rel in toRels:
                     toReference = rel.toModelObject
                     if isinstance(toReference, arelle.ModelDtsObject.ModelResource):
-                        r = [("role",toReference.role)]
+                        r = [("role", toReference.role)]
                         for elt in toReference.iterchildren():
                             s = elt.text
-                            if s is not None: # empty elts appear in us-gaap 2008 and 2011 refs
-                                if len(s)>0:
-                                    r += [(elt.localName,s)]
-                        r = tuple(r) # make it immutable and suitable as a key
+                            if s is not None:  # empty elts appear in us-gaap 2008 and 2011 refs
+                                if len(s) > 0:
+                                    r += [(elt.localName, s)]
+                        r = tuple(r)  # make it immutable and suitable as a key
                         self.refSet.add(r)
                         self.qnameReferenceDict[fromConcept.qname.clarkNotation].add(r)
 
         # build a dictionary tree of the eventual JSON output.
         self.tagDict = OrderedDict()
-        for concept in sorted(conceptInUseSet,key=lambda concept: concept.qname.localName):
-            self.tagDict[concept.attrib['id']] = {'xbrltype' : (concept.typeQname).localName
-                                                  ,'nsuri': concept.qname.namespaceURI
-                                                  ,'localname': concept.qname.localName}
+        for concept in sorted(conceptInUseSet, key=lambda concept: concept.qname.localName):
+            self.tagDict[concept.attrib['id']] = {'xbrltype': (concept.typeQname).localName
+                                                  , 'nsuri': concept.qname.namespaceURI
+                                                  , 'localname': concept.qname.localName}
             tag = self.tagDict[concept.attrib['id']]
             roleDict = None
             if concept.balance is not None: tag['crdr'] = concept.balance
@@ -614,15 +621,15 @@ class InstanceSummary(object):
                 roleDict = tag['calculation'] = {}
                 for calculation in calculations:
                     role = calculation.linkrole
-                    if not hasattr(calculation.fromModelObject,'attrib'): continue
-                    parentTag =  calculation.fromModelObject.attrib['id']
+                    if not hasattr(calculation.fromModelObject, 'attrib'): continue
+                    parentTag = calculation.fromModelObject.attrib['id']
                     weight = calculation.weight
                     order = calculation.order
                     if order is None: order = 1
                     # here we assume that in a given role only one calc parent is allowed.
-                    roleDict[role] = {'parentTag' : parentTag
-                                        ,'weight' : weight
-                                        ,'order' : order}
+                    roleDict[role] = {'parentTag': parentTag
+                                        , 'weight': weight
+                                        , 'order': order}
             calculations = summationItemRelationshipSet.modelRelationshipsFrom[concept]
             if calculations is not None and len(calculations) > 0:
                 for calculation in calculations:
@@ -630,21 +637,21 @@ class InstanceSummary(object):
                     if roleDict is None:
                         roleDict = tag['calculation'] = {}
                     if role not in roleDict:
-                        roleDict[role] = {'parentTag' : None, 'weight': None, 'order': None, 'root': True}
+                        roleDict[role] = {'parentTag': None, 'weight': None, 'order': None, 'root': True}
 
             presentations = parentChildRelationshipSet.modelRelationshipsTo[concept]
             if presentations is not None and len(presentations) > 0:
                 roleSet = set()
                 for presentation in presentations:
-                    role =  presentation.linkrole
+                    role = presentation.linkrole
                     roleSet.add(role)
-                tag['presentation'] = sorted(list(roleSet)) # WcH 6/20/2016 sort to make MetaLinks files more comparable
+                tag['presentation'] = sorted(list(roleSet))  # WcH 6/20/2016 sort to make MetaLinks files more comparable
             labels = conceptLabelRelationshipSet.modelRelationshipsFrom[concept]
             if labels is not None and len(labels) > 0:
                 langDict = tag['lang'] = {}
                 for rel in labels:
                     lang = rel.toModelObject.xmlLang
-                    if lang: lang = lang.lower() # index on canonical xml:lang
+                    if lang: lang = lang.lower()  # index on canonical xml:lang
                     label = rel.toModelObject
                     if label is not None:
                         labelrole = (label.role or "").split('/')[-1:][0]
@@ -655,15 +662,14 @@ class InstanceSummary(object):
                         langDict[lang]['role'][labelrole] = labeltext
         self.qnameInUseSet = {concept.qname.clarkNotation for concept in conceptInUseSet}
         self.conceptInUseSet = {concept.qname for concept in conceptInUseSet}
-        self.namespacesFactsCount = {} # dict of standard namespace by number of facts of that namespace
+        self.namespacesFactsCount = {}  # dict of standard namespace by number of facts of that namespace
         for qname in self.conceptInUseSet:
             ns = qname.namespaceURI
             if Utils.isEfmStandardNamespace(ns):
-                self.namespacesFactsCount[ns] = self.namespacesFactsCount.get(ns, 0) + len(modelXbrl.factsByQname.get(qname,()))
+                self.namespacesFactsCount[ns] = self.namespacesFactsCount.get(ns, 0) + len(modelXbrl.factsByQname.get(qname, ()))
 
-
-        #/ hasRR = self.hasRR = next((True for n in modelXbrl.namespaceDocs.keys() if 'http://xbrl.sec.gov/rr/' in n), False)
-        if (self.hasRR and hasattr(modelXbrl,'ixdsHtmlElements')): # RR summaries have "S1" "S2" entries.
+        # / hasRR = self.hasRR = next((True for n in modelXbrl.namespaceDocs.keys() if 'http://xbrl.sec.gov/rr/' in n), False)
+        if (self.hasRR and hasattr(modelXbrl, 'ixdsHtmlElements')):  # RR summaries have "S1" "S2" entries.
             # the array is constructed by walking the entire inline XBRL document
             # for each unique combination of document information members and legal entity (series) members
             # the first fact found having one of those combinations becomes the unique anchor of that section
@@ -685,7 +691,7 @@ class InstanceSummary(object):
                 hiddenQname = None
                 for e in ElementDepthFirstIterator(h):
                     if (e.prefix == 'ix'):
-                        if (e.localName =='hidden'):
+                        if (e.localName == 'hidden'):
                             hiddenQname = e. elementQname
                         elif ('contextRef' in e.attrib):
                             if (not e.parentQname == hiddenQname):
@@ -693,38 +699,38 @@ class InstanceSummary(object):
                                 hash = context.dimsHash
                                 if (hash in rrSectionDimsHashDict):
                                     if (len(rrSectionDimsHashDict[hash]) == 0):
-                                        rrSectionDimsHashDict[hash] = (e.objectIndex+1,e)
+                                        rrSectionDimsHashDict[hash] = (e.objectIndex + 1, e)
             rrSections = sorted(rrSectionDimsHashDict.values())
             rrSections = [pair for pair in rrSections if len(pair) == 2]
             self.rrSectionFacts = []
             isDefault = True
-            for section,(objectIndex, fact) in enumerate(rrSections):
+            for section, (objectIndex, fact) in enumerate(rrSections):
                 doc = fact.document
                 name = str(fact.qname)
                 shortName = name
                 longName = '{:09} - Disclosure - '.format(objectIndex)
                 lang = 'en-US' if (fact.xmlLang is None) else fact.xmlLang
-                ancestors = [str(getattr(ancestor,"qname",ancestor.tag)) for ancestor in fact.iterancestors()]
+                ancestors = [str(getattr(ancestor, "qname", ancestor.tag)) for ancestor in fact.iterancestors()]
                 ref = None if (doc is None) else doc.basename
                 anchor = \
                     { 'ancestors': ancestors
-                     ,'baseRef': ref
-                     ,'contextRef':fact.contextID
-                     ,'decimals':fact.decimals
-                      ,'lang':lang
-                      ,'name':name
-                      ,'reportCount': 1
-                      ,'unitRef':fact.unitID
-                      ,'xsiNil':fact.xsiNil
+                     , 'baseRef': ref
+                     , 'contextRef':fact.contextID
+                     , 'decimals':fact.decimals
+                      , 'lang':lang
+                      , 'name':name
+                      , 'reportCount': 1
+                      , 'unitRef':fact.unitID
+                      , 'xsiNil':fact.xsiNil
                           }
                 _memberDocument = None
                 _memberSeries = None
-                for axis,dim in fact.context.qnameDims.items():
+                for axis, dim in fact.context.qnameDims.items():
                     _labels = {}
                     if (axis.namespaceURI.startswith('http://xbrl.sec.gov/dei/')):
                         if (axis.localName == 'DocumentInformationDocumentAxis'):
                             try:
-                                _labels = self.tagDict[dim.member.id]['lang']['en-us']['role'] # canonical em-us
+                                _labels = self.tagDict[dim.member.id]['lang']['en-us']['role']  # canonical em-us
                                 if ('terseLabel' in _labels):
                                     _memberDocument = _labels['terseLabel']
                                 elif ('label' in _labels):
@@ -733,29 +739,29 @@ class InstanceSummary(object):
                                 pass
                         elif (axis.localName == 'LegalEntityAxis'):
                             try:
-                                _labels = self.tagDict[dim.member.id]['lang']['en-us']['role'] # canonical em-us
+                                _labels = self.tagDict[dim.member.id]['lang']['en-us']['role']  # canonical em-us
                                 if ('terseLabel' in _labels):
                                     _memberSeries = _labels['terseLabel']
                                 elif ('label' in _labels):
                                     _memberSeries = _labels['label']
                             except:
                                 pass
-                _fragments = [x for x in [_memberDocument,_memberSeries] if x is not None]
+                _fragments = [x for x in [_memberDocument, _memberSeries] if x is not None]
                 if (len(_fragments) == 0):
                     shortName = 'Document and Entity Information'
                 else:
                     shortName = ", ".join(_fragments)
                 longName = longName + shortName
 
-                self.rrSectionFacts.append( \
+                self.rrSectionFacts.append(\
                     { 'firstAnchor': anchor
-                        ,'groupType':'RR_Summaries'
-                        ,'isDefault': str(isDefault).casefold()
-                        ,'longName': longName
-                        ,'section' : section
-                        ,'shortName': shortName
-                        ,'subGroupType': ""
-                        ,'uniqueAnchor': anchor
+                        , 'groupType':'RR_Summaries'
+                        , 'isDefault': str(isDefault).casefold()
+                        , 'longName': longName
+                        , 'section': section
+                        , 'shortName': shortName
+                        , 'subGroupType': ""
+                        , 'uniqueAnchor': anchor
                         })
                 isDefault = False
         return  # from InstanceSummary initialization
@@ -763,7 +769,7 @@ class InstanceSummary(object):
     @property
     def menuStyle(self):
         if self.hasRR: return 'RiskReturn'
-        if self.hasOef and self.edgarDocType is not None and re.match(r'485[AB]POS|485BXT|497|N-1A(/A)?',str(self.edgarDocType)):
+        if self.hasOef and self.edgarDocType is not None and re.match(r'485[AB]POS|485BXT|497|N-1A(/A)?', str(self.edgarDocType)):
             return 'RiskReturn'
         if self.hasVip: return 'Prospectus'
         if self.hasFeeExhibit: return 'FeeExhibit'
@@ -775,7 +781,7 @@ class InstanceSummary(object):
         state = ''
         for i, reportSummary in enumerate([r for r in self.reportSummaryList
                                           if (includeUncategorized == r.isUncategorized)]):
-            if True: #not isRRorProspectusorFeeTable:
+            if True:  # not isRRorProspectusorFeeTable:
                 state = self.classifyReportFiniteStateMachine(state, reportSummary.longName)
                 parentRole = self.getReportParentIfExists(reportSummary, state)
             reportETree = SubElement(myReportsEtree, 'Report')
@@ -787,8 +793,8 @@ class InstanceSummary(object):
                         instanceFile = f
                         break
             if not instanceFile:
-                instanceFile = (self.instanceFiles+self.inlineFiles)[0]
-            reportETree.set('instance',os.path.basename(instanceFile))
+                instanceFile = (self.instanceFiles + self.inlineFiles)[0]
+            reportETree.set('instance', os.path.basename(instanceFile))
             SubElement(reportETree, 'IsDefault').text = str(isFirstInstance and i == 1).casefold()
             SubElement(reportETree, 'HasEmbeddedReports').text = str(reportSummary.hasEmbeddedReports).casefold()
             if reportSummary.htmlFileName is not None:
@@ -842,7 +848,6 @@ class InstanceSummary(object):
         #     pass # no other kind of reportSummary can have a parent.
         if parentRole is not None:
             return parentRole
-
 
     def getReportParentIfExistsHelper(self, shortName, levelList):
         for noteReportSummary in levelList:
@@ -967,6 +972,7 @@ class InstanceSummary(object):
         else:
             return Uncategorized
 
+
 matchStatement = re.compile(r'.* +\- +Statement +\- .*')
 matchDisclosure = re.compile(r'.* +\- +Disclosure +\- +.*')
 matchDocument = re.compile(r'.* +\- +Document +\- +.*')
@@ -976,26 +982,34 @@ matchTable = re.compile(r'.*\(Table.*\).*')
 matchDetail = re.compile(r'.*\(Detail.*\).*')
 matchHttp = re.compile(r'^http://')
 
+
 def isStatement(longName):
     return matchStatement.match(longName) is not None
+
 
 def isDisclosure(longName):
     return matchDisclosure.match(longName) is not None
 
+
 def isDocument(longName):
     return matchDocument.match(longName) is not None
+
 
 def isParenthetical(longName):
     return matchParenthetical.match(longName) is not None
 
+
 def isPolicy(longName):
     return matchPolicy.match(longName) is not None
+
 
 def isTable(longName):
     return matchTable.match(longName) is not None
 
+
 def isDetail(longName):
     return matchDetail.match(longName) is not None
+
 
 def isUncategorized(longName):
     return longName == 'UncategorizedItems'

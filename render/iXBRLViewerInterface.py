@@ -21,6 +21,7 @@ _iXBRLViewer_plugin_info = None
 STUB_NAME = "ixbrlviewer.xhtml"
 JS_PATH = "/ixviewer-arelle/ixbrlviewer-1.4.29.js"
 
+
 def hasIXBRLViewerPlugin(cntlr):
     global _iXBRLViewerPlugin
     if _iXBRLViewerPlugin is not None:
@@ -40,7 +41,7 @@ def generateViewer(cntlr, stubDir):
     securityIsActive = securityHasWritten = False
     stubBytes = None
     for pluginMethod in pluginClassMethods("Security.Crypt.IsActive"):
-        securityIsActive = pluginMethod(self) # must be active for the save method to save encrypted files
+        securityIsActive = pluginMethod(self)  # must be active for the save method to save encrypted files
     with io.BytesIO() as fZip:
         _iXBRLViewerPlugin.generateViewer(cntlr, fZip, JS_PATH, False, True, False, None, None, False, True)
         fZip.seek(0)
@@ -55,8 +56,9 @@ def generateViewer(cntlr, stubDir):
         with open(stubPath, "wb") as fout:
             fout.write(stubBytes)
 
+
 def disableiXBRLViewerPluginInfo(cntlr):
-    if PluginManager.pluginConfig["modules"].get("ixbrl-viewer",{}).get("status","disabled") == "enabled":
+    if PluginManager.pluginConfig["modules"].get("ixbrl-viewer", {}).get("status", "disabled") == "enabled":
         PluginManager.pluginConfig["modules"]["ixbrl-viewer"]["status"] = "disabled"
         PluginManager.reset()
         cntlr.addToLog(_("iXBRLViewer plugin disabled for EdgarRenderer. EdgarRenderer manages iXBRLViewer within its workflow."))
