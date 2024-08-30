@@ -14,27 +14,37 @@ durationStartRoleError = "durationStartRoleError"  # fake role URI to indicate t
 durationEndRoleError = "durationEndRoleError"  # fake role URI to indicate that a periodEnd label role was put on a duration concept.
 durationStartEndRolesError = [durationStartRoleError, durationEndRoleError]
 
+
 def isPeriodStartLabel(preferredLabel):
     if preferredLabel is None:
         return False
     return 'periodstart' in preferredLabel.casefold()
+
+
 def isPeriodEndLabel(preferredLabel):
     if preferredLabel is None:
         return False
     return 'periodend' in preferredLabel.casefold()
+
+
 def isPeriodStartOrEndLabel(preferredLabel):
     if preferredLabel is None:
         return False
     preferredLabelLower = preferredLabel.casefold()
     return 'periodstart' in preferredLabelLower or 'periodend' in preferredLabelLower
+
+
 def isNegatedLabel(preferredLabel):
     if preferredLabel is None:
         return False
     return 'negated' in preferredLabel.casefold()
+
+
 def isTotalLabel(preferredLabel):
     if preferredLabel is None:
         return False
     return 'total' in preferredLabel.casefold()
+
 
 minNumber = -sys.maxsize - 1
 efmStandardAuthorities = ["sec.gov", "fasb.org", "xbrl.org", "xbrl.us", "w3.org", "ifrs.org"]
@@ -47,11 +57,13 @@ def isRate(fact, filing):
              (fact.unit is not None and fact.unit.isSingleMeasure and
               any(utrEntry.unitId == 'Rate' for utrEntry in fact.utrEntries.copy())))
 
+
 def printErrorStringToDisambiguateEmbeddedOrNot(embeddedCommandFact):
     if embeddedCommandFact is None:
         return ''
     return ', in the embedded report created by the embedding textBlock fact {!s}, with the context {!s}'.format(
                                                     embeddedCommandFact.qname, embeddedCommandFact.contextID)
+
 
 def printErrorStringToDiscribeEmbeddedTextBlockFact(embeddedCommandFact):
     if embeddedCommandFact is None:
@@ -74,6 +86,7 @@ def booleanFromString(x):
     else:
         return (x.casefold() == "true")
 
+
 isImageRegex = re.compile(r'.*\.(jpg|gif|png)$')
 isXmlRegex = re.compile(r'.*\.x(ml|sd)')
 isEfmRegex = re.compile(r'.*[0-9]{8}((_(cal|def|lab|pre))?\.xml|\.xsd)$')
@@ -85,29 +98,38 @@ isEfmStandardNamespaceRegex = re.compile('^http(s)?://.*(' + "|".join(efmStandar
 isEfmInvestNamespaceRegex = re.compile('^http(s)?://.*(' + "|".join(efmStandardAuthorities) + ")/invest.*")
 isBarChartFactRegex = re.compile(r'^\{http://xbrl.sec.gov/(?P<family>rr|oef)/.*\}AnnualReturn(?P<year>[0-9]{4})')
 
+
 def isImageFilename(path):
     return isImageRegex.match(path) and True
+
 
 def isXmlFilename(path):
     return isXmlRegex.match(path) and True
 
+
 def isEfmFilename(path):
     return isEfmRegex.match(path) and True
+
 
 def isInlineFilename(path):
     return isInlineRegex.match(path) and True
 
+
 def isZipFilename(path):
     return isZipRegex.match(path) and True
+
 
 def isHttpFilename(path):
     return isHttpRegex.match(path) and True
 
+
 def isEfmStandardNamespace(namespaceUri):
     return isEfmStandardNamespaceRegex.match(namespaceUri) and True
 
+
 def isEfmInvestNamespace(namespaceUri):
     return isEfmInvestNamespaceRegex.match(namespaceUri) and True
+
 
 def matchedDurationRoles(role1, role2):  # True if the roles are both period start or are both period end roles.
     if 'Start' in role1 and 'Start' in role2:
@@ -115,6 +137,7 @@ def matchedDurationRoles(role1, role2):  # True if the roles are both period sta
     if 'End' in role1 and 'End' in role2:
         return True
     return False
+
 
 def hasCustomNamespace(thing):
     if type(thing) == str:
@@ -127,25 +150,30 @@ def hasCustomNamespace(thing):
                 return hasCustomNamespace(getattr(thing, a))
     return False
 
+
 isRoleNotRenderedRegex = re.compile(r'^https?://xbrl.sec.gov/.*/notRendered$')
 isElementNotRenderedRegex = re.compile(r'^\{http://xbrl.sec.gov/ffd/.*\}OffsetClmdInd$')
 
+
 def isNotRendered(factOrRole):
     if type(factOrRole) == str:
-        return bool(re.match(isRoleNotRenderedRegex,factOrRole))
+        return bool(re.match(isRoleNotRenderedRegex, factOrRole))
     elif type(factOrRole) == arelle.ModelInstanceObject.ModelInlineFact:
-        return bool(re.match(isElementNotRenderedRegex,factOrRole.qname.clarkNotation))
+        return bool(re.match(isElementNotRenderedRegex, factOrRole.qname.clarkNotation))
     return False
+
 
 ffdDisclaimerStyle = "color:rgb(12,33,58); margin-top: 5pt; font-family:'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans', 'Helvetica Neue', Arial, sans-serif;"
 ffdDisclaimerText = "Text of disclaimer goes here."
 
+
 def xbrlErrors(modelXbrl):
     """Returns the list of messages in modelXbrl whose levelno is at least ERROR, assuming there is a buffer handler present."""
     try:
-        handler =  modelXbrl.logger.handlers[-1]
+        handler = modelXbrl.logger.handlers[-1]
         return [r for r in handler.logRecordBuffer if r.levelno >= logging.ERROR]
     except: return []
+
 
 def getUnitStr(fact):
     if fact.unit is None:
@@ -155,6 +183,7 @@ def getUnitStr(fact):
     else:  # if unit.value does give a qname, use something else
         unitStr = fact.unitSymbol()
     return (unitStr, 'pure' in unitStr.casefold())
+
 
 def getUnitAndSymbolStr(fact):
     if fact is not None and fact.unit is not None:
@@ -169,6 +198,7 @@ def getUnitAndSymbolStr(fact):
                 return unitStr
             if symbolStr != '':
                 return '{} ({})'.format(unitStr, symbolStr)
+
 
 def getSymbolStr(fact):
     if fact is not None and fact.unit is not None:
@@ -268,9 +298,9 @@ def strFactValue(fact, preferredLabel=None, filing=None, report=None):
                 else:
                     concept = filing.modelXbrl.qnameConcepts[qname]
                     label = None
-                    if preferredLabel: # first look for a prefferred label, if specified
+                    if preferredLabel:  # first look for a prefferred label, if specified
                         label = concept.label(preferredLabel, fallbackToQname=False, lang=filing.controller.labelLangs)
-                    if not label: # find standard label or qname if none
+                    if not label:  # find standard label or qname if none
                         label = concept.label(lang=filing.controller.labelLangs)
                 labels.append(label)
             return ", ".join(labels)
@@ -300,6 +330,7 @@ def isTypeQnameDerivedFrom(modelXbrl, typeQname, predicate):
         return next((True for q in qnamesDerivedFrom if predicate(q)), False)
     return isTypeQnameDerivedFrom(modelXbrl, qnamesDerivedFrom, predicate)
 
+
 def isFactTypeEqualToOrDerivedFrom(fact, predicate):
     if fact is None or fact.concept is None: return False
     conceptTypeQname = fact.concept.typeQname
@@ -310,28 +341,33 @@ def isPerShareItemTypeQname(typeQname):
     """(bool) -- True if the type qname is {standard namespace}perShareItemType"""
     return typeQname.localName == 'perShareItemType' and isEfmStandardNamespace(typeQname.namespaceURI)
 
+
 def isPercentItemTypeQname(typeQname):
     """(bool) -- True if the type qname is {standard namespace}percentItemType"""
     return typeQname.localName == 'percentItemType' and isEfmStandardNamespace(typeQname.namespaceURI)
+
 
 def isDurationStringItemTypeQname(typeQname):
     """(bool) -- True if the type qname is xbrli:durationStringItemType"""
     return typeQname.localName == 'durationStringItemType' and isEfmStandardNamespace(typeQname.namespaceURI)
 
+
 def isPureItemTypeQname(typeQname):
     """(bool) -- True if the type qname is xbrli:perShareItemType"""
     return typeQname.localName == 'pureItemType' and typeQname.namespaceURI == arelle.XbrlConst.xbrli
 
+
 def isDurationItemTypeQname(typeQname):
     """(bool) -- True if the type qname is xbrli:durationItemType"""
     return typeQname.localName == 'durationItemType' and typeQname.namespaceURI == arelle.XbrlConst.xbrli
+
 
 def modelRelationshipsTransitiveFrom(relationshipSet, concept, linkroleUri, resultSet):
     """Return the subset of a relationship set in the transitive closure starting from concept, limited to linkroleUri."""
     for r in relationshipSet.modelRelationshipsFrom[concept]:
         if r.linkrole == linkroleUri and r not in resultSet:
             resultSet.add(r)
-            modelRelationshipsTransitiveFrom(relationshipSet,r.toModelObject,linkroleUri,resultSet)
+            modelRelationshipsTransitiveFrom(relationshipSet, r.toModelObject, linkroleUri, resultSet)
     return resultSet
 
 
@@ -365,6 +401,7 @@ def heapsort(l, cmp):  # l is a list, cmp is a two-argument fn
             break
     return nl
 
+
 def compareInOrdering(x, y, l, o):
     if x in o:
         return -1
@@ -375,6 +412,7 @@ def compareInOrdering(x, y, l, o):
     except:
         pass
     return 0
+
 
 def commonPrefix(str1, str2):  # count characters that form the prefix of both str1 and str2
     i = 0
@@ -388,6 +426,7 @@ def commonPrefix(str1, str2):  # count characters that form the prefix of both s
             break
     return i
 
+
 def cubeGarbageCollect(cube):
     # all of the cube's embeddings are gone already, so we can kill the cube and presentationGroup.
     cube.presentationGroup.__dict__.clear()
@@ -398,7 +437,7 @@ def embeddingGarbageCollect(embedding):
     try:
         report = embedding.report
     except AttributeError:
-        return # it's already been garbage collected.
+        return  # it's already been garbage collected.
     if report is not None:  # could be if broken
         for row in report.rowList:
             for cell in row.cellList:
@@ -410,17 +449,21 @@ def embeddingGarbageCollect(embedding):
         report.__dict__.clear()
     embedding.__dict__.clear()
 
+
 class RenderingException(Exception):
+
     def __init__(self, code, message):
         self.code = str(code)  # called with qname or string, qname -> prefixed name string
         self.message = message
-        self.args = ( self.__repr__(), )
+        self.args = (self.__repr__(),)
+
     def __repr__(self):
         return _('[{0}] exception {1}').format(self.code, self.message)
 
+
 class Errmsg(object):
+
     def __init__(self, messageCode, message):
         self.msgCode = messageCode
         self.msg = message
-
 

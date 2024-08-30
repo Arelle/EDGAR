@@ -7,7 +7,7 @@ Data and content created by government employees within the scope of their emplo
 are not subject to domestic copyright protection. 17 U.S.C. 105.
 """
 
-from os import getpid, remove, makedirs, listdir # , getenv
+from os import getpid, remove, makedirs, listdir  # , getenv
 from os.path import basename, isfile, abspath, isdir, dirname, exists, join, splitext, normpath
 from io import IOBase
 import json, shutil, sys, datetime, os, zipfile
@@ -18,6 +18,7 @@ from . import Utils
 
 jsonIndent = 1  # None for most compact, 0 for left aligned
 
+
 def genpath(filename):
     if filename == '.':
         filename = basename(abspath(filename))
@@ -25,14 +26,17 @@ def genpath(filename):
                                     # .translate(str.maketrans(" :.","---"))
                                     , splitext(basename(filename))[0], getpid())
 
-def createNewFolder(controller,path,stubname="."):
+
+def createNewFolder(controller, path, stubname="."):
     newpath = join(path, genpath(stubname))
     controller.createdFolders += [newpath]
     return newpath
 
+
 def cleanupNewfolders(controller):
     for f in controller.createdFolders:
-        shutil.rmtree(f,ignore_errors=True)
+        shutil.rmtree(f, ignore_errors=True)
+
 
 def absPathOnPythonPath(controller, filename):  # if filename is relative, find it on the PYTHONPATH, otherwise, just return it.
     if filename is None: return None
@@ -47,6 +51,7 @@ def absPathOnPythonPath(controller, filename):  # if filename is relative, find 
     controller.logDebug("No such location {} found in sys path dirs {}.".format(filename, pathdirs))
     return None
 
+
 def writeXmlDoc(filing, etree, reportZip, reportFolder, filename, zipDir=""):
     xmlText = treeToString(etree.getroottree(), method='xml', with_tail=False, pretty_print=True, encoding='utf-8', xml_declaration=True)
     if reportZip:
@@ -54,24 +59,28 @@ def writeXmlDoc(filing, etree, reportZip, reportFolder, filename, zipDir=""):
     elif reportFolder is not None:
         filing.writeFile(os.path.join(reportFolder, filename), xmlText)
 
+
 def writeHtmlDoc(filing, root, reportZip, reportFolder, filename, zipDir=""):
-    htmlText =  treeToString(root, method='html', with_tail=False, pretty_print=True, encoding='utf-8')
+    htmlText = treeToString(root, method='html', with_tail=False, pretty_print=True, encoding='utf-8')
     if reportZip:
         reportZip.writestr(zipDir + filename, htmlText)
     elif reportFolder is not None:
         filing.writeFile(os.path.join(reportFolder, filename), htmlText)
 
+
 def writeJsonDoc(lines, pathOrStream, sort_keys=True):
     if isinstance(pathOrStream, str):
         with open(pathOrStream, mode='w') as f:
             json.dump(lines, f, sort_keys=sort_keys, indent=jsonIndent)
-    elif isinstance(pathOrStream, IOBase): # path is an open file
+    elif isinstance(pathOrStream, IOBase):  # path is an open file
         json.dump(lines, pathOrStream, sort_keys=sort_keys, indent=jsonIndent)
+
 
 def moveToZip(zf, abspath, zippath):
     if isfile(abspath) and not isFileHidden(abspath):
         zf.write(abspath, zippath, zipfile.ZIP_DEFLATED)
         remove(abspath)
+
 
 def move_clobbering_file(src, dst):  # this works across Windows drives, simple rename does not.
     if isdir(dst):
@@ -94,7 +103,7 @@ def move_clobbering_file(src, dst):  # this works across Windows drives, simple 
 
 
 def handleFolder(controller, folderName, mustBeEmpty, forceClean):  # return success
-    if not isdir(folderName): # must exist and be a directory, not file
+    if not isdir(folderName):  # must exist and be a directory, not file
         if exists(folderName):
             controller.logDebug(_("Folder {} exists and is not a directory.").format(folderName), file=basename(__file__))
         else:
@@ -108,8 +117,9 @@ def handleFolder(controller, folderName, mustBeEmpty, forceClean):  # return suc
                     shutil.rmtree(fullfilepath)
                 else:
                     remove(fullfilepath)
-        elif mustBeEmpty and len(fileList) > 0 :
+        elif mustBeEmpty and len(fileList) > 0:
             controller.logDebug(_("Folder {} exists and is not empty.").format(folderName), file=basename(__file__))
+
 
 def getConfigFile(controller, options):
     if options.configFile is None: return None
@@ -118,6 +128,7 @@ def getConfigFile(controller, options):
         return(_localConfigFile)
     configFile = absPathOnPythonPath(controller, options.configFile)
     return configFile
+
 
 def logConfigFile(controller, options):
     configFileTemp = getConfigFile(controller, options)
@@ -217,7 +228,7 @@ def isSurvivor(controller, original, base, entry, targetOrStream):  # return boo
     oktocopy = Utils.isImageFilename(base) or Utils.isXmlFilename(base) or Utils.isInlineFilename(base)
     if not oktocopy:  # Found a file that doesn't fit
         controller.logInfo(_("Ignoring file {} of unknown type found in folder or zip.").format(base), file=basename(__file__))
-        if isinstance(targetOrStream, str): # file name, not filesource
+        if isinstance(targetOrStream, str):  # file name, not filesource
             remove(targetOrStream)
         return False
     if Utils.isImageFilename(base):
@@ -237,7 +248,7 @@ def isSurvivor(controller, original, base, entry, targetOrStream):  # return boo
                            .format(original, entry, base), file=basename(__file__))
             return False
     elif (ns, ln) == (arelle.XbrlConst.xhtml, 'html') and ixns in arelle.XbrlConst.ixbrlAll:
-        controller.logDebug("Only Inline 1.1 is supported, ignoring Inline 1.0 doc {0} in {1}".format(original,base),file=basename(__file__))
+        controller.logDebug("Only Inline 1.1 is supported, ignoring Inline 1.0 doc {0} in {1}".format(original, base), file=basename(__file__))
     elif (ns, ln) == (arelle.XbrlConst.xbrli, 'xbrl'):
         if entry is None or entry == base:
             controller.logDebug("Found Instance Doc in {0}: {1}".format(original, base), file=basename(__file__))
@@ -253,14 +264,14 @@ def isSurvivor(controller, original, base, entry, targetOrStream):  # return boo
         controller.logDebug("Found schema in {}: {}".format(original, base), file=basename(__file__))
         controller.otherXbrlList += [base]
     else:
-        controller.logDebug("Ignoring unknown file {} in {}".format(base,original), file=basename(__file__))
-        if isinstance(targetOrStream, str): # file name, not filesource
+        controller.logDebug("Ignoring unknown file {} in {}".format(base, original), file=basename(__file__))
+        if isinstance(targetOrStream, str):  # file name, not filesource
             remove(targetOrStream)
         return False
     return True  # you made it
 
 
-def getQName(controller, pathname): # return ns, localname, and inline namespace if found
+def getQName(controller, pathname):  # return ns, localname, and inline namespace if found
     from lxml import etree
 
     rootElement = rootNamespace = inlineNamespaceBound = None
@@ -268,9 +279,9 @@ def getQName(controller, pathname): # return ns, localname, and inline namespace
     try:
         if isinstance(pathname, str):
             f = open(pathname)
-        else: # stream, already is open
+        else:  # stream, already is open
             f = pathname
-        for event, element in etree.iterparse(f.buffer, events=('start','start-ns')):
+        for event, element in etree.iterparse(f.buffer, events=('start', 'start-ns')):
             if event == 'start-ns':
                 _ignore, uri = element
                 if uri in arelle.XbrlConst.ixbrlAll:

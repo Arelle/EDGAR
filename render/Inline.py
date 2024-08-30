@@ -29,6 +29,7 @@ DEFAULT_INSTANCE_EXT = ".xml"  # the extension on the instance to be saved
 DEFAULT_DISTINGUISHING_SUFFIX = "_htm."  # suffix tacked onto the base name of the source inline document
 USUAL_INSTANCE_EXTS = {"xml", "xbrl"}
 
+
 def saveTargetDocumentIfNeeded(cntlr, options, modelXbrl, filing, suffix="_htm.", iext=".xml", altFolder=None, suplSuffix=None, zipDir=None):
     if (modelXbrl is None): return
     if modelXbrl.modelDocument.type not in (Type.INLINEXBRL, Type.INLINEXBRLDOCUMENTSET):
@@ -70,6 +71,7 @@ def saveTargetDocumentIfNeeded(cntlr, options, modelXbrl, filing, suffix="_htm."
             filingZip = zipfile.ZipFile(saveTargetPath, mode='w', compression=zipfile.ZIP_DEFLATED, allowZip64=False)
 
         filingFiles = set()
+
         # copy referencedDocs to two levels.
         # TODO: this looks fully recursive, not stopping at two.
         def addRefDocs(doc):
@@ -77,12 +79,13 @@ def saveTargetDocumentIfNeeded(cntlr, options, modelXbrl, filing, suffix="_htm."
                 if refDoc.uri not in filingFiles:
                     filingFiles.add(refDoc.uri)
                     addRefDocs(refDoc)
+
         addRefDocs(modelDocument)
 
     else:
          if cntlr.reportZip:
              filingZip = cntlr.reportZip
-             _zipDir = zipDir # use zipDir for rest API returned redline/redact extracted instance
+             _zipDir = zipDir  # use zipDir for rest API returned redline/redact extracted instance
 
     saveTargetDocument(filing, modelXbrl, targetFilename, targetSchemaRefs,
                        outputZip=filingZip, filingFiles=filingFiles, suffix=suffix, iext=iext, suplSuffix=suplSuffix, zipDir=_zipDir)
@@ -101,6 +104,7 @@ def saveTargetDocumentIfNeeded(cntlr, options, modelXbrl, filing, suffix="_htm."
         zipStream.seek(0)
         cntlr.reportZip.writestr(saveTargetPath, zipStream.read())
         zipStream.close()
+
 
 def saveTargetDocument(filing, modelXbrl, targetDocumentFilename, targetDocumentSchemaRefs,
                        outputZip=None, filingFiles=None,
@@ -123,9 +127,9 @@ def saveTargetDocument(filing, modelXbrl, targetDocumentFilename, targetDocument
             filing.writeFile(targetUrl, fh.read())
             fh.close()
         if getattr(modelXbrl, "isTestcaseVariation", False):
-            modelXbrl.extractedInlineInstance = True # for validation comparison
+            modelXbrl.extractedInlineInstance = True  # for validation comparison
         modelXbrl.modelManager.showStatus(_("Saved extracted instance"), clearAfter=5000)
         modelXbrl.ixTargetFilename = targetUrl
-        return # there can only be one "InlineDocumentSet.CreateTargetInstance" but just to be sure
+        return  # there can only be one "InlineDocumentSet.CreateTargetInstance" but just to be sure
     cntlr.logTrace(_("Unable to save extracted document, missing plugin class \"InlineDocumentSet.CreateTargetInstance\"."))
 
