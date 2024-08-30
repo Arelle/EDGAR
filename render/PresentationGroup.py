@@ -172,19 +172,20 @@ class PresentationGroup(object):
 
     def startPreorderTraversal(self):
         visited = set()
+        visitCounter = {"arcs":0}
         giveMemGetPositionDictPrimary = defaultdict(list) # gets populated by recursive call
 
         self.sortRootNodeListByLabel()
 
         if len(self.rootNodeList) == 1:
-            self.doPreorderTraversal(self.rootNodeList[0], giveMemGetPositionDictPrimary, {}, False, False, visited)
+            self.doPreorderTraversal(self.rootNodeList[0], giveMemGetPositionDictPrimary, {}, None, False, visited, visitCounter, 0)
         else:
             for rootNode in self.rootNodeList:
                 # later on we're going to need to decide whether to print a warning about if multiple root nodes are being used, so here we keep track of
                 # everything under each root node.  the idea is that if multiple root nodes are being used, the ordering is arbitrary by label, not controlled
                 # in an intentional way by the filer.
                 setOfConcepts = set()
-                self.doPreorderTraversal(rootNode, giveMemGetPositionDictPrimary, {}, False, setOfConcepts, visited)
+                self.doPreorderTraversal(rootNode, giveMemGetPositionDictPrimary, {}, None, setOfConcepts, visited, visitCounter, 0)
                 self.cube.rootNodeToConceptSetDict[rootNode] = setOfConcepts
 
         # we searched the whole graph and got back giveMemGetPositionDictPrimary which contains all of the primary elements
@@ -193,38 +194,41 @@ class PresentationGroup(object):
 
 
     # as we do our preorder traversal of the graph, the size of the visited set will increases one by one. therefore,
-    # we can use len(visited) for ordering.  if later we sort all of the axes by their order, it will
+    # we can use visitCounter['arcs'] for ordering.  if later we sort all of the axes by their order, it will
     # in the order of a preorder traversal of the presentation group.  the order won't be simple like 1,2,3, it might
-    # be 5, 20, 53, ... but sorting in increasing order will order axes in the order of a preorder traversal.  we do
-    # this trick several times below too.
-    def doPreorderTraversal(self, node, giveMemGetPositionDictPrimary, giveMemGetPositionDictAxis, parentIsAnAxis, setOfConcepts, visited):
+    # be 5, 20, 53, ... but sorting in increasing order will order axes in the order of a preorder traversal.
+    # XBRL 2.1 valid networks of parent-child arcs are guaranteed to be free of directed cyles.
+    # however, it's still necessary to guard against infinite loops; here we just track the depth, so:
+    # stop if it's more than the number of distinct relationships traversed.
+    def doPreorderTraversal(self, node, giveMemGetPositionDictPrimary, giveMemGetPositionDictAxis, parentAxis, setOfConcepts, visited, visitCounter, depth):
         if self.cube.noFactsOrAllFactsSuppressed:
             return
         preferredLabel = None
         relationship = node.arelleRelationship
         if relationship is not None: # root nodes have no relationship
-            if relationship in visited:
-                return
+            #if relationship in visited:
+            #    return
+            visitCounter["arcs"] += 1
             visited.add(relationship)
             preferredLabel = relationship.preferredLabel
         concept = node.arelleConcept
 
         # making giveMemGetPositionDict's
         nodeIsAnAxis = concept is not None and concept.isDimensionItem
+        nVisited = visitCounter["arcs"]
         if nodeIsAnAxis:
-            if concept in visited or concept.qname not in self.cube.hasAxes:
+            if (concept.qname not in self.cube.hasAxes):
                 # first, make sure we don't visit an axis twice, could happen if it has multiple parents
                 # then, make sure it's an axis for this cube
                 return
-            visited.add(concept) # yes, we are sort of misusing visited for this, but it's ok
             if relationship is None:
                 axisOrder = Utils.minNumber
             else:
                 axisOrder = relationship.order
-            parentIsAnAxis = True
-        elif parentIsAnAxis: # only members can be under axes
-            giveMemGetPositionDictAxis[concept.qname] = len(visited)
-        elif not parentIsAnAxis: # we're not on an axis or below an axis, so it's a primary item.
+            parentAxis = concept
+        elif parentAxis is not None: # only members can be under axes
+            giveMemGetPositionDictAxis[concept.qname] = nVisited
+        elif parentAxis is None: # we're not on an axis or below an axis, so it's a primary item.
             try:
                 isStart = Utils.isPeriodStartLabel(preferredLabel)
                 if isStart or Utils.isPeriodEndLabel(preferredLabel):
@@ -239,20 +243,19 @@ class PresentationGroup(object):
             except AttributeError:
                 pass
             # see note earlier about len(visited) for an explanation
-            giveMemGetPositionDictPrimary[concept.qname].append((len(visited), preferredLabel))
+            giveMemGetPositionDictPrimary[concept.qname].append((nVisited, preferredLabel))
 
-            # axes and members are abstract too, but nodeIsAnAxis and parentIsAnAxis are false, so we don't have to worry about them here.
+            # axes and members are abstract too, but nodeIsAnAxis and parentAxis are false, so we don't have to worry about them here.
             if concept.isAbstract:
-                self.cube.abstractDict[concept.qname] = len(visited)
-
+                self.cube.abstractDict[concept.qname] = nVisited
         # if it's false, then there is only one root and there's no possibility of ever needing to print a warning message.  otherwise, keep track of what's under
         # each root node so that if nodes under multiple roots are being used, we can warn that the ordering between them might be unexpected.
-        if setOfConcepts != False and (nodeIsAnAxis or not parentIsAnAxis):
+        if setOfConcepts != False and (nodeIsAnAxis or not bool(parentAxis)):
             setOfConcepts.add(concept)
 
         # units -- note that a member or element can be used for something else and still be used for unit ordering.
         if node.mayBeUnitConcept:
-            self.unitOrdering += [(len(visited), concept.name)] # see note earlier about len(visited) for an explanation
+            self.unitOrdering += [(nVisited, concept.name)] # see note earlier about [count of visits, depth of visits] for an explanation
 
         # labels
         self.buildLabel(concept, preferredLabel)
@@ -260,12 +263,16 @@ class PresentationGroup(object):
         # sort children, we are doing this as we go.
         node.childrenList = sorted(node.childrenList, key = lambda thing : thing.arelleRelationship.order)
 
-        # recurse
-        for childNode in node.childrenList:
-            if parentIsAnAxis:
-                self.doPreorderTraversal(childNode, giveMemGetPositionDictPrimary, giveMemGetPositionDictAxis, parentIsAnAxis, setOfConcepts, visited)
-            else:
-                self.doPreorderTraversal(childNode, giveMemGetPositionDictPrimary, {}, parentIsAnAxis, setOfConcepts, visited)
+        if depth <= len(visited): # you can't go deeper than the number of unique relationships you've already visited.
+            for childNode in node.childrenList:
+                if parentAxis is not None: # collect more of this axis' descendants
+                    self.doPreorderTraversal(childNode, giveMemGetPositionDictPrimary, giveMemGetPositionDictAxis, parentAxis, setOfConcepts, visited, visitCounter, depth)
+                else: 
+                    self.doPreorderTraversal(childNode, giveMemGetPositionDictPrimary, {}, parentAxis, setOfConcepts, visited, visitCounter, depth)
+        else:
+            self.filing.modelXbrl.debug("info", 
+                                              ("Presentation group '%{linkRoleName} a an invalid directed cycle"),
+                                              linkrole=self.cube.linkroleUri)
 
         if nodeIsAnAxis:
             if concept.isTypedDimension: # designate this as a typed dimension axis

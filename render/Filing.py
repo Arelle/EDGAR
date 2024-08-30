@@ -11,6 +11,7 @@ from gettext import gettext as _
 from collections import defaultdict
 import os, math, datetime, dateutil.relativedelta, lxml, sys, time
 import regex as re
+from itertools import chain
 import arelle.ModelValue, arelle.XbrlConst
 from arelle.ModelDtsObject import ModelConcept
 from arelle.ModelObject import ModelObject
@@ -181,11 +182,10 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
 def factAppearsInParentChildBaseSets (fact) -> set:
     appearsInRsets = set()
     for k, rset in fact.modelXbrl.relationshipSets.items():
-        arcrole, *roleURIs = k
-        if arcrole == parentChild:
-            relationshipTargetConcepts = rset.modelRelationshipsTo
-            if fact.concept in relationshipTargetConcepts and bool(rset.linkrole):
-                appearsInRsets.add(rset.linkrole)
+        arcrole, roleURI, *ignore = k
+        if arcrole == parentChild and roleURI is not None:
+            if (fact.concept in chain(rset.loadModelRelationshipsFrom() or [], rset.loadModelRelationshipsTo() or [])):
+                appearsInRsets.add(roleURI)
     return appearsInRsets
 
 def contextDims(context) -> dict:
@@ -490,7 +490,10 @@ class Filing(object):
 
             # build presentation groups
             for concept in self.modelXbrl.qnameConcepts.values():
-                for relationship in self.modelXbrl.relationshipSet(arelle.XbrlConst.parentChild).toModelObject(concept):
+                relationships = self.modelXbrl.relationshipSet(arelle.XbrlConst.parentChild).toModelObject(concept)
+                if not bool(relationships):
+                    relationships = self.modelXbrl.relationshipSet(arelle.XbrlConst.parentChild).fromModelObject(concept)
+                for relationship in relationships:
                     cube = self.cubeDict[relationship.linkrole]
                     cube.presentationGroup.traverseToRootOrRoots(concept, None, None, None, []) # HF: path to roots has to be list for proper error reporting
                     try:
