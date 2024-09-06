@@ -200,6 +200,7 @@ class Cube(object):
 
         for factMembership in self.factMemberships:
             fact, axisMemberLookupDict, role = factMembership
+            if not fact.context.isInstantPeriod: continue # if it's not an instant, ignore any start/end label role.
             # The startEndPreferredLabelList shows what label roles the presentation linkbase expected to be present.
             startEndPreferredLabelList = (self.periodStartEndLabelDict.get(fact.qname) or [])
             if len(startEndPreferredLabelList) > 0:
