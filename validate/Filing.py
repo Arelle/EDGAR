@@ -4483,7 +4483,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         maxDiff = pow(10, -minDec) * tolerance
                                     if difference > maxDiff:
                                         modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
-                                            modelObject=facts, value=sumFact.xValue, mbrSum=mbrSum, mbrStr=mbrStr, name=f.qname.localName,
+                                            modelObject=[sumFact]+memberFacts, value=sumFact.xValue, mbrSum=mbrSum, mbrStr=mbrStr, name=f.qname.localName,
                                             linkroleUri=linkroleUri,
                                             contextID=sumFact.context.id, unitID=sumFact.unit.id if sumFact.unit is not None else "(none)",
                                             edgarCode=edgarCode, ruleElementId=id)
