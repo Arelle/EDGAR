@@ -18,28 +18,30 @@ ixvRootDirPattern = re.compile(r"^i[x-z]viewer")
 wsRootDirPattern = re.compile(r"^(AR/)?(include|i[xy]viewer[^/]*)/(.*)$")
 extMimeType = {
     ".xhtml": "application/xhtml+xml",
-    ".html":  "text/html",
-    ".htm":   "text/html",
-    ".xml":   "application/xml",
-    ".js":    "text/javascript",
-    ".css":   "text/css",
-    ".gif":   "image/gif",
-    ".jpg":   "image/jpeg",
-    ".jpeg":   "image/jpeg",
-    ".bmp":   "image/bmp",
-    ".jpg":   "image/jpeg",
-    ".png":   "image/png",
-    ".svg":   "image/svg+xml",
-    ".tif":   "image/tiff",
-    ".tiff":   "image/tiff",
-    ".csv":   "text/csv",
-    ".txt":   "text/plain",
-    ".json":  "application/json",
+    ".html": "text/html",
+    ".htm": "text/html",
+    ".xml": "application/xml",
+    ".js": "text/javascript",
+    ".css": "text/css",
+    ".gif": "image/gif",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".bmp": "image/bmp",
+    ".jpg": "image/jpeg",
+    ".png": "image/png",
+    ".svg": "image/svg+xml",
+    ".tif": "image/tiff",
+    ".tiff": "image/tiff",
+    ".csv": "text/csv",
+    ".txt": "text/plain",
+    ".json": "application/json",
     ".woff": "font/woff",
     ".woff2": "font/woff2"
     }
 
+
 class _LocalViewer(LocalViewer):
+
     # plugin-specific local file handler
     def getLocalFile(self, file, relpath, request):
         if file == 'favicon.ico':
@@ -50,7 +52,7 @@ class _LocalViewer(LocalViewer):
         if _report.startswith("DisplayDocument.do"):
             _file = file
             _report = str(len(self.reportsFolders) - 1)
-        if file == "---xbrl.zip" and "referer" in request.headers: # no report number, get from referer header
+        if file == "---xbrl.zip" and "referer" in request.headers:  # no report number, get from referer header
             refererPathParts = request.headers["referer"].split("/")
             if len(refererPathParts) >= 4 and refererPathParts[3].isnumeric():
                 _report = refererPathParts[3]
@@ -61,30 +63,30 @@ class _LocalViewer(LocalViewer):
             return static_file(_file, root=os.path.join(self.reportsFolders[0], _report), mimetype=mimeType)
         if ixvRootDirPattern.match(_report):
             return static_file(_file, root=os.path.join(self.reportsFolders[0], _report, "dist"), mimetype=mimeType)
-        if ixviewerDirFilesPattern.match(_file): # although in ixviewer, it refers relatively to ixviewer/
+        if ixviewerDirFilesPattern.match(_file):  # although in ixviewer, it refers relatively to ixviewer/
             return static_file(_file, root=os.path.join(self.reportsFolders[0], 'ixviewer', 'dist'), mimetype=mimeType)
-        if _file.startswith("/ixviewer"): # ops gateway
+        if _file.startswith("/ixviewer"):  # ops gateway
             _fileParts = _file.split("/")
             _file = "/".join(_fileParts[:2] + ["dist"] + _fileParts[2:])
             self.cntlr.addToLog(f"_file={_file}", messageCode="localViewer:trace", level=logging.DEBUG)
             return static_file(_file, root=self.reportsFolders[0][:-1], mimetype=mimeType)
-        if _file.startswith("include/"): # really in ixviewer subtree (Workstation Images are in distribution include)
+        if _file.startswith("include/"):  # really in ixviewer subtree (Workstation Images are in distribution include)
             return static_file(_file[8:], root=os.path.join(self.reportsFolders[0], 'include'), mimetype=mimeType)
-        if _file.startswith("images/") or  _file.startswith("Images/"): # really in ixviewer subtree (Workstation Images are in distribution include)
+        if _file.startswith("images/") or  _file.startswith("Images/"):  # really in ixviewer subtree (Workstation Images are in distribution include)
             return static_file(_file[7:], root=os.path.join(self.reportsFolders[0], 'include'), mimetype=mimeType)
-        if _report == "images": # really in ixviewer subtree (Workstation Images are in distribution include)
+        if _report == "images":  # really in ixviewer subtree (Workstation Images are in distribution include)
             return static_file(_file, root=os.path.join(self.reportsFolders[0], 'include'), mimetype=mimeType)
-        if wsRootDirPattern.match(_file): # really in ixviewer subtree
+        if wsRootDirPattern.match(_file):  # really in ixviewer subtree
             m = wsRootDirPattern.match(_file)
             return static_file(m.group(3), root=os.path.join(self.reportsFolders[0], m.group(2)), mimetype=mimeType)
-        if _report.isnumeric(): # in reportsFolder folder
+        if _report.isnumeric():  # in reportsFolder folder
             # is it an EDGAR workstation query parameter
             if _file == "DisplayDocument.do":
                 if "filename" in request.query:
                     _file = request.query["filename"]
-                    self.cntlr.addToLog("  ?filename={}".format(_file), messageCode="localViewer:get",level=logging.DEBUG)
+                    self.cntlr.addToLog("  ?filename={}".format(_file), messageCode="localViewer:get", level=logging.DEBUG)
                 else:
-                    self.cntlr.addToLog("  ?" + ", ".join([f"{k}={v}" for k,v in request.query.items()]),level=logging.DEBUG)
+                    self.cntlr.addToLog("  ?" + ", ".join([f"{k}={v}" for k, v in request.query.items()]), level=logging.DEBUG)
             elif _file == "ix":
                 return static_file(_file, root=self.reportsFolders[0])
             # check if file is in the current or parent directory (may bve
@@ -99,16 +101,18 @@ class _LocalViewer(LocalViewer):
                 # default zip produced for accession but local zip may have no accession number
                 for f in os.listdir(_fileDir):
                     if f.endswith(".zip"):
-                        redirect("/{}/{}".format(_report,f))
+                        redirect("/{}/{}".format(_report, f))
             if not _fileExists:
-                queryParams = ", ".join([f"{k}={v}" for k,v in request.query.items()])
+                queryParams = ", ".join([f"{k}={v}" for k, v in request.query.items()])
                 if queryParams:
                     queryParams = "?" + queryParams
-                self.cntlr.addToLog("http://localhost:{}/{}{}".format(self.port,file,queryParams), messageCode="localViewer:fileNotFound",level=logging.DEBUG)
-            return static_file(_file, root=_fileDir, headers=self.noCacheHeaders, mimetype=mimeType) # extra_headers modification to py-bottle
-        return static_file(file, root="/") # probably can't get here unless path is wrong
+                self.cntlr.addToLog("http://localhost:{}/{}{}".format(self.port, file, queryParams), messageCode="localViewer:fileNotFound", level=logging.DEBUG)
+            return static_file(_file, root=_fileDir, headers=self.noCacheHeaders, mimetype=mimeType)  # extra_headers modification to py-bottle
+        return static_file(file, root="/")  # probably can't get here unless path is wrong
 
-localViewer = _LocalViewer("SEC ix viewer", EDGAR_VIEWER_ROOT) # plugin singleton local viewer class
 
-def init(cntlr, reportsFolder): # returns browser root
+localViewer = _LocalViewer("SEC ix viewer", EDGAR_VIEWER_ROOT)  # plugin singleton local viewer class
+
+
+def init(cntlr, reportsFolder):  # returns browser root
     return localViewer.init(cntlr, reportsFolder)
