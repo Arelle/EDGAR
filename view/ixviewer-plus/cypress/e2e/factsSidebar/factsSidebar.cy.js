@@ -1,40 +1,35 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus'
-import { selectors } from "../../utils/selectors"
-let filing = filings[0]
+import { selectors } from "../../utils/selectors.mjs"
+import { getFilingsSample, getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
 
-// http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/eer230-a10-qq32018-multi/a10-qq32018-a.htm
-// http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/0001104659-23-099708/tm2325734d1_8ka.htm
-
-// "sec": "https://www.sec.gov/Archives/edgar/data/4457/000000445723000052/uhal-20230331.htm",
-// "secUrl": "https://www.sec.gov/ix?doc=https://www.sec.gov/Archives/edgar/data/4457/000000445723000052/uhal-20230331.htm",
-// "devLink": "http://172.18.85.157:8080/ixviewer2plus/?doc=?doc=./../ixviewer-2-getter/filings/0000004457-23-000052/uhal-20230331.htm",
+let filingsSample = getFilingsSample(Cypress.env);
+let filing = getByAccessionNum('000121390023047204');
 
 describe(`Fact sidebar features`, () => {
     it('prev/next fact nav should work', () => {
         cy.visitHost(filing)
 
         // click first fact
-        cy.get('#fact-identifier-6').click()  // should bring up sidebar
+        cy.get('#fact-identifier-2', { timeout: filing.timeout }).first().click()  // should bring up sidebar
         cy.get(selectors.showFactInSidebar).click() 
         cy.get(selectors.factSidebar).should('be.visible') 
-        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-6"]').click()
-        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-6"]')
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-2"]').click()
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-2"]')
             .should('have.attr', 'selected-fact', 'true')
 
         cy.get(selectors.nextFact).click()
         // first fact should not longer be foucsed
-        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-6"]')
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-2"]')
             .should('have.attr', 'selected-fact', 'false')
-        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-7"]').click()
-        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-7"]')
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-3"]', {force: true}).click()
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-3"]', {force: true})
             .should('have.attr', 'selected-fact', 'true')
 
         cy.get(selectors.prevFact).click()
         // first fact should be focused again
         cy.wait(300)
-        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-6"]')
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-2"]', {force: true})
             .should('have.attr', 'selected-fact', 'true')
-        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-7"]')
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-3"]', {force: true})
             .should('have.attr', 'selected-fact', 'false')
 
         cy.get(selectors.factSideBarClose).click()
@@ -45,7 +40,7 @@ describe(`Fact sidebar features`, () => {
         cy.visitHost(filing)
 
         // click first fact (doc type 10-k)
-        cy.get('#fact-identifier-6').click()  // should bring up sidebar
+        cy.get('#fact-identifier-2', { timeout: filing.timeout }).first().click()  // should bring up sidebar
         cy.get(selectors.showFactInSidebar).click()
         
         cy.get(selectors.sidebarPaginationInfo).should('contain.text', '1 of')
@@ -68,8 +63,8 @@ describe(`Fact sidebar features`, () => {
         cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 1')
 
         cy.get(selectors.sidebarPaginationLast).click() 
-        cy.get(selectors.sidebarPaginationInfo).should('contain.text', '4 of') 
-        cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 4')
+        cy.get(selectors.sidebarPaginationInfo).should('contain.text', '5 of') 
+        cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 5')
     });
 
 
@@ -79,7 +74,7 @@ describe(`Fact sidebar features`, () => {
 
         //When the page loads, the Facts button is disabled
         //Cypress will wait until the text matches, then continue
-        cy.get(selectors.factCountBadge).invoke("text").should("match", /[a-z0-9,]+/);
+        cy.get(selectors.factCountBadge, { timeout: filing.timeout }).invoke("text").should("match", /[a-z0-9,]+/);
         cy.get(selectors.factSidebarToggleBtn).click();
 
         cy.get(".pagination .pagination-info.text-body").invoke("text").then((text) =>
@@ -106,14 +101,14 @@ describe(`Fact sidebar features`, () => {
                     cy.get(fact).invoke("attr", "data-id").then((id) =>
                     {
                         //The fact should be highlighted unless it's in an ix:hidden element
-                        if(Cypress.$(`ix\\:hidden #${id}`).length == 0)
+                        if (Cypress.$(`ix\\:hidden #${id}`).length == 0)
                         {
                             cy.get(`#${id}`).should("satisfy", Cypress.dom.isVisible);
                         }
                     });
                 });
 
-                if(i != max)
+                if (i != max)
                 {
                     //Click to the next page of facts
                     cy.get("#facts-menu-list-pagination .pagination a.page-link > .fas.fa-angle-right").click();

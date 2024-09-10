@@ -16,7 +16,7 @@ type MetaDocument = any;
 
 export const Constants =
 {
-	version: "24.2.u1",
+	version: "24.3",
 	featureSet: "plus",
 
 	scrollPosition: typeof window !== 'undefined' && window.localStorage.getItem("scrollPosition") || "start",

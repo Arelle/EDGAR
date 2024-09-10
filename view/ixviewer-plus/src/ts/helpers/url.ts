@@ -20,12 +20,12 @@ export const HelpersUrl = {
             // already absolute URL
             element.setAttribute('tabindex', '18');
         } else {
-            if(element.getAttribute('href')?.startsWith('#'))
+            if (element.getAttribute('href')?.startsWith('#'))
             {
                 element.setAttribute('tabindex', '18');
                 // already simple anchor tag
             }
-            else if(HelpersUrl.getFormAbsoluteURL && element.getAttribute('href'))
+            else if (HelpersUrl.getFormAbsoluteURL && element.getAttribute('href'))
             {
                 element.setAttribute('tabindex', '18');
                 element.setAttribute('href', HelpersUrl.getFormAbsoluteURL + element.getAttribute('href'));

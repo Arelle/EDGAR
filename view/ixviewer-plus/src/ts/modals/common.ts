@@ -149,36 +149,38 @@ export const ModalsCommon = {
 
 	keyboardEvents: (event: KeyboardEvent) => {
 		const thisCarousel = bootstrap.Carousel.getInstance(document.getElementById('fact-modal-carousel') as HTMLElement);
-
-		if (event.key === '1') {
-			thisCarousel?.to(0);
-			ModalsCommon.focusOnContent();
-			return false;
-		}
-		if (event.key === '2') {
-			thisCarousel?.to(1);
-			ModalsCommon.focusOnContent();
-			return false;
-		}
-		if (event.key === '3') {
-			thisCarousel?.to(2);
-			ModalsCommon.focusOnContent();
-			return false;
-		}
-		if (event.key === '4') {
-			thisCarousel?.to(3);
-			ModalsCommon.focusOnContent();
-			return false;
-		}
-		if (event.key === 'ArrowLeft') {
-			thisCarousel?.prev();
-			ModalsCommon.focusOnContent();
-			return false;
-		}
-		if (event.key === 'ArrowRight') {
-			thisCarousel?.next();
-			ModalsCommon.focusOnContent();
-			return false;
+		const searchInput = document.getElementById('global-search');
+		if (document.activeElement !== searchInput) {
+			if (event.key === '1') {
+				thisCarousel?.to(0);
+				ModalsCommon.focusOnContent();
+				return false;
+			}
+			if (event.key === '2') {
+				thisCarousel?.to(1);
+				ModalsCommon.focusOnContent();
+				return false;
+			}
+			if (event.key === '3') {
+				thisCarousel?.to(2);
+				ModalsCommon.focusOnContent();
+				return false;
+			}
+			if (event.key === '4') {
+				thisCarousel?.to(3);
+				ModalsCommon.focusOnContent();
+				return false;
+			}
+			if (event.key === 'ArrowLeft') {
+				thisCarousel?.prev();
+				ModalsCommon.focusOnContent();
+				return false;
+			}
+			if (event.key === 'ArrowRight') {
+				thisCarousel?.next();
+				ModalsCommon.focusOnContent();
+				return false;
+			}
 		}
 	},
 

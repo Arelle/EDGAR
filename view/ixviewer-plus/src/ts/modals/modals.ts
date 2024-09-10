@@ -186,7 +186,7 @@ export const Modals = {
 			if (factModal != null) {
 				// drag freely while keeping drag button in the client window
 				factModal.style.left = (mouseXPos >= 10 && mouseXPos <= window.innerWidth-14) ? ((mouseXPos - xElement) + factModal.offsetWidth / 2) + 'px' : xElement;
-				factModal.style.top = (mouseYPos >= 10 && mouseYPos <= window.innerHeight-14) ? ((mouseYPos - yElement) + factModal.offsetHeight / 2) + 'px' : yElement;
+				factModal.style.top = (mouseYPos >= 60 && mouseYPos <= window.innerHeight-14) ? ((mouseYPos - yElement) + factModal.offsetHeight / 2) + 'px' : yElement;
 			}
 		}
 

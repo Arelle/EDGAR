@@ -1,10 +1,9 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus'
+// import { filings } from '../../dataPlus/enrichedFilingsPlus.mjs'
 import { selectors } from '../../utils/selectors'
+import { filings } from '../../dataPlus/standardFilings.js'
+import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
 
-let filingsSample = filings;
-if (Cypress.env('limitNumOfFilingsForTestRun')) {
-    filingsSample = filings.slice(0, Cypress.env('limitOfFilingsToTest'));
-}
+let filingsSample = getFilingsSample(Cypress.env);
 
 //TODO: this line is unused -- delete?
 const multidocFilings = filings.filter(f => f.hasOwnProperty('cases') && f.cases.includes('multi-doc'));

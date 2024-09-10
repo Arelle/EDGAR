@@ -12,16 +12,23 @@ import { SingleFact } from "../interface/fact";
 
 export const Pagination = {
 
-	init: (paginaitonContent: Array<string>, selectorForPaginationControls: string, selectorForPaginationContent: string, modalAction: boolean) => {
+	init: (paginationContent: Array<string>, selectorForPaginationControls: string, selectorForPaginationContent: string, modalAction: boolean) => {
 		Pagination.reset();
 		Pagination.getModalAction = modalAction;
 		Pagination.getPaginationControlsSelector = selectorForPaginationControls;
 		Pagination.getPaginationSelector = selectorForPaginationContent;
-		Pagination.setArray(paginaitonContent);
+		Pagination.setArray(paginationContent);
 		Pagination.getCurrentPage = 1;
 		Pagination.getTotalPages = Math.ceil(Pagination.getArray.length / Constants.getPaginationPerPage);
 		Pagination.getPaginationTemplate(Pagination.getCurrentPage);
 		Pagination.setPageSelect();
+		if (paginationContent.length === 0) {
+			document.getElementById('facts-menu-list-pagination')?.classList.add('d-none');
+			document.getElementById('noFactsMsg')?.classList.remove('d-none');
+		} else {
+			document.getElementById('facts-menu-list-pagination')?.classList.remove('d-none');
+			document.getElementById('noFactsMsg')?.classList.add('d-none');
+		}
 	},
 
 	reset: () => {
@@ -85,19 +92,16 @@ export const Pagination = {
 	},
 
 	firstPage: () => {
-
 		Pagination.getCurrentPage = 1;
 		Pagination.getPaginationTemplate(Pagination.getCurrentPage);
 	},
 
 	lastPage: () => {
-
 		Pagination.getCurrentPage = Pagination.getTotalPages;
 		Pagination.getPaginationTemplate(Pagination.getCurrentPage);
 	},
 
 	previousPage: () => {
-
 		Pagination.getCurrentPage = Pagination.getCurrentPage - 1;
 		Pagination.getPaginationTemplate(Pagination.getCurrentPage);
 	},
@@ -108,7 +112,6 @@ export const Pagination = {
 	},
 
 	previousFact: (event: MouseEvent | KeyboardEvent, element: HTMLElement, trueIfHighlightLast: boolean) => {
-
 		const beginAt = ((Pagination.getCurrentPage - 1) * Constants.getPaginationPerPage);
 		const endAt = beginAt + Constants.getPaginationPerPage;
 
@@ -149,7 +152,6 @@ export const Pagination = {
 	},
 
 	nextFact: (event: MouseEvent | KeyboardEvent, element: HTMLElement) => {
-
 		const beginAt = ((Pagination.getCurrentPage - 1) * Constants.getPaginationPerPage);
 		const endAt = beginAt + Constants.getPaginationPerPage;
 		const currentFacts = Pagination.getArray.slice(beginAt, endAt);
@@ -182,7 +184,6 @@ export const Pagination = {
 	},
 
 	getPrevNextControls: () => {
-
 		const elementToReturn = document.createDocumentFragment();
 
 		const divElement = document.createElement('div');
@@ -227,7 +228,6 @@ export const Pagination = {
 	},
 
 	getPaginationInfo: () => {
-
 		const elementToReturn = document.createDocumentFragment();
 
 		const paginationInfoDivElement = document.createElement('div');
@@ -243,7 +243,6 @@ export const Pagination = {
 	},
 
 	getPageControls: () => {
-
 		const firstPage = (Pagination.getCurrentPage === 1) ? 'disabled' : '';
 		const previousPage = (Pagination.getCurrentPage - 1 <= 0) ? 'disabled' : '';
 		const nextPage = (Pagination.getCurrentPage + 1 > Pagination.getTotalPages) ? 'disabled' : '';
@@ -323,11 +322,9 @@ export const Pagination = {
 		navElement.appendChild(ulElement);
 		elementToReturn.appendChild(navElement);
 		return elementToReturn;
-
 	},
 
 	getControlsTemplate: () => {
-
 		const firstPage = (Pagination.getCurrentPage === 1) ? 'disabled' : '';
 		const previousPage = (Pagination.getCurrentPage - 1 <= 0) ? 'disabled' : '';
 		const nextPage = (Pagination.getCurrentPage + 1 > Pagination.getTotalPages) ? 'disabled' : '';
@@ -437,8 +434,6 @@ export const Pagination = {
 				Pagination.goToPage(event?.target?.value as number);
 			});
 		}
-
-
 	},
 
 	goToPage: (pageNumber: number) => {
@@ -487,7 +482,7 @@ export const Pagination = {
 			Pagination.getPaginationTemplate(pageToGoTo);
 			Pagination.scrollToSelectedFactInSidebar(index);
 		} else {
-			ErrorsMinor.factNotActive();
+			ErrorsMinor.factNotInSearch();
 		}
 	},
 
@@ -498,8 +493,18 @@ export const Pagination = {
 		});
 		element.setAttribute('selected-fact', 'true');
 
-		const factElement = document.querySelector(`#dynamic-xbrl-form [filing-url="${fact.file}"] #${fact.id}`);
-		factElement?.scrollIntoView({
+		const selectedFactElem = document.querySelector(`#dynamic-xbrl-form [filing-url="${fact.file}"] #${fact.id}`);
+		const allInlineFacts = Array.from(document.querySelectorAll('[name][contextref]'));
+		allInlineFacts.forEach((factElem: Element) => {
+			if (factElem == selectedFactElem) {
+				factElem.setAttribute('selected-fact', 'true');
+			} else {
+				factElem.setAttribute('selected-fact', 'false');
+			}
+		})
+	
+		selectedFactElem?.setAttribute('selected-fact', 'true');
+		selectedFactElem?.scrollIntoView({
 			behavior: 'smooth',
 			// block: "start", fixes
 			block: "nearest", // previously set to Constants.scrollPosition - not sure why.

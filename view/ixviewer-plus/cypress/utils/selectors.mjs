@@ -43,9 +43,11 @@ export const selectors = {
     submitSearchButton: 'form[data-test="global-search-form"] button[type="submit"]',
     searchSettingsGear: 'form[id="global-search-form"] button[data-name="global-search-options"]',
     searchDataTypeCheckboxFilter: 'form[id="global-search-form"] div.form-check',
+    searchRefOption: 'form[id="global-search-form"] div.form-check:nth-child(6) input',
 
     dataFiltersButton: 'a[data-test="nav-filter-data"]',
     dataAmountsOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(2) > label > input',
+    dataAdditionalOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(6) > label > input',
 
     tagsHeader: 'nav ul > li > a[data-test="nav-filter-tags"]',
     allTagsRadio: 'form[data-name="tags-dropdown"] div input[aria-label*="All"]',

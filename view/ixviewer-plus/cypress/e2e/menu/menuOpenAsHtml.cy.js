@@ -1,15 +1,11 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus'
-
-let filingsSample = filings
-if (Cypress.env('limitNumOfFilingsForTestRun')) {
-    filingsSample = filings.slice(0, Cypress.env('limitOfFilingsToTest'))
-}
+import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
+let filingsSample = getFilingsSample(Cypress.env);
 
 describe(`Menu open as html for ${filingsSample.length} filings`, () => {
     filingsSample.forEach((filing) => {
-        it(`${filing.ticker || filing.docName} ${filing.formType}`, () => {
+        it(`${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
             cy.visitHost(filing)
-            cy.get('a[data-test="menu-dropdown-link"]').click()
+            cy.get('a[data-test="menu-dropdown-link"]').click({ timeout: filing.timeout })
 
             cy.get('a[data-test="form-information-html"]').invoke('attr', 'href').then(href => {
                 cy.request(href).then(response => {

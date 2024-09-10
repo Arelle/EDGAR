@@ -13,8 +13,10 @@ from . import Utils
 import regex as re
 Filing = None
 
+
 class FactAxisMemberGroup(object):
-    def __init__(self, fact, preferredLabel = None):
+
+    def __init__(self, fact, preferredLabel=None):
         self.fact = fact
         self.preferredLabel = preferredLabel
         self.factAxisMemberRowList = []
@@ -25,7 +27,9 @@ class FactAxisMemberGroup(object):
     def __str__(self):
         return "[{}='{}' w/{}Cx{}R]".format(self.fact.elementQname, self.fact.sValue, len(self.factAxisMemberColList), len(self.factAxisMemberRowList))
 
+
 class FactAxisMember(object):
+
     def __init__(self, pseudoAxisName, member, axisMemberPositionTuple=None, memberLabel='None', memberIsDefault=False):
         self.pseudoAxisName = pseudoAxisName
         self.member = member  # either a qname or a startEndContext or a unitID object
@@ -36,7 +40,9 @@ class FactAxisMember(object):
     def __str__(self):
         return "[{}={}]".format(self.pseudoAxisName, self.member)
 
+
 class Embedding(object):
+
     def __init__(self, filing, cube, commandTextListOfLists, factThatContainsEmbeddedCommand=None):
         global Filing
         if Filing is None:
@@ -54,7 +60,7 @@ class Embedding(object):
         self.unitsWeAreKeepingSet = set()
         self.rowCommands = []
         self.colCommands = []
-        #self.groupedAxisQnameSet = set()
+        # self.groupedAxisQnameSet = set()
         self.factAxisMemberGroupList = []
         self.hasElementsAndElementMemberPairs = set()
         self.isEmbeddingOrReportBroken = False
@@ -78,7 +84,6 @@ class Embedding(object):
             else:
                 self.commandTextListOfLists[i][0] = 'row'
 
-
     def generateStandardEmbeddedCommandsFromPresentationGroup(self):
         axes = set()
         # we make this orderedListOfOrderAxisQnameTuples, instead of sorting the dict, just to remove period, unit and primary
@@ -93,7 +98,7 @@ class Embedding(object):
                 orderedListOfOrderAxisQnameTuples += [(presentationGroupOrderForAxis, pseudoaxisQname, axisLabel)]
 
         # here we sort by presentationGroup order, and if they are the same because the axes were all roots, then sort by axis label
-        orderedListOfOrderAxisQnameTuples = sorted(orderedListOfOrderAxisQnameTuples, key=lambda thing : (thing[0], thing[2]))
+        orderedListOfOrderAxisQnameTuples = sorted(orderedListOfOrderAxisQnameTuples, key=lambda thing: (thing[0], thing[2]))
         self.tooManyCells()
         if self.cube.isStatementOfEquity:
             self.localnamesMovedToColumns = []
@@ -125,18 +130,18 @@ class Embedding(object):
                                         self.localnamesMovedToColumns, self.localnamesMovedToRows))
 
             self.controller.logDebug("Equity Command List {}".format(self.commandTextListOfLists))
-        elif self.cube.linkroleUri in ('http://xbrl.sec.gov/rxp/role/Detail'# TODO: Wch first cut at customized rxp rendering, looks crummy
+        elif self.cube.linkroleUri in ('http://xbrl.sec.gov/rxp/role/Detail'  # TODO: Wch first cut at customized rxp rendering, looks crummy
                                        # WcH the problem here is that only 'compact' keyword works right now.
-                                       ,'http://xbrl.sec.gov/rxp/role/ByCategory'
-                                       ,'http://xbrl.sec.gov/rxp/role/ByProject'
-                                       ,'http://xbrl.sec.gov/rxp/role/ByGovernment'):
+                                       , 'http://xbrl.sec.gov/rxp/role/ByCategory'
+                                       , 'http://xbrl.sec.gov/rxp/role/ByProject'
+                                       , 'http://xbrl.sec.gov/rxp/role/ByGovernment'):
             self.emptyHeadingPattern += "|rxp/role/Detail"
             leAxisQname = None
             for ignore, axisQname, ignore in orderedListOfOrderAxisQnameTuples:
                 if axisQname.localName == 'LegalEntityAxis' and self.cube.linkroleUri.endswith('ByCategory'):
-                    leAxisQname= axisQname
+                    leAxisQname = axisQname
                     continue
-                token = 'compact' # WcH experiments with this have unsatisfactory results
+                token = 'compact'  # WcH experiments with this have unsatisfactory results
                 self.commandTextListOfLists += [['row', axisQname, token, '*']]
 
             if len(self.cube.timeAxis) > 0:
@@ -151,7 +156,7 @@ class Embedding(object):
             if len(self.cube.unitAxis) > 0:
                 self.commandTextListOfLists += [['column', 'unit', 'compact', '*']]
 
-            #print(self.commandTextListOfLists) # wch for debug
+            # print(self.commandTextListOfLists) # wch for debug
 
         elif self.cube.isRepurchasesDetail:
             self.commandTextListOfLists += [['column', 'primary', 'compact', '*']]
@@ -160,12 +165,12 @@ class Embedding(object):
             if len(self.cube.timeAxis) > 0:
                 self.commandTextListOfLists += [['row', 'period', 'compact', '*']]
             for _ignore, axisQname, _ignore in orderedListOfOrderAxisQnameTuples:
-                if not axisQname.localName in ('period','primary','unit'):
+                if not axisQname.localName in ('period', 'primary', 'unit'):
                     self.commandTextListOfLists += [['row', axisQname, 'compact', '*']]
 
             # print(self.commandTextListOfLists) # wch for debug
 
-        elif bool(re.search(r"/ffd/main/role/(feesOffering|feesOffset|feesByCmbdPrspcts)",self.cube.linkroleUri)):
+        elif bool(re.search(r"/ffd/main/role/(feesOffering|feesOffset|feesByCmbdPrspcts)", self.cube.linkroleUri)):
             self.emptyHeadingPattern += "|ffd/main/role/fees"
             self.suppressHeadingUnits = True
             self.commandTextListOfLists += [['column', 'primary', 'compact', '*']]
@@ -174,7 +179,7 @@ class Embedding(object):
             if len(self.cube.timeAxis) > 0:
                 self.commandTextListOfLists += [['row', 'period', 'compact', '*']]
             for _ignore, axisQname, _ignore in orderedListOfOrderAxisQnameTuples:
-                if not axisQname.localName in ('period','primary','unit'):
+                if not axisQname.localName in ('period', 'primary', 'unit'):
                     self.commandTextListOfLists += [['row', axisQname, 'compact', '*']]
 
             # print(self.commandTextListOfLists) # wch for debug
@@ -204,7 +209,7 @@ class Embedding(object):
                         printThisTextIfTrue = ''
                         if self.cube.isEmbedded:
                             printThisTextIfTrue = ' or by an embedded command'
-                        #message = ErrorMgr.getError('DIMENSION_AXIS_ORDER_WARNING').format(self.cube.shortName, errorStr, str(axisQname), printThisTextIfTrue)
+                        # message = ErrorMgr.getError('DIMENSION_AXIS_ORDER_WARNING').format(self.cube.shortName, errorStr, str(axisQname), printThisTextIfTrue)
                         self.filing.modelXbrl.warning("EFM.6.26.06",
                                 _("In ''%(linkroleName)s'', the embedded report created by the fact %(fact)s with context %(contextID)s, "
                                   "the axis %(axis)s was not given an order in the presentation group %(linkroleDefinition)s. "
@@ -242,7 +247,7 @@ class Embedding(object):
                             break
 
         else:
-            if bool(re.search(r"/ffd/(main|424i)/role/",self.cube.linkroleUri)):
+            if bool(re.search(r"/ffd/(main|424i)/role/", self.cube.linkroleUri)):
                 self.suppressHeadingUnits = True
 
             for ignore, axisQname, ignore in orderedListOfOrderAxisQnameTuples:
@@ -256,11 +261,11 @@ class Embedding(object):
             if len(self.cube.unitAxis) > 0:
                 self.commandTextListOfLists += [['column', 'unit', 'compact', '*']]
 
-    def getEmptyHeading(self,uri) -> str:
+    def getEmptyHeading(self, uri) -> str:
         heading = "Total"
         if not bool(self.emptyHeadingRegex):
             self.emptyHeadingRegex = re.compile(self.emptyHeadingPattern)
-        if bool(re.search(self.emptyHeadingRegex,uri)):
+        if bool(re.search(self.emptyHeadingRegex, uri)):
             heading = ""
         return heading
 
@@ -308,7 +313,7 @@ class Embedding(object):
 
         if missingRowOrColStr is not None:
             errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(self.factThatContainsEmbeddedCommand)
-            #beginMessage = ErrorMgr.getError('EMBEDDED_COMMANDS_ALL_ROWS_OR_ALL_COLUMNS_ERROR').format(self.cube.shortName, errorStr, missingRowOrColStr)
+            # beginMessage = ErrorMgr.getError('EMBEDDED_COMMANDS_ALL_ROWS_OR_ALL_COLUMNS_ERROR').format(self.cube.shortName, errorStr, missingRowOrColStr)
             _msgCodes = ("EFM.6.26.05.embeddingCmdMissingIterator", "EFM.6.26.05.embeddingCmdMissingIteratorAfterTransposition")
             self.filing.modelXbrl.error(_msgCodes[self.cube.isTransposed],
                 _("In \"%(linkroleName)s\", the embedded report created by the fact %(fact)s with the context %(contextID)s, "
@@ -323,9 +328,6 @@ class Embedding(object):
                 axes=', '.join([str(command.pseudoAxis) for command in commandsToPrint]),
                 messageCodes=_msgCodes)
             self.isEmbeddingOrReportBroken = True
-
-
-
 
     # this function makes a factAxisMemberGroup for each fact we're keeping, and does some housekeeping too.
     def processOrFilterFacts(self):
@@ -343,7 +345,7 @@ class Embedding(object):
         for pseudoAxis, (giveMemGetPositionDict, ignore) in self.cube.axisAndMemberOrderDict.items():
             if isinstance(pseudoAxis, arelle.ModelValue.QName) and "!?isTypedDimensionAxis?!" in giveMemGetPositionDict:
                 # get fact member values for this pseudo axis
-                try: # try to sort by native value
+                try:  # try to sort by native value
                     for typedMember in sorted((getMemberOnAxisForFactDict[pseudoAxis]
                                                for fact, getMemberOnAxisForFactDict, periodStartEndLabel in self.cube.factMemberships
                                                if pseudoAxis in getMemberOnAxisForFactDict),
@@ -351,14 +353,13 @@ class Embedding(object):
                         if typedMember not in giveMemGetPositionDict:
                             giveMemGetPositionDict[typedMember] = len(giveMemGetPositionDict)
 
-                except TypeError: # if unsortable members, try as string (but will be inconsistent on numbers)
+                except TypeError:  # if unsortable members, try as string (but will be inconsistent on numbers)
                     for typedMember in sorted((getMemberOnAxisForFactDict[pseudoAxis]
                                                for fact, getMemberOnAxisForFactDict, periodStartEndLabel in self.cube.factMemberships
                                                if pseudoAxis in getMemberOnAxisForFactDict),
                                               key=lambda member: str(member.typedMemberSortKey)):
                         if typedMember not in giveMemGetPositionDict:
                             giveMemGetPositionDict[typedMember] = len(giveMemGetPositionDict)
-
 
         for fact, getMemberOnAxisForFactDict, periodStartEndLabel in self.cube.factMemberships:
             factAxisMemberGroupList = self.buildFactAxisMemberGroupsForFactOrFilter(pseudoAxisRowColStrTuples, pseudoAxisSet, fact, getMemberOnAxisForFactDict,
@@ -383,7 +384,7 @@ class Embedding(object):
         # if all facts were all filtered out, we don't bother making a report
         if len(self.factAxisMemberGroupList) == 0:
             errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(self.factThatContainsEmbeddedCommand)
-            #message = ErrorMgr.getError('LINKROLE_HAS_NO_FACTS').format(self.cube.shortName, errorStr)
+            # message = ErrorMgr.getError('LINKROLE_HAS_NO_FACTS').format(self.cube.shortName, errorStr)
             self.controller.logDebug(("In ''{}'', all of the facts have been filtered out. Therefore, it will " \
                                       "not be rendered.").format(self.cube.shortName, errorStr))
             self.isEmbeddingOrReportBroken = True
@@ -410,10 +411,6 @@ class Embedding(object):
                                 modelObject=self.factThatContainsEmbeddedCommand, linkrole=self.cube.linkroleUri, linkroleDefinition=self.cube.definitionText,
                                 linkroleName=self.cube.shortName, numberRootConcepts=numUsedRootNodes)
                         break
-
-
-
-
 
     def buildFactAxisMemberGroupsForFactOrFilter(self, pseudoAxisRowColStrTuples, pseudoAxisSet, fact, getMemberOnAxisForFactDict,
                                                  periodStartEndLabel, primaryIndex, primaryRowOrColStr):
@@ -454,10 +451,6 @@ class Embedding(object):
 
         return factAxisMemberGroupList
 
-
-
-
-
     # this builds a factAxisMember and sets the memberLabel and axisMemberPositionTuple attributes.
     # it also decides whether to filter the fact.
     def generateFactAxisMemberLabelListForPrimary(self, fact, axisIndex, periodStartEndLabel):
@@ -472,7 +465,7 @@ class Embedding(object):
         for positionOnPrimaryAxis, labelRole in getMemberPositionsOnAxisDict[fact.qname]:
             mustMatch = (Utils.isPeriodStartOrEndLabel(labelRole)
                          or Utils.isPeriodStartOrEndLabel(periodStartEndLabel))
-            if ((mustMatch and periodStartEndLabel == labelRole) # EDGARDEV-6871 5/5/21
+            if ((mustMatch and periodStartEndLabel == labelRole)  # EDGARDEV-6871 5/5/21
                 or not mustMatch):
                 factAxisMember = FactAxisMember('primary', fact.qname)
                 factAxisMember.axisMemberPositionTuple = (axisIndex, positionOnPrimaryAxis)
@@ -485,8 +478,8 @@ class Embedding(object):
                             fact.concept.qname == qname and
                             ((Utils.durationStartRoleError == labelRole and Utils.isPeriodStartLabel(originalLabelRole)) or
                              (Utils.durationEndRoleError == labelRole and Utils.isPeriodEndLabel(originalLabelRole)))):
-                            #errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(self.factThatContainsEmbeddedCommand)
-                            #message = ErrorMgr.getError('INSTANT_DURATION_CONFLICT_WARNING').format(shortName, errorStr, str(qname), Utils.strFactValue(fact))
+                            # errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(self.factThatContainsEmbeddedCommand)
+                            # message = ErrorMgr.getError('INSTANT_DURATION_CONFLICT_WARNING').format(shortName, errorStr, str(qname), Utils.strFactValue(fact))
                             # TBD: not same as 6.12.7 test, do we replace anyway
                             self.filing.modelXbrl.debug("debug",
                                 _("In \"%(linkroleName)s\", element %(conceptTo)s has period type 'duration' but is given a preferred label %(preferredLabelValue)s when shown under parent %(conceptFrom)s.  The preferred label will be ignored."),
@@ -500,7 +493,6 @@ class Embedding(object):
                 factAxisMemberLabelList += [(factAxisMember, labelRole)]
         return factAxisMemberLabelList
 
-
     # this builds a factAxisMember and sets the memberLabel and axisMemberPositionTuple attributes.
     # it also decides whether to filter the fact.
     def generateFactAxisMemberForNonPrimary(self, fact, axisIndex, periodStartEndLabel, pseudoAxisName, getMemberOnAxisForFactDict):
@@ -512,13 +504,13 @@ class Embedding(object):
             substituteInstant = memberQname.endTime
             memberQname = self.filing.startEndContextDict[(None, substituteInstant)]
 
-        if memberQname is None: # member is a default
+        if memberQname is None:  # member is a default
             isTypedDimension = ('!?isTypedDimensionAxis?!' in getMemberPositionsOnAxisDict)
             if pseudoAxisName in {'unit', 'period'} or isTypedDimension:
                 memberPositionOnAxis = Utils.minNumber  # has no order from PG, so put at beginning
             else:
                 if pseudoAxisName in self.cube.defaultFilteredOutAxisSet:
-                    return None # this fact is on a real axis with the default filtered out, so it's filtered too
+                    return None  # this fact is on a real axis with the default filtered out, so it's filtered too
                 axis = self.cube.hasAxes[pseudoAxisName]
                 try:
                     axisDefaultQname = axis.defaultArelleConcept.qname
@@ -529,7 +521,7 @@ class Embedding(object):
                     # that it wasn't in any other report.  so, in this case, we manufacture a label.
                     if not self.cube.isUncategorizedFacts:
                         errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(self.factThatContainsEmbeddedCommand)
-                        #message = ErrorMgr.getError('AXIS_HAS_NO_DEFAULT').format(self.cube.shortName, errorStr, fact.qname, fact.contextID, axis.arelleConcept.qname)
+                        # message = ErrorMgr.getError('AXIS_HAS_NO_DEFAULT').format(self.cube.shortName, errorStr, fact.qname, fact.contextID, axis.arelleConcept.qname)
                         self.filing.modelXbrl.debug("debug",
                                 _('In "%(cube)s"%(error)s, the fact %(element)s with context %(context)s was filtered because the '
                                   'axis %(axis)s has no default.'),
@@ -542,7 +534,7 @@ class Embedding(object):
 
                 try:
                     memberLabel = self.cube.labelDict[axisDefaultQname]
-                except KeyError: # this can happen when the axis default did not appear in the presentation group.
+                except KeyError:  # this can happen when the axis default did not appear in the presentation group.
                     memberLabel = axisDefaultQname
 
                 try:
@@ -558,7 +550,7 @@ class Embedding(object):
                         return None
             memberIsDefault = True
 
-        elif isinstance(memberQname, Filing.Member): # typed dimension member
+        elif isinstance(memberQname, Filing.Member):  # typed dimension member
             # typed dim position is table
             filingMember = memberQname
             if filingMember not in getMemberPositionsOnAxisDict:
@@ -568,7 +560,7 @@ class Embedding(object):
                     self.cube.labelDict[pseudoAxisName],
                     "(nil)" if memberQname.typedMemberIsNil else memberQname.typedValue)
             memberIsDefault = False
-        else: # explicit member is not a default
+        else:  # explicit member is not a default
             try:
                 memberPositionOnAxis = getMemberPositionsOnAxisDict[memberQname]  # look up memberQname order
             except KeyError:
@@ -589,10 +581,8 @@ class Embedding(object):
                         memberLabel = Utils.prettyPrintQname(memberQname.localName)
             memberIsDefault = False
 
-        return FactAxisMember(pseudoAxisName, memberQname, axisMemberPositionTuple = (axisIndex, memberPositionOnAxis),
-                              memberLabel = memberLabel, memberIsDefault = memberIsDefault)
-
-
+        return FactAxisMember(pseudoAxisName, memberQname, axisMemberPositionTuple=(axisIndex, memberPositionOnAxis),
+                              memberLabel=memberLabel, memberIsDefault=memberIsDefault)
 
     # it is uncomfortable to go back and order the unit axis at this point, it would be easier to do it in Cube's populateUnitPseudoaxis(),
     # however, we do it only because we don't what units will actually be used by this embedding until we've decided which facts we're
@@ -606,7 +596,7 @@ class Embedding(object):
         # used in this cube -- before we could only tell if it's a unit in the entire instance, because we didn't have the cube yet.  then we insist that
         # the units given by the graph form a total ordering, if we are only given a partial ordering, we throw a warning.
         unitOrderDict = {}
-        for order, unitId in sorted(self.cube.presentationGroup.unitOrdering, key=lambda thing : thing[0]):
+        for order, unitId in sorted(self.cube.presentationGroup.unitOrdering, key=lambda thing: thing[0]):
             if unitId in self.unitsWeAreKeepingSet:
                 unitOrderDict[unitId] = order
 
@@ -617,7 +607,7 @@ class Embedding(object):
         if len(unitOrderDict) < len(self.unitsWeAreKeepingSet):
             unitOrderingsFromPGStr = ', '.join(sorted(list(unitOrderDict)))
             missingUnitOrderingsStr = ', '.join(sorted(list(set(self.unitsWeAreKeepingSet) - set(unitOrderDict))))
-            #message = ErrorMgr.getError('PRESENTATION_LINKBASE_UNIT_ORDERING_INCOMPLETE_WARNING').format(self.cube.shortName, unitOrderingsFromPGStr, missingUnitOrderingsStr)
+            # message = ErrorMgr.getError('PRESENTATION_LINKBASE_UNIT_ORDERING_INCOMPLETE_WARNING').format(self.cube.shortName, unitOrderingsFromPGStr, missingUnitOrderingsStr)
             self.filing.modelXbrl.warning("EFM.6.12.09",
                     _('Units of measure %(foundMeasureSet)s were found in "%(linkroleName)s" but the facts presented use '
                       'these additional units of measure: %(missingMeasureSet)s.  Add presentation relationships to provide '
@@ -648,8 +638,7 @@ class Embedding(object):
         newUnitOrderForUnit = unitOrderDict[factAxisMember.member]
         factAxisMember.axisMemberPositionTuple = axisMemberPositionTupleRowOrColList[unitAxisIndex] = (axisOrderFromTuple, newUnitOrderForUnit)
 
-
-    def tooManyCells(self,threshold=2):
+    def tooManyCells(self, threshold=2):
         axesAndMembers = self.cube.axisAndMemberOrderDict
         axes = len(axesAndMembers) - 3
         if axes < threshold:
@@ -660,10 +649,11 @@ class Embedding(object):
         if n < 1000000000:
             return False
         group = self.cube.linkroleUri
-        cells = int(n/1000000000)
-        self.controller.logWarn(f"Presentation group {group} with {axes} axes could have more than {cells} billion cells.  "
-                                +"Split up this presentation group and see EXG, Rendering, to see how to reduce the number of combinations by selecting "
-                                +"fewer members for each axis.",
+        cells = int(n / 1000000000)
+        self.controller.logWarn(f"Presentation group {group} with {axes} axes could have more than {cells} billion cells."
+                                +" Split it up and see [EXG 7.3 Fact Selection]"
+                                +" to see how to reduce the number of combinations by selecting"
+                                +" fewer members for each axis.",
                                 messageCode="EXG.rendering.tooManyDimensions"
                                 )
         return True
@@ -695,8 +685,8 @@ class Embedding(object):
         self.controller.logTrace('****************************************************************\n\n\n')
 
 
-
 class Command(object):
+
     def __init__(self, filing, cube, embedding, commandTextList):
         self.filing = filing
         self.cube = cube
@@ -710,9 +700,9 @@ class Command(object):
 
     def processCommandBuildgetMemberPositionsOnAxisDictOfDicts(self):
         if self.cube.isElements and self.pseudoAxis == 'primary' and self.rowOrColumn == 'column':
-            self.rowOrColumn = 'row' # we will fix it for them
+            self.rowOrColumn = 'row'  # we will fix it for them
             errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(self.embedding.factThatContainsEmbeddedCommand)
-            #message = ErrorMgr.getError('ELEMENTS_USED_PRIMARY_ON_COLUMNS_WARNING').format(self.cube.shortName, errorStr)
+            # message = ErrorMgr.getError('ELEMENTS_USED_PRIMARY_ON_COLUMNS_WARNING').format(self.cube.shortName, errorStr)
             self.filing.modelXbrl.warning("EFM.6.26.09",
                     _("In ''%(linkroleName)s'' the embedded report created by the fact %(fact)s with context %(contextID)s "
                       "contains an iterator \"column primary\" even though the definition text of %(linkroleDefinition)s "
@@ -725,7 +715,7 @@ class Command(object):
         if self.formattingType == 'nodisplay':
             self.embedding.noDisplayAxesSet.add(self.pseudoAxis)
 
-        #elif self.formattingType == 'grouped':
+        # elif self.formattingType == 'grouped':
             #===================================================================
             # if self.pseudoAxis == 'primary':
             #     errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(self.factThatContainsEmbeddedCommand)
@@ -759,7 +749,7 @@ class Command(object):
                     invalidMems.append(mem)
             if invalidMems:
                 errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(self.embedding.factThatContainsEmbeddedCommand)
-                #message = ErrorMgr.getError('EMBEDDED_COMMAND_INVALID_MEMBER_NAME_ERROR').format(self.cube.shortName, errorStr, str(mem))
+                # message = ErrorMgr.getError('EMBEDDED_COMMAND_INVALID_MEMBER_NAME_ERROR').format(self.cube.shortName, errorStr, str(mem))
                 self.filing.modelXbrl.error("EFM.6.26.04.embeddingCmdInvalidMember",
                         _('In "%(linkroleName)s", the embedded report created by the fact %(fact)s '
                           'with the context %(contextID)s, the domain members %(members)s are not presentation descendants of %(axis)s.'),

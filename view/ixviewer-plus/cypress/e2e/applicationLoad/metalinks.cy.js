@@ -1,15 +1,13 @@
-import { filings } from '../../dataPlus/filingsWithUrls'
-// import { filings } from '../../dataPlus/enrichedFilingsPlus'
+// import { filings } from '../../dataPlus/filingsWithUrls'
+// // import { filings } from '../../dataPlus/enrichedFilingsPlus.mjs'
+import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
 
-let filingsSample = filings
-if (Cypress.env('limitNumOfFilingsForTestRun')) {
-    filingsSample = filings.slice(0, Cypress.env('limitOfFilingsToTest'))
-}
+let filingsSample = getFilingsSample(Cypress.env);
 
 describe(`Metalinks requests`, () => {
 	filingsSample.forEach((filing) => {
 		
-		it(`metalinks.json should load for ${filing.ticker || filing.docName} ${filing.formType}`, () => {
+		it(`metalinks.json should load for ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
 			cy.requestMetaLinksPerHost(filing).then(resp => {
 				expect(resp.status).to.equal(200)
 			})

@@ -31,22 +31,24 @@ forbiddenChars = re.compile(r'[\\*?:/\[\]]')
 
 OUTPUT_FILE_NAME = "Financial_Report.xlsx"
 
+
 def intCol(elt, attrName, default=None):
     try:
         return int(elt.get(attrName, default))
     except (TypeError, ValueError):
         return default
 
+
 class XlWriter(object):
+
     def __init__(self, controller, outputFolderName):
         self.controller = controller
         self.outputFolderName = outputFolderName
         self.simplified_transform = lxml.etree.XSLT(lxml.etree.parse(controller.excelXslt))
         self.wb = openpyxl.Workbook()
-        self.sheetNames = set() # prevent duplicates
+        self.sheetNames = set()  # prevent duplicates
         self.workSheet = None
-        controller.logDebug(_('Excel writer initialized {}'.format(controller.entrypoint)),file=os.path.basename(__file__))
-
+        controller.logDebug(_('Excel writer initialized {}'.format(controller.entrypoint)), file=os.path.basename(__file__))
 
     def __repr__(self):
         return ("xlWriter(outputFolderName='{}')".format(self.outputFolderName))
@@ -57,12 +59,11 @@ class XlWriter(object):
         del self.controller
         del self.simplified_transform
 
-
     def save(self, suffix="", zipDir=""):
-        if len(self.wb.worksheets)>1:
+        if len(self.wb.worksheets) > 1:
             self.wb.remove(self.wb.worksheets[0])
         if not (self.controller.reportZip or self.outputFolderName is not None):
-            return # no report output (just validation)
+            return  # no report output (just validation)
         import io
         file = io.BytesIO()
         self.wb.save(file)
@@ -75,18 +76,17 @@ class XlWriter(object):
         file.close()
         del file  # dereference
         self.controller.renderedFiles.add(outputFileName)
-        self.controller.logDebug('Excel output saved {}'.format(self.controller.entrypoint),file=os.path.basename(__file__))
-
+        self.controller.logDebug('Excel output saved {}'.format(self.controller.entrypoint), file=os.path.basename(__file__))
 
     def createWorkSheet(self, reportNum, reportShortName):
         sheetName = reportShortName[:31]  # max length 31 for excel title
 
         try:
-            sheetName = sheetName.encode("ascii", "replace").decode("ascii") # this can throw an exception
-            sheetName = re.sub(forbiddenChars, '_', sheetName) # some characters not allowed in Sheet Names, we replace them with '_'
+            sheetName = sheetName.encode("ascii", "replace").decode("ascii")  # this can throw an exception
+            sheetName = re.sub(forbiddenChars, '_', sheetName)  # some characters not allowed in Sheet Names, we replace them with '_'
         except Exception:
             sheetName = 'nonAsciiName_' + str(reportNum)
-            #message = ErrorMgr.getError('CANNOT_CREATE_SHEET_NAME').format(reportShortName, sheetName)
+            # message = ErrorMgr.getError('CANNOT_CREATE_SHEET_NAME').format(reportShortName, sheetName)
             self.controller.logDebug(("Cannot convert {} to ASCII. The Excel work sheet will instead " \
                                      "be labeled {}.").format(reportShortName, sheetName),
                                      file=os.path.basename(__file__))
@@ -95,13 +95,12 @@ class XlWriter(object):
         # it thinks 'Dog' and 'dog' are the same sheet.
         sheetDupNbr = 1
         while sheetName.casefold() in self.sheetNames:
-            sheetDupNbr += 1 # second sheet title is blahblah_2, 3rd is blahblah_3, _ needed because some sheets end in year numbers
+            sheetDupNbr += 1  # second sheet title is blahblah_2, 3rd is blahblah_3, _ needed because some sheets end in year numbers
             sheetDupNbrStr = str(sheetDupNbr)
-            sheetName = sheetName[:30 - len(sheetDupNbrStr)] + "_" + sheetDupNbrStr # this can overshoot, won't cause an array out of index error
+            sheetName = sheetName[:30 - len(sheetDupNbrStr)] + "_" + sheetDupNbrStr  # this can overshoot, won't cause an array out of index error
 
         self.sheetNames.add(sheetName.casefold())
         self.workSheet = self.wb.create_sheet(title=sheetName)
-
 
     def buildWorkSheet(self, report):
         ws = self.workSheet
@@ -114,24 +113,25 @@ class XlWriter(object):
             # any <table> element appearing in a textBlock is being dropped.
             # any other html formatting of users' text blocks is pretty much thrown away by this.
             _startedAt = time.time()
-            rdoc = self.simplified_transform(report.rootETree,asPage=lxml.etree.XSLT.strparam('true'),method='html')
+            rdoc = self.simplified_transform(report.rootETree, asPage=lxml.etree.XSLT.strparam('true'), method='html')
             self.controller.logDebug("R{} xlout XSLT {:.3f} secs".format(report.cube.fileNumber, time.time() - _startedAt))
             # uncomment to debug intermediate xml result
-            #with open("/Users/hermf/temp/xlout.xml", "wb") as fh:
+            # with open("/Users/hermf/temp/xlout.xml", "wb") as fh:
             #    fh.write(treeToString(rdoc, method='xml', with_tail=False, pretty_print=True, encoding='utf-8', xml_declaration=True))
             row = 0  # openpyxl changed to 1-offset col numbering in version 2
             widthPerCharacter = 1
             maxWidth = 80
             for tableElt in rdoc.iter(tag="table"):
                 # handle only top level table of class 'report'
-                if (tableElt.xpath("count(ancestor::table)") == 0 and tableElt.xpath("count(ancestor-or-self::table[@class='report'])")>0):
-                    def populateCell(col,row,classAttr,text,tag,fontBold):
+                if (tableElt.xpath("count(ancestor::table)") == 0 and tableElt.xpath("count(ancestor-or-self::table[@class='report'])") > 0):
+
+                    def populateCell(col, row, classAttr, text, tag, fontBold):
                         # TODO Just cut off the text at 32767 the biggest string Excel 2010 can handle.
                         colLetter = openpyxl.utils.get_column_letter(col)
                         if colLetter not in colsWithCustomDimensions:
                             colsWithCustomDimensions.add(colLetter)
                             ws.column_dimensions[colLetter] = openpyxl.worksheet.dimensions.ColumnDimension(ws, customWidth=True)
-                        cell = ws.cell(row=row,column=col)
+                        cell = ws.cell(row=row, column=col)
                         # default style fields (so we can set the all at once)
                         wrapText = False
                         alignHorizontal = "general"
@@ -200,24 +200,24 @@ class XlWriter(object):
                                 cell.font = openpyxl.styles.Font(bold=fontBold)
                                 cell.alignment = openpyxl.styles.Alignment(horizontal=alignHorizontal, vertical=alignVertical, wrap_text=wrapText)
                             else:
-                                cell.style = openpyxl.styles.Style(font = openpyxl.styles.Font(bold=fontBold),
-                                                   alignment = openpyxl.styles.Alignment(horizontal=alignHorizontal, vertical=alignVertical, wrap_text=wrapText)
+                                cell.style = openpyxl.styles.Style(font=openpyxl.styles.Font(bold=fontBold),
+                                                   alignment=openpyxl.styles.Alignment(horizontal=alignHorizontal, vertical=alignVertical, wrap_text=wrapText)
                                                    # HF causes crash ,number_format=fmt
                                                    )
                             cell.number_format = fmt
                         try:
-                            currentWidth =  ws.column_dimensions[colLetter].width
+                            currentWidth = ws.column_dimensions[colLetter].width
                             w = len(text) + 1
                             if unitSymbol:
                                 for c, n in collections.Counter(unitSymbol).items():
                                     if c in ('MW_'): w += n * 2
                                     elif c.islower() or c.isdigit() or c in (' .,'): w += n
                                     else: w += n * 1.3
-                                w += 2 # assure room for unit negative numbers and padding
-                            newWidth = min(int(w) * widthPerCharacter,maxWidth)
-                            ws.column_dimensions[colLetter].width = newWidth if currentWidth is None else max(currentWidth,newWidth)
+                                w += 2  # assure room for unit negative numbers and padding
+                            newWidth = min(int(w) * widthPerCharacter, maxWidth)
+                            ws.column_dimensions[colLetter].width = newWidth if currentWidth is None else max(currentWidth, newWidth)
                         except Exception as ex:
-                            #message = ErrorMgr.getError('CANNOT_ADJUST_WIDTH').format(cell,colLetter, ex)
+                            # message = ErrorMgr.getError('CANNOT_ADJUST_WIDTH').format(cell,colLetter, ex)
                             self.controller.logDebug(("Internal error in worksheet generation: {} could not adjust width on column {}: {}").format(
                                                       cell, colLetter, ex), file='Xlout.py', messageCode="debug")
                         return cell
@@ -229,41 +229,41 @@ class XlWriter(object):
                                          for col, mergedArea in mergedAreas.items()
                                          if rowNum >= mergedArea[1]]:  # rowNum is 0-based, row is 1-based
                             del mergedAreas[mergeCol]
-                        col = 1 # openpyxl 2.0.2 cell A1 row=1 col=1
+                        col = 1  # openpyxl 2.0.2 cell A1 row=1 col=1
                         for trTdElt in trElt.iterchildren():
                             if trTdElt.tag in ('th', 'td'):
                                 if col == 1:
-                                    row += 1 # new row
+                                    row += 1  # new row
                                 if col in mergedAreas:
                                     col += mergedAreas[col][0]
                                 colspan = intCol(trTdElt, "colspan", 1)
                                 rowspan = intCol(trTdElt, "rowspan", 1)
                                 if rowspan > 1:
                                     mergedAreas[col] = (colspan, row + rowspan - 1)
-                                #text = trTdElt.text_content().strip()
+                                # text = trTdElt.text_content().strip()
                                 text = ''.join([s for s in trTdElt.itertext(tag=lxml.etree.Element)])
                                 textNodes = tryExtractingTextNodes(text)
                                 if textNodes is not None:
                                     text = textNodes
                                 if not text == '':
-                                    isBold = any(True for ignore in trTdElt.iterdescendants('strong','b'))
-                                    ignore = populateCell(col,row,trTdElt.get("class"),text,trTdElt.tag,isBold)
+                                    isBold = any(True for ignore in trTdElt.iterdescendants('strong', 'b'))
+                                    ignore = populateCell(col, row, trTdElt.get("class"), text, trTdElt.tag, isBold)
                                 elif rowspan > 1 or colspan > 1:
-                                    ws.cell(row=row,column=col)
+                                    ws.cell(row=row, column=col)
                                 if colspan > 1 or rowspan > 1:
                                     # openpyxl bug in 2.0.2, these row/col are 0 offset, not 1 offset
-                                    #ws.merge_cells(start_row=row, end_row=row+rowspan-1, start_column=col, end_column=col+colspan-1)
+                                    # ws.merge_cells(start_row=row, end_row=row+rowspan-1, start_column=col, end_column=col+colspan-1)
                                     ws.merge_cells(range_string='%s%s:%s%s' % (openpyxl.utils.get_column_letter(col),
                                                                                row,
-                                                                               openpyxl.utils.get_column_letter(col+colspan-1),
-                                                                               row+rowspan-1))
+                                                                               openpyxl.utils.get_column_letter(col + colspan - 1),
+                                                                               row + rowspan - 1))
                                 col += colspan
         except (lxml.etree.LxmlError, lxml.etree.XSLTError) as err:
-            self.controller.logDebug("Internal error in worksheet generation: {}".format(err.args),file='Xlout.py', messageCode="debug")
+            self.controller.logDebug("Internal error in worksheet generation: {}".format(err.args), file='Xlout.py', messageCode="debug")
         except (Exception) as err:
             try: message = err.message
-            except: message = str(getattr(err,'args',err))
-            self.controller.logDebug("Internal error in worksheet generation: {}".format(message),file='Xlout.py', messageCode="debug")
+            except: message = str(getattr(err, 'args', err))
+            self.controller.logDebug("Internal error in worksheet generation: {}".format(message), file='Xlout.py', messageCode="debug")
 
 
 def tryExtractingTextNodes(text):
@@ -276,18 +276,17 @@ def tryExtractingTextNodes(text):
     if '<' in text and '>' in text:
         blank = ' '
         newline = '\n'
-        blanks_pat='['+''.join(['\xA0','\x40','\x09',blank])+']+'
-        newlines_pat='[ \r\n]*[\r\n][ \r\n]*'
+        blanks_pat = '[' + ''.join(['\xA0', '\x40', '\x09', blank]) + ']+'
+        newlines_pat = '[ \r\n]*[\r\n][ \r\n]*'
         try:
-            tree = lxml.etree.HTML('<body>'+text+'</body>')
-            plain = ' '.join([x for x in tree.itertext(tag=lxml.etree.Element,with_tail=False)])
-            plain = re.sub(blanks_pat,blank,plain)
-            plain = re.sub(newlines_pat,newline,plain)
+            tree = lxml.etree.HTML('<body>' + text + '</body>')
+            plain = ' '.join([x for x in tree.itertext(tag=lxml.etree.Element, with_tail=False)])
+            plain = re.sub(blanks_pat, blank, plain)
+            plain = re.sub(newlines_pat, newline, plain)
             plain = plain.strip('\n')
             del tree
             return plain
         except Exception as ignore:
             return None
-    return None # from tryExtractingTextNodes
-
+    return None  # from tryExtractingTextNodes
 

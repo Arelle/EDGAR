@@ -1,7 +1,7 @@
 import { Reference, SingleFact } from "./fact";
 import { FormInformation } from "./form-information";
 import { Instance } from "./instance";
-import { Meta, Section } from "./meta";
+import { Meta, Report, Section } from "./meta";
 
 
 export interface InstanceFile
@@ -12,7 +12,7 @@ export interface InstanceFile
     instanceHtm: string;
     map: Map<string, SingleFact>;
     metaInstance: Meta;
-    xhtmls: XhtmlFileMeta[];
+    docs: XhtmlFileMeta[];
     xmlSlugs: string[];
     xmlUrl: string;
     xml?: Instance;
@@ -25,7 +25,7 @@ export interface MetaLinks
     meta: Meta;
     inlineFiles: Array<{ slug: string, current: boolean, loaded: boolean }>;
     version: string;
-    sections: Record<any, unknown>;
+    sections: Record<any, Report>;
     std_ref?: { [key: string]: Reference };
 }
 
