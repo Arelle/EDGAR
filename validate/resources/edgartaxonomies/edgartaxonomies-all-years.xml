@@ -734,7 +734,7 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 		<Prefix>vip-n6</Prefix>
 	</Loc>
 	<!-- VIP 2024q4 -->
-	    <Loc>
+	<Loc>
         <Family>VIP</Family>
         <Version>2024q4</Version>
         <Href>https://xbrl.sec.gov/vip/2024q4/vip-2024q4.xsd</Href>
