@@ -548,10 +548,22 @@ def filingValidate(cntlr, options, filesource, entrypointFiles, sourceZipStream=
                                     {"deiDocumentType": r.deiDocumentType, "attachmentDocumentType": r.attachmentDocumentType,
                                      "edgarCode": "cp-0302-Sdr-Has-Non-Sdr-Attachment"},
                                     r.url)
+
+        hasInline = False
+        hasInstance = False
         _attachmentDocumentTypeReports = defaultdict(list)
         for r in reports:
             if hasattr(r, "attachmentDocumentType") and r.attachmentDocumentType and not supplementalAttachmentDocumentTypesPattern.match(r.attachmentDocumentType):
                 _attachmentDocumentTypeReports[r.attachmentDocumentType.partition(".")[0]].append(r)
+            if r.isInline:
+                hasInline = True
+            else:
+                hasInstance = True
+
+        # EDGAR will not accept an Inline XBRL document that includes a separate instance document in the submission process.
+        if hasInline and hasInstance:
+            efmFiling.error("EFM.5.02.05", "You can not attach an Instance XBRL document and an Inline XBRL document on the same Submission.")
+
         if len(_attachmentDocumentTypeReports) > 1:
             efmFiling.error("EFM.6.03.08",
                             _("A filling contains multiple attachment document types %(attachmentDocumentType)s."),

@@ -47,7 +47,7 @@ docTypesNotAllowingIfrs = ('485APOS', '485BPOS','485BXT', '497', 'N-1A', 'N-1A/A
                            'K SDR', 'L SDR')
 
 docTypesNotAllowingInlineXBRL = {
-    "K SDR", "L SDR", "2.01 SD"}
+    "K SDR", "L SDR"}
 docTypesAttachmentDocumentType = {
     "2.01 SD": "EX-2.01",
     "K SDR": "EX-99.K SDR",
