@@ -6,7 +6,7 @@
 
   <DisclosureSystem
      names="US SEC (Edgar Filing Manual, Strict)|efm|efm-strict"
-     description="US SEC Edgar Filing Manual v71 Release 24.4\n
+     description="US SEC Edgar Filing Manual v72 Release 24.4\n
      Default language en-US (en allowed in some cases per EFM)\n
      CIK identifier patterns\n
      Disallowed references are blocked and not loaded (same as SEC production system)\n
@@ -44,7 +44,7 @@
      />
   <DisclosureSystem
      names="US SEC (Edgar Filing Manual, Pragmatic)|efm-blocking|efm-pragmatic"
-     description="US SEC Edgar Filing Manual v71 Release 24.4\n
+     description="US SEC Edgar Filing Manual v72 Release 24.4\n
      Default language en-US (en allowed in some cases per EFM)\n
      CIK identifier patterns\n
      Allowed references http://www.sec.gov/info/edgar/edgartaxonomies.shtml\n
