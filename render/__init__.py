@@ -143,7 +143,7 @@ Language of labels:
     GUI may use tools->language labels setting to override system language for labels
 
 """
-VERSION = '3.24.3'
+VERSION = '3.24.4'
 
 from collections import defaultdict
 from arelle import PythonUtil
