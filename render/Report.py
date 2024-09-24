@@ -1106,9 +1106,24 @@ class Report(object):
         baseNameBeforeExtension = self.filing.fileNamePrefix + str(self.cube.fileNumber)
         reportSummary.baseNameBeforeExtension = baseNameBeforeExtension
         tree = self.rootETree.getroottree()
+        if self.filing.reportJsonFormat: self.writeJsonFile(baseNameBeforeExtension, tree, reportSummary)
         if self.filing.reportXmlFormat: self.writeXmlFile(baseNameBeforeExtension, tree, reportSummary)
         if self.filing.reportHtmlFormat: self.writeHtmlFile(baseNameBeforeExtension, tree, reportSummary)
 
+    def writeJsonFile(self, baseNameBeforeExtension, tree, reportSummary):
+        import json, xmltodict
+        baseName = (self.filing.rFilePrefix or '') + baseNameBeforeExtension + '.json' + (self.filing.suplSuffix or '')
+        reportSummary.xmlFileName = baseName
+        xmlText = treeToString(tree, xml_declaration=True, encoding='utf-8', pretty_print=True)
+        json_data = json.dumps(xmltodict.parse(xmlText), indent=4)
+
+        if self.filing.reportZip:
+            self.filing.reportZip.writestr(self.filing.zipDir + baseName, json_data)
+            self.controller.renderedFiles.add(baseName)
+        elif self.filing.fileNameBase is not None:
+            self.controller.writeFile(os.path.join(self.filing.fileNameBase, baseName), json_data)
+            self.controller.renderedFiles.add(baseName)
+            
     def writeXmlFile(self, baseNameBeforeExtension, tree, reportSummary):
         baseName = (self.filing.rFilePrefix or '') + baseNameBeforeExtension + '.xml' + (self.filing.suplSuffix or '')
         reportSummary.xmlFileName = baseName
