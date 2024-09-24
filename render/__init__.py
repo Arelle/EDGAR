@@ -242,7 +242,7 @@ def edgarRendererCmdLineOptionExtender(parser, *args, **kwargs):
                       help=_("Type of HTML report...Complete: asPage rendering = True, or Fragment: asPage rendering = False."))
 
     parser.add_option("--reportFormat", dest="reportFormat",
-                      help=_("One of Xml, Html, HtmlAndXml or None."))
+                      help=_("One of Xml, Html, JSON, HtmlAndXml or None."))
 
     parser.add_option("--failFile", dest="failFile", help=_("Relative path and name of fail file. "))
 
@@ -404,7 +404,7 @@ class EdgarRenderer(Cntlr.Cntlr):
 
         # options applicable to rendering in either mode:
         options.renderingService = setProp('renderingService', options.renderingService, rangeList=['Instance', 'Daemon'])
-        options.reportFormat = setProp('reportFormat', options.reportFormat, rangeList=['Html', 'Xml', 'HtmlAndXml', 'None'])
+        options.reportFormat = setProp('reportFormat', options.reportFormat, rangeList=['Html', 'Xml', 'JSON', 'HtmlAndXml', 'None'])
         options.htmlReportFormat = setProp('htmlReportFormat', options.htmlReportFormat, rangeList=['Complete', 'Fragment'])
         options.zipOutputFile = setProp('zipOutputFile', options.zipOutputFile, cs=True)
         options.sourceList = " ".join(setProp('sourceList', options.sourceList, cs=True).split()).split(',')
