@@ -646,6 +646,8 @@ class Embedding(object):
         n = 1
         for (domain, ignore) in axesAndMembers.values():
             n = n * len(domain)
+        m = len(self.filing.modelXbrl.facts)
+        n = min(m * m * 4, n) # diagonal is 2x number of facts due to abstracts; square is one fact on each cell in the diagonal
         if n < 1000000000:
             return False
         group = self.cube.linkroleUri
