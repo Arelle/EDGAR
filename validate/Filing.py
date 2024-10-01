@@ -2123,7 +2123,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 for rName in referenceTag:
                                     if isAnotherLine:
                                         otherLinesFacts = list(
-                                                fr for fr in sevFacts(sev, rName, axisKey=sev.get("references-axes"), whereKey="references-where", sevCovered=False)
+                                                fr for fr in sevFacts(sev, rName, axisKey=sev.get("references-axes"), whereKey="references-where", excludeKey="references-exclude", sevCovered=False)
                                                 if fr.context.dimsHash != (f.context.dimsHash if f is not None else None) and
                                                 (referenceComparison is None or
                                                 (referenceComparison == "equal" and fValue == "absent" if fr is None else fValue == fr.xValue)
@@ -2131,7 +2131,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                             )
                                         fr = otherLinesFacts[0] if any(otherFact is not None for otherFact in otherLinesFacts) else None
                                     else:
-                                        fr = sevFact(sev, rName, f, axisKey=sev.get("references-axes"), whereKey="references-where", sevCovered=False) # dependent fact is of context of f or for "c" inherited context (less disaggregated)
+                                        fr = sevFact(sev, rName, f, axisKey=sev.get("references-axes"), whereKey="references-where", excludeKey="references-exclude", sevCovered=False) # dependent fact is of context of f or for "c" inherited context (less disaggregated)
                                     items = [f]
                                     if fr is None:
                                         frValue = "absent"

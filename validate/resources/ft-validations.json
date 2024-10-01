@@ -4643,6 +4643,7 @@
         "validation": "fdepflag-any-gt-zero",
         "references": [{"name": "ffd:Rule457uFlg", "where-key":"where-457u"},
         			   {"name": "ffd:FeesOthrRuleFlg", "where-key":"where-othr"}],
+        "references-exclude" : [{"ffd:Rule457uFlg": [true], "!anotherLine!": {"ffd:OfferingSctyTp": ["!not!", "Exchange-Traded Vehicle Securities"]}, "header:submissionType": ["S-1"]}],
         "where-457u": {"ffd:Rule457uFlg": [true], "ffd:OfferingSctyTp": ["Exchange-Traded Vehicle Securities"], "header:submissionType": ["S-1"],
             "ffd:Rule457oFlg": ["!anotherLine!", false, "absent"], "ffd:Rule457aFlg": ["!anotherLine!", false, "absent"],
             "ffd:Rule457fFlg": ["!anotherLine!", false, "absent"], "ffd:Rule457rFlg": ["!anotherLine!", false, "absent"],
