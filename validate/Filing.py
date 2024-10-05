@@ -47,6 +47,7 @@ from .Util import conflictClassFromNamespace, abbreviatedNamespace, NOYEAR, WITH
                     loadCustomAxesReplacements, loadNonNegativeFacts, loadDeiValidations, loadOtherStandardTaxonomies, \
                     loadUgtRelQnames, loadDqcRules, factBindings, leastDecimals, axisMemQnames, memChildQnames, \
                     loadTaxonomyCompatibility, loadIxTransformRegistries, ValueRange
+from .XuleInterface import xuleValidate
 
 MIN_DOC_PER_END_DATE = ModelValue.dateTime("1980-01-01", type=ModelValue.DATE)
 MAX_DOC_PER_END_DATE = ModelValue.dateTime("2050-12-31", type=ModelValue.DATE)
@@ -3613,6 +3614,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
     val.modelXbrl.profileActivity("... filer preferred label checks", minTimeToShow=1.0)
 
     # DQC.US rules
+    if xuleValidate(val): # true if there was a Xule validation
+        dqcRules = {} # block built-in rules
     for dqcRuleName, dqcRule in dqcRules.items(): # note this is an OrderedDict to preserve rule execution order
         if dqcRuleName == "copyright": # first in JSON OrderedDict, initialize common variables for rule
             if ugtRels:

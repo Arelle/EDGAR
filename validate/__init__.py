@@ -137,6 +137,9 @@ from .Consts import (feeTagEltsNotRelevelable, feeTagMessageCodesRelevelable, fe
                      exhibitTypesPrivateNotDisseminated, primaryAttachmentDocumentTypesPattern)
 from .Filing import validateFiling
 from .MessageNumericId import messageNumericId
+from .XuleInterface import (menuTools as xuleMenuTools, validateMenuTools as xuleValidateMenuTools,
+                            cntrlrCmdLineUtilityRun as xuleCntrlrCmdLineUtilityRun,
+                            cmdOptions as xuleCmdOptions, init as xuleInit, close as xuleClose)
 import regex as re
 from collections import defaultdict
 
@@ -424,11 +427,13 @@ def guiTestcasesStart(cntlr, modelXbrl, *args, **kwargs):
     modelManager = cntlr.modelManager
     if cntlr.hasGui: # enable EdgarRenderer to initiate ixviewer irregardless of whether an EFM disclosure system is active
         for pluginXbrlMethod in pluginClassMethods("EdgarRenderer.Gui.Run"):
+            xuleInit(cntlr)
             pluginXbrlMethod(cntlr, modelXbrl, *args,
                              # pass plugin items to GUI mode of EdgarRenderer
                              exhibitTypesStrippingOnErrorPattern=exhibitTypesStrippingOnErrorPattern,
                              exhibitTypesPrivateNotDisseminated=exhibitTypesPrivateNotDisseminated,
                              setReportAttrs=setReportAttrs, **kwargs)
+            xuleClose(cntlr)
 
 def testcasesStart(cntlr, options, modelXbrl, *args, **kwargs):
     # a test or RSS cases run is starting, in which case testcaseVariation... events have unique efmFilings
@@ -690,6 +695,8 @@ def commandLineOptionExtender(parser, *args, **kwargs):
                       action="store_true",
                       dest="buildFTValidationsFile",
                       help=_("Build EFM Validation deprecated concepts file (pre-cache before use)"))
+    # xule cmd options
+    xuleCmdOptions(parser, *args, **kwargs)
 
 def utilityRun(self, options, *args, **kwargs):
     if options.buildDeprecatedConceptsFile:
@@ -698,6 +705,8 @@ def utilityRun(self, options, *args, **kwargs):
     if options.buildFTValidationsFile:
         from .Util import buildFTValidationsFile
         buildFTValidationsFile(self)
+    # call Xule's cntrlrCmdLineUtilityRun
+    xuleCntrlrCmdLineUtilityRun(self, options, *args, **kwargs)
 
 class Filing:
     def __init__(self, cntlr, options=None, filesource=None, entrypointfiles=None, sourceZipStream=None, responseZipStream=None, errorCaptureLevel=None):
@@ -893,7 +902,7 @@ __pluginInfo__ = {
     'version': '1.24.3', # SEC EDGAR release 24.3
     'description': '''EFM Validation.''',
     'license': 'Apache-2',
-    'import': ('EDGAR/transform',), # SEC inline can use SEC transformations
+    'import': ('transforms/SEC','xule'), # SEC inline can use SEC transformations
     'author': authorLabel,
     'copyright': copyrightLabel,
     'aliases': ('validate/EFM', ),
@@ -922,5 +931,8 @@ __pluginInfo__ = {
     'FileSource.File': fileSourceFile,
     'FileSource.Exists': fileSourceExists,
     'Logging.Severity.Releveler': severityReleveler,
-    'InlineDocumentSet.IsolateSeparateIXDSes': isolateSeparateIXDSes
+    'InlineDocumentSet.IsolateSeparateIXDSes': isolateSeparateIXDSes,
+    # Xule interfaces
+    'CntlrWinMain.Menu.Tools': xuleMenuTools,
+    'CntlrWinMain.Menu.Validation': xuleValidateMenuTools
 }
