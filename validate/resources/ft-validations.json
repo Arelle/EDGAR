@@ -4603,8 +4603,11 @@
         "sub-types": ["F-1", "F-3", "F-3D", "S-3", "S-3D", "S-11", "S-4", "S-4EF", "N-14 8C", "F-4", "F-10", "F-10EF", "S-8"],
         "xbrl-names": "ffd:TtlOfferingAmt",
         "bind-if-absent": true,
-        "where": {"ffd:TtlOfferingAmt": ["less than or equal", 0, "absent"],
-        		  "ffd:Rule429CmbndPrspctsFlg axis cp": ["!anotherLine!", "!not!", true]},
+        "where": {"ffd:TtlOfferingAmt": ["less than or equal", 0, "absent"]},
+        "exclude": [{
+                "header:submissionType": ["F-1", "F-3", "F-3D", "F-4", "F-10", "F-10EF", "N-14 8C", "S-3", "S-3D", "S-4", "S-4EF", "S-11"],
+                "ffd:Rule429CmbndPrspctsFlg axis cp": [true]}
+        ],
         "efm": "ft.dbtVal4",
         "validation": "fdepflag-any-gt-zero",
         "references": [{"name": "ffd:Rule457uFlg", "where-key":"where-457u"},

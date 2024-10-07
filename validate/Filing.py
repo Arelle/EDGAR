@@ -1388,7 +1388,11 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                                 break
                                         conditionResults.append(foundOtherLine)
                                     else:
-                                        fexcl = sevFact(sev, exclName, f, sevCovered=False)
+                                        if " axis " in exclName:
+                                            _exclName, _sep, _axisKey = exclName.partition(" axis ")
+                                            fexcl = sevFact(sev, _exclName, axisKey=_axisKey, sevCovered=False)
+                                        else:
+                                            fexcl = sevFact(sev, exclName, f, sevCovered=False)
                                         fexclVal = "absent" if fexcl is None else fexcl.xValue
                                         conditionResults.append(not whereConditionIsFalse(fexclVal, exclCond))
                                 if all(conditionResults):
@@ -2110,7 +2114,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     isAnotherLine = validation.endswith("anotherLine")
                     referenceComparison = sev.get("references-comparison")
                     for name in names:
-                        for f in sevFacts(sev, name, deduplicate=True, whereKey="where", fallback=bindIfAbsent, sevCovered=False):
+                        for f in sevFacts(sev, name, deduplicate=True, whereKey="where", excludeKey="exclude", fallback=bindIfAbsent, sevCovered=False):
                             flagFactsFound = set()
                             if f is None:
                                 fMbrVals = () # process reference values
