@@ -4607,8 +4607,8 @@
         "exclude": [{
                 "header:submissionType": ["F-1", "F-3", "F-3D", "F-4", "F-10", "F-10EF", "N-14 8C", "S-3", "S-3D", "S-4", "S-4EF", "S-11"],
                 "ffd:Rule429CmbndPrspctsFlg axis cp": [true],
-                "ffd:Rule457oFlg axis of": [false, "absent"], "ffd:Rule457aFlg axis of": [false, "absent"],
-                "ffd:Rule457fFlg axis of": [false, "absent"], "ffd:Rule457rFlg axis of": [false, "absent"],
+                "ffd:Rule457oFlg axis of": [false, "absent"], "ffd:Rule457aFlg axis of": [false, "absent"], "ffd:FeesOthrRuleFlg axis of": [false, "absent"],
+                "ffd:Rule457fFlg axis of": [false, "absent"], "ffd:Rule457rFlg axis of": [false, "absent"], "ffd:Rule457uFlg axis of": [false, "absent"],
                 "ffd:Rule457sFlg axis of": [false, "absent"], "ffd:Rule415a6Flg axis of": [false, "absent"]
             }
         ],
