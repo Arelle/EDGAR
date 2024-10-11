@@ -195,7 +195,7 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
     <Loc>
         <Family>IFRS</Family>
         <Version>2024</Version>
-        <Href>http://xbrl.org/2020/extensible-enumerations-2.0.xsd</Href>
+        <Href>https://xbrl.org/2020/extensible-enumerations-2.0.xsd</Href>
         <AttType>SCH</AttType>
         <FileTypeName>Schema</FileTypeName>
         <Elements>0</Elements>
