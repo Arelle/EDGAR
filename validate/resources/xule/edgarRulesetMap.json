@@ -1,0 +1,5 @@
+{
+    "http://fasb.org/us-gaap/2024": "/Users/hermf/Documents/projects/Arelle/ArelleProject/edgrXule/arelle/plugin/EDGAR/validate/resources/xule/dqcrt-us-2024-V25-ruleset.zip",
+    "http://fasb.org/us-gaap/2023": "/Users/hermf/Documents/projects/Arelle/ArelleProject/edgrXule/arelle/plugin/EDGAR/validate/resources/xule/dqcrt-us-2023-V25-ruleset.zip",
+    "http://fasb.org/us-gaap/2022": "/Users/hermf/Documents/projects/Arelle/ArelleProject/edgrXule/arelle/plugin/EDGAR/validate/resources/xule/dqcrt-us-2022-V25-ruleset.zip"
+    }

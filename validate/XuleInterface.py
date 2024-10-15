@@ -29,7 +29,7 @@ Implementation of DQC rules invokes https://xbrl.us/dqc-license and https://xbrl
 $Change: 22782 $
 DOCSKIP
 """
-import optparse
+import optparse, os, json
 from arelle import PluginManager
 
 """ Xule validator specific variables."""
@@ -41,12 +41,15 @@ _description = 'DQC rules validator.'
 _license = 'Apache-2'
 _author = 'XBRL US Inc.'
 _copyright = '(c) 2017-2023'
-_rule_set_map_name = 'edgarRulesetMap.json'
-_latest_map_name = 'https://github.com/DataQualityCommittee/dqc_us_rules/raw/master/rulesetMap.json' 
+_xule_resources_dir = os.path.join(os.path.dirname(__file__), "resources", "xule")
+_xule_resources_dir_for_json = json.dumps(_xule_resources_dir + os.sep)[1:-1]
+_rule_set_map_name = os.path.join(_xule_resources_dir, "edgarRulesetMap.json")
+_latest_map_name = 'https://github.com/Arelle/EDGAR/tree/master/validate/resources/xule/edgarRulesetMapOnline.json' 
 
 """Do not change anything below this line."""
 _xule_plugin_info = None
 xuleValidateFinally = None
+
 def noop(*args, **kwargs):
     return # do nothing
 
@@ -202,6 +205,10 @@ def getXulePlugin(cntlr):
         for plugin_name, plugin_info in PluginManager.modulePluginInfos.items():
             if plugin_info.get('moduleURL') == 'xule':
                 _xule_plugin_info = plugin_info
+                # put current resources xule path into rule set map, xule requires full path
+                with open(_rule_set_map_name.replace(".json", ".template"), "r") as fin:
+                    with open(_rule_set_map_name, "w") as fout:
+                        fout.write(fin.read().replace("{path-to-here}", _xule_resources_dir_for_json))
                 break
         else:
             cntlr.addToLog(_("Xule plugin is not loaded. Xule plugin is required to run DQC rules. This plugin should be automatically loaded."))
