@@ -3614,7 +3614,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
     val.modelXbrl.profileActivity("... filer preferred label checks", minTimeToShow=1.0)
 
     # DQC.US rules
-    if xuleValidate(val): # true if there was a Xule validation
+    if dqcRules and xuleValidate(val): # true if there was a Xule validation
         dqcRules = {} # block built-in rules
     for dqcRuleName, dqcRule in dqcRules.items(): # note this is an OrderedDict to preserve rule execution order
         if dqcRuleName == "copyright": # first in JSON OrderedDict, initialize common variables for rule

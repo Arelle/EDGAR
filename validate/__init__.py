@@ -478,6 +478,7 @@ def xbrlLoaded(cntlr, options, modelXbrl, entryPoint, *args, **kwargs):
                 if hasattr(supplementalXbrl, "ixdsDocUrls"):
                     entryPoint = {"ixds":[{"file":f} for f in supplementalXbrl.ixdsDocUrls]}
                 xbrlLoaded(cntlr, options, supplementalXbrl, entryPoint)
+            xuleInit(cntlr)
         elif modelXbrl.modelDocument.type == Type.RSSFEED:
             testcasesStart(cntlr, options, modelXbrl)
 

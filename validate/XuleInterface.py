@@ -26,6 +26,9 @@ to domestic copyright protection. 17 U.S.C. 105.
 
 Implementation of DQC rules invokes https://xbrl.us/dqc-license and https://xbrl.us/dqc-patent
 
+For GUI usage the xule validation is applied when an applicable instance type is being validated
+For command line usage in EDGAR/validate workflow do not specify --xule-run, this is inferred by EDGAR workflow
+
 $Change: 22782 $
 DOCSKIP
 """
@@ -73,6 +76,7 @@ def xuleValidate(val):
         # must run without disclosure system blockage of URLs
         validateDisclosureSystem = val.modelXbrl.modelManager.validateDisclosureSystem
         val.modelXbrl.modelManager.validateDisclosureSystem = False
+        # if we got here Xule should be active (force it otherwise)
         xuleValidateFinally(val)
         val.modelXbrl.modelManager.validateDisclosureSystem = validateDisclosureSystem
         return True
@@ -236,6 +240,8 @@ def validateMenuTools(cntlr, validateMenu, *args, **kwargs):
     
     This is invoked by the Arelle controller.
     """
+    # set validation true for validateDQCRT so it always validates for Filing.py when that validates
+    cntlr.config["validateDQCRT"] = True
     menu_method = getXuleMethod(cntlr, 'Xule.AddValidationMenuTools')
     menu_method(cntlr, validateMenu, _short_name, _rule_set_map_name)
     
