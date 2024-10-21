@@ -7,6 +7,57 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 -->
 
     
+    <!-- DEI 2025 -->
+    <Loc>
+        <Family>DEI</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/dei/2025/dei-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://xbrl.sec.gov/dei/2025</Namespace>
+        <Prefix>dei</Prefix>
+    </Loc>
+    <Loc>
+        <Family>DEI</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/dei/2025/dei-2025_def.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/dei-def/2025</Namespace>
+        <Prefix>dei-def</Prefix>
+    </Loc>
+    <Loc>
+        <Family>DEI</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/dei/2025/dei-2025_lab.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/dei-lab/2025</Namespace>
+        <Prefix>dei-lab</Prefix>
+    </Loc>
+    <Loc>
+        <Family>DEI</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/dei/2025/dei-2025_pre.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/dei-pre/2025</Namespace>
+        <Prefix>dei-pre</Prefix>
+    </Loc>
+    <Loc>
+        <Family>DEI</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/dei/2025/dei-sub-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/dei-sub/2025</Namespace>
+        <Prefix>dei-sub</Prefix>
+    </Loc>
     <!-- SPAC 2025 -->
     <Loc>
         <Family>SPAC</Family>
