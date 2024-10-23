@@ -19,7 +19,7 @@ _iXBRLViewerPlugin = None
 _iXBRLViewer_plugin_info = None
 
 STUB_NAME = "ixbrlviewer.xhtml"
-JS_PATH = "/ixviewer-arelle/ixbrlviewer-1.4.29.js"
+JS_NAME = "ixbrlviewer.js"
 
 
 def hasIXBRLViewerPlugin(cntlr):
@@ -38,23 +38,39 @@ def hasIXBRLViewerPlugin(cntlr):
 
 def generateViewer(cntlr, stubDir):
     stubPath = os.path.join(stubDir, STUB_NAME)
+    jsPath = os.path.join(stubDir, JS_NAME)
     securityIsActive = securityHasWritten = False
     stubBytes = None
     for pluginMethod in pluginClassMethods("Security.Crypt.IsActive"):
         securityIsActive = pluginMethod(self)  # must be active for the save method to save encrypted files
+    _iXBRLViewerPlugin.pluginData(cntlr).builder = _iXBRLViewerPlugin.IXBRLViewerBuilder(cntlr, useStubViewer = True)
+    _iXBRLViewerPlugin.processModel(cntlr, cntlr.modelManager.modelXbrl)
     with io.BytesIO() as fZip:
-        _iXBRLViewerPlugin.generateViewer(cntlr, fZip, JS_PATH, False, True, False, None, None, False, True)
+        _iXBRLViewerPlugin.generateViewer(
+                                cntlr=cntlr,
+                                saveViewerDest=fZip,
+                                viewerURL=None,
+                                showValidationMessages=False,
+                                zipViewerOutput=True,
+                                features=None,
+                                packageDownloadURL=None,
+                                copyScript=True
+            )
         fZip.seek(0)
         with zipfile.ZipFile(fZip) as zF:
             stubBytes = zF.read("ixbrlviewer.html")
+            jsBytes = zF.read(JS_NAME)
     if not stubBytes:
         return
     if securityIsActive:
         for pluginMethod in pluginClassMethods("Security.Crypt.Write"):
             securityHasWritten = pluginMethod(self, stubPath, stubBytes)
+            _ = pluginMethod(self, jsPath, jsBytes)
     if not securityHasWritten:
         with open(stubPath, "wb") as fout:
             fout.write(stubBytes)
+        with open(jsPath, "wb") as fout:
+            fout.write(jsBytes)
 
 
 def disableiXBRLViewerPluginInfo(cntlr):
