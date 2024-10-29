@@ -1054,20 +1054,24 @@ class Filing(object):
         maxMonths = max(col.startEndContext.numMonths for col in visibleColumns)
         minFacts = min(len(col.factList) for col in visibleColumns if col.startEndContext.numMonths == maxMonths)
         minToKeep = math.floor(.25 * minFacts)
+        thisCubeSet = {report.cube}
         for col in visibleColumns:
             if col.startEndContext.numMonths < maxMonths and len(col.factList) < minToKeep:
                 preserveColumn = False
+                factsInOtherReportsNotInOtherColumns = set()
                 for fact in col.factList:
                     appearsInOtherColumn = False
                     for otherCol in remainingVisibleColumns:
                         if otherCol != col and fact in otherCol.factList:
                             appearsInOtherColumn = True
                             break
-                    appearsInOtherReport = (len(fact.inCubes) > 1)
+                    appearsInOtherReport = (len(fact.inCubes - thisCubeSet) > 1)
+                    if appearsInOtherReport and not appearsInOtherColumn:
+                        factsInOtherReportsNotInOtherColumns.add(fact)
                     preserveColumn = (not appearsInOtherColumn and not appearsInOtherReport)
                     break
                 if preserveColumn:
-                    continue  # to next column, cannot remove this one
+                    continue  # to next column, cannot remove this one, leave its facts alone.
                 self.modelXbrl.info("info",
                                     _("Columns in cash flow \"%(presentationGroup)s\" have maximum duration %(maxDuration)s months and at least %(minNumValues)s "
                                       "values. Shorter duration columns must have at least one fourth (%(minToKeep)s) as many values. "
@@ -1075,13 +1079,18 @@ class Filing(object):
                                     modelObject=self.modelXbrl.modelDocument, presentationGroup=report.shortName,
                                     maxDuration=maxMonths, minNumValues=minFacts, minToKeep=minToKeep, startEndContext=col.startEndContext,
                                     months=col.startEndContext.numMonths, numValues=len(col.factList))
-                # first kick this fact out of report.embedding.factAxisMemberGroupList, our defacto list of facts
-                report.embedding.factAxisMemberGroupList = \
+                for fact in factsInOtherReportsNotInOtherColumns:
+                    # kick this fact out of report.embedding.factAxisMemberGroupList, our defacto list of facts
+                    report.embedding.factAxisMemberGroupList = \
                         [FAMG for FAMG in report.embedding.factAxisMemberGroupList if FAMG.fact != fact]
-                try:
-                    self.usedOrBrokenFactDefDict[fact].remove(report.embedding)
-                except KeyError:
-                    pass
+                    try:
+                        self.usedOrBrokenFactDefDict[fact].remove(report.embedding)
+                    except KeyError:
+                        pass
+                    try:
+                        fact.inCubes.remove(report.cube)
+                    except KeyError:
+                        pass
                 col.hide()
                 didWeHideAnyCols = True
                 remainingVisibleColumns.remove(col)
