@@ -1065,7 +1065,7 @@ class Filing(object):
                         if otherCol != col and fact in otherCol.factList:
                             appearsInOtherColumn = True
                             break
-                    appearsInOtherReport = (len(fact.inCubes - thisCubeSet) > 1)
+                    appearsInOtherReport = bool(fact.inCubes - thisCubeSet)
                     if appearsInOtherReport and not appearsInOtherColumn:
                         factsInOtherReportsNotInOtherColumns.add(fact)
                     preserveColumn = (not appearsInOtherColumn and not appearsInOtherReport)
