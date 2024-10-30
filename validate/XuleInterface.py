@@ -29,11 +29,16 @@ Implementation of DQC rules invokes https://xbrl.us/dqc-license and https://xbrl
 For GUI usage the xule validation is applied when an applicable instance type is being validated
 For command line usage in EDGAR/validate workflow do not specify --xule-run, this is inferred by EDGAR workflow
 
+To save constants for this ruleset run
+  python arelleCmdLine.py --plugin xule --xule-rule-set {path-to-resources/xule}/dqcrt-us-2024-v25-ruleset.zip  --xule-precalc-constants > {path-to-resources/xule}/dqcrt-us-2024-v25-consts.zip
+
 $Change: 22782 $
 DOCSKIP
 """
 import optparse, os, json
 from arelle import PluginManager
+from arelle.PythonUtil import attrdict
+from .Util import usgaapYear
 
 """ Xule validator specific variables."""
 _short_name = 'DQCRT' # EDGAR uses DQCRT as short_name instead of DQC (in XBRL.US distribution0
@@ -63,6 +68,9 @@ def init(cntlr):
     if xuleValidateFinally is not None: # xule is loaded
         PluginManager.modulePluginInfos[_xule_plugin_info["name"]]['Validate.Finally'] = noop # block Xule's own Validate.Finally
         PluginManager.reset()
+        # add EDGAR mapping for resource files to disclosureSystem.mappings
+        if cntlr.modelManager.disclosureSystem:
+            cntlr.modelManager.disclosureSystem.mappedPaths.append(("/__xule_resources_dir__", _xule_resources_dir))
         
 def close(cntlr): # unhook Xule's 'Validate.Finally' from validate/EFM
     global xuleValidateFinally
@@ -72,12 +80,17 @@ def close(cntlr): # unhook Xule's 'Validate.Finally' from validate/EFM
         xuleValidateFinally = None
         
 def xuleValidate(val):
-    if xuleValidateFinally is not None:
+    usgYr = usgaapYear(val.modelXbrl)
+    if xuleValidateFinally is not None and usgYr >= "2023":
         # must run without disclosure system blockage of URLs
         validateDisclosureSystem = val.modelXbrl.modelManager.validateDisclosureSystem
         val.modelXbrl.modelManager.validateDisclosureSystem = False
         # if we got here Xule should be active (force it otherwise)
-        xuleValidateFinally(val)
+        xuleValidateFinally(val, extra_options={
+            "xule_rule_set": f"/__xule_resources_dir__/dqcrt-us-{usgYr}-ruleset.zip",
+            "xule_args_file": f"/__xule_resources_dir__/dqcrt-us-{usgYr}-constants.json",
+            "xule_time": 1.0
+            })
         val.modelXbrl.modelManager.validateDisclosureSystem = validateDisclosureSystem
         return True
     return False
@@ -209,10 +222,6 @@ def getXulePlugin(cntlr):
         for plugin_name, plugin_info in PluginManager.modulePluginInfos.items():
             if plugin_info.get('moduleURL') == 'xule':
                 _xule_plugin_info = plugin_info
-                # put current resources xule path into rule set map, xule requires full path
-                with open(_rule_set_map_name.replace(".json", ".template"), "r") as fin:
-                    with open(_rule_set_map_name, "w") as fout:
-                        fout.write(fin.read().replace("{path-to-here}", _xule_resources_dir_for_json))
                 break
         else:
             cntlr.addToLog(_("Xule plugin is not loaded. Xule plugin is required to run DQC rules. This plugin should be automatically loaded."))
