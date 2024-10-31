@@ -30,7 +30,7 @@ For GUI usage the xule validation is applied when an applicable instance type is
 For command line usage in EDGAR/validate workflow do not specify --xule-run, this is inferred by EDGAR workflow
 
 To save constants for this ruleset run
-  python arelleCmdLine.py --plugin xule --xule-rule-set {path-to-resources/xule}/dqcrt-us-2024-v25-ruleset.zip  --xule-precalc-constants > {path-to-resources/xule}/dqcrt-us-2024-v25-consts.zip
+  python arelleCmdLine.py --plugin xule --xule-rule-set {path-to-resources/xule}/dqcrt-us-2024-ruleset.zip  --xule-precalc-constants > {path-to-resources/xule}/dqcrt-us-2024-consts.zip
 
 $Change: 22782 $
 DOCSKIP
@@ -65,19 +65,23 @@ def init(cntlr):
     global xuleValidateFinally
     if xuleValidateFinally is None:
         xuleValidateFinally = getXuleMethod(cntlr, 'Validate.Finally')
-    if xuleValidateFinally is not None: # xule is loaded
-        PluginManager.modulePluginInfos[_xule_plugin_info["name"]]['Validate.Finally'] = noop # block Xule's own Validate.Finally
-        PluginManager.reset()
-        # add EDGAR mapping for resource files to disclosureSystem.mappings
-        if cntlr.modelManager.disclosureSystem:
-            cntlr.modelManager.disclosureSystem.mappedPaths.append(("/__xule_resources_dir__", _xule_resources_dir))
+        if xuleValidateFinally is not None: # xule is loaded
+            ''' block this
+            PluginManager.modulePluginInfos[getXulePlugin(cntlr)["name"]]['Validate.Finally'] = noop # block Xule's own Validate.Finally
+            PluginManager.reset()
+            '''
+            # add EDGAR mapping for resource files to disclosureSystem.mappings
+            if cntlr.modelManager.disclosureSystem:
+                cntlr.modelManager.disclosureSystem.mappedPaths.append(("/__xule_resources_dir__", _xule_resources_dir))
         
 def close(cntlr): # unhook Xule's 'Validate.Finally' from validate/EFM
     global xuleValidateFinally
+    '''
     if xuleValidateFinally is not None:
-        PluginManager.modulePluginInfos[_xule_plugin_info["name"]]['Validate.Finally'] = xuleValidateFinally # restore original finally
+        PluginManager.modulePluginInfos[getXulePlugin(cntlr)["name"]]['Validate.Finally'] = xuleValidateFinally # restore original finally
         PluginManager.reset()
         xuleValidateFinally = None
+    '''
         
 def xuleValidate(val):
     usgYr = usgaapYear(val.modelXbrl)
@@ -89,7 +93,8 @@ def xuleValidate(val):
         xuleValidateFinally(val, extra_options={
             "xule_rule_set": f"/__xule_resources_dir__/dqcrt-us-{usgYr}-ruleset.zip",
             "xule_args_file": f"/__xule_resources_dir__/dqcrt-us-{usgYr}-constants.json",
-            "xule_time": 1.0
+            "xule_time": 1.0,
+            "xule_debug": True
             })
         val.modelXbrl.modelManager.validateDisclosureSystem = validateDisclosureSystem
         return True
@@ -250,9 +255,17 @@ def validateMenuTools(cntlr, validateMenu, *args, **kwargs):
     This is invoked by the Arelle controller.
     """
     # set validation true for validateDQCRT so it always validates for Filing.py when that validates
+    ''' block this function
+        it causes xule to register validator with validate variable which causes it to run on validate.finally
+        
     cntlr.config["validateDQCRT"] = True
     menu_method = getXuleMethod(cntlr, 'Xule.AddValidationMenuTools')
     menu_method(cntlr, validateMenu, _short_name, _rule_set_map_name)
+    '''
+    # Register the xule validator
+    registerMethod = getXuleMethod(cntlr, 'Xule.RegisterValidator')
+    registerMethod(_short_name, _rule_set_map_name)
+    cntlr.config['xule_activated'] = False # block xule initialization from Tools menu path
     
 ''' original plugininfo from DQC.py
     incorporated as validate/EFM/__init__.py 
