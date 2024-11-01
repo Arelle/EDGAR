@@ -45,7 +45,7 @@ _short_name = 'DQCRT' # EDGAR uses DQCRT as short_name instead of DQC (in XBRL.U
 _name = 'DQCRT XULE Rules Validator'
 _version = 'Check version using Tools->DQC->Version on the GUI or --dqc-version on the command line'
 _version_prefix = '3.0.'
-_description = 'DQC rules validator.'
+_description = 'DQCRT rules validator.'
 _license = 'Apache-2'
 _author = 'XBRL US Inc.'
 _copyright = '(c) 2017-2023'
@@ -66,10 +66,6 @@ def init(cntlr):
     if xuleValidateFinally is None:
         xuleValidateFinally = getXuleMethod(cntlr, 'Validate.Finally')
         if xuleValidateFinally is not None: # xule is loaded
-            ''' block this
-            PluginManager.modulePluginInfos[getXulePlugin(cntlr)["name"]]['Validate.Finally'] = noop # block Xule's own Validate.Finally
-            PluginManager.reset()
-            '''
             # add EDGAR mapping for resource files to disclosureSystem.mappings
             if cntlr.modelManager.disclosureSystem:
                 cntlr.modelManager.disclosureSystem.mappedPaths.append(("/__xule_resources_dir__", _xule_resources_dir))
@@ -91,10 +87,13 @@ def xuleValidate(val):
         val.modelXbrl.modelManager.validateDisclosureSystem = False
         # if we got here Xule should be active (force it otherwise)
         xuleValidateFinally(val, extra_options={
+            "block_Validate.Finally": True,
             "xule_rule_set": f"/__xule_resources_dir__/dqcrt-us-{usgYr}-ruleset.zip",
             "xule_args_file": f"/__xule_resources_dir__/dqcrt-us-{usgYr}-constants.json",
             "xule_time": 1.0,
-            "xule_debug": True
+            # to trace whether contexts are reloaded properly from build process, uncomment
+            #"xule_output_constants": "ACCRUAL_ITEMS,TAXONOMY_DEFAULTS"
+            # "xule_debug": True # causes trace of  each rule as it runs
             })
         val.modelXbrl.modelManager.validateDisclosureSystem = validateDisclosureSystem
         return True
