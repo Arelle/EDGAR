@@ -8,7 +8,7 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 """
 
 from gettext import gettext as _
-from collections import defaultdict
+from collections import defaultdict, OrderedSet
 import os, math, datetime, dateutil.relativedelta, lxml, sys, time
 import regex as re
 from itertools import chain
@@ -215,7 +215,7 @@ class Filing(object):
 
         self.embeddedCubeSet = set()
         self.usedOrBrokenFactDefDict = defaultdict(set)
-        self.unusedFactSet = set()
+        self.unusedFactSet = OrderedDict() # preserve order of discovery
         self.skippedFactsList = []
 
         self.hasEmbeddings = False

@@ -8,7 +8,7 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 """
 
 import regex as re
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import arelle.ModelObject
 from . import Utils
 from arelle.XmlUtil import dateunionValue
@@ -194,7 +194,7 @@ class Cube(object):
         # list of new fact memberships (aka fact locations) to be created from instants.
         newFactMemberships = list()
         # set of instants with periodStart or periodEnd that could not be matched to a duration.
-        skippedFactMembershipSet = set()
+        skippedFactMembershipSet = OrderedSet() # preserve order of discovery for consistent error reporting
 
         for factMembership in self.factMemberships:
             fact, axisMemberLookupDict, role = factMembership
