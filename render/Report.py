@@ -1554,9 +1554,8 @@ class Column(object):
                                     modelObject=factAxisMemberGroup.fact,
                                     cube=report.cube.shortName, error=errorStr, column=self.index)
         self.startEndContext = startEndContext
-        if self.startEndContext is None:
+        if self.startEndContext is None and not report.cube.isStatementOfEquity:
             errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(report.embedding.factThatContainsEmbeddedCommand)
-            # message = ErrorMgr.getError('COLUMN_WITHOUT_CONTEXT_WARNING').format(report.cube.shortName, errorStr, self.index)
             filing.modelXbrl.debug("debug",
                                    _('In "%(cube)s%(error)s, column %(column)s has no startEndContext.'),
                                     modelObject=factAxisMemberGroup.fact,

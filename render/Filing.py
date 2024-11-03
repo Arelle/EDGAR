@@ -8,7 +8,7 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 """
 
 from gettext import gettext as _
-from collections import defaultdict, OrderedSet
+from collections import defaultdict, OrderedDict
 import os, math, datetime, dateutil.relativedelta, lxml, sys, time
 import regex as re
 from itertools import chain
@@ -145,8 +145,13 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     # have to do some massaging of filing.usedOrBrokenFactDefDict.  can't just do set(filing.usedOrBrokenFactDefDict).
     # that's because when you remove if you remove every thing in the set for one of the keys, the key still stays.
     # so we need to make sure they key has a nonempty set associated with it.
-    filing.unusedFactSet = \
-            set(modelXbrl.facts) - {fact for fact, embeddingSet in filing.usedOrBrokenFactDefDict.items() if len(embeddingSet) > 0}
+    def hasNonemptyEmbeddingSet(fact):
+        return fact in filing.usedOrBrokenFactDefDict and len(filing.usedOrBrokenFactDefDict[fact]) > 0
+            
+    filing.unusedFactSet = OrderedDict()
+    for f in modelXbrl.facts:
+        if not hasNonemptyEmbeddingSet:
+            filing.unusedFactSet[f] = True
 
     filing.strExplainSkippedFacts()
 
@@ -362,7 +367,7 @@ class Filing(object):
                     self.elementDict[fact.qname] = element
                     element.linkCube(uncategorizedCube)
             uncategorizedCube.presentationGroup = PresentationGroup.PresentationGroup(self, uncategorizedCube)
-            facts = self.unusedFactSet
+            facts = list(self.unusedFactSet)
 
         else:
             # build cubes
