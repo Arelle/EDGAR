@@ -2760,21 +2760,6 @@
     {
         "sub-types": ["F-10", "F-10/A", "F-10EF"],
         "xbrl-names": "ffd:GnlInstrIIhiFlg",
-        "where": {"ffd:GnlInstrIIhiFlg": [true]},
-        "efm": "ft.r457fMAOP",
-        "validation": "fdepflag-any",
-        "axis": "of",
-        "references": ["ffd:CshRcvdByRegistrantInTx", "ffd:CshPdByRegistrantInTx"],
-        "comment-validation": "Optional in fee note table line (where there is at least one other fee note table line with this element).  Otherwise the validation for r457fMAOPsums will trigger a warning message.\r\n\r\nFor these MAOP validations in the 457(f) fee note:\r\nWhen the registrant receives cash or pays cash in connection with the transaction, validate that the MAOP value of the 457(f) fee note is: --the \"Total Value of Securities To Be Received or Cancelled\"(the product of \"Amount of Securities to be Received or Cancelled\" and \"Value per Share to be Received or Cancelled\") plus the \"Cash Consideration Received by the registrant\" value minus the \"Cash Consideration (Paid) by the registrant\" value. If the system calculated value is not equal to filer provided value, use the value provided by the filer but provide warning message.\r\n\r\nCheck the footnote table MAOP, below, against the offering line MAOP, above the table.",
-        "comment-exception-handling": "",
-        "comment-conversion-requested": "",
-        "comment-requesting-do": "",
-        "comment-date-requested": "",
-        "comment-reason": ""
-    },
-    {
-        "sub-types": ["F-10", "F-10/A", "F-10EF"],
-        "xbrl-names": "ffd:GnlInstrIIhiFlg",
         "value": [true],
         "where": {"ffd:FeeNoteMaxAggtOfferingPric": ["!not!", "absent"]},
         "efm": "ft.usrSty3334RqdFlds",
