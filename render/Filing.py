@@ -8,7 +8,7 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 """
 
 from gettext import gettext as _
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import os, math, datetime, dateutil.relativedelta, lxml, sys, time
 import regex as re
 from itertools import chain
@@ -145,8 +145,13 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     # have to do some massaging of filing.usedOrBrokenFactDefDict.  can't just do set(filing.usedOrBrokenFactDefDict).
     # that's because when you remove if you remove every thing in the set for one of the keys, the key still stays.
     # so we need to make sure they key has a nonempty set associated with it.
-    filing.unusedFactSet = \
-            set(modelXbrl.facts) - {fact for fact, embeddingSet in filing.usedOrBrokenFactDefDict.items() if len(embeddingSet) > 0}
+    def hasNonemptyEmbeddingSet(fact):
+        return fact in filing.usedOrBrokenFactDefDict and len(filing.usedOrBrokenFactDefDict[fact]) > 0
+            
+    filing.unusedFactSet = OrderedDict()
+    for f in modelXbrl.facts:
+        if not hasNonemptyEmbeddingSet:
+            filing.unusedFactSet[f] = True
 
     filing.strExplainSkippedFacts()
 
@@ -215,7 +220,7 @@ class Filing(object):
 
         self.embeddedCubeSet = set()
         self.usedOrBrokenFactDefDict = defaultdict(set)
-        self.unusedFactSet = set()
+        self.unusedFactSet = OrderedDict() # preserve order of discovery
         self.skippedFactsList = []
 
         self.hasEmbeddings = False
@@ -362,7 +367,7 @@ class Filing(object):
                     self.elementDict[fact.qname] = element
                     element.linkCube(uncategorizedCube)
             uncategorizedCube.presentationGroup = PresentationGroup.PresentationGroup(self, uncategorizedCube)
-            facts = self.unusedFactSet
+            facts = list(self.unusedFactSet)
 
         else:
             # build cubes
@@ -1054,20 +1059,24 @@ class Filing(object):
         maxMonths = max(col.startEndContext.numMonths for col in visibleColumns)
         minFacts = min(len(col.factList) for col in visibleColumns if col.startEndContext.numMonths == maxMonths)
         minToKeep = math.floor(.25 * minFacts)
+        thisCubeSet = {report.cube}
         for col in visibleColumns:
             if col.startEndContext.numMonths < maxMonths and len(col.factList) < minToKeep:
                 preserveColumn = False
+                factsInOtherReportsNotInOtherColumns = set()
                 for fact in col.factList:
                     appearsInOtherColumn = False
                     for otherCol in remainingVisibleColumns:
                         if otherCol != col and fact in otherCol.factList:
                             appearsInOtherColumn = True
                             break
-                    appearsInOtherReport = (len(fact.inCubes) > 1)
+                    appearsInOtherReport = bool(fact.inCubes - thisCubeSet)
+                    if appearsInOtherReport and not appearsInOtherColumn:
+                        factsInOtherReportsNotInOtherColumns.add(fact)
                     preserveColumn = (not appearsInOtherColumn and not appearsInOtherReport)
                     break
                 if preserveColumn:
-                    continue  # to next column, cannot remove this one
+                    continue  # to next column, cannot remove this one, leave its facts alone.
                 self.modelXbrl.info("info",
                                     _("Columns in cash flow \"%(presentationGroup)s\" have maximum duration %(maxDuration)s months and at least %(minNumValues)s "
                                       "values. Shorter duration columns must have at least one fourth (%(minToKeep)s) as many values. "
@@ -1075,13 +1084,18 @@ class Filing(object):
                                     modelObject=self.modelXbrl.modelDocument, presentationGroup=report.shortName,
                                     maxDuration=maxMonths, minNumValues=minFacts, minToKeep=minToKeep, startEndContext=col.startEndContext,
                                     months=col.startEndContext.numMonths, numValues=len(col.factList))
-                # first kick this fact out of report.embedding.factAxisMemberGroupList, our defacto list of facts
-                report.embedding.factAxisMemberGroupList = \
+                for fact in factsInOtherReportsNotInOtherColumns:
+                    # kick this fact out of report.embedding.factAxisMemberGroupList, our defacto list of facts
+                    report.embedding.factAxisMemberGroupList = \
                         [FAMG for FAMG in report.embedding.factAxisMemberGroupList if FAMG.fact != fact]
-                try:
-                    self.usedOrBrokenFactDefDict[fact].remove(report.embedding)
-                except KeyError:
-                    pass
+                    try:
+                        self.usedOrBrokenFactDefDict[fact].remove(report.embedding)
+                    except KeyError:
+                        pass
+                    try:
+                        fact.inCubes.remove(report.cube)
+                    except KeyError:
+                        pass
                 col.hide()
                 didWeHideAnyCols = True
                 remainingVisibleColumns.remove(col)
