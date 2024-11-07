@@ -94,6 +94,7 @@ def xuleValidate(val):
             # to trace whether contexts are reloaded properly from build process, uncomment
             #"xule_output_constants": "ACCRUAL_ITEMS,TAXONOMY_DEFAULTS"
             # "xule_debug": True # causes trace of  each rule as it runs
+            #"xule_crash": True # causes stacktrace on xule exceptions
             })
         val.modelXbrl.modelManager.validateDisclosureSystem = validateDisclosureSystem
         return True
