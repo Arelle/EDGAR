@@ -8,9 +8,10 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 """
 
 import regex as re
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 import arelle.ModelObject
 from . import Utils
+from arelle.PythonUtil import OrderedSet
 from arelle.XmlUtil import dateunionValue
 Filing = None
 
@@ -194,7 +195,7 @@ class Cube(object):
         # list of new fact memberships (aka fact locations) to be created from instants.
         newFactMemberships = list()
         # set of instants with periodStart or periodEnd that could not be matched to a duration.
-        skippedFactMembershipSet = OrderedDict() # preserve order of discovery for consistent error reporting
+        skippedFactMembershipSet = OrderedSet() # preserve order of discovery for consistent error reporting
 
         for factMembership in self.factMemberships:
             fact, axisMemberLookupDict, role = factMembership
@@ -209,7 +210,7 @@ class Cube(object):
 
                 if len(startAndEndLabelsSet) == 0:
                     for role in startEndPreferredLabelList:
-                        skippedFactMembershipSet[(fact, role, self, self.linkroleUri, self.shortName, self.definitionText)] = True
+                        skippedFactMembershipSet.add( (fact, role, self, self.linkroleUri, self.shortName, self.definitionText) )
 
                 for startEndTuple, preferredLabel in startAndEndLabelsSet:
                     try:  # if startEndContext exists, find it
@@ -223,7 +224,7 @@ class Cube(object):
                     newFactMemberships += [(fact, tempAxisMemberLookupDict, preferredLabel)]
         self.factMemberships += newFactMemberships
         self.controller.logDebug("factMembership now {} in {}".format(len(self.factMemberships), self.definitionText))
-        skippedFactSet = {x[0] for x in skippedFactMembershipSet.keys()}
+        skippedFactSet = {x[0] for x in skippedFactMembershipSet}
         if (len(skippedFactSet) == initialSize
             and len(discoveredDurations) == 0):
             # if we skipped all the facts it means there were no durations.
@@ -242,7 +243,7 @@ class Cube(object):
                 self.hasDiscoveredDurations = True
                 self.handlePeriodStartEndLabel(discoveredDurations=intervals)
 
-        self.filing.skippedFactsList += list(skippedFactMembershipSet.keys())
+        self.filing.skippedFactsList += list(skippedFactMembershipSet)
 
     def populateUnitPseudoaxis(self):
         giveMemGetPositionDict = {}
