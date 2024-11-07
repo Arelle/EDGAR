@@ -8,12 +8,13 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 """
 
 from gettext import gettext as _
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 import os, math, datetime, dateutil.relativedelta, lxml, sys, time
 import regex as re
 from itertools import chain
 import arelle.ModelValue, arelle.XbrlConst
 from arelle.ModelDtsObject import ModelConcept
+from arelle.PythonUtil import OrderedSet
 from arelle.XmlUtil import collapseWhitespace
 from arelle.XmlValidateConst import VALID, VALID_NO_CONTENT
 from arelle.XbrlConst import parentChild
@@ -147,11 +148,11 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     # so we need to make sure they key has a nonempty set associated with it.
     def hasNonemptyEmbeddingSet(fact):
         return fact in filing.usedOrBrokenFactDefDict and len(filing.usedOrBrokenFactDefDict[fact]) > 0
-            
-    filing.unusedFactSet = OrderedDict()
+
+    filing.unusedFactSet = OrderedSet()
     for f in modelXbrl.facts:
-        if not hasNonemptyEmbeddingSet:
-            filing.unusedFactSet[f] = True
+        if not hasNonemptyEmbeddingSet(f):
+            filing.unusedFactSet.add(f)
 
     filing.strExplainSkippedFacts()
 
@@ -220,7 +221,7 @@ class Filing(object):
 
         self.embeddedCubeSet = set()
         self.usedOrBrokenFactDefDict = defaultdict(set)
-        self.unusedFactSet = OrderedDict() # preserve order of discovery
+        self.unusedFactSet = OrderedSet() # preserve order of discovery
         self.skippedFactsList = []
 
         self.hasEmbeddings = False
