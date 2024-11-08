@@ -338,7 +338,6 @@ def isolateSeparateIXDSes(modelXbrl, primaryIxdsDocument, *args, **kwargs):
     for htmlElt in modelXbrl.ixdsHtmlElements:
         tp = "" # attachment document type inferred from document type and ffd:SubmissnTp
         for qn in ("dei:DocumentType", "ffd:FeeExhibitTp"):
-            findString = f".//{{{htmlElt.modelDocument.ixNS}}}nonNumeric[@name='{qn}']"
             for elt in htmlElt.iterfind(f".//{{{htmlElt.modelDocument.ixNS}}}nonNumeric[@name='{qn}']"):
                 tp = elt.stringValue.strip()
                 if tp:
