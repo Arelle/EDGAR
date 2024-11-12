@@ -180,6 +180,11 @@ def uncloseSelfClosedTags(doc):
             and e.tag not in tagsWithNoContent):
             e.text = ""  # prevents self-closing tag with etree.tostring for zip and dissem folders
 
+def recloseNilForSchemaRevalidation(doc):
+    for e in doc.xmlRootElement.iter("{http://www.xbrl.org/2013/inlineXBRL}nonFraction"):
+        # check if no text, no children and not self-closable element for EDGAR
+        if e.isNil and e.text == "":
+            e.text = None # remove text node content from element
 
 def allowableBytesForEdgar(bytestr):
     # encode xml-legal ascii bytes not acceptable to EDGAR
@@ -1272,7 +1277,9 @@ class EdgarRenderer(Cntlr.Cntlr):
                             for ixdsHtmlRootElt in getattr(report.modelXbrl, "ixdsHtmlElements", ()):
                                 if ixdsHtmlRootElt.modelDocument.basename in cntlr.redlineIxDocs:
                                     # revalidate schema validation
+                                    recloseNilForSchemaRevalidation(ixdsHtmlRootElt.modelDocument)
                                     xhtmlValidate(report.modelXbrl, ixdsHtmlRootElt)
+                                    uncloseSelfClosedTags(ixdsHtmlRootElt.modelDocument)
                             if revalidateXbrl:
                                 # revalidate after redaction
                                 Validate.validate(report.modelXbrl)
