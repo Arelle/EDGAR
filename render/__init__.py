@@ -181,7 +181,8 @@ def uncloseSelfClosedTags(doc):
             e.text = ""  # prevents self-closing tag with etree.tostring for zip and dissem folders
 
 def recloseNilForSchemaRevalidation(doc):
-    for e in doc.xmlRootElement.iter("{http://www.xbrl.org/2013/inlineXBRL}nonFraction"):
+    for e in doc.xmlRootElement.iter("{http://www.xbrl.org/2013/inlineXBRL}nonFraction",
+                                     "{http://www.xbrl.org/2013/inlineXBRL}nonNumeric"):
         # check if no text, no children and not self-closable element for EDGAR
         if e.isNil and e.text == "":
             e.text = None # remove text node content from element
