@@ -188,18 +188,12 @@ class Report(object):
             self.decideWhetherToSuppressPeriod('col', self.colList, self.embedding.columnPeriodPosition)
 
     def decideWhetherToSuppressPeriod(self, rowOrColStr, rowOrColList, periodPosition):
-        # returns if more than one period, otherwise represses period headings.  i use memberLabel, because it will treat an instant
-        # and duration ending at the same time as the instant as the same.
-        if rowOrColStr == 'row':
-            first = rowOrColList[0].factAxisMemberGroup.factAxisMemberRowList[periodPosition].memberLabel
-            for row in rowOrColList:
-                if first != row.factAxisMemberGroup.factAxisMemberRowList[periodPosition].memberLabel:
-                    return  # we're done, there are two periods
-        else:
-            first = rowOrColList[0].factAxisMemberGroup.factAxisMemberColList[periodPosition].memberLabel
-            for col in rowOrColList:
-                if first != col.factAxisMemberGroup.factAxisMemberColList[periodPosition].memberLabel:
-                    return  # we're done, there are two periods
+        # returns if more than one period, otherwise represses period headings
+        first = rowOrColList[0].factAxisMemberGroup.factAxisMemberList(rowOrColStr)[periodPosition].member
+        for row in rowOrColList:
+            other = row.factAxisMemberGroup.factAxisMemberList(rowOrColStr)[periodPosition].member
+            if not first.same(other):
+                return  # we're done, there are two periods
         self.repressPeriodHeadings = True  # there's only one period, don't show it.
 
     def proposeAxisPromotions(self, rowOrColStr, rowOrColList, pseudoAxisNameList):

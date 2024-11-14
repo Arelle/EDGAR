@@ -24,6 +24,10 @@ class FactAxisMemberGroup(object):
         self.factAxisMemberColList = []
         self.axisMemberPositionTupleColList = []  # for sorting
 
+    def factAxisMemberList(self,rowOrColStr):
+        return {'row': self.factAxisMemberRowList,
+                'col': self.factAxisMemberColList}[rowOrColStr]
+
     def __str__(self):
         return "[{}='{}' w/{}Cx{}R]".format(self.fact.elementQname, self.fact.sValue, len(self.factAxisMemberColList), len(self.factAxisMemberRowList))
 
@@ -184,7 +188,7 @@ class Embedding(object):
 
             # print(self.commandTextListOfLists) # wch for debug
 
-        elif self.cube.cubeType == 'statement' or self.filing.hasEmbeddings or self.cube.isElements:
+        elif self.cube.cubeType == 'statement' or bool(self.filing.hasEmbeddings) or self.cube.isElements:
             generatedCommandTextListOfLists = []
 
             if self.cube.isEmbedded:

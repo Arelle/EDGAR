@@ -45,7 +45,7 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
             filing.embeddingDriverBeforeFlowThroughSuppression(embedding)
     controller.logDebug("Filing cubes {:.3f} secs.".format(time.time() - _funStartedAt)); _funStartedAt = time.time()
 
-    if not filing.hasEmbeddings:
+    if not bool(filing.hasEmbeddings):
         filing.filterOutColumnsWhereAllElementsAreInOtherReports(sortedCubeList)  # otherwise known as flow through suppression
     controller.logDebug("Filing flow thru suppression {:.3f} secs.".format(time.time() - _funStartedAt)); _funStartedAt = time.time()
 
@@ -71,7 +71,7 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     # handle excel writing
     xlWriter = None
     if controller.excelXslt:
-        if filing.hasEmbeddings:
+        if bool(filing.hasEmbeddings):
             modelXbrl.debug("debug",
                             _("Excel XSLT is not applied to instance %(instance)s having embedded commands."),
                             modelObject=modelXbrl.modelDocument, instance=modelXbrl.modelDocument.basename)
@@ -224,7 +224,7 @@ class Filing(object):
         self.unusedFactSet = OrderedSet() # preserve order of discovery
         self.skippedFactsList = []
 
-        self.hasEmbeddings = False
+        self.hasEmbeddings = []
         self.disallowEmbeddings = True
 
         # These namespaces contain elements treated specially in some ways.
@@ -866,7 +866,7 @@ class Filing(object):
             outputList += [listToAddToOutput]
 
         cube.isEmbedded = True
-        self.hasEmbeddings = True
+        self.hasEmbeddings.append(cube)
         self.disallowEmbeddings = False
 
         embedding = Embedding.Embedding(self, cube, outputList, factThatContainsEmbeddedCommand=fact)
@@ -975,7 +975,7 @@ class Filing(object):
         report.generateRowsOrCols('row', sortedFAMGL)
 
         if not cube.isElements:
-            if self.hasEmbeddings:
+            if cube in (self.hasEmbeddings):
                 report.decideWhetherToRepressPeriodHeadings()
             if not cube.isUnlabeled:
                 report.proposeAxisPromotions('col', report.colList, [command.pseudoAxis for command in embedding.colCommands])
@@ -1243,6 +1243,13 @@ class StartEndContext(object):
             return "[{}]".format(self.endTimePretty[:10])
         else:
             return "[{} {}m {}]".format(self.startTimePretty[:10], self.numMonths, self.endTimePretty[:10])
+
+    def same(self, other):
+        return (self == other
+                or (type(other) == StartEndContext
+                    and self.periodTypeStr == other.periodTypeStr
+                    and self.startTime == other.startTime
+                    and self.endTime == other.endTime))
 
 
 class Axis(object):
