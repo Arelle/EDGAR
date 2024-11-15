@@ -1173,7 +1173,10 @@ class Report(object):
                     if fact.context.isInstantPeriod:
                         year = fact.context.instantDatetime.year
                     elif fact.context.isStartEndPeriod:
-                        year = fact.context.endDatetime.year
+                        try:
+                            year = fact.context.endDate.year
+                        except:
+                            year = fact.context.endDatetime.year
                     else:
                         continue
                     if fact.isNil:
