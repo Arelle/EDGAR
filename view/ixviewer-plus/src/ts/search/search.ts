@@ -101,8 +101,8 @@ export const Search = {
       const results: Array<string> | undefined = FlexSearch.searchFacts(objectForState, true);
       const ul = document.getElementById('suggestions') as HTMLElement;
       results?.slice(0, 3).forEach((current: string) => {
-        const template = FactsGeneral.getFactListTemplate(current);
-        ul.append(template as unknown as HTMLElement);
+        const template = FactsGeneral.renderFactElem(current);
+        ul.append(template);
       });
 
       if (results!.length > 5) {

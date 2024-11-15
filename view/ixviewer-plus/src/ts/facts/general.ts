@@ -9,6 +9,7 @@ import { ModalsCommon } from "../modals/common";
 import { ConstantsFunctions } from "../constants/functions";
 import { Pagination } from "../pagination/sideBarPagination";
 import { Constants } from "../constants/constants";
+import { Facts } from "../facts/facts";
 
 export const FactsGeneral = {
 	getElementByNameContextref: (name: string, contextref: string) => {
@@ -28,46 +29,48 @@ export const FactsGeneral = {
 	 * @returns {any} => 
 	 */
 	goToInlineFact: (event: MouseEvent | KeyboardEvent | Event, element: HTMLElement) => {
-		if (
-			Object.prototype.hasOwnProperty.call(event, 'key') &&
-			!((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space')
-		) {
+		if (event instanceof KeyboardEvent && !((event).key === 'Enter' || (event).key === 'Space'))
 			return;
-		}
+		
 		const fact = FactMap.getByID(element.getAttribute('data-id') as string);
-		console.log('fact', fact)
 		if (fact) {
 			FactMap.setIsSelected(fact.id);
 			const currentInstance = Constants.getInstanceFiles.find(element => element.current);
 			const currentXHTML = currentInstance?.docs.find(element => element.current);
 			if (fact.file) {
 				if (currentXHTML?.slug !== fact.file) {
-					ConstantsFunctions.changeInlineFiles(fact.file);
+					ConstantsFunctions.switchDoc(fact.file)
+						.then(() => element.scrollIntoView(false));
 				} else {
 					Pagination.setSelectedFact(element, fact);
+					element.scrollIntoView(false);
 				}
 			} else {
 				ErrorsMinor.factNotFound();
 			}
+
 			const tempDiv = document.createElement('div');
 			tempDiv.setAttribute('id', fact.id);
+			Facts.addURLHash(fact.id);
 			ModalsCommon.clickEvent(event, tempDiv);
 		}
 	},
 
+	//TODO factmap.getbyid is used a lot
 	// fact in fact sidebar
-	getFactListTemplate: (elementID: string) => {
-		const factInfo = FactMap.getByID(elementID as string);
-		const elementToReturn = document.createDocumentFragment();
+	renderFactElem: (elementID: string): Node => {
+		const factInfo = FactMap.getByID(elementID);
+		const factElem = document.createDocumentFragment();
 
 		const aElement = document.createElement('a');
-		aElement
-			.setAttribute('class',
-				'text-body sidebar-fact border-bottom click text-decoration-none click list-group-item list-group-item-action p-1');
+		aElement.setAttribute(
+			'class',
+			'text-body sidebar-fact border-bottom click text-decoration-none click list-group-item list-group-item-action p-1'
+		);
 		aElement.setAttribute('selected-fact', `${factInfo?.isSelected}`);
 		if (factInfo?.id) {
 			aElement.setAttribute('data-id', factInfo?.id);
-			aElement.setAttribute('data-href', factInfo?.file);
+			aElement.setAttribute('data-href', factInfo?.file || "");
 		}
 		aElement.setAttribute('tabindex', '13');
 
@@ -78,23 +81,30 @@ export const FactsGeneral = {
 			FactsGeneral.goToInlineFact(e, aElement);
 		});
 
-		const conceptElem = document.createElement('div');
-		conceptElem.setAttribute('class', 'd-flex w-100 justify-content-between');
-		const pElement = document.createElement('p');
-		pElement.setAttribute('class', 'mb-0 font-weight-bold word-break');
-		const pElementContent = document.createTextNode(ConstantsFunctions.getFactLabel(factInfo?.labels));
-		pElement.appendChild(pElementContent);
+		const conceptWrapper = document.createElement('div');
+		conceptWrapper.setAttribute('class', 'd-flex w-100 justify-content-between');
+		const conceptElem = document.createElement('p');
+		conceptElem.setAttribute('class', 'mb-0 font-weight-bold word-break');
+		conceptElem.setAttribute('data-cy', 'concept');
+		const pElementContent = document.createTextNode(ConstantsFunctions.getFactLabel(factInfo?.labels || []));
+		conceptElem.appendChild(pElementContent);
 		const badge = FactsGeneral.getFactBadge(factInfo);
-		conceptElem.appendChild(pElement);
-		conceptElem.appendChild(badge);
+		badge.setAttribute('data-cy', 'badge');
+		conceptWrapper.appendChild(conceptElem);
+		conceptWrapper.appendChild(badge);
 
 		const factValElem = document.createElement('p');
 		factValElem.setAttribute('class', 'mb-0');
-		const pElement3Content = document.createTextNode(factInfo?.isHTML || factInfo?.isContinued ? 'Click to see Fact.' : factInfo.value);
+		factValElem.setAttribute('data-cy', 'factVal');
+
+		const factValue = (factInfo?.value && factInfo.isAmountsOnly) ? Number(factInfo.value).toLocaleString("en-US", { "maximumFractionDigits": 10 }) : factInfo?.value  || "nil";
+		const p3Text = factInfo?.isHTML || factInfo?.isContinued ? 'Click to see Fact.' : factValue;
+		const pElement3Content = document.createTextNode(p3Text);
 		factValElem.appendChild(pElement3Content);
 
 		const periodElem = document.createElement('p');
 		periodElem.setAttribute('class', 'mb-0 lighter-text');
+		periodElem.setAttribute('data-cy', 'factPeriod');
 		const pElementContent2 = document.createTextNode(factInfo?.period as string);
 		periodElem.appendChild(pElementContent2);
 
@@ -102,20 +112,21 @@ export const FactsGeneral = {
 		const currentInstance = Constants.getInstanceFiles.find(element => element.current);
 		const currentXHTML = currentInstance?.docs.find(element => element.current);
 		docNameElem.setAttribute('class', `${currentXHTML?.slug === factInfo?.file ? 'text-primary' : 'text-success'}`);
+		docNameElem.setAttribute('data-cy', 'factFile');
 		const docNameText = document.createTextNode(factInfo?.file ? factInfo.file : 'Unknown Location');
 		docNameElem.appendChild(docNameText);
 
-		aElement.appendChild(conceptElem);
+		aElement.appendChild(conceptWrapper);
 		aElement.appendChild(factValElem);
 		aElement.appendChild(periodElem);
 		aElement.appendChild(docNameElem);
-		elementToReturn.appendChild(aElement);
+		factElem.appendChild(aElement);
 
-		return elementToReturn;
+		return factElem;
 	},
 
-	getFactBadge: (factInfo) => {
-		const dimensions = factInfo.segment?.some(element => element.dimension);
+	getFactBadge: (factInfo: any) => {
+		const dimensions = factInfo.segment?.some((element: any) => element.dimension);
 
 		const spanElement = document.createElement('span');
 		const nestedSpanElement = document.createElement('span');
@@ -132,15 +143,9 @@ export const FactsGeneral = {
 		return spanElement;
 	},
 
-	specialSort: (unsortedArray: Array<{ id: string, isAdditional: boolean }>) => {
-		const hiddenFacts: Array<string> = [];
-		return unsortedArray.map((current) => {
-			if (current.isAdditional) {
-				hiddenFacts.push(current.id);
-			} else {
-				return current.id;
-			}
-		}).filter(Boolean).concat(hiddenFacts);
+	specialSort: (unsortedArray: Array<{ id: string, isAdditional: boolean }>): string[] =>
+	{
+		return [...unsortedArray].sort((a, b) => +a.isAdditional - +b.isAdditional)
+			.map(({ id }) => id);
 	}
-
 };

@@ -6,16 +6,19 @@
 import * as bootstrap from "bootstrap";
 import * as DOMPurify from "dompurify";
 
-import { App } from "../app/app";
+import { App, hideLoadingUi, showLoadingUi } from "../app/app";
 import { FactMap } from "../facts/map";
 import { FactsTable } from "../facts/table";
 import { HelpersUrl } from "../helpers/url";
 import { Modals } from "../modals/modals";
-import { Tabs } from "../tabs/tabs"
 import { Constants } from "./constants";
 import { InstanceFile } from "../interface/instance-file";
 import { Reference } from "../interface/fact";
 import { FormInformation } from "../interface/form-information";
+import { FactsGeneral } from "../facts/general";
+import { Pagination } from "../pagination/sideBarPagination";
+import { SideBarPaginationPrevNext } from "../pagination/sideBarPaginationPrevNext";
+import { UserFiltersState } from "../user-filters/state";
 
 
 export const ConstantsFunctions = {
@@ -35,14 +38,21 @@ export const ConstantsFunctions = {
 		window.parent.document.title = `${viewType}: ${name} ${form} ${date}`;
 	},
 
-	emptyHTMLByID: (id: string) => {
-		if (id && document.getElementById(id)) {
-			while (document.getElementById(id)?.firstChild)
+	emptyHTMLByID: (id: string) =>
+	{
+		ConstantsFunctions.emptyHTML(`#${id}`);
+	},
+	
+	emptyHTML: (selector: string) =>
+	{
+		const element = document.querySelector(selector);
+		if (element)
+		{
+			while (element.firstChild)
 			{
-				document.getElementById(id)?.firstChild?.remove();
+				element.firstChild?.remove();
 			}
 		}
-
 	},
 
 	setInstanceFiles: (input: InstanceFile[]) => {
@@ -69,7 +79,7 @@ export const ConstantsFunctions = {
 	getCollapseToFactValue: () => {
 		const factValueModals = Array.from(document.querySelectorAll('.fact-value-modal'));
 		factValueModals.forEach((current) => {
-			if ((current as HTMLElement)?.offsetHeight && (current as HTMLElement)?.offsetHeight as number > 33) {
+			if ((current as HTMLElement)?.offsetHeight && (current as HTMLElement)?.offsetHeight as number > 33 && current.parentNode?.parentNode?.querySelector('.fact-collapse')) {
 
 				const a = document.createElement('a');
 				a.classList.add('ms-1')
@@ -77,6 +87,7 @@ export const ConstantsFunctions = {
 				a.setAttribute('aria-controls', 'fact-value-modal');
 				a.setAttribute('data-bs-toggle', 'collapse');
 				a.setAttribute('data-bs-target', '.fact-value-modal');
+				a.setAttribute('data-cy', 'factExpandMoreLess');
 				a.setAttribute('href', '#');
 				const aText = document.createTextNode(`More/Less`);
 				a.append(aText);
@@ -137,30 +148,47 @@ export const ConstantsFunctions = {
 		offCanvasElement?.addEventListener('hidden.bs.offcanvas', () => FactsTable.toggle(false));
 	},
 
-	changeInlineFiles: (fileToChangeTo: string) => {
+	switchDoc: (fileToChangeTo: string): Promise<void> =>
+	{
+		if(location.href.includes(fileToChangeTo)) return Promise.resolve();
+
+		showLoadingUi();
 		ConstantsFunctions.hideFactTable();
 
-		const displayInlineFile = () => {
-			const requestedFile = document.querySelector(`#dynamic-xbrl-form [filing-url='${fileToChangeTo}']`);
-			if (requestedFile) {
-				const inlineDocElems = Array.from(document.querySelectorAll(`#dynamic-xbrl-form [filing-url]`));
-				for (const currentInlineDoc of inlineDocElems) {
-					if (currentInlineDoc.getAttribute('filing-url') === fileToChangeTo) {
-						currentInlineDoc.classList.remove('d-none');
-					} else {
-						currentInlineDoc.classList.add('d-none');
-					}
-				}
-				Constants.getInlineFiles.forEach((inlineFile) => {
+		const switchTabs = () =>
+		{
+			//requires setTimeout, otherwise the Loading UI doesn't show
+			return new Promise<void>((resolve) => setTimeout(() =>
+			{
+				for(let inlineFile of Constants.getInlineFiles)
+				{
 					inlineFile.current = inlineFile.slug === fileToChangeTo;
-				});
-				Tabs.updateTabs();
-			} else {
-				// throw error, something super strnage has occured
-			}
-		}
+				}
 
-		HelpersUrl.init(fileToChangeTo, displayInlineFile);
+				for(let e of document.querySelectorAll("#tabs-container a.nav-link.active"))
+				{
+					//set the tab as inactive
+					e.classList.remove("active");
+
+					//hide the section containing the doc HTML
+					const slug = e.querySelector("[doc-slug]")?.getAttribute("doc-slug");
+					document.querySelector(`section[filing-url="${slug}"]`)?.classList.add("d-none");
+				}
+
+				//set the new tab as active
+				const element = document.querySelector(`#tabs-container a.nav-link[data-link="${fileToChangeTo}"]`);
+				element?.classList.add("active");
+				
+				//show the relevant section containing the doc HTML
+				document.querySelector(`section[filing-url="${fileToChangeTo}"]`)?.classList.remove("d-none");
+
+				resolve();
+			}));
+		};
+
+		return HelpersUrl.initPromise(fileToChangeTo)
+			.then(() => switchTabs())
+			.then(() => hideLoadingUi());
 	},
 
 	runNestedAccordionTest: () => {
@@ -287,4 +315,23 @@ export const ConstantsFunctions = {
 		return DOMPurify.sanitize(unsafeHtml);
 	},
 
+	setPagination: () => {
+		let enabledFacts;
+		if (Object.keys(UserFiltersState.getUserSearch).length === 0) {
+			enabledFacts = FactMap.getEnabledFacts();
+		} else {
+			enabledFacts = FactMap.getEnabledHighlightedFacts();
+		}
+		const enabledFactsArray = FactsGeneral.specialSort(enabledFacts);
+		Pagination.init(
+			enabledFactsArray,
+			('#facts-menu-list-pagination .pagination'),
+			('#facts-menu-list-pagination .list-group'),
+			true
+		);
+		new SideBarPaginationPrevNext(enabledFactsArray,
+			('.paginationprevnext'),
+			('#facts-menu-list-pagination .list-group'),
+			true);
+	}
 }

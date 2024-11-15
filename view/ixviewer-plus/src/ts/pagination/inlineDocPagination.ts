@@ -1,4 +1,3 @@
-import { Scroll } from "../scroll/scroll";
 import { Constants } from "../constants/constants";
 
 const toPrev = () => {
@@ -77,14 +76,12 @@ const toNext = () => {
 const toTop = () => {
     const formElement = document.getElementById('dynamic-xbrl-form');
     (formElement as HTMLElement).scrollTop = 0;
-    Scroll.removeAnchorTag();
 }
 
 export const toBottomOfInlineDoc = () => {
     const formElement = document.getElementById("dynamic-xbrl-form") as HTMLElement;
     // (formElement as HTMLElement).scrollTop = (formElement as HTMLElement).scrollHeight as number;
     formElement?.scrollTo({top: formElement.scrollHeight, behavior: 'smooth'});
-    Scroll.removeAnchorTag();
 }
 
 export const buildInlineDocPagination = () =>

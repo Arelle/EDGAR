@@ -85,7 +85,7 @@ export const Sections =
         const sections = Constants.getSectionsFromSessionStorage();
 
         let targetSectionData: Section | null = null;
-        for(let sect of sections)
+        for(const sect of sections)
         {
             const selectorForInlineFact = eventTarget?.getAttribute('inline-fact-selector');
             if (sect.inlineFactSelector == selectorForInlineFact)
@@ -175,7 +175,7 @@ export const Sections =
     setSelectedAttributes: (element: Element) =>
     {
         const selected = document.querySelectorAll("#tagged-sections [selected-fact]");
-        for(let current of Array.from(selected))
+        for(const current of Array.from(selected))
         {
             current.setAttribute("selected-fact", 'false');
         }
@@ -268,7 +268,7 @@ export const Sections =
             document.getElementById("sections-settings-btn")?.classList.add('d-none');
         }
 
-        sections.forEach((section: Section, index: number) => {
+        sections.forEach((section: Section) => {
             // dom ids
             const sectionSelector = convertToSelector(section.domId);
 
@@ -285,7 +285,7 @@ export const Sections =
                 const sectionsInInstanceCount = sections.filter(sect => {
                     return sect.instanceDocName === section.instanceDocName
                 }).length;
-                Sections.createInstanceAccordionHeader(section, index, sectionsInInstanceCount);
+                Sections.createInstanceAccordionHeader(section, sectionsInInstanceCount);
             }
             prevDocName = section.instanceDocName;
 
@@ -294,7 +294,7 @@ export const Sections =
                 const linksInMenuCatCount = sections.filter(sect => {
                     return sect.menuCatMapped === section.menuCatMapped && sect.instanceDocName === section.instanceDocName
                 }).length;
-                Sections.createMenuCatCollapsable(section, index, linksInMenuCatCount);
+                Sections.createMenuCatCollapsable(section, linksInMenuCatCount);
             }
 
             Sections.createSectionItemLink(section);
@@ -304,7 +304,7 @@ export const Sections =
         Sections.addMenuCatCollapseListeners();
     },
 
-    createInstanceAccordionHeader: (sectionItem: Section, instInd: number, sectionsInInstanceCount: number) => {
+    createInstanceAccordionHeader: (sectionItem: Section, sectionsInInstanceCount: number) => {
         const isCurrent = sectionItem.instanceHtm.includes(HelpersUrl.getHTMLFileName || "BAD FILE NAME!");
         const instanceCollapseString =
             `<div 
@@ -353,7 +353,7 @@ export const Sections =
         document.getElementById("tagged-sections")?.appendChild(instanceHeader);
     },
 
-    createMenuCatCollapsable: (sectionItem: Section, index: number, linksInMenuCatCount: number) => {
+    createMenuCatCollapsable: (sectionItem: Section, linksInMenuCatCount: number) => {
         // const menuCatClean = DOMPurify.sanitize(sectionItem.menuCatMapped)
         const expandMenuCat = sectionItem.instanceHtm === HelpersUrl.getHTMLFileName || linksInMenuCatCount < 7;
 
@@ -384,8 +384,8 @@ export const Sections =
                 </div>
             </div>`;
         const domParser = new DOMParser();
-        const menuCatDoc = domParser.parseFromString(cardHeaderString, 'text/html')
-        const menuCatElem = menuCatDoc.querySelector('body > div') as HTMLElement
+        const menuCatDoc = domParser.parseFromString(cardHeaderString, 'text/html');
+        const menuCatElem = menuCatDoc.querySelector('body > div') as HTMLElement;
 
         document.querySelector(`#${sectionItem.instanceSectionBodyId} div.accordion-body`)?.appendChild(menuCatElem);
     },
@@ -410,7 +410,7 @@ export const Sections =
         const doc = parser.parseFromString(instanceCollapseString, 'text/html')
         const sectionFactLink = doc.querySelector('li') as HTMLElement
 
-        for(let eType of ["click", "keyup"] as const)
+        for(const eType of ["click", "keyup"] as const)
         {
             sectionFactLink.addEventListener(eType, (eventElem) =>
                 Sections.handleSectionLinkClick(eventElem))
