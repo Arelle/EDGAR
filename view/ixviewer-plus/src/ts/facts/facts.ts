@@ -9,10 +9,12 @@ import { ModalsCommon } from "../modals/common";
 import { ModalsNested } from "../modals/nested";
 
 import { FactsMenu } from "./menu";
-import { FactsTable } from "./table";
+// import { FactsTable } from "./table";
 import { SingleFact } from "../interface/fact";
 import { Logger, ILogObj } from "tslog";
 import { ConstantsFunctions } from "../constants/functions";
+import { ixScrollTo } from "../helpers/utils";
+
 
 export const Facts = {
 	updateFactCount: () => {
@@ -34,16 +36,17 @@ export const Facts = {
 		});
 
 		// do the slugs too:
-		const factSlugsElementsArray = Array.from(document.querySelectorAll("[filing-slug]"));
-		factSlugsElementsArray.forEach((docSlug) => {
-			if (docSlug) {
+		const docTabsFactsCounts = Array.from<HTMLElement>(document.querySelectorAll("[doc-slug]"));
+		docTabsFactsCounts.forEach((docFactCountElem) => {
+			if (docFactCountElem) {
 				const filingLoaded = Constants.getInlineFiles.find(element => {
-					if (element.slug === docSlug.getAttribute('filing-slug')) {
+					if (element.slug === docFactCountElem.getAttribute('doc-slug')) {
 						return element;
 					}
 				});
-				if (filingLoaded.loaded) {
-					docSlug.innerHTML = FactMap.getFactCountForFile(docSlug.getAttribute('filing-slug'), true);
+				if (filingLoaded?.loaded) {
+					const fileName = docFactCountElem.getAttribute('doc-slug') || "";
+					docFactCountElem.innerText = FactMap.getFactCountForFile(fileName);
 				}
 			}
 		});
@@ -74,17 +77,45 @@ export const Facts = {
 		}
 	},
 
+	handleFactHash: (event = new Event("click")) => {
+		if (window.location.hash.startsWith('#fact-identifier')) {
+			event.stopPropagation();
+			event.preventDefault();
+			const id = window.location.hash;
+			const element = document.querySelector(id);
+			if (element instanceof HTMLElement) {
+				Facts.clickEvent(event, element);
+				// element.scrollIntoView(false); // keeping as comment to remember alternative function
+				ixScrollTo(element);
+			}
+		}
+	},
+
+	addHashChangeListener: () => {
+		window.addEventListener("hashchange", (event) => {
+			Facts.handleFactHash(event)
+		});
+	},
+
 	setListeners(element: HTMLElement) {
 		element.addEventListener("click", (event: MouseEvent) => {
 			event.stopPropagation();
 			event.preventDefault();
-			Facts.clickEvent(event, element);
+			if (element instanceof HTMLElement) {
+				const id = element.hasAttribute('continued-main-fact-id') ? element.getAttribute('continued-main-fact-id') : element.getAttribute('id');
+				Facts.addURLHash(id as string);
+				Facts.clickEvent(event, element);
+			}
 		});
 
 		element.addEventListener("keyup", (event: KeyboardEvent) => {
 			event.stopPropagation();
 			event.preventDefault();
-			Facts.clickEvent(event, element);
+			if (element instanceof HTMLElement) {
+				const id = element.hasAttribute('continued-main-fact-id') ? element.getAttribute('continued-main-fact-id') : element.getAttribute('id');
+				Facts.addURLHash(id as string);
+				Facts.clickEvent(event, element);
+			}
 		});
 
 		element.addEventListener("mouseover", (event: MouseEvent) => {
@@ -94,6 +125,7 @@ export const Facts = {
 		element.addEventListener("mouseleave", (event: MouseEvent) => {
 			Facts.leaveElement(event, element);
 		});
+
 		element.setAttribute('listeners', 'true');
 	},
 
@@ -109,21 +141,21 @@ export const Facts = {
 							return document.getElementById(href.slice(1))?.closest(`[filing-url]`);
 						}
 						const fileToChangeTo = file(target.getAttribute('href') as string);
-						if (fileToChangeTo && fileToChangeTo.getAttribute('filing-url')) {
+						if (fileToChangeTo?.getAttribute('filing-url')) {
 							target.addEventListener('click', () => {
-								ConstantsFunctions.changeInlineFiles(fileToChangeTo.getAttribute('filing-url') as string);
+								ConstantsFunctions.switchDoc(fileToChangeTo.getAttribute('filing-url') || "");
 							});
 							target.addEventListener('keyup', () => {
-								ConstantsFunctions.changeInlineFiles(fileToChangeTo.getAttribute('filing-url') as string);
+								ConstantsFunctions.switchDoc(fileToChangeTo.getAttribute('filing-url') || "");
 							});
 						}
 
 					} else if (target.hasAttribute('data-link')) {
 						target.addEventListener('click', () => {
-							ConstantsFunctions.changeInlineFiles(target.getAttribute('data-link') as string);
+							ConstantsFunctions.switchDoc(target.getAttribute('data-link') || "");
 						});
 						target.addEventListener('keyup', () => {
-							ConstantsFunctions.changeInlineFiles(target.getAttribute('data-link') as string);
+							ConstantsFunctions.switchDoc(target.getAttribute('data-link') || "");
 						});
 					} else {
 						if (!target.getAttribute('listeners')) {
@@ -139,35 +171,24 @@ export const Facts = {
 						if (fact.xbrltype === 'textBlockItemType') {
 							// text block fact is on the screen
 							target.setAttribute("text-block-fact", 'true');
-
-							const leftSpan = document.createElement("span");
-							leftSpan.setAttribute(
-								"class",
-								"float-left text-block-indicator-left position-absolute"
-							);
-							leftSpan.title = "One or more textblock facts are between this symbol and the right side symbol.";
-							target.parentNode?.insertBefore(leftSpan, target);
-
-							const rightSpan = document.createElement("span");
-							rightSpan.setAttribute(
-								"class",
-								"float-right text-block-indicator-right position-absolute"
-							);
-							rightSpan.title = "One or more textblock facts are between this symbol and the left side symbol.";
-							target.parentNode?.insertBefore(rightSpan, target);
 						}
 
 						if (target.hasAttribute("continued-main-fact")) {
-							const getContinuedIDs = (id: string, mainID: string) => {
+							const getContinuedIDs = (continuedAtId: string, mainID: string) => {
 								// let's ensure we haven't already added the necessary html attributes to the element
-								if (fact.continuedIDs && !fact.continuedIDs.includes(id)) {
-									Facts.setListeners(document.querySelector(`[id="${id}"]`) as HTMLElement);
-									document.querySelector(`[id="${id}"]`)?.setAttribute("continued-main-fact-id", mainID);
-									document.querySelector(`[id="${id}"]`)?.setAttribute("continued-fact", "true");
-									target.setAttribute('tabindex', `18`);
-									fact.continuedIDs.push(id);
-									if (document.querySelector(`[id="${id}"]`)?.hasAttribute("continuedat")) {
-										getContinuedIDs(document.querySelector(`[id="${id}"]`)?.getAttribute("continuedat") as string, mainID);
+								if (fact.continuedIDs && !fact.continuedIDs.includes(continuedAtId)) {
+									Facts.setListeners(document.querySelector(`[id="${continuedAtId}"]`) as HTMLElement);
+									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("continued-main-fact-id", mainID);
+									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("continued-fact", "true");
+									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("enabled-fact", `${fact.isEnabled}`);	
+									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("selected-fact", `${fact.isSelected}`);					
+									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("text-block-fact", "true");		
+													
+									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("highlight-fact", `${fact.isHighlight}`);						
+									target.setAttribute('highlight-fact', `${fact.isHighlight}`);
+									fact.continuedIDs.push(continuedAtId);
+									if (document.querySelector(`[id="${continuedAtId}"]`)?.hasAttribute("continuedat")) {
+										getContinuedIDs(document.querySelector(`[id="${continuedAtId}"]`)?.getAttribute("continuedat") as string, mainID);
 									}
 								}
 							};
@@ -184,23 +205,9 @@ export const Facts = {
 		});
 	},
 
-	isElementContinued: (element: HTMLElement) => {
-		if (element) {
-
-			if (
-				element.hasAttribute("continued-fact") &&
-				element.getAttribute("continued-fact") === "true"
-			) {
-				return true;
-			}
-			if (
-				element.hasAttribute("continued-main-fact") &&
-				element.getAttribute("continued-main-fact") === "true"
-			) {
-				return true;
-			}
-		}
-		return false;
+	isElementContinued: (element: HTMLElement | null) =>
+	{
+		return element?.getAttribute("continued-fact") === "true" || element?.getAttribute("continued-main-fact") === "true";
 	},
 
 	isElementNested: (element: HTMLElement) => {
@@ -210,19 +217,16 @@ export const Facts = {
 		return ModalsNested.getAllElementIDs.length > 1;
 	},
 
-	clickEvent: (event: MouseEvent | KeyboardEvent, element: HTMLElement) => {
+	clickEvent: (event: Event, element: HTMLElement) => {
 		event.stopPropagation();
 		event.preventDefault();
-		if (
-			Object.prototype.hasOwnProperty.call(event, 'key') &&
-			!((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space')
-		) {
+		if (event instanceof KeyboardEvent && !(event.key === 'Enter' || event.key === 'Space'))
 			return;
-		}
+
 		document.getElementById("fact-modal")?.classList.add("d-none");
 		document.getElementById("fact-nested-modal")?.classList.add("d-none");
 		const elementRecursion = (element: HTMLElement): { href: string, _target: string } | null => {
-			if (element.hasAttribute('href')) {
+			if (typeof element.hasAttribute == "function" && element.hasAttribute('href')) {
 				return {
 					href: element.getAttribute('href') as string,
 					_target: element.getAttribute('target') as string
@@ -234,7 +238,7 @@ export const Facts = {
 				return elementRecursion(element.parentElement)
 			}
 		}
-		const isLink = elementRecursion(event.target as HTMLElement);
+		const isLink = event.target && elementRecursion(event.target as HTMLElement);
 		if (isLink) {
 			window.open(
 				isLink.href,
@@ -242,9 +246,9 @@ export const Facts = {
 			);
 			return false;
 		} else {
-			const id = element.hasAttribute('continued-main-fact-id') ? element.getAttribute('continued-main-fact-id') : element.getAttribute('id');
+			const id = element.getAttribute('continued-main-fact-id') || element.getAttribute('id');
+			if (id == null) return;
 			FactMap.setIsSelected(id as string);
-			Facts.addURLParam(id as string);
 			if (Facts.isElementNested(element)) {
 				ModalsNested.nestedClickEvent(event, element);
 			} else {
@@ -270,10 +274,11 @@ export const Facts = {
 			} else {
 				if (Facts.isElementContinued(element)) {
 					// get this facts info
-					const fact = FactMap.getByID(element.getAttribute('continued-main-fact-id') || element.getAttribute('id') as string);
+					const fact: any = FactMap.getByID(element.getAttribute('continued-main-fact-id') || element.getAttribute('id') as string);
 					if (fact) {
-						fact.continuedIDs.forEach((current) => {
+						fact.continuedIDs.forEach((current: any) => {
 							document.getElementById(current)?.setAttribute('hover-fact', 'true');
+							document.querySelector(`[continuedat="${current}"]`)?.setAttribute('hover-fact', 'true');
 						});
 					}
 				}
@@ -282,7 +287,7 @@ export const Facts = {
 	},
 
 	addPopover: (element: HTMLElement) => {
-		const fact = FactMap.getByID(element.getAttribute('id') as string);
+		const fact: any = FactMap.getByID(element.getAttribute('id') as string);
 		if (fact) {
 			element.parentElement?.setAttribute("data-bs-toggle", "popover");
 			element.parentElement?.setAttribute("data-bs-placement", "auto");
@@ -339,15 +344,12 @@ export const Facts = {
 		});
 	},
 
-	addURLParam: (input: string) => {
-		const url = new URL(window.location.href);
-		url.searchParams.set('fact', input);
-		window.history.pushState(null, '', decodeURIComponent(url.toString()));
-	},
-
-	removeURLParam: () => {
-		const url = new URL(window.location.href);
-		url.searchParams.delete('fact');
-		window.history.pushState(null, '', decodeURIComponent(url.toString()));
+	addURLHash: (factId: string) => {
+		if (window.history.pushState) {
+			window.history.pushState(null, "", `#${factId}`);
+		}
+		else {
+			window.location.hash = `#${factId}`;
+		}
 	},
 };

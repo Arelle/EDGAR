@@ -14,6 +14,11 @@ export const HelpersUrl = {
         callback(HelpersUrl.setParams(internalUrl));
     },
 
+    initPromise: (internalUrl: string): Promise<boolean> =>
+    {
+        return Promise.resolve(HelpersUrl.setParams(internalUrl));
+    },
+
     makeAbsoluteUrlUnlessSimpleAnchorTag: (element: HTMLElement): void => {
         if (element.getAttribute('href')?.indexOf('http://') === 0
             || element.getAttribute('href')?.indexOf('https://') === 0) {
@@ -188,6 +193,11 @@ export const HelpersUrl = {
 
     getAllParams: null as UrlParams | null,
 
+    /** Description
+     * By WLK 7/23/24
+     * @param {string | boolean} internalURL: URL slug
+     * @returns {boolean} when params are set.
+     */
     setParams: (internalUrl: string | boolean): boolean => {
         if ((internalUrl && typeof internalUrl === 'string') && (internalUrl !== HelpersUrl.getHTMLFileName)) {
             HelpersUrl.fullURL = HelpersUrl.fullURL?.replace(HelpersUrl.getHTMLFileName || "", internalUrl) || null;
@@ -319,7 +329,7 @@ export const HelpersUrl = {
 
         const properties: Array<keyof typeof urlInfo> = ['host', 'hostname', 'hash', 'href', 'port', 'protocol', 'search'];
 
-        for(let prop of properties)
+        for(const prop of properties)
         {
             urlInfo[prop] = parser[prop];
         }

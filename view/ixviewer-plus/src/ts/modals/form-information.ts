@@ -50,16 +50,17 @@ export const ModalsFormInformation = {
 
 		window.addEventListener('keyup', ModalsFormInformation.keyboardEvents);
 
-		thisCarousel?.addEventListener('slide.bs.carousel', (event) => {
-			ModalsFormInformation.currentSlide = (event['to']) + 1;
-			const previousActiveIndicator = event['from'];
-			const newActiveIndicator = event['to'];
+		thisCarousel?.addEventListener('slide.bs.carousel' as any, (event: CarouselEvent) =>
+		{
+			ModalsFormInformation.currentSlide = event.to + 1;
+			const previousActiveIndicator = event.from;
+			const newActiveIndicator = event.to;
 			document.getElementById('form-information-carousel-indicators')?.querySelector(
 				'[data-bs-slide-to="' + previousActiveIndicator + '"]')?.classList.remove('active');
 			document.getElementById('form-information-carousel-indicators')?.querySelector(
 				'[data-bs-slide-to="' + newActiveIndicator + '"]')?.classList.add('active');
 			const span = document.createElement('span');
-			const dialogTitle = document.createTextNode(`${ModalsFormInformation.carouselInformation[event['to']]['dialog-title']}`);
+			const dialogTitle = document.createTextNode(`${ModalsFormInformation.carouselInformation[event.to]['dialog-title']}`);
 			span.appendChild(dialogTitle);
 			document.getElementById('form-information-modal-title')?.firstElementChild?.replaceWith(span);
 		});
@@ -166,7 +167,7 @@ export const ModalsFormInformation = {
 			},
 			{
 				'label': 'Fiscal Year/Period Focus',
-				'value': FactMap.getByName('dei:DocumentFiscalYearFocus', 'dei:DocumentFiscalPeriodFocus')
+				'value': FactMap.getByName('dei:DocumentFiscalYearFocus') || FactMap.getByName('dei:DocumentFiscalPeriodFocus'),
 			},
 			{
 				'label': 'Current Fiscal Year End',
@@ -177,7 +178,8 @@ export const ModalsFormInformation = {
 				'value': FactMap.getByName('dei:AmendmentFlag')
 			}
 		];
-		possibleLabels.forEach((current, index) => {
+		
+		possibleLabels.forEach((current) => {
 			if (current['value']) {
 				const tr = document.createElement('tr');
 				const th = document.createElement('th');
@@ -187,15 +189,14 @@ export const ModalsFormInformation = {
 				td.textContent = current['value'];
 				tr.appendChild(th);
 				tr.appendChild(td);
-				if (index === 0) {
-					document.getElementById('form-information-modal-carousel-page-1')?.firstElementChild?.replaceWith(tr);
-				} else {
-					document.getElementById('form-information-modal-carousel-page-1')?.append(tr);
+				document.getElementById('form-information-modal-carousel-page-1')?.append(tr);
+				if((current['label']=='Fiscal Year/Period Focus' || current['label']=='Current Fiscal Year End') && td.textContent=='Not Available.') {
+					tr.parentNode?.removeChild(tr);
 				}
 			}
 		});
-
 	},
+	
 
 	secondSlide: () => {
 		ConstantsFunctions.emptyHTMLByID('form-information-modal-carousel-page-2');
@@ -296,7 +297,7 @@ export const ModalsFormInformation = {
 					total]
 			}]
 
-		];
+		] as const;
 
 		const table = document.createElement('table');
 		possibleLabels.forEach((current, index) => {
@@ -313,27 +314,26 @@ export const ModalsFormInformation = {
 					th.textContent = nestedCurrent['label'];
 					tr.appendChild(th);
 
-					if (nestedCurrent['value']) {
+					if ("value" in nestedCurrent) {
 						const td = document.createElement('td');
-						td.setAttribute('data-name', nestedCurrent['label']);
-						td.setAttribute('colspan', 2);
-						td.textContent = nestedCurrent['value'];
+						td.setAttribute('data-name', nestedCurrent.label);
+						td.setAttribute('colspan', "2");
+						td.textContent = (nestedCurrent.value || "").toString();
 						tr.appendChild(td);
 
-					} else if (nestedCurrent['values']) {
-						nestedCurrent['values'].forEach((finalCurrent: string | null, finalIndex: string) => {
+					} else if ("values" in nestedCurrent) {
+						nestedCurrent.values.forEach((finalCurrent, finalIndex) => {
 							const td = document.createElement('td');
-							td.setAttribute('data-name', nestedCurrent['label'] + '-' + finalIndex);
+							td.setAttribute('data-name', nestedCurrent.label + '-' + finalIndex);
 							td.setAttribute('colspan', '1');
-							td.textContent = finalCurrent;
+							td.textContent = finalCurrent.toString();
 							tr.appendChild(td);
 						});
-
 					}
 				});
-
 			} else {
-				if (current['value']) {
+				//TODO: this should be impossible...
+				if ((current as any).value) {
 					const th = document.createElement('th');
 					th.setAttribute('colspan', '1');
 					th.textContent = current['label'];
@@ -345,6 +345,7 @@ export const ModalsFormInformation = {
 					tr.appendChild(td);
 				}
 			}
+
 			if (index === 0) {
 				document.getElementById('form-information-modal-carousel-page-2')?.firstElementChild?.replaceWith(tr);
 			} else {
@@ -438,13 +439,14 @@ export const ModalsFormInformation = {
 		const possibleLabels = [{
 			'label': 'Taxonomy',
 			'value': 'Count',
-			'bold': true
+			'bold': true,
 		}];
 
 		Object.keys(Constants.getFormInformation.hidden).forEach((current) => {
 			const temp = {
-				'label': (current === 'total') ? 'Total' : current,
-				'value': Constants.getFormInformation.hidden[current]
+				label: (current === 'total') ? 'Total' : current,
+				value: Constants.getFormInformation.hidden[current].toString(),
+				bold: false,
 			};
 			possibleLabels.push(temp);
 		});
@@ -455,22 +457,22 @@ export const ModalsFormInformation = {
 			table.appendChild(tr);
 			if (current['bold']) {
 				const th1 = document.createElement('th');
-				th1.textContent = current['label'];
+				th1.textContent = current.label;
 				tr.appendChild(th1);
 
 				const th2 = document.createElement('th');
-				th2.textContent = current['value'];
+				th2.textContent = current.value;
 				tr.appendChild(th2);
 
 			} else if (current['value']) {
 				const th = document.createElement('th');
 				th.setAttribute('data-name', 'Additional Items Label-' + (index - 1));
-				th.textContent = current['label'];
+				th.textContent = current.label;
 				tr.appendChild(th);
 
 				const td = document.createElement('td');
 				td.setAttribute('data-name', 'Additional Items Value-' + (index - 1));
-				td.textContent = current['value'];
+				td.textContent = current.value;
 				tr.appendChild(td);
 			}
 			if (index === 0) {
@@ -479,5 +481,5 @@ export const ModalsFormInformation = {
 				document.getElementById('form-information-modal-carousel-page-4')?.append(tr);
 			}
 		});
-	}
+	},
 };
