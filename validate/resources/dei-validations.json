@@ -238,7 +238,7 @@
     {"sub-types": ["N-2 POSASR"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["N-2 POSASR", "N-2"], "source": "both", "dei/cover": "dei"},
     {"sub-types": ["N-3"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["N-3"], "source": "both", "dei/cover": "dei"},
     {"sub-types": ["N-3/A"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["N-3/A"], "source": "both", "dei/cover": "dei"},
-    {"sub-types": ["N-4"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["N-4"], "source": "both", "dei/cover": "dei"},
+    {"sub-types": ["N-4"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["N-4", "EX-99.4R HISTORIC"], "source": "both", "dei/cover": "dei"},
     {"sub-types": ["N-4/A"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["N-4/A"], "source": "both", "dei/cover": "dei"},
     {"sub-types": ["N-6"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["N-6"], "source": "both", "dei/cover": "dei"},
     {"sub-types": ["N-6/A"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["N-6/A"], "source": "both", "dei/cover": "dei"},
