@@ -2479,6 +2479,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         axesValidations = deiValidations["axis-validations"][axisKey]
                         axes = axesValidations["axes"]
                         members = axesValidations.get("members",())
+                        isValidValue = False if sev.get("store-db-valid-values") and f.xValue not in sev.get("store-db-valid-values") else True
                         if f is not None:
                             _axisKey = tuple(
                                 (lcStr(dim.dimensionQname.localName.replace("Axis","")),
@@ -2488,7 +2489,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 if qname(_axis, deiDefaultPrefixedNamespaces) == dim.dimensionQname
                                 )
                             if storeDbName:
-                                if not (storeDbInnerTextOnly and storeDbInnerTextTruncate): # only write truncated inner text to output file
+                                if not (storeDbInnerTextOnly and storeDbInnerTextTruncate) and isValidValue: # only write truncated inner text to output file
                                     storeDbObjectFacts.setdefault(storeDbObject,{}).setdefault(_axisKey,{})[
                                         _storeDbName] = getStoreDBValue(ftName(f), eloValueOfFact(names[0], f.xValue))
                                 if storeDbInnerTextTruncate:
@@ -2504,7 +2505,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     storeDbActions.setdefault(storeDbObject,{}).setdefault(_axisKey,{})[k] = getStoreDBValue(k, v, otherFact=f)
 
                         elif not axes:
-                            if storeDbName and _storeDbName not in storeDbObjectFacts:
+                            if storeDbName and _storeDbName not in storeDbObjectFacts and isValidValue:
                                 storeDbObjectFacts.setdefault(storeDbObject,{}).setdefault((),{})[_storeDbName] = eloValueOfFact(names[0], f.xValue)
                             if storeDbAction:
                                 for k, v in storeDbAction.items():

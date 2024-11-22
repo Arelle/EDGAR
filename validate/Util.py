@@ -218,7 +218,7 @@ def loadDeiValidations(modelXbrl, isInlineXbrl, attachmentDocumentType):
             sev["formTypeSet"] = compileSubTypeSet(sev.get("form-types", (sev.get("form-type",()),)))
 
         # allow value to be a list which includes @ references to sub types
-        for valueKey in ("value", "reference-value"):
+        for valueKey in ("value", "reference-value", "store-db-valid-values"):
             if valueKey in sev and isinstance(sev[valueKey],list) and any(e.startswith("@") for e in sev[valueKey] if isinstance(e,str)):
                 sev[valueKey] = compileSubTypeSet(sev[valueKey])
         if "value-pattern" in sev:
