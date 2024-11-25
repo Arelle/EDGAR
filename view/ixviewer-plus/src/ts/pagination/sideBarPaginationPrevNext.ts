@@ -114,7 +114,7 @@ export class SideBarPaginationPrevNext {
 		const prevhtmlString = `<div xmlns="http://www.w3.org/1999/xhtml">
 								<ul class="pagination pagination-sm mb-0">
 								<li class="page-item">
-								<a class="page-link text-body" href="#" tabindex="13" id="PrevFact">
+								<a class="page-link text-body" tabindex="13" id="PrevFact">
 								Previous Fact</a></li>`;
 		const parser = new DOMParser();
 		const prevdoc = parser.parseFromString(prevhtmlString, 'text/html');
@@ -125,7 +125,7 @@ export class SideBarPaginationPrevNext {
 		const nexthtmlString = `<div xmlns="http://www.w3.org/1999/xhtml">
 								<ul class="pagination pagination-sm mb-0">
 								<li class="page-item">
-								<a class="page-link text-body" href="#" tabindex="13" id="NextFact">
+								<a class="page-link text-body" tabindex="13" id="NextFact">
 								Next Fact</a></li>`;
 		const nextdoc = parser.parseFromString(nexthtmlString, 'text/html');
 		const nextelem = nextdoc.querySelector('body > div') as HTMLElement

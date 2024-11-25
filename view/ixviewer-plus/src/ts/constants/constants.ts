@@ -19,6 +19,8 @@ export const Constants =
 	version: "24.4",
 	featureSet: "plus",
 
+	isNcsr: false,
+
 	scrollPosition: typeof window !== 'undefined' && window.localStorage.getItem("scrollPosition") || "start",
 
 	hoverOption: typeof window !== 'undefined' && window.localStorage.getItem("hoverOption") === "true" || false,

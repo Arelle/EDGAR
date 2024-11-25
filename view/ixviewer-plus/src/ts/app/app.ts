@@ -2,6 +2,7 @@ import { Logger, ILogObj } from "tslog";
 import { Constants } from "../constants/constants";
 import { ConstantsFunctions } from "../constants/functions";
 import { ErrorsMajor } from "../errors/major";
+import { ErrorsMinor } from "../errors/minor";
 import { Facts } from "../facts/facts";
 import { FetchAndMerge } from "../fetch-merge/fetch-merge";
 import { FlexSearch } from "../flex-search/flex-search";
@@ -15,6 +16,7 @@ import { buildInlineDocPagination, addPaginationListeners } from "../pagination/
 import { Sections } from "../sections/sections";
 import { Tabs } from "../tabs/tabs";
 import { excludeFacts, fixImages, fixLinks, hiddenFacts, redLineFacts } from "./app-helper";
+import { hideLoadingUi, incrementProgress, resetProgress } from "./loading-progress";
 
 
 /* Created by staff of the U.S. Securities and Exchange Commission.
@@ -22,8 +24,6 @@ import { excludeFacts, fixImages, fixLinks, hiddenFacts, redLineFacts } from "./
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  */
 
-
-/* eslint-disable @typescript-eslint/ban-types */
 
 //this seems to be necessary for webpack to correctly include the sourceMaps for FetchAndMerge
 const fetchAndMerge = new FetchAndMerge({} as any); // eslint-disable-line
@@ -85,6 +85,7 @@ export const App = {
                         {
                             //Leave sidebars alone if this is not the initial load
                             if (!changeInstance) closeSidebars();
+                            Constants.isNcsr = event.data.isNcsr
                             progressiveLoadDoc(event.data.xhtml);
                             
                             incrementProgress();
@@ -150,7 +151,7 @@ export const App = {
         const xhtml = activeInstance.docs.filter(doc => doc.current)[0].xhtml;
 
         progressiveLoadDoc(xhtml);
-        //skip attributeFacts -- this has already been done during the orig load
+        addAttributesToInlineFacts(activeInstance.map, true);
         storeData(activeInstance);
         handleFetchAndMerge(activeInstance);
         App.additionalSetup();
@@ -314,16 +315,55 @@ function loadDoc(xhtml: string, current: boolean, i?: number): void
     const body = htmlDoc.querySelector('body');
     if (!body) throw new Error("Error: XBRL document is missing `body` tag");
 
+    //split if doc is larger than 50MB or the filing is an NCSR
+    if(Constants.isNcsr || xhtml.length > 50 * 1024 * 1024)
+        splitBodyContents(body);
+
     docSection.append(body);
-    document.getElementById('dynamic-xbrl-form')?.append(docSection);
+    document.getElementById("dynamic-xbrl-form")?.append(docSection);
 }
 
+/**
+ * Use 2 strategies to combat large files exhausting RAM
+ * 1. limit the number of direct children of `body`
+ * 2. utilize `content-visibility: auto` to load elements only when necessary
+ */
+function splitBodyContents(body: HTMLElement): void
+{
+    ErrorsMinor.message("IX Viewer has detected a very large file.  Performance may be degraded, and some features may not work as expected.");
+
+    const ELEMENTS_PER_GROUP = Math.floor(Math.sqrt(body.childElementCount));
+    const groupCount = Math.ceil(body.childElementCount / ELEMENTS_PER_GROUP);
+    const fastRenderGroups = new Array(groupCount).fill(null)
+        .map(() =>
+        {
+            const span = document.createElement("span");
+            span.setAttribute("style", "content-visibility: auto;");
+            return span;
+        });
+
+    for(let i=0; i < groupCount; i++)
+    {
+        const start = i * ELEMENTS_PER_GROUP;
+        const end = (i + 1) * ELEMENTS_PER_GROUP;
+        fastRenderGroups[i].append(...Array.from(body.children).slice(start, end));
+    }
+
+    body.innerHTML = "";
+    body.append(...fastRenderGroups);
+}
+
+
+
+let idAllocator = null as any as FactIdAllocator;
+
+/** Give facts attributes like highlights during load */
 function addAttributesToInlineFacts(facts: Map<string, SingleFact>, current = true)
 {
     const startPerformance = performance.now();
 
     //For the facts in the HTML that have no IDs...
-    const idAllocator = new FactIdAllocator(facts);
+    idAllocator = idAllocator || new FactIdAllocator(facts);
     const getByNameAndContextRef = (contextRef: string | null, name: string | null): string | null =>
     {
         let id = idAllocator.getId(contextRef, name);
@@ -389,40 +429,20 @@ function addPagination(): void
 {
     // maybe remove
     document.getElementById('html-pagination')?.classList.toggle('d-none');
+
+    const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+    const currentXHTML = currentInstance?.docs.find(element => element.current);
+
+    const currentDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);
+    const numPageBreaks = currentDocElem?.querySelectorAll(`[style*="page-break-after"], [style*="break-before"]`)?.length || 0;
     
-    const inlineDocPaginationUI = buildInlineDocPagination();
-    document.getElementById('dynamic-xbrl-form')?.append(inlineDocPaginationUI);
-    addPaginationListeners();
-}
-
-
-//TODO: maybe move these to their own module?
-let progress = 0;
-const MAX_PROGRESS = 5;
-function resetProgress()
-{
-    progress = 0;
-    document.querySelector("#loading-animation")?.classList.remove("d-none");
-    document.querySelector("#loading")?.classList.remove("d-none");
-}
-function incrementProgress(): void
-{
-    progress++;
-    (document.querySelector("#loading") as HTMLElement)
-        .style.setProperty("--progress", `${progress / MAX_PROGRESS * 100}`);
-
-    if (progress >= MAX_PROGRESS)
-    {
-        setTimeout(() => hideLoadingUi(), 500);
+    if (numPageBreaks > 0) {
+        const inlineDocPaginationUI = buildInlineDocPagination();
+        document.getElementById('dynamic-xbrl-form')?.append(inlineDocPaginationUI);
+        addPaginationListeners();
+    } else {
+        document.getElementById('html-pagination')?.classList.add('d-none');
     }
-}
-export function showLoadingUi()
-{
-    document.querySelector("#loading-animation")?.classList.remove("d-none");
-}
-export function hideLoadingUi()
-{
-    document.querySelector("#loading-animation")?.classList.add("d-none");
 }
 
 function handleFetchError(loadingError: ErrorResponse): false

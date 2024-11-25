@@ -6,7 +6,7 @@
 import * as bootstrap from "bootstrap";
 import * as DOMPurify from "dompurify";
 
-import { App, hideLoadingUi, showLoadingUi } from "../app/app";
+import { App } from "../app/app";
 import { FactMap } from "../facts/map";
 import { FactsTable } from "../facts/table";
 import { HelpersUrl } from "../helpers/url";
@@ -19,6 +19,8 @@ import { FactsGeneral } from "../facts/general";
 import { Pagination } from "../pagination/sideBarPagination";
 import { SideBarPaginationPrevNext } from "../pagination/sideBarPaginationPrevNext";
 import { UserFiltersState } from "../user-filters/state";
+import { Facts } from "../facts/facts";
+import { incrementProgress, resetProgress, showLoadingUi } from "../app/loading-progress";
 
 
 export const ConstantsFunctions = {
@@ -152,7 +154,10 @@ export const ConstantsFunctions = {
 	{
 		if(location.href.includes(fileToChangeTo)) return Promise.resolve();
 
+		resetProgress();
+		incrementProgress();
 		showLoadingUi();
+
 		ConstantsFunctions.hideFactTable();
 
 		const switchTabs = () =>
@@ -160,6 +165,9 @@ export const ConstantsFunctions = {
 			//requires setTimeout, otherwise the Loading UI doesn't show
 			return new Promise<void>((resolve) => setTimeout(() =>
 			{
+				//remove the fact from the URL
+				Facts.addURLHash("");
+
 				for(let inlineFile of Constants.getInlineFiles)
 				{
 					inlineFile.current = inlineFile.slug === fileToChangeTo;
@@ -178,9 +186,13 @@ export const ConstantsFunctions = {
 				//set the new tab as active
 				const element = document.querySelector(`#tabs-container a.nav-link[data-link="${fileToChangeTo}"]`);
 				element?.classList.add("active");
-				
+
 				//show the relevant section containing the doc HTML
 				document.querySelector(`section[filing-url="${fileToChangeTo}"]`)?.classList.remove("d-none");
+
+				incrementProgress();
+				incrementProgress();
+				incrementProgress();
 
 				resolve();
 			}));
@@ -188,7 +200,7 @@ export const ConstantsFunctions = {
 
 		return HelpersUrl.initPromise(fileToChangeTo)
 			.then(() => switchTabs())
-			.then(() => hideLoadingUi());
+			.then(() => incrementProgress());
 	},
 
 	runNestedAccordionTest: () => {

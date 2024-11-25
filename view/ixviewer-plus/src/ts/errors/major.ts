@@ -95,7 +95,7 @@ export const ErrorsMajor: {
 	cors: (doc) => {
 		const host = window.location.protocol + '//' + window.location.host;
 
-		const content = document.createTextNode('The protocol, host name and port number of the "doc" field (' + doc.host
+		const content = document.createTextNode('The protocol, host name, and port number of the "doc" field (' + doc.host
 			+ '), if provided, must be identical to that of the Inline XBRL viewer(' + host + ')');
 
 		const errorDiv = document.createElement('div');
@@ -133,5 +133,5 @@ export const ErrorsMajor: {
 			const log: Logger<ILogObj> = new Logger();
 			log.debug(`message`);
 		}
-	}
+	},
 };

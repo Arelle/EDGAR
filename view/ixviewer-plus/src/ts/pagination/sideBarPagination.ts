@@ -137,7 +137,6 @@ export const Pagination = {
 
 		const firstPageAElement = document.createElement('a');
 		firstPageAElement.setAttribute('class', 'page-link text-body');
-		firstPageAElement.setAttribute('href', '#');
 		firstPageAElement.setAttribute('tabindex', '13');
 		firstPageAElement.addEventListener('click', () => { Pagination.firstPage(); });
 
@@ -153,7 +152,6 @@ export const Pagination = {
 
 		const previousPageAElement = document.createElement('a');
 		previousPageAElement.setAttribute('class', 'page-link text-body');
-		previousPageAElement.setAttribute('href', '#');
 		previousPageAElement.setAttribute('tabindex', '13');
 		previousPageAElement.addEventListener('click', () => { Pagination.previousPage(); });
 
@@ -169,7 +167,6 @@ export const Pagination = {
 
 		const nextPageAElement = document.createElement('a');
 		nextPageAElement.setAttribute('class', 'page-link text-body');
-		nextPageAElement.setAttribute('href', '#');
 		nextPageAElement.setAttribute('tabindex', '13');
 		nextPageAElement.addEventListener('click', () => { Pagination.nextPage(); });
 
@@ -185,7 +182,6 @@ export const Pagination = {
 
 		const lastPageAElement = document.createElement('a');
 		lastPageAElement.setAttribute('class', 'page-link text-body');
-		lastPageAElement.setAttribute('href', '#');
 		lastPageAElement.setAttribute('tabindex', '13');
 		lastPageAElement.addEventListener('click', () => { Pagination.lastPage(); });
 
@@ -222,7 +218,6 @@ export const Pagination = {
 
 		const firstPageAElement = document.createElement('a');
 		firstPageAElement.setAttribute('class', ' page-link text-body');
-		firstPageAElement.setAttribute('href', '#');
 		firstPageAElement.setAttribute('tabindex', '13');
 		firstPageAElement.addEventListener('click', () => { Pagination.firstPage(); });
 
@@ -238,7 +233,6 @@ export const Pagination = {
 
 		const previousPageAElement = document.createElement('a');
 		previousPageAElement.setAttribute('class', 'page-link text-body');
-		previousPageAElement.setAttribute('href', '#');
 		previousPageAElement.setAttribute('tabindex', '13');
 		previousPageAElement.addEventListener('click', () => { Pagination.previousPage(); });
 
@@ -254,7 +248,6 @@ export const Pagination = {
 
 		const nextPageAElement = document.createElement('a');
 		nextPageAElement.setAttribute('class', 'page-link text-body');
-		nextPageAElement.setAttribute('href', '#');
 		nextPageAElement.setAttribute('tabindex', '13');
 		nextPageAElement.addEventListener('click', () => { Pagination.nextPage(); });
 
@@ -270,7 +263,6 @@ export const Pagination = {
 
 		const lastPageAElement = document.createElement('a');
 		lastPageAElement.setAttribute('class', ' page-link text-body');
-		lastPageAElement.setAttribute('href', '#');
 		lastPageAElement.setAttribute('tabindex', '13');
 		lastPageAElement.addEventListener('click', () => { Pagination.lastPage(); });
 
@@ -389,8 +381,6 @@ export const Pagination = {
 			block: "nearest", // previously set to Constants.scrollPosition - not sure why.
 			inline: "start"
 		});
-		
-
 	},
 
 	scrollToSelectedFactInSidebar: () => {
