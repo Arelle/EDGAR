@@ -28,31 +28,41 @@ export const FactsGeneral = {
 	 * @param {any} element:HTMLElement
 	 * @returns {any} => 
 	 */
-	goToInlineFact: (event: MouseEvent | KeyboardEvent | Event, element: HTMLElement) => {
+	goToInlineFact: (event: MouseEvent | KeyboardEvent | Event, element: HTMLElement) =>
+	{
 		if (event instanceof KeyboardEvent && !((event).key === 'Enter' || (event).key === 'Space'))
 			return;
 		
 		const fact = FactMap.getByID(element.getAttribute('data-id') as string);
-		if (fact) {
-			FactMap.setIsSelected(fact.id);
-			const currentInstance = Constants.getInstanceFiles.find(element => element.current);
-			const currentXHTML = currentInstance?.docs.find(element => element.current);
-			if (fact.file) {
-				if (currentXHTML?.slug !== fact.file) {
-					ConstantsFunctions.switchDoc(fact.file)
-						.then(() => element.scrollIntoView(false));
-				} else {
-					Pagination.setSelectedFact(element, fact);
-					element.scrollIntoView(false);
-				}
-			} else {
-				ErrorsMinor.factNotFound();
-			}
+		if (!fact?.file)
+		{
+			ErrorsMinor.factNotFound();
+			return;
+		}
 
+		FactMap.setIsSelected(fact.id);
+		const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+		const currentXHTML = currentInstance?.docs.find(element => element.current);
+
+		const afterLoad = () =>
+		{
 			const tempDiv = document.createElement('div');
 			tempDiv.setAttribute('id', fact.id);
-			Facts.addURLHash(fact.id);
 			ModalsCommon.clickEvent(event, tempDiv);
+
+			Facts.addURLHash(fact.id);
+			// element.scrollIntoView(false);
+			Pagination.setSelectedFact(element, fact);
+		}
+
+		if (currentXHTML?.slug !== fact.file)
+		{
+			ConstantsFunctions.switchDoc(fact.file)
+				.then(() => afterLoad());
+		}
+		else
+		{
+			afterLoad();
 		}
 	},
 

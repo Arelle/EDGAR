@@ -8,7 +8,7 @@ import { UrlParams } from "./url-params";
 export type FMFinalResponse = { instance: InstanceFile[], sections: Section[], std_ref: Record<string, Reference>, error?: false };
 export type ErrorResponse = { error: true, messages: string[] };
 export type All = { all: FMFinalResponse };
-export type FMResponse = All | { xhtml: string } | { facts: Map<string, SingleFact> };
+export type FMResponse = All | { xhtml: string; isNcsr: boolean } | { facts: Map<string, SingleFact> };
 
 export type FetchMergeArgs =
 {

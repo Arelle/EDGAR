@@ -377,7 +377,7 @@ kbd {
 }
 
 .overflow-hidden {
-  overflow: hidden; // required on anceestors of scrollIntoView scrollbar elements
+  overflow: hidden; // required on ancestors of scrollIntoView scrollbar elements
 }
 
 .doc-pagination {
@@ -385,7 +385,7 @@ kbd {
   position: sticky;
   bottom: 18px;
   align-self: end;
-  justify-content: end;
+  justify-content: start;
   pointer-events: none;
 }
 #html-pagination {

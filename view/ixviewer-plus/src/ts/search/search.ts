@@ -26,31 +26,29 @@ export const Search = {
     // 5 => Include Dimensions
     // 6 => Include References
     ConstantsFunctions.emptyHTMLByID('suggestions');
+    // let valueToSearchFor = (document.getElementById('global-search') as HTMLInputElement).value;
+    // here we sanitize the users input to account for Regex patterns
     let valueToSearchFor = (document.getElementById('global-search') as HTMLInputElement).value;
-    if (valueToSearchFor.length > 1) {
-      // here we sanitize the users input to account for Regex patterns
-      valueToSearchFor = valueToSearchFor.replace(/[\\{}()[\]^$+*?.]/g, '\\$&');
+    valueToSearchFor = valueToSearchFor.replace(/[\\{}()[\]^$+*?.]/g, '\\$&');
 
-      const options = document.querySelectorAll('[name="search-options"]');
-      let optionsArray = Array.prototype.slice.call(options);
-      optionsArray = optionsArray.map((current) => {
-        if (current['checked']) {
-          return parseInt(current['value']);
-        }
-      }).filter((element) => {
-        return element;
-      });
+    const options = document.querySelectorAll('[name="search-options"]');
+    let optionsArray = Array.prototype.slice.call(options);
+    optionsArray = optionsArray.map((current) => {
+      if (current['checked']) {
+        return parseInt(current['value']);
+      }
+    }).filter((element) => {
+      return element;
+    });
 
-      valueToSearchFor = Search.createValueToSearchFor(valueToSearchFor);
+    valueToSearchFor = Search.createValueToSearchFor(valueToSearchFor);
 
-      const objectForState = {
-        value: [valueToSearchFor],
-        'options': optionsArray
-      };
-      UserFiltersState.setUserSearch(objectForState);
-      FlexSearch.searchFacts(objectForState);
-    }
-    return false;
+    const objectForState = {
+      value: [valueToSearchFor],
+      'options': optionsArray
+    };
+    UserFiltersState.setUserSearch(objectForState);
+    FlexSearch.searchFacts(objectForState);
   },
 
   createValueToSearchFor: (input: string) => {

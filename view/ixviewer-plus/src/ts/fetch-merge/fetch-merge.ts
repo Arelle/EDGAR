@@ -106,7 +106,7 @@ export class FetchAndMerge
             const filingSummaryReports = filingSummary.MyReports.Report;
         
             //track which HTML slugs we've seen already
-            const instanceHtmSlugs = new Set<string>;  // stored in filing summary as foo.htm
+            const instanceHtmSlugs = new Set<string>();  // stored in filing summary as foo.htm
             filingSummaryReports.forEach((r) => {
                 const reportInstanceHtmSlug = r._attributes?.instance;
                 if (reportInstanceHtmSlug && !instanceHtmSlugs.has(reportInstanceHtmSlug)) {
@@ -130,6 +130,7 @@ export class FetchAndMerge
             let metalinks: (MetaLinks & { instances: InstanceFile[]}) | null = null;
             this.activeInstance = this.instances.filter((element) => element.current)[0];
             const initialLoad = this.activeInstance == null;
+            let isNcsr = false;
 
             if (initialLoad)
             {
@@ -142,11 +143,16 @@ export class FetchAndMerge
 
                 metalinks = meta;
                 this.instances = metalinks.instances;
+
+                isNcsr = summ.InputFiles.File.reduce((acc, { _attributes }) =>
+                {
+                    return acc || _attributes?.isNcsr == "true";
+                }, isNcsr);
             }
 
             await docsAndInstance();
 
-            return { xhtml: this.activeInstance.docs.find((x) => x.current)?.xhtml || "" };
+            return { xhtml: this.activeInstance.docs.find((x) => x.current)?.xhtml || "", isNcsr };
         }
         catch(e) { this.errorHandling(e) }
     }
@@ -679,9 +685,9 @@ export class FetchAndMerge
 
                 // add labels (if any) to each individual fact
                 if (factObjectMl.lang) {
-                    currentFact.labels = Object.keys(factObjectMl.lang).map((current) => {
-                        const oldObject = factObjectMl.lang[current].role;
-                        const newObject = {};
+                    currentFact.labels = Object.values(factObjectMl.lang).map((lang) => {
+                        const oldObject = lang.role;
+                        const newObject = {} as LabelElement;
                         for (const property in oldObject) {
 
                             const result = property.replace(/([A-Z])/g, ' $1');
@@ -772,17 +778,32 @@ export class FetchAndMerge
                     const startDate = new Date(current.period.startDate._text);
                     const endDate = new Date(current.period.endDate._text);
 
-                    const yearDiff = (endDate.getUTCFullYear() - startDate.getUTCFullYear())*12;
-                    const monthDiff = (endDate.getUTCMonth() - startDate.getUTCMonth()) + yearDiff;
-                    current.period._array = [
+                    const yearDiff = (endDate.getUTCFullYear() - startDate.getUTCFullYear()) * 12;
+
+                    let monthDiff = (endDate.getUTCMonth() - startDate.getUTCMonth()) + yearDiff;
+                    const dayDiff = endDate.getUTCDate() - startDate.getUTCDate();
+
+                    //If the difference in days is more than half a month, round up/down as appropriate
+                    if(dayDiff > 15)
+                    {
+                        monthDiff++;
+                    }
+                    else if(dayDiff < -15)
+                    {
+                        monthDiff--;
+                    }
+
+                    current.period._array =
+                    [
                         `${startDate.getUTCMonth() + 1}/${startDate.getUTCDate()}/${startDate.getUTCFullYear()}`,
-                        `${endDate.getUTCMonth() + 1}/${endDate.getUTCDate()}/${endDate.getUTCFullYear()}`
+                        `${endDate.getUTCMonth() + 1}/${endDate.getUTCDate()}/${endDate.getUTCFullYear()}`,
                     ];
+
                     if (monthDiff <= 0) {
                         current.period._text = `${startDate.getUTCMonth() + 1}/${startDate.getUTCDate()}/${startDate.getUTCFullYear()} - ${endDate.getUTCMonth() + 1}/${endDate.getUTCDate()}/${endDate.getUTCFullYear()}`;
                     } else {
-                        //this is the naive approach to get month diffrence since we are not checking exact day, added 1 since Jan considered 0 in javascript
-                        current.period._text = `${monthDiff + 1} months ending ${endDate.getUTCMonth() + 1}/${endDate.getUTCDate()}/${endDate.getUTCFullYear()}`;
+                        //JS counts Jan = UTCMonth-0, so add 1
+                        current.period._text = `${monthDiff} months ending ${endDate.getUTCMonth() + 1}/${endDate.getUTCDate()}/${endDate.getUTCFullYear()}`;
                     }
                 } else {
                     const log: Logger<ILogObj> = new Logger();
