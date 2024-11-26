@@ -1158,7 +1158,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     if "value" in n.lower():
                         if isinstance(v, set):
                             v = sorted(v)
-                        if isinstance(v, list):
+                        if isinstance(v, (list, OrderedSet)):
+                            if isinstance(v, OrderedSet):
+                                v = list(v)
                             if len(v) == 1:
                                 logArgs[n] = sevMessageArgValue(v[0], pf)
                             elif len(v) == 2 and v[0] == "!not!":
@@ -1977,7 +1979,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         if f.xValue and (_fileNum.startswith("811-") or _fileNum.startswith("814-")):
                             sevMessage(sev, subType=submissionType, modelObject=f, tag=f.qname.localName, otherTag="entity file number",
                                        value="not starting with 811- or 814-", contextID=f.contextID)
-                elif validation in ("x", "xv", "r", "y", "n") or (validation and validation.startswith("ov")):
+                elif validation in ("x", "xv", "r", "y", "n", "xv-sbtpmap") or (validation and validation.startswith("ov")):
+                    if validation == "xv-sbtpmap":
+                        value = sev.get("value-map", {}).get(submissionType)
                     for name in names:
                         for f in sevFacts(sev, name, requiredContext=not axisKey, whereKey="where", fallback=True, sevCovered=subTypes != {"n/a"}):
                             # always fallback to None for these validations

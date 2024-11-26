@@ -8,7 +8,7 @@ from collections import defaultdict, OrderedDict
 from arelle.FileSource import openFileStream, openFileSource, saveFile # only needed if building a cached file
 from arelle.ModelValue import qname, dateTime, DATE
 from arelle import XbrlConst
-from arelle.PythonUtil import attrdict, flattenSequence, pyObjectSize
+from arelle.PythonUtil import attrdict, flattenSequence, pyObjectSize, OrderedSet
 from arelle.ValidateXbrlCalcs import inferredDecimals, floatINF
 from arelle.XmlValidateConst import VALID
 from .Consts import standardNamespacesPattern, latestTaxonomyDocs, latestEntireUgt, attachmentDocumentTypeValidationRulesFiles, feeTaggingAttachmentDocumentTypePattern
@@ -129,7 +129,7 @@ def loadDeiValidations(modelXbrl, isInlineXbrl, attachmentDocumentType):
     stc = validations["sub-type-classes"]
     def compileSubTypeSet(forms, formSet=None, visitedClasses=None):
         if visitedClasses is None: visitedClasses = set()
-        if formSet is None: formSet = set()
+        if formSet is None: formSet = OrderedSet()
         for form in flattenSequence(forms):
             if form.startswith("@"):
                 referencedClass = form[1:]
@@ -235,6 +235,20 @@ def loadDeiValidations(modelXbrl, isInlineXbrl, attachmentDocumentType):
                         modelXbrl.error("arelle:loadDeiValidations",
                                         _("Where clause %(field)s %(cond)s from %(validation)s, must be a list."),
                                         field=field, cond=cond, validation=sev)
+                    else:
+                        if any(e.startswith("@") for e in clause if isinstance(e,str)):
+                            value[cond] = list(compileSubTypeSet(clause)) # where clause needs to keep order and be subscriptable
+            if field.endswith("value-map") and isinstance(value, str):
+                if not value.startswith("@"):
+                        modelXbrl.error("arelle:loadDeiValidations",
+                                        _("%(field)s %(cond)s from %(validation)s, must be a dictionary or a reference to a dictionary."),
+                                        field=field, cond=value, validation=sev)
+                referencedClass = value[1:]
+                if referencedClass not in stc:
+                    modelXbrl.error("arelle:loadDeiValidations", _("Missing declaration for %(referencedClass)s."), referencedClass=value)
+                else:
+                    sev[field] = stc[referencedClass]
+                                        
     for axisKey, axisValidation in validations["axis-validations"].items():
         messageKey = axisValidation.get("message")
         if messageKey and messageKey not in validations["messages"]:
