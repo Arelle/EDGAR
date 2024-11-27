@@ -59,7 +59,6 @@ export function fixImages(doc = document): void
 
 export function fixLinks(doc = document): void
 {
-    const LOGPERFORMANCE=true;  //remove this before merge!
     const startPerformance = performance.now();
 
     const foundLinksArray = Array.from(doc.querySelectorAll("[data-link], :not(link)[href]"));
@@ -141,7 +140,6 @@ export function hiddenFacts(doc = document)
             d. next to file value show "(No Inline Location)"
     */
 
-    let LOGPERFORMANCE=true;    //remove this before merge!!
     const startPerformance = performance.now();
     const inlineElems = [...doc.querySelectorAll<HTMLElement>('[style*="-ix-hidden"]')].reverse();
 

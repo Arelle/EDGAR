@@ -30,7 +30,7 @@ export const ConstantsFunctions = {
 		const form = FactMap.getByName('dei:DocumentType') || '';
 		const date = FactMap.getByName('dei:DocumentPeriodEndDate') || '';
 		let viewType = 'Inline Viewer';
-		const searchParams = HelpersUrl.returnURLParamsAsObject(window.location.search);
+		const searchParams = HelpersUrl.returnURLParamsAsObject(Constants.appWindow.location.search);
 		// need to test on arelle local gui...
 		const iframes = document.querySelectorAll('iframe').length;
 		const appIsInIframe = (window.parent.document == document) && iframes;
@@ -152,7 +152,7 @@ export const ConstantsFunctions = {
 
 	switchDoc: (fileToChangeTo: string): Promise<void> =>
 	{
-		if(location.href.includes(fileToChangeTo)) return Promise.resolve();
+		if(Constants.appWindow.location.href.includes(fileToChangeTo)) return Promise.resolve();
 
 		resetProgress();
 		incrementProgress();

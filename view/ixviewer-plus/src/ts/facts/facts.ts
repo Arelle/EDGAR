@@ -15,7 +15,6 @@ import { Logger, ILogObj } from "tslog";
 import { ConstantsFunctions } from "../constants/functions";
 import { ixScrollTo } from "../helpers/utils";
 
-
 export const Facts = {
 	updateFactCount: () => {
 		const factCount = FactMap.getFactCount();
@@ -78,10 +77,10 @@ export const Facts = {
 	},
 
 	handleFactHash: (event = new Event("click")) => {
-		if (window.location.hash.startsWith('#fact-identifier')) {
+		if (Constants.appWindow.location.hash.startsWith('#fact-identifier')) {
 			event.stopPropagation();
 			event.preventDefault();
-			const id = window.location.hash;
+			const id = Constants.appWindow.location.hash;
 			const element = document.querySelector(id);
 			if (element instanceof HTMLElement) {
 				Facts.clickEvent(event, element);
@@ -92,7 +91,7 @@ export const Facts = {
 	},
 
 	addHashChangeListener: () => {
-		window.addEventListener("hashchange", (event) => {
+		Constants.appWindow.addEventListener("hashchange", (event) => {
 			Facts.handleFactHash(event)
 		});
 	},
@@ -345,11 +344,11 @@ export const Facts = {
 	},
 
 	addURLHash: (factId: string) => {
-		if (window.history.pushState) {
-			window.history.pushState(null, "", `#${factId}`);
+		if (Constants.appWindow.history.pushState) {
+			Constants.appWindow.history.pushState(null, "", `#${factId}`);
 		}
 		else {
-			window.location.hash = `#${factId}`;
+			Constants.appWindow.location.hash = `#${factId}`;
 		}
 	},
 };
