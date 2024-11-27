@@ -144,7 +144,10 @@ export class FetchAndMerge
                 metalinks = meta;
                 this.instances = metalinks.instances;
 
-                isNcsr = summ.InputFiles.File.reduce((acc, { _attributes }) =>
+                if (!Array.isArray(summ.InputFiles?.File)) 
+                    summ.InputFiles.File = [summ.InputFiles?.File]
+                
+                isNcsr = summ.InputFiles?.File?.reduce((acc, { _attributes }) =>
                 {
                     return acc || _attributes?.isNcsr == "true";
                 }, isNcsr);

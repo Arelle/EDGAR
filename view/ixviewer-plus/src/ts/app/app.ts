@@ -315,8 +315,8 @@ function loadDoc(xhtml: string, current: boolean, i?: number): void
     const body = htmlDoc.querySelector('body');
     if (!body) throw new Error("Error: XBRL document is missing `body` tag");
 
-    //split if doc is larger than 50MB or the filing is an NCSR
-    if(Constants.isNcsr || xhtml.length > 50 * 1024 * 1024)
+    //split if doc is larger than 50MB
+    if(xhtml.length > 50 * 1024 * 1024)
         splitBodyContents(body);
 
     docSection.append(body);
@@ -434,7 +434,7 @@ function addPagination(): void
     const currentXHTML = currentInstance?.docs.find(element => element.current);
 
     const currentDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);
-    const numPageBreaks = currentDocElem?.querySelectorAll(`[style*="page-break-after"], [style*="break-before"]`)?.length || 0;
+    const numPageBreaks = currentDocElem?.querySelectorAll(`[style*="break-after"], [style*="break-before"]`)?.length || 0;
     
     if (numPageBreaks > 0) {
         const inlineDocPaginationUI = buildInlineDocPagination();

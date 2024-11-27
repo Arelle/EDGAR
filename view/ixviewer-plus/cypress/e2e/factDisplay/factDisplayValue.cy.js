@@ -34,4 +34,13 @@ describe(`Fact Display`, () => {
     })
 
     // TODO: Also, need tests to make sure values are getting commas added when they should.
+
+    it('12-month period should show correct (Not off-by-one)', () =>
+    {
+        cy.loadByAccessionNum('000168441724800397')
+        cy.get(selectors.factSidebarToggleBtn).click()
+        cy.get(selectors.sidebarFactPeriod(24)).should(
+            'include.text', '12 months'
+        )
+    })
 })

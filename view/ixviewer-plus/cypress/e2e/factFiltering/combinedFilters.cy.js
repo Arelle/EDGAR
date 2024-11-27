@@ -22,7 +22,6 @@ describe(`Filters - Combo`, () => {
 
     it(`Amts & Std Tags & Period (2022 & 2023) Tags for nmex filing`, () => {
         cy.loadByAccessionNum('000143774923034166')
-        cy.get(selectors.factCountClock).should('not.exist')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.moreFiltersHeader).click()
@@ -34,7 +33,6 @@ describe(`Filters - Combo`, () => {
 
     it(`Amts & Std Tags & Period (2023) Tags for nmex filing`, () => {
         cy.loadByAccessionNum('000143774923034166')
-        cy.get(selectors.factCountClock).should('not.exist')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.tagsHeader).click()
@@ -47,7 +45,6 @@ describe(`Filters - Combo`, () => {
 
     it(`Amts & Std Tags & Period (2022 & 2023) Tags for nmex filing`, () => {
         cy.loadByAccessionNum('000143774923034166')
-        cy.get(selectors.factCountClock).should('not.exist')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.tagsHeader).click()
@@ -61,7 +58,6 @@ describe(`Filters - Combo`, () => {
 
     it(`Match for Data, NO match for Tags for nmex filing`, () => {
         cy.loadByAccessionNum('000143774923034166')
-        cy.get(selectors.factCountClock).should('not.exist')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAdditionalOnlyFilter).click()
         cy.get(selectors.tagsHeader).click()

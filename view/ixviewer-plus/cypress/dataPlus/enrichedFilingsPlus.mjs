@@ -3475,5 +3475,32 @@ export const filings = [
         "Instances": "",
         "docName": "pld-20230331",
         "expectedSectionCountCorrection": "0"
-    }
+    },
+    {
+		"submissionType": "10-K",
+        "accessionNum": "000168441724800397",
+        "docPath": "/Archives/edgar/data/1684417/000168441724800397/cik0-20240927.htm",
+        "notes": "",
+        "factCount": "1886",
+        "timeout": "15000",
+        "multiInstance": "",
+        "multiDoc": "",
+        "Instances": "",
+        "docName": "cik0-20240927",
+        "expectedSectionCountCorrection": "0"
+	},
+    {
+		"submissionType": "F-3",
+        "accessionNum": "000121465924017888",
+        "docPath": "/Archives/edgar/data/927971/000121465924017888/ex-filingfees.htm",
+        "notes": "",
+        "factCount": "9",
+        "timeout": "15000",
+        "multiInstance": "",
+        "multiDoc": "",
+		"filingFees": true,
+        "Instances": "",
+        "docName": "ex-filingfees",
+        "expectedSectionCountCorrection": "0"
+	}
 ]

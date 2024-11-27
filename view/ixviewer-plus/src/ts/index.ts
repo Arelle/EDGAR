@@ -16,6 +16,7 @@ import { Logger, ILogObj } from "tslog";
     new Listeners();
     new SetCustomCSS();
     const startPerformance = performance.now();
+
     App.init(false, (formLoaded: boolean) => {
         console.log(`Version: ${Constants.version} (${Constants.featureSet})`);
         console.log(`CSS Mode: ${(document.compatMode=="CSS1Compat" ? "Standards 🎉" : "Quirks 😢")}`);

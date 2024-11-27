@@ -19,6 +19,12 @@ export const Constants =
 	version: "24.4",
 	featureSet: "plus",
 
+	appWindow: typeof window !== 'undefined' 
+		? !!window.frameElement && window.frameElement.id === "ixvFrame"
+			? window.parent
+			: window
+		: {} as Window,
+
 	isNcsr: false,
 
 	scrollPosition: typeof window !== 'undefined' && window.localStorage.getItem("scrollPosition") || "start",

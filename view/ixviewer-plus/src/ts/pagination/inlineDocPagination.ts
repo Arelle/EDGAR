@@ -7,7 +7,7 @@ const toPrev = () => {
     // e.g section[filing-url="ea185980-6k_inspiratech.htm"]
     const currentDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);
     const currentScrollPosition = document.getElementById('dynamic-xbrl-form')?.scrollTop as number;
-    const pageBreakNodes = Array.from(currentDocElem?.querySelectorAll(`[style*="page-break-after"],[style*="break-before"]`) || [])
+    const pageBreakNodes = Array.from(currentDocElem?.querySelectorAll(`[style*="break-after"],[style*="break-before"]`) || [])
 
     const prevBreak = pageBreakNodes
         .reverse()
@@ -32,7 +32,7 @@ const toNext = () => {
     const currentDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);
     const viewHieght = (document.getElementById('dynamic-xbrl-form') as HTMLElement).offsetHeight;
     const currentScrollPosition = document.getElementById('dynamic-xbrl-form')?.scrollTop as number;
-    const pageBreakNodes = currentDocElem?.querySelectorAll(`[style*="page-break-after"],[style*="break-before"]`) as NodeList;
+    const pageBreakNodes = currentDocElem?.querySelectorAll(`[style*="break-after"],[style*="break-before"]`) || [];
 
     const nextBreak = Array.from(pageBreakNodes)
         .map((breakElem) => {

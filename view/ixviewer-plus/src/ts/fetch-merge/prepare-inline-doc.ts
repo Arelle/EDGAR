@@ -59,7 +59,6 @@ export class XhtmlPrepper
 
     private applyElementDataToFact(current: XhtmlFileMeta)
     {
-        const LOGPERFORMANCE = true;
         const startPerformance = performance.now();
 
         let $ = load(current.xhtml, {});
