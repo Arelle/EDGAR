@@ -14,9 +14,10 @@ export interface SingleFact {
     isHTML: boolean;
     isSelected: boolean;
     period: string;
+    periodDates?: string[];
     scale: string | null;
     decimals?: Decimals | null;
-    sign: null;
+    sign: string | null;
     footnote: null | string;
     isEnabled: boolean;
     isHighlight: boolean;
@@ -31,13 +32,15 @@ export interface SingleFact {
     format?: null | string;
     isAdditional?: boolean;
     isCustom?: boolean;
-    file?: string;
+    file: string | null;
     unitRef?: string;
     measure?: string;
     balance?: Balance;
     segment?: Array<SegmentClass[] | SegmentClass>;
+    isContinued: boolean;
     continuedIDs: Array<string>;
     "xsi:nil"?: string;
+    "xml:lang"?: string;
 }
 
 /** somehow, an object in fetch-merge metamorphosizes from SingleFact into this */
@@ -66,19 +69,35 @@ export interface Calculation {
     value: string;
 }
 
-export enum LabelEnum {
+export enum LabelEnum
+{
+    Balance = "Balance",
     Parent = "Parent",
     Section = "Section",
     Weight = "Weight",
 }
 
-export enum Decimals {
-    HundredMillions = "Hundred Millions",
-    Hundredths = "Hundredths",
-    Millions = "Millions",
-    TenThousandths = "Ten Thousandths",
+export enum Decimals
+{
+    Tens = "Tens",
+    Hundreds = "Hundreds",
     Thousands = "Thousands",
+    TenThousands = "Ten Thousands",
+    HundredThousands = "Hundred Thousands",
+    Millions = "Millions",
+    TenMillions = "Ten Millions",
+    HundredMillions = "Hundred Millions",
+    Billions = "Billions",
+    TenBillions = "Ten Billions",
+    HundredBillions = "Hundred Billions",
+    Trillions = "Trillions",
+
+    Tenths = "Tenths",
+    Hundredths = "Hundredths",
     Thousandths = "Thousandths",
+    TenThousandths = "Ten Thousandths",
+    HundredThousandths = "Hundred Thousandths",
+    Millionths = "Millionths",
 }
 
 export interface LabelElement {

@@ -1,3 +1,5 @@
+import { SegmentClass } from "./fact";
+
 export interface Instance {
     _declaration: Declaration;
     xbrl: Xbrl;
@@ -62,6 +64,8 @@ export interface Measure
 
 export interface Units extends Measure {
     _attributes: ContextAttributes;
+    _text?: string;
+    divide?: unknown;
 }
 
 export interface UnitsAdditional extends Units
@@ -84,7 +88,7 @@ export enum ID {
 
 export interface Entity {
     identifier: Identifier;
-    segment?: { data: unknown };
+    segment?: { data: SegmentClass[] };
 }
 
 export interface Identifier {

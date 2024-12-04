@@ -36,14 +36,14 @@ export const xmlToDom = (xmlNode: Node): Node | null => {
         // add attributes
         if (xmlNode instanceof Element)
         {
-            for(let attr of xmlNode.attributes)
+            for(const attr of xmlNode.attributes)
             {
                 element.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue || "");
             }
         }
         
         // recursively process child nodes
-        for(let child of xmlNode.childNodes)
+        for(const child of xmlNode.childNodes)
         {
             const childNode = xmlToDom(child);
             if (childNode) {

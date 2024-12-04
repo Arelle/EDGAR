@@ -13,6 +13,7 @@ export type FormInformation =
     keyStandard: number;
     memberCustom: number;
     memberStandard: number;
+    nsprefix?: string;
     nsPrefix: string;
     nsuri: string;
     segmentCount: number;
@@ -36,4 +37,5 @@ export type FormInformation =
     nsuri: string;
     segmentCount: number;
     unitcount: number;      //Doesn't match name above
+    version?: number;
 };

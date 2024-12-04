@@ -11,6 +11,7 @@ import regex as re
 from collections import defaultdict
 import arelle.ModelObject
 from . import Utils
+from arelle.PythonUtil import OrderedSet
 from arelle.XmlUtil import dateunionValue
 Filing = None
 
@@ -194,7 +195,7 @@ class Cube(object):
         # list of new fact memberships (aka fact locations) to be created from instants.
         newFactMemberships = list()
         # set of instants with periodStart or periodEnd that could not be matched to a duration.
-        skippedFactMembershipSet = set()
+        skippedFactMembershipSet = OrderedSet() # preserve order of discovery for consistent error reporting
 
         for factMembership in self.factMemberships:
             fact, axisMemberLookupDict, role = factMembership
@@ -209,7 +210,7 @@ class Cube(object):
 
                 if len(startAndEndLabelsSet) == 0:
                     for role in startEndPreferredLabelList:
-                        skippedFactMembershipSet.add((fact, role, self, self.linkroleUri, self.shortName, self.definitionText))
+                        skippedFactMembershipSet.add( (fact, role, self, self.linkroleUri, self.shortName, self.definitionText) )
 
                 for startEndTuple, preferredLabel in startAndEndLabelsSet:
                     try:  # if startEndContext exists, find it

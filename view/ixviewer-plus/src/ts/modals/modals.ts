@@ -4,8 +4,7 @@
  */
 
 import { ConstantsFunctions } from "../constants/functions";
-import { FactMap } from "../facts/map";
-import { Facts } from "../facts/facts";
+// import { FactMap } from "../facts/map";
 import { ModalsCommon } from "./common";
 import { ModalsFormInformation } from "./form-information";
 
@@ -39,7 +38,6 @@ export const Modals = {
 		if (Object.prototype.hasOwnProperty.call(event, 'key') && !((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space')) {
 			return;
 		}
-		Facts.removeURLParam();
 		document.getElementById('fact-copy-paste')?.classList.add('d-none');
 
 		window.removeEventListener('keyup', ModalsFormInformation.keyboardEvents);
@@ -68,10 +66,10 @@ export const Modals = {
 	},
 
 	copyContent: (event: MouseEvent | KeyboardEvent, elementIdToCopy: string, copyPasteElement: string) => {
-		if (Object.prototype.hasOwnProperty.call(event, 'key') &&
-			!((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space')) {
+		if ("key" in event && !(event.key === "Enter" || event.key === "Space")) {
 			return;
 		}
+
 		if (!document.getElementById(copyPasteElement)?.classList.contains('d-none')) {
 			document.getElementById(copyPasteElement)?.classList.add('d-none');
 		} else {
@@ -79,8 +77,7 @@ export const Modals = {
 			document.getElementById(copyPasteElement)?.classList.remove('d-none');
 
 			const foundCarouselPagesArray = Array.from(document.getElementById(elementIdToCopy)?.querySelectorAll('.carousel-item') || []);
-			// TODO should we just put all of the innerText automatically into the
-			// users clipboard?
+			// TODO should we just put all of the innerText automatically into the user's clipboard?
 
 			// th elements are the keys
 			// td elements are the values
@@ -88,33 +85,36 @@ export const Modals = {
 
 			foundCarouselPagesArray.forEach((current) => {
 				const foundInformation = current.querySelectorAll('table > * > tr');
-				const foundInformationArray = Array.prototype.slice.call(foundInformation);
 
-				foundInformationArray.forEach((nestedCurrent) => {
-
-					if (nestedCurrent.querySelector('th') && nestedCurrent.querySelector('th').innerText) {
-						textToCopy += nestedCurrent.querySelector('th').innerText.trim() + ' : ';
+				for(let nestedCurrent of foundInformation)
+				{
+					if (nestedCurrent.querySelector('th')?.innerText) {
+						textToCopy += nestedCurrent.querySelector('th')!.innerText.trim() + ': ';
 					}
 
-					if (nestedCurrent.querySelector('td')) {
-
-						if (nestedCurrent.querySelector('td #collapse-modal')) {
-							const largeFactSelector = nestedCurrent.querySelector('td #collapse-modal');
-
+					if (nestedCurrent.querySelector('td'))
+					{
+						const largeFactSelector = nestedCurrent.querySelector('td #collapse-modal');
+						if (largeFactSelector instanceof HTMLElement)
+						{
 							textToCopy += '\n';
 							textToCopy += largeFactSelector.innerText.trim().replace(/(\r\n|\n|\r)/gm, '');
 							textToCopy += '\n';
-
-						} else if (nestedCurrent.querySelector('td').innerText) {
-							textToCopy += nestedCurrent.querySelector('td').innerText.trim().replace(/(\r\n|\n|\r)/gm, '');
+						}
+						else if (nestedCurrent.querySelector('td')?.innerText)
+						{
+							textToCopy += nestedCurrent.querySelector('td')!.innerText.trim().replace(/(\r\n|\n|\r)/gm, '');
 							textToCopy += '\n';
 						}
 					}
-				});
+				}
 			});
-			const text = document.createTextNode(textToCopy.trim());
-			document.querySelector(sectionToPopulate + ' textarea')!.innerHTML = '';
-			document.querySelector(sectionToPopulate + ' textarea')!.append(text);
+
+			const textarea = document.querySelector(sectionToPopulate + " textarea");
+			if(textarea != null)
+			{
+				textarea.textContent = textToCopy.trim();
+			}
 		}
 	},
 

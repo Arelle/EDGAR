@@ -25,8 +25,8 @@ export const FormInformation = {
         //Handle Workstation case
         if (HelpersUrl.isWorkstation())
         {
-            const url = window.parent.location.href;
-            const params = new URLSearchParams(window.parent.location.search);
+            const url = Constants.appWindow.location.href;
+            const params = new URLSearchParams(Constants.appWindow.location.search);
             const zip = `${params.get("accessionNumber")}-xbrl.zip`;
             params.set("filename", zip);
             params.set("step", "docOnly");

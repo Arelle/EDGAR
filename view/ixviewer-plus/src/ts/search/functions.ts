@@ -89,7 +89,9 @@ export const SearchFunctions = {
     }
 
     return textToRegex;
+  },
 
-  }
-
+  elementLabelForRegex: (..._args: any[]) => void 0,
+  elementDefinitionForRegex: (..._args: any[]) => void 0,
+  elementReferencesForRegex: (..._args: any[]) => void 0,
 };

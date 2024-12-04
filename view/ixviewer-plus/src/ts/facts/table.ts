@@ -28,7 +28,7 @@ export const FactsTable = {
 
     listeners: () => {
 
-        document.getElementById('fact-table-pagination-size')?.addEventListener('change', (event: HTMLSelectElement) => {
+        document.getElementById('fact-table-pagination-size')?.addEventListener('change', (event: HTMLSelectElement | any) => {
             FactsTable.currentPage = 0;
             FactsTable.size = parseInt(event?.target.value);
             ConstantsFunctions.emptyHTMLByID('fact-table');
@@ -218,7 +218,7 @@ export const FactsTable = {
         return tbody;
     },
 
-    createHiddenTR: (value, index) => {
+    createHiddenTR: (value: any, index: any) => {
         const hiddenTR = document.createElement('tr');
         hiddenTR.classList.add('d-none');
         hiddenTR.setAttribute('hidden-fact-row', index.toString());

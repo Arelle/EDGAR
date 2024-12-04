@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
+    "baseUrl": ".",
     "sourceMap": true,
     "noImplicitAny": true,
     "module": "es2020",

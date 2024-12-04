@@ -7,22 +7,22 @@ import * as bootstrap from "bootstrap";
 import { Constants } from "../constants/constants";
 import { ErrorsMinor } from "../errors/minor";
 import { FactsGeneral } from "../facts/general";
-import { ConstantsFunctions } from "../constants/functions";
 import { SingleFact } from "../interface/fact";
+import { ConstantsFunctions } from "../constants/functions";
 
 export const Pagination = {
 
-	init: (paginationContent: Array<string>, selectorForPaginationControls: string, selectorForPaginationContent: string, modalAction: boolean) => {
+	init: (enabledFactIds: Array<string>, selectorForPaginationControls: string, selectorForPaginationContent: string, modalAction: boolean) => {
 		Pagination.reset();
 		Pagination.getModalAction = modalAction;
 		Pagination.getPaginationControlsSelector = selectorForPaginationControls;
 		Pagination.getPaginationSelector = selectorForPaginationContent;
-		Pagination.setArray(paginationContent);
-		Pagination.getCurrentPage = 1;
-		Pagination.getTotalPages = Math.ceil(Pagination.getArray.length / Constants.getPaginationPerPage);
-		Pagination.getPaginationTemplate(Pagination.getCurrentPage);
-		Pagination.setPageSelect();
-		if (paginationContent.length === 0) {
+		Pagination.setArray(enabledFactIds);
+		Constants.sideBarPaginationState.pageNumber = 1;
+		Constants.sideBarPaginationState.totalPages = Math.ceil(Pagination.getArray.length / Constants.getPaginationPerPage);
+		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
+
+		if (enabledFactIds.length === 0) {
 			document.getElementById('facts-menu-list-pagination')?.classList.add('d-none');
 			document.getElementById('noFactsMsg')?.classList.remove('d-none');
 		} else {
@@ -35,17 +35,16 @@ export const Pagination = {
 		Pagination.getModalAction = false;
 		Pagination.setArray([]);
 		Pagination.getPaginationControlsSelector = '';
-		Pagination.getPaginationControlsSelector = '';
 		Pagination.getPaginationSelector = '';
-		Pagination.getCurrentPage = 1;
-		Pagination.getTotalPages = 0;
+		Constants.sideBarPaginationState.pageNumber = 1;
+		Constants.sideBarPaginationState.totalPages = 0;
 	},
 
 	getModalAction: false,
 
-	getArray: [],
+	getArray: [] as string[],
 
-	setArray: (input: never[]) => {
+	setArray: (input: string[]) => {
 		Pagination.getArray = input;
 	},
 
@@ -57,184 +56,62 @@ export const Pagination = {
 
 	getTotalPages: 0,
 
-	getPaginationTemplate: (currentPage: number) => {
+	renderPage: (currentPage: number) => {
 		// Runs each time user navs to new page of facts in facts sidebar pagination
-		while (document.querySelector(Pagination.getPaginationControlsSelector)?.firstChild) {
-			document.querySelector(Pagination.getPaginationControlsSelector)?.firstChild?.remove();
-		}
+		ConstantsFunctions.emptyHTML(Pagination.getPaginationControlsSelector);
 
 		const divElement = document.createElement('div');
-		divElement.setAttribute('class', 'w-100 d-flex justify-content-between py-2 px-1');
-		divElement.appendChild(Pagination.getPrevNextControls());
-		divElement.appendChild(Pagination.getPaginationInfo());
+		divElement.setAttribute('class', 'w-100 d-flex justify-content-between py-2 px-3 center-align-items');
+		const subDivElement = document.createElement('div');
+		subDivElement.appendChild(Pagination.setPageSelect());
+		subDivElement.appendChild(Pagination.getPaginationInfo());
+		subDivElement.setAttribute("class", "center-align-items");
+
+		divElement.appendChild(subDivElement);
 		divElement.appendChild(Pagination.getPageControls());
 		document.querySelector(Pagination.getPaginationControlsSelector)?.appendChild(divElement);
 
-		const elementToReturn = document.createDocumentFragment();
+		const factElemsList = document.createDocumentFragment();
 		const beginAt = ((currentPage - 1) * Constants.getPaginationPerPage);
 		const endAt = beginAt + Constants.getPaginationPerPage;
 
-		const arrayForPage = Pagination.getArray.slice(beginAt, endAt);
-		// if (!PRODUCTION) console.log('arrayForPage', arrayForPage);
-		arrayForPage.forEach((currentFact) => {
-			// call here results in "unknown location" for some fact file props with feeExhibit filings
-			elementToReturn.appendChild(FactsGeneral.getFactListTemplate(currentFact));
+		const factsForPage = Pagination.getArray.slice(beginAt, endAt);
+		factsForPage.forEach((factId) => {
+			factElemsList.appendChild(FactsGeneral.renderFactElem(factId));
 		});
 
-		while (document.querySelector(Pagination.getPaginationSelector)?.firstChild) {
-			document.querySelector(Pagination.getPaginationSelector)?.firstChild?.remove();
-		}
+		ConstantsFunctions.emptyHTML(Pagination.getPaginationSelector);
 
-		document.querySelector(Pagination.getPaginationSelector)?.appendChild(elementToReturn);
-
-		ConstantsFunctions.emptyHTMLByID(`facts-menu-page-select`);
-		Pagination.setPageSelect();
+		document.querySelector(Pagination.getPaginationSelector)?.appendChild(factElemsList);
 	},
 
 	firstPage: () => {
-		Pagination.getCurrentPage = 1;
-		Pagination.getPaginationTemplate(Pagination.getCurrentPage);
+		Constants.sideBarPaginationState.pageNumber = 1;
+		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
 	},
 
 	lastPage: () => {
-		Pagination.getCurrentPage = Pagination.getTotalPages;
-		Pagination.getPaginationTemplate(Pagination.getCurrentPage);
+		Constants.sideBarPaginationState.pageNumber = Constants.sideBarPaginationState.totalPages;
+		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
 	},
 
 	previousPage: () => {
-		Pagination.getCurrentPage = Pagination.getCurrentPage - 1;
-		Pagination.getPaginationTemplate(Pagination.getCurrentPage);
+		Constants.sideBarPaginationState.pageNumber = Constants.sideBarPaginationState.pageNumber - 1;
+		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
 	},
 
 	nextPage: () => {
-		Pagination.getCurrentPage = Pagination.getCurrentPage + 1;
-		Pagination.getPaginationTemplate(Pagination.getCurrentPage);
-	},
-
-	previousFact: (event: MouseEvent | KeyboardEvent, element: HTMLElement, trueIfHighlightLast: boolean) => {
-		const beginAt = ((Pagination.getCurrentPage - 1) * Constants.getPaginationPerPage);
-		const endAt = beginAt + Constants.getPaginationPerPage;
-
-		const currentFacts = Pagination.getArray.slice(beginAt, endAt);
-
-		const selectedFact = currentFacts.map((current, index) => {
-
-			const element = FactsGeneral.getMenuFactByDataID(current);
-			if (element && element.getAttribute('selected-fact') === 'true') {
-				return index;
-			}
-		}).filter((element) => {
-			return element >= 0;
-		});
-
-		if (selectedFact.length === 0) {
-			if (trueIfHighlightLast) {
-
-				const element = FactsGeneral.getMenuFactByDataID(currentFacts[currentFacts.length - 1]);
-				FactsGeneral.goToInlineFact(event, element, true);
-			} else {
-
-				const element = FactsGeneral.getMenuFactByDataID(currentFacts[0]);
-				FactsGeneral.goToInlineFact(event, element, true);
-			}
-		} else {
-			if ((selectedFact[0] - 1) < 0) {
-				if (Pagination.getCurrentPage - 1 > 0) {
-					Pagination.previousPage();
-					Pagination.previousFact(event, element, true);
-				}
-			} else {
-
-				const element = FactsGeneral.getMenuFactByDataID(currentFacts[(selectedFact[0] - 1)]);
-				FactsGeneral.goToInlineFact(event, element, true);
-			}
-		}
-	},
-
-	nextFact: (event: MouseEvent | KeyboardEvent, element: HTMLElement) => {
-		const beginAt = ((Pagination.getCurrentPage - 1) * Constants.getPaginationPerPage);
-		const endAt = beginAt + Constants.getPaginationPerPage;
-		const currentFacts = Pagination.getArray.slice(beginAt, endAt);
-		const selectedFact = currentFacts.map((current, index) => {
-
-			const element = FactsGeneral.getMenuFactByDataID(current);
-			if (element && element.getAttribute('selected-fact') === 'true') {
-
-				return index;
-			}
-
-		}).filter((element) => {
-
-			return element >= 0;
-		});
-		if (selectedFact.length === 0) {
-			const element = FactsGeneral.getMenuFactByDataID(currentFacts[0]);
-			FactsGeneral.goToInlineFact(event, element as HTMLElement);
-		} else {
-			if ((selectedFact[0] + 1) >= currentFacts.length) {
-				if ((Pagination.getCurrentPage - 1) !== (Pagination.getTotalPages - 1)) {
-					Pagination.nextPage();
-					Pagination.nextFact(event, element);
-				}
-			} else {
-				const element = FactsGeneral.getMenuFactByDataID(currentFacts[selectedFact[0] + 1]);
-				FactsGeneral.goToInlineFact(event, element as HTMLElement);
-			}
-		}
-	},
-
-	getPrevNextControls: () => {
-		const elementToReturn = document.createDocumentFragment();
-
-		const divElement = document.createElement('div');
-
-		const ulElement = document.createElement('ul');
-		ulElement.setAttribute('class', 'pagination pagination-sm mb-0');
-
-		const previousFactLiElement = document.createElement('li');
-		previousFactLiElement.setAttribute('class', 'page-item');
-
-		const previousFactAElement = document.createElement('a');
-		previousFactAElement.setAttribute('class', 'page-link text-body');
-		previousFactAElement.setAttribute('href', '#');
-		previousFactAElement.setAttribute('tabindex', '13');
-		previousFactAElement.addEventListener('click', (e) => { Pagination.previousFact(e, previousFactAElement); });
-
-		const previousFactContent = document.createTextNode('Prev');
-
-		previousFactAElement.appendChild(previousFactContent);
-		previousFactLiElement.appendChild(previousFactAElement);
-		ulElement.appendChild(previousFactLiElement);
-
-		const nextFactLiElement = document.createElement('li');
-		nextFactLiElement.setAttribute('class', 'page-item');
-
-		const nextFactAElement = document.createElement('a');
-		nextFactAElement.setAttribute('class', 'page-link text-body');
-		nextFactAElement.setAttribute('href', '#');
-		nextFactAElement.setAttribute('tabindex', '13');
-		nextFactAElement.addEventListener('click', (e) => { Pagination.nextFact(e, nextFactAElement); });
-
-		const nextFactContent = document.createTextNode('Next');
-
-		nextFactAElement.appendChild(nextFactContent);
-		nextFactLiElement.appendChild(nextFactAElement);
-		ulElement.appendChild(nextFactLiElement);
-		divElement.appendChild(ulElement);
-
-		elementToReturn.appendChild(divElement);
-
-		return elementToReturn;
+		Constants.sideBarPaginationState.pageNumber = Constants.sideBarPaginationState.pageNumber + 1;
+		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
 	},
 
 	getPaginationInfo: () => {
 		const elementToReturn = document.createDocumentFragment();
 
 		const paginationInfoDivElement = document.createElement('div');
-		paginationInfoDivElement.setAttribute('class', 'pagination-info text-body');
-
-		const paginationInfoDivContent = document.createTextNode(Pagination.getCurrentPage + ' of '
-			+ Pagination.getTotalPages);
+		paginationInfoDivElement.setAttribute('class', 'pagination-info text-body ms-1');
+		const paginationInfoDivContent = document.createTextNode(' of '
+			+ Constants.sideBarPaginationState.totalPages);
 		paginationInfoDivElement.appendChild(paginationInfoDivContent);
 
 		elementToReturn.appendChild(paginationInfoDivElement);
@@ -243,10 +120,10 @@ export const Pagination = {
 	},
 
 	getPageControls: () => {
-		const firstPage = (Pagination.getCurrentPage === 1) ? 'disabled' : '';
-		const previousPage = (Pagination.getCurrentPage - 1 <= 0) ? 'disabled' : '';
-		const nextPage = (Pagination.getCurrentPage + 1 > Pagination.getTotalPages) ? 'disabled' : '';
-		const lastPage = (Pagination.getCurrentPage === Pagination.getTotalPages) ? 'disabled' : '';
+		const firstPage = (Constants.sideBarPaginationState.pageNumber === 1) ? 'disabled' : '';
+		const previousPage = (Constants.sideBarPaginationState.pageNumber - 1 <= 0) ? 'disabled' : '';
+		const nextPage = (Constants.sideBarPaginationState.pageNumber + 1 > Constants.sideBarPaginationState.totalPages) ? 'disabled' : '';
+		const lastPage = (Constants.sideBarPaginationState.pageNumber === Constants.sideBarPaginationState.totalPages) ? 'disabled' : '';
 
 		const elementToReturn = document.createDocumentFragment();
 
@@ -260,7 +137,6 @@ export const Pagination = {
 
 		const firstPageAElement = document.createElement('a');
 		firstPageAElement.setAttribute('class', 'page-link text-body');
-		firstPageAElement.setAttribute('href', '#');
 		firstPageAElement.setAttribute('tabindex', '13');
 		firstPageAElement.addEventListener('click', () => { Pagination.firstPage(); });
 
@@ -276,7 +152,6 @@ export const Pagination = {
 
 		const previousPageAElement = document.createElement('a');
 		previousPageAElement.setAttribute('class', 'page-link text-body');
-		previousPageAElement.setAttribute('href', '#');
 		previousPageAElement.setAttribute('tabindex', '13');
 		previousPageAElement.addEventListener('click', () => { Pagination.previousPage(); });
 
@@ -292,7 +167,6 @@ export const Pagination = {
 
 		const nextPageAElement = document.createElement('a');
 		nextPageAElement.setAttribute('class', 'page-link text-body');
-		nextPageAElement.setAttribute('href', '#');
 		nextPageAElement.setAttribute('tabindex', '13');
 		nextPageAElement.addEventListener('click', () => { Pagination.nextPage(); });
 
@@ -308,7 +182,6 @@ export const Pagination = {
 
 		const lastPageAElement = document.createElement('a');
 		lastPageAElement.setAttribute('class', 'page-link text-body');
-		lastPageAElement.setAttribute('href', '#');
 		lastPageAElement.setAttribute('tabindex', '13');
 		lastPageAElement.addEventListener('click', () => { Pagination.lastPage(); });
 
@@ -325,10 +198,10 @@ export const Pagination = {
 	},
 
 	getControlsTemplate: () => {
-		const firstPage = (Pagination.getCurrentPage === 1) ? 'disabled' : '';
-		const previousPage = (Pagination.getCurrentPage - 1 <= 0) ? 'disabled' : '';
-		const nextPage = (Pagination.getCurrentPage + 1 > Pagination.getTotalPages) ? 'disabled' : '';
-		const lastPage = (Pagination.getCurrentPage === Pagination.getTotalPages) ? 'disabled' : '';
+		const firstPage = (Constants.sideBarPaginationState.pageNumber === 1) ? 'disabled' : '';
+		const previousPage = (Constants.sideBarPaginationState.pageNumber - 1 <= 0) ? 'disabled' : '';
+		const nextPage = (Constants.sideBarPaginationState.pageNumber + 1 > Constants.sideBarPaginationState.totalPages) ? 'disabled' : '';
+		const lastPage = (Constants.sideBarPaginationState.pageNumber === Constants.sideBarPaginationState.totalPages) ? 'disabled' : '';
 
 		const elementToReturn = document.createDocumentFragment();
 
@@ -345,7 +218,6 @@ export const Pagination = {
 
 		const firstPageAElement = document.createElement('a');
 		firstPageAElement.setAttribute('class', ' page-link text-body');
-		firstPageAElement.setAttribute('href', '#');
 		firstPageAElement.setAttribute('tabindex', '13');
 		firstPageAElement.addEventListener('click', () => { Pagination.firstPage(); });
 
@@ -361,7 +233,6 @@ export const Pagination = {
 
 		const previousPageAElement = document.createElement('a');
 		previousPageAElement.setAttribute('class', 'page-link text-body');
-		previousPageAElement.setAttribute('href', '#');
 		previousPageAElement.setAttribute('tabindex', '13');
 		previousPageAElement.addEventListener('click', () => { Pagination.previousPage(); });
 
@@ -377,7 +248,6 @@ export const Pagination = {
 
 		const nextPageAElement = document.createElement('a');
 		nextPageAElement.setAttribute('class', 'page-link text-body');
-		nextPageAElement.setAttribute('href', '#');
 		nextPageAElement.setAttribute('tabindex', '13');
 		nextPageAElement.addEventListener('click', () => { Pagination.nextPage(); });
 
@@ -393,7 +263,6 @@ export const Pagination = {
 
 		const lastPageAElement = document.createElement('a');
 		lastPageAElement.setAttribute('class', ' page-link text-body');
-		lastPageAElement.setAttribute('href', '#');
 		lastPageAElement.setAttribute('tabindex', '13');
 		lastPageAElement.addEventListener('click', () => { Pagination.lastPage(); });
 
@@ -413,34 +282,36 @@ export const Pagination = {
 	},
 
 	setPageSelect: () => {
-		const select = document.getElementById('facts-menu-page-select');
+		const select = document.createElement('select');
+		select.setAttribute('id','facts-menu-page-select');
+		select.setAttribute('class','pagination-border');
 		const option = document.createElement('option');
 		option.setAttribute('value', 'null');
 		const optionText = document.createTextNode('Select a Page');
 		option.append(optionText);
-		for (let i = 0; i < Pagination.getTotalPages; i++) {
+		for (let i = 0; i < Constants.sideBarPaginationState.totalPages; i++) {
 			const option = document.createElement('option');
 			option.setAttribute('value', `${i + 1}`);
 			const optionText = document.createTextNode(`Page ${i + 1}`);
 			option.append(optionText);
-			if ((i + 1) === Pagination.getCurrentPage) {
+			if ((i + 1) === Constants.sideBarPaginationState.pageNumber) {
 				option.setAttribute('selected', 'true');
 			}
 			select!.append(option);
 		}
 		if (!select?.hasAttribute('listener')) {
-			select?.setAttribute('listener', 'true');
-			select?.addEventListener('change', (event) => {
-				Pagination.goToPage(event?.target?.value as number);
-			});
+			select.setAttribute('listener', 'true');
+			select.addEventListener('change', () => 
+				Pagination.goToPage(+select.value));
 		}
+		return select;
 	},
 
 	goToPage: (pageNumber: number) => {
 		if (!isNaN(pageNumber)) {
-			Pagination.getCurrentPage = +pageNumber;
+			Constants.sideBarPaginationState.pageNumber = +pageNumber;
 
-			Pagination.getPaginationTemplate(Pagination.getCurrentPage);
+			Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
 		}
 	},
 
@@ -478,9 +349,9 @@ export const Pagination = {
 		}
 		if (index >= 0) {
 			const pageToGoTo = Math.ceil((index + 1) / Constants.getPaginationPerPage);
-			Pagination.getCurrentPage = pageToGoTo;
-			Pagination.getPaginationTemplate(pageToGoTo);
-			Pagination.scrollToSelectedFactInSidebar(index);
+			Constants.sideBarPaginationState.pageNumber = pageToGoTo;
+			Pagination.renderPage(pageToGoTo);
+			Pagination.scrollToSelectedFactInSidebar();
 		} else {
 			ErrorsMinor.factNotInSearch();
 		}

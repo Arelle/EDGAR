@@ -244,6 +244,12 @@ button.nav-search-btn:focus-visible
 .dialog-box {
   font-size: .9rem;
 }
+
+.dropdown-menu
+{
+  z-index: 9001;
+}
+
 .lead {
   font-size: 1.1rem;
 }
@@ -296,11 +302,6 @@ body {
   height: 41.8px;
 }
 
-.z-10 {
-  z-index: 10;
-  background-color: white;
-}
-
 // deprecated but might use to scroll facts list instead of whole side bar
 .auto-scroll-y-facts {
   overflow-y: auto !important;
@@ -308,7 +309,7 @@ body {
 }
 
 .sidebar {
-  min-width: 300px;
+  min-width: 350px;
   width: 23vw;
   max-width: 600px;
   // transition causes jerky animation
@@ -364,31 +365,6 @@ kbd {
 .elevated, .popover {
   box-shadow: rgba(0, 0, 0, 0.3) 2px 2px 4px;
 }
-
-.xbrl-loading-text, .xbrl-loading-text * {
-  font-size: 2.5rem;
-  margin-top: 30px;
-  font-weight: 200;
-}
-
-#dynamic-xbrl-form .text-block-indicator-left, #settings-modal .text-block-indicator-left {
-  left: 0px;
-  width: 5px;
-  border-top: 0.5rem solid transparent;
-  border-left-style: solid;
-  border-left-width: 0.75rem;
-  border-bottom: 0.5rem solid transparent;
-}
-
-#dynamic-xbrl-form .text-block-indicator-right, #settings-modal .text-block-indicator-right {
-  right: 0px;
-  width: 5px;
-  border-top: 0.5rem solid transparent;
-  border-right-style: solid;
-  border-right-width: 0.75rem;
-  border-bottom: 0.5rem solid transparent;
-}
-
 .main-navbar {
   z-index: 11; // at smaller screen widths nav dropdown is under inline doc
 }
@@ -401,7 +377,7 @@ kbd {
 }
 
 .overflow-hidden {
-  overflow: hidden; // required on anceestors of scrollIntoView scrollbar elements
+  overflow: hidden; // required on ancestors of scrollIntoView scrollbar elements
 }
 
 .doc-pagination {
@@ -409,7 +385,11 @@ kbd {
   position: sticky;
   bottom: 18px;
   align-self: end;
-  justify-content: end;
+  justify-content: start;
+  pointer-events: none;
+}
+#html-pagination {
+  pointer-events: auto;
 }
 
 .navbar {
@@ -539,7 +519,8 @@ kbd {
 
 .fact-value-modal.collapse {
   display: block;
-  height: 33px;
+  min-height: 33px;
+  height: 0;
   overflow: hidden;
 }
 
@@ -794,3 +775,88 @@ kbd {
 //   display: inline-block;
 // }
 // box-shadow: -2px 0px 0px 0px orange, 2px 0px 0px 0px orange;
+
+.pagination-border {
+  border: var(--bs-pagination-border-width) solid var(--bs-pagination-border-color);
+}
+
+.up-15 {
+	transform: translateY(-15px);
+}
+
+.center-align-items {
+  display: flex;
+	align-items: center;
+}
+
+.opacity-10 {
+  opacity: .1;
+}
+
+
+//doc tabs
+#tabs-container a.nav-link
+{
+    span.badge.fact-file-total-count
+    {
+        @extend .bg-sec;
+    }
+
+    &.active span.badge.fact-file-total-count
+    {
+        @extend .text-bg-light;
+    }
+}
+
+//circular progress bar: https://www.30secondsofcode.org/css/s/circular-progress-bar/
+svg text
+{
+    font-size: 18px;
+    font-family: var(--bs-body-font-family);
+    font-weight: var(--bs-body-font-weight);
+    line-height: var(--bs-body-line-height);
+    color: var(--bs-body-color);
+}
+
+.circular-progress
+{
+    --size: 250px;
+    --half-size: calc(var(--size) / 2);
+    --stroke-width: 20px;
+    --radius: calc((var(--size) - var(--stroke-width)) / 2);
+    --circumference: calc(var(--radius) * pi * 2);
+    --dash: calc((var(--progress) * var(--circumference)) / 100);
+    animation: progress-animation 5s linear 0s 1 forwards;
+}
+
+.circular-progress circle
+{
+    cx: var(--half-size);
+    cy: var(--half-size);
+    r: var(--radius);
+    stroke-width: var(--stroke-width);
+    fill: none;
+    stroke-linecap: round;
+
+    &.bg
+    {
+        stroke: #EEE;
+    }
+
+    &.fg
+    {
+        transform: rotate(-90deg);
+        transform-origin: var(--half-size) var(--half-size);
+        stroke-dasharray: var(--dash) calc(var(--circumference) - var(--dash));
+        transition: stroke-dasharray 0.3s linear 0s;
+        stroke: #003768;
+    }
+}
+
+//TODO: do this same thing for hidden fact styles
+@property --progress
+{
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+}

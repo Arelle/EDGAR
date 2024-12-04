@@ -13,11 +13,26 @@
     },
     "rules":
     {
-        "prefer-const": "warn",
+        "prefer-const": "off",
         "no-extra-boolean-cast": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
 
         //this needs to stay off until we have good types across the app 
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
+
+        //disable the base rule as it can report incorrect errors
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars":
+        [
+            "warn",
+            {
+                "args": "all",
+                "argsIgnorePattern": "^_",
+                "caughtErrors": "all",
+                "destructuredArrayIgnorePattern": ".*",
+                "varsIgnorePattern": "^_",
+                "ignoreRestSiblings": true
+            }
+        ]
     }
 }

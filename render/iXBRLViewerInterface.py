@@ -19,7 +19,7 @@ _iXBRLViewerPlugin = None
 _iXBRLViewer_plugin_info = None
 
 STUB_NAME = "ixbrlviewer.xhtml"
-JS_PATH = "/ixviewer-arelle/ixbrlviewer-1.4.29.js"
+JS_PATH = "ixviewer-arelle/ixbrlviewer.js"
 
 
 def hasIXBRLViewerPlugin(cntlr):
@@ -42,8 +42,19 @@ def generateViewer(cntlr, stubDir):
     stubBytes = None
     for pluginMethod in pluginClassMethods("Security.Crypt.IsActive"):
         securityIsActive = pluginMethod(self)  # must be active for the save method to save encrypted files
+    _iXBRLViewerPlugin.pluginData(cntlr).builder = _iXBRLViewerPlugin.IXBRLViewerBuilder(cntlr, useStubViewer = True)
+    _iXBRLViewerPlugin.processModel(cntlr, cntlr.modelManager.modelXbrl)
     with io.BytesIO() as fZip:
-        _iXBRLViewerPlugin.generateViewer(cntlr, fZip, JS_PATH, False, True, False, None, None, False, True)
+        _iXBRLViewerPlugin.generateViewer(
+                                cntlr=cntlr,
+                                saveViewerDest=fZip,
+                                viewerURL=JS_PATH,
+                                showValidationMessages=False,
+                                zipViewerOutput=True,
+                                features=None,
+                                packageDownloadURL=None,
+                                copyScript=False
+            )
         fZip.seek(0)
         with zipfile.ZipFile(fZip) as zF:
             stubBytes = zF.read("ixbrlviewer.html")
@@ -55,7 +66,6 @@ def generateViewer(cntlr, stubDir):
     if not securityHasWritten:
         with open(stubPath, "wb") as fout:
             fout.write(stubBytes)
-
 
 def disableiXBRLViewerPluginInfo(cntlr):
     if PluginManager.pluginConfig["modules"].get("ixbrl-viewer", {}).get("status", "disabled") == "enabled":

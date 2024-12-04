@@ -17,13 +17,25 @@
         This application relies heavily on JavaScript -- you
         will need to allow JavaScript to use this application.
     </noscript>
-
+    
     <div id="loading-animation"
          class="d-flex justify-content-center align-items-center"
-         style="position: absolute; height: 100vh; width: 100vw; background-color: #EEEB; z-index: 20;">
-        <div class="d-flex align-items-center">
-            <div class="spinner-grow me-2" style="height: 50px; width: 50px;" role="status"></div>
-            <span>Loading...</span>
+         style="position: absolute; height: 100vh; width: 100vw; background-color: #EEEB; z-index: 20000;">
+         
+        <div class="d-flex justify-content-center align-items-center"
+             style="background-color: #DDDD; border-radius: 200px; box-shadow: 1px 5px 20px #777;">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 id="loading"
+                 width="250" height="250"
+                 viewBox="0 0 250 250"
+                 class="circular-progress">
+
+                <circle class="bg"></circle>
+                <circle class="fg"></circle>
+                <text x="50%" y="50%" text-anchor="middle">
+                    Processing Inline Facts...
+                </text>
+            </svg>
         </div>
     </div>
 
@@ -150,7 +162,7 @@
                         </form>
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
-                        <a href="#" id="nav-filter-data" data-test="nav-filter-data"
+                        <a id="nav-filter-data" data-test="nav-filter-data"
                             class="nav-link dropdown-toggle disabled click" role="button" data-bs-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false" tabindex="7" accesskey="3">
                             <i class="nav-loading fas fa-list-alt" title="Data"></i>
@@ -189,7 +201,7 @@
                                 </div>
                                 <div class="form-check">
                                     <label class="form-check-label mb-0">
-                                        <input class="form-check-input" type="radio" name="data-radios" value="4"
+                                        <input class="form-check-input" type="radio" name="data-radios" value="4" data-cy="negatives-only"
                                             tabindex="7" />
                                         <span>Negatives Only</span>
                                     </label>
@@ -205,7 +217,7 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
-                        <a href="#" id="nav-filter-tags" data-test="nav-filter-tags"
+                        <a id="nav-filter-tags" data-test="nav-filter-tags"
                             class="nav-link dropdown-toggle disabled click" role="button" data-bs-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false" tabindex="8" accesskey="4">
                             <i class="nav-loading fas fa-tags" title="Tags"></i>
@@ -460,7 +472,7 @@
                     </li>
                     <li id="current-filters-reset" data-test="current-filters-reset"
                         class="nav-item d-none my-auto ml-1">
-                        <a href="#" id="current-filters-reset-all" data-name="current-filters-reset"
+                        <a id="current-filters-reset-all" data-name="current-filters-reset"
                             class="nav-link dropdown-toggle text-danger disabled click" tabindex="11" accesskey="7">
                             <i class="nav-loading fas fa-redo flip-x"></i>
                             <span class="d-md-none d-lg-inline">Reset All
@@ -468,7 +480,7 @@
                         </a>
                     </li>
                     <li id="links-dropdown" data-test="links-dropdown" class="nav-item dropdown d-none my-auto ml-1">
-                        <a href="#" id="additional-links-dropdown" class="nav-link dropdown-toggle disabled click"
+                        <a id="additional-links-dropdown" class="nav-link dropdown-toggle disabled click"
                             role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                             tabindex="12" accesskey="8">
                             <i class="nav-loading fas fa-link"></i>
@@ -490,14 +502,8 @@
                 </ul>
             </div>
         </nav>
-        <ul id="tabs-container" class="nav nav-pills tabs-container position-relative nav-underline justify-content-center z-10">
+        <ul id="tabs-container" class="nav nav-pills tabs-container position-relative nav-underline justify-content-center">
             <!-- tabs are dynamically loaded by JS.  See src\ts\links\index.ts -->
-
-            <!-- show a progress bar in this space while the app loads -->
-            <div id="loading" class="progress position-fixed w-100" style="height: 20px;" role="progressbar" aria-label="Loading" aria-valuenow="0">
-                <div class="progress-bar progress-bar-striped progress-bar-animated w-10"></div>
-                <span class="position-fixed text-center w-100">Processing Inline Facts...</span>
-            </div>
         </ul>
     </div>
 
@@ -905,13 +911,6 @@
                     <!-- Below is populated dynamically VIA JS (error messages) -->
                 </div>
 
-                <div id="xbrl-form-loading" data-test="xbrl-form-loading" class="jumbotron h-100">
-                    <h2 class="text-center xbrl-loading-text">
-                        <i class="fa fa-regular fa-clock"></i>
-                        <span>Loading Inline Form.</span>
-                    </h2>
-                </div>
-
                 <div id="dynamic-xbrl-form" class="col position-relative">
 
                     <!-- Main Doucment view - populated dynamically VIA JS-->
@@ -925,22 +924,22 @@
                             <nav aria-label="Facts Table Navigation">
                                 <ul class="pagination pagination-sm">
                                     <li class="page-item">
-                                        <a id="fact-table-pagination-first" class="page-link text-body" href="#" tabindex="13">
+                                        <a id="fact-table-pagination-first" class="page-link text-body" tabindex="13">
                                             <i class="fas fa-lg fa-angle-double-left"></i>
                                         </a>
                                     </li>
                                     <li class="page-item">
-                                        <a id="fact-table-pagination-prev" class="page-link text-body" href="#" tabindex="13">
+                                        <a id="fact-table-pagination-prev" class="page-link text-body" tabindex="13">
                                             <i class="fas fa-lg fa-angle-left"></i>
                                         </a>
                                     </li>
                                     <li class="page-item">
-                                        <a id="fact-table-pagination-next" class="page-link text-body" href="#" tabindex="13">
+                                        <a id="fact-table-pagination-next" class="page-link text-body" tabindex="13">
                                             <i class="fas fa-lg fa-angle-right"></i>
                                         </a>
                                     </li>
                                     <li id="fact-table-pagination-last" class="page-item">
-                                        <a class="page-link text-body" href="#" tabindex="13">
+                                        <a class="page-link text-body" tabindex="13">
                                             <i class="fas fa-lg fa-angle-double-right"></i>
                                         </a>
                                     </li>
@@ -991,23 +990,24 @@
             <div class="col-auto px-0 sidebar-container sidebar-container-right hide">
                 <div id="facts-menu" class="sidebar collapse collapse-horizontal show">
                     <div class="offcanvas-header space-between">
-                        <h5>Facts</h5>
-                        <span class="fact-total-count badge bg-sec"><i class="fa fa-regular fa-clock"></i></span>
-                        <button type="button" class="btn-close" 
+                        <span class="center-align-items">
+                            <h5 class="mb-0 me-2 ms-1">Facts</h5>
+                            <span class="fact-total-count badge bg-sec"><i class="fa fa-regular fa-clock"></i></span>
+                            <div class="paginationprevnext d-sm-inline-block ms-3"></div>
+                        </span>
+
+                        <button type="button" class="btn-close up-15" 
                             data-bs-target="#facts-menu" data-bs-toggle="collapse" aria-label="Close"
                         ></button>
                     </div>
-                    <div class="offcanvas-body py-0">
+                    <hr class="mx-3 my-1 opacity-10"></hr>
+                    <div class="offcanvas-body p-0">
                         <div id="facts-menu-list-pagination" class="d-flex flex-column flex-fill h-100 w-100">
-                            <div class="pagination"></div>
-                            <div class="form-group">
-                                <select id="facts-menu-page-select" class="form-select"
-                                    aria-label="Quickly jump to a page in the Fact Menu." tabindex="13">
-                                    <option>Select Page</option>
-                                </select>
+                            <div class="pagination center-align-items">
                             </div>
+                            <hr class="my-0"></hr>
                             <!-- auto-scroll-y-facts -->
-                            <div class="list-group list-group-flush overflow-x-auto overflow-auto w-100 facts-scrollable"></div>
+                            <div class="list-group list-group-flush overflow-x-auto overflow-auto w-100 facts-scrollable px-3"></div>
                         </div>
                         <div id="noFactsMsg" class="m-4 text-center">There are no facts in the selected instance that match the current search and filters.</div>
                     </div>
@@ -1233,25 +1233,6 @@
                     </div>
                 </div>
                 <hr />
-
-                <!-- text block indicators -->
-                <div class="form-group row">
-                    <label class="col-sm-4 col-form-label" tabindex="15" for="text-block-color-picker">
-                        <span class="float-left text-block-indicator-left position-absolute"></span>
-                        <span class="float-right text-block-indicator-right position-absolute"></span>
-                        <span class="text-block-exmple-1">Text Block Indicators</span>
-                    </label>
-                    <div class="col-sm-4">
-                        <span>
-                            <input id="text-block-color-picker" class="form-control w-75 float-start settings-height"
-                                type="color" tabindex="15" />
-                            <button id="text-block-color-picker-reset" type="button"
-                                class="btn btn-secondary btn-sm settings-height">
-                                <i class="fa-solid fa-rotate-left"></i>
-                            </button>
-                        </span>
-                    </div>
-                </div>
             </form>
         </div>
         <div class="dialog-footer d-flex justify-content-around"></div>

@@ -24,6 +24,10 @@ class FactAxisMemberGroup(object):
         self.factAxisMemberColList = []
         self.axisMemberPositionTupleColList = []  # for sorting
 
+    def factAxisMemberList(self,rowOrColStr):
+        return {'row': self.factAxisMemberRowList,
+                'col': self.factAxisMemberColList}[rowOrColStr]
+
     def __str__(self):
         return "[{}='{}' w/{}Cx{}R]".format(self.fact.elementQname, self.fact.sValue, len(self.factAxisMemberColList), len(self.factAxisMemberRowList))
 
@@ -184,7 +188,7 @@ class Embedding(object):
 
             # print(self.commandTextListOfLists) # wch for debug
 
-        elif self.cube.cubeType == 'statement' or self.filing.hasEmbeddings or self.cube.isElements:
+        elif self.cube.cubeType == 'statement' or bool(self.filing.hasEmbeddings) or self.cube.isElements:
             generatedCommandTextListOfLists = []
 
             if self.cube.isEmbedded:
@@ -646,6 +650,8 @@ class Embedding(object):
         n = 1
         for (domain, ignore) in axesAndMembers.values():
             n = n * len(domain)
+        m = len(self.filing.modelXbrl.facts)
+        n = min(m * m * 4, n) # diagonal is 2x number of facts due to abstracts; square is one fact on each cell in the diagonal
         if n < 1000000000:
             return False
         group = self.cube.linkroleUri

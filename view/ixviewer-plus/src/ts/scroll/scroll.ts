@@ -3,11 +3,13 @@
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  */
 
+import { Constants } from "../constants/constants";
+
 export const Scroll = {
 
   allTextBlocks: [],
 
   removeAnchorTag: () => {
-    location.hash = '';
+    Constants.appWindow.location.hash = '';
   }
 };

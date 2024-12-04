@@ -11,18 +11,17 @@ export const UserFiltersMoreFiltersPeriodSetUp = {
     periodsOptions: [],
 
     setPeriods: () => {
-
         const periods = FactMap.getAllPeriods();
 
         const totalPeriods = Object.keys(periods).reduce((acc, current) => { return acc += periods[current].values.length }, 0);
 
         document.getElementById('filters-periods-count')!.innerText = `${totalPeriods}`;
 
-        UserFiltersMoreFiltersPeriodSetUp.populateCollapse('user-filters-periods',
-            periods);
+        //TODO: fix this usage of `any`
+        UserFiltersMoreFiltersPeriodSetUp.populateCollapse('user-filters-periods', periods as any);
     },
 
-    populateCollapse: (parentId: string, objectOfInfo) => {
+    populateCollapse: (parentId: string, objectOfInfo: Record<string, { values: string[] }>) => {
         const parentDiv = document.querySelector('#' + parentId + ' .list-group');
         Object.keys(objectOfInfo).reverse().forEach((current, index) => {
             const div1 = document.createElement('div');

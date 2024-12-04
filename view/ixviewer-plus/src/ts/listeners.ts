@@ -95,15 +95,20 @@ export class Listeners {
         document.getElementById('section-menu-search-btn-clear')?.addEventListener('click', () => {
             SectionsSearch.clear();
         });
-
         document.getElementById('section-menu-search-btn-clear')?.addEventListener('keyup', () => {
             SectionsSearch.clear();
         });
 
+
+        // global search
         document.getElementById('global-search-form')?.addEventListener('submit', (event) => {
             event.preventDefault();
-            Search.submit();
-            return false;
+            let valueToSearchFor = (document.getElementById('global-search') as HTMLInputElement).value;
+            if (valueToSearchFor.length > 1) {
+                Search.submit();
+            } else {
+                Search.clear();
+            }
         });
 
         let globalSearchTimeout: string | number | NodeJS.Timeout | null | undefined = null;
@@ -116,16 +121,13 @@ export class Listeners {
             }, 500)
         });
 
-        document.getElementById('global-search')?.addEventListener('blur', () => {
-            Search.suggestionsEmpty();
-        });
-
         document.getElementById('search-btn-clear')?.addEventListener("click", () => {
             Search.clear();
         });
-
-        document.getElementById('search-btn-clear')?.addEventListener("keyup", () => {
-            Search.clear();
+        document.getElementById('search-btn-clear')?.addEventListener("keyup", (event) => {
+            if (event.key === 'Enter' || event.key === 'Space') {
+                Search.clear();
+            }
         });
         
         const searchOptions = document.querySelectorAll('input[name="search-options"]');
@@ -136,6 +138,7 @@ export class Listeners {
                 });
             })
         })
+
 
         document.getElementById('hover-option-select')?.addEventListener("change", (event: Event) => {
             ModalsSettings.hoverOption(event);

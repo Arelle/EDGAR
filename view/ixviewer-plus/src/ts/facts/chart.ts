@@ -17,6 +17,7 @@ export const FactsChart = {
     },
 
     chart1: () => {
+        //TODO type breakdown object.
         const breakdown = FactMap.getTagLine();
 
         if (breakdown.length) {
@@ -26,7 +27,7 @@ export const FactsChart = {
                 const chosenFact: {
                     name: string,
                     data: Array<{
-                        period_dates: Array<string>,
+                        periodDates: Array<string>,
                         value: number
                     }>
                 } = Object.assign({}, breakdown[input]);
@@ -40,25 +41,25 @@ export const FactsChart = {
                 const chartSubTitle = document.createTextNode(chosenFact.name);
                 document.getElementById('chart-subtitle-1')?.append(chartSubTitle);
                 const data = new Set();
-                chosenFact.data = chosenFact.data.reduce((accumulator, current, index) => {
-                    if (current.period_dates) {
-                        if (current.period_dates.length === 1) {
-                            accumulator[index] = { period_dates: current.period_dates[0], value: current.value };
+                chosenFact.data = chosenFact.data.reduce((accumulator: Array<{periodDates: any, value: any}>, current, index) => {
+                    if (current.periodDates) {
+                        if (current.periodDates.length === 1) {
+                            accumulator[index] = { periodDates: current.periodDates[0], value: current.value };
                         } else {
-                            accumulator = accumulator.concat(current.period_dates.map((currentNested) => {
-                                return { period_dates: currentNested, value: current.value };
+                            accumulator = accumulator.concat(current.periodDates.map((currentNested) => {
+                                return { periodDates: currentNested, value: current.value };
                             }));
                         }
                     }
                     return accumulator;
                 }, []).filter((element) => {
-                    if (data.has(element.period_dates)) {
+                    if (data.has(element.periodDates)) {
                         return false;
                     }
-                    data.add(element.period_dates);
+                    data.add(element.periodDates);
                     return true;
-                }).sort((first: { period_dates: string | number | Date; }, second: { period_dates: string | number | Date; }) => {
-                    return new Date(first.period_dates) - new Date(second.period_dates);
+                }).sort((first: { periodDates: string | number | Date; }, second: { periodDates: string | number | Date; }) => {
+                    return new Date(first.periodDates) - new Date(second.periodDates);
                 });
 
                 const option = {
@@ -73,7 +74,7 @@ export const FactsChart = {
                     xAxis: {
                         type: 'category',
                         data: chosenFact.data.map((current) => {
-                            return current.period_dates
+                            return current.periodDates
                         }),
                     },
                     yAxis: {
@@ -94,12 +95,12 @@ export const FactsChart = {
             select.classList.add('form-select');
             select.classList.add('mx-2');
 
-            breakdown.forEach((current, index) => {
+            breakdown.forEach((current: any, index) => {
                 const option = document.createElement('option');
                 if (index === 0) {
                     option.setAttribute('selected', 'true');
                 }
-                option.setAttribute('value', index);
+                option.setAttribute('value', String(index));
                 const optionText = document.createTextNode(`${index + 1}: ${current.name.split(':')[1].replace(/([a-z])([A-Z])/g, '$1 $2')
                     .replace(/\b([A-Z]+)([A-Z])([a-z])/, '$1 $2$3')
                     .replace(/^./, (str: string) => { return str.toUpperCase() })}`);
@@ -109,8 +110,9 @@ export const FactsChart = {
 
             document.getElementById('chart-select-1')?.append(select);
 
+            //TODO event.target.value used in multiple places, has to be better fix...
             select.addEventListener('change', (event) => {
-                createGraph(event.target.value as number);
+                createGraph(event?.target?.value as number);
             });
 
             createGraph();

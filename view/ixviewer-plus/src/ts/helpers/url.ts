@@ -14,6 +14,11 @@ export const HelpersUrl = {
         callback(HelpersUrl.setParams(internalUrl));
     },
 
+    initPromise: (internalUrl: string): Promise<boolean> =>
+    {
+        return Promise.resolve(HelpersUrl.setParams(internalUrl));
+    },
+
     makeAbsoluteUrlUnlessSimpleAnchorTag: (element: HTMLElement): void => {
         if (element.getAttribute('href')?.indexOf('http://') === 0
             || element.getAttribute('href')?.indexOf('https://') === 0) {
@@ -50,7 +55,7 @@ export const HelpersUrl = {
         if (attribute && element.getAttribute(attribute)?.charAt(0) !== '#') {
             const attributeValue = element.getAttribute(attribute)!;  //won't be null because of check above
             const absoluteLinkOfElementAttribute = decodeURIComponent(HelpersUrl.getAbsoluteUrl(attributeValue));
-            const url = HelpersUrl.ParsedUrl(absoluteLinkOfElementAttribute);
+            const url = HelpersUrl.parsedUrl(absoluteLinkOfElementAttribute);
 
             if (url.search) {
                 const urlParams = HelpersUrl.returnURLParamsAsObject(url.search.substring(1));
@@ -93,9 +98,9 @@ export const HelpersUrl = {
 
     isWorkstation: (): boolean =>
     {
-        const url = window.location.href;
+        const url = Constants.appWindow.location.href;
         let isWorkstation = url.includes("DisplayDocument.do?");
-        isWorkstation ||= window.location.host.indexOf("edgar.sec.gov") > 0; //originally used in form-information
+        isWorkstation ||= Constants.appWindow.location.host.indexOf("edgar.sec.gov") > 0; //originally used in form-information
 
         //an old implementation:
         // const isWorkStation = Object.prototype.hasOwnProperty.call(urlParamsAsObject, 'accessionNumber') &&
@@ -188,6 +193,11 @@ export const HelpersUrl = {
 
     getAllParams: null as UrlParams | null,
 
+    /** Description
+     * By WLK 7/23/24
+     * @param {string | boolean} internalURL: URL slug
+     * @returns {boolean} when params are set.
+     */
     setParams: (internalUrl: string | boolean): boolean => {
         if ((internalUrl && typeof internalUrl === 'string') && (internalUrl !== HelpersUrl.getHTMLFileName)) {
             HelpersUrl.fullURL = HelpersUrl.fullURL?.replace(HelpersUrl.getHTMLFileName || "", internalUrl) || null;
@@ -195,9 +205,9 @@ export const HelpersUrl = {
             HelpersUrl.getHTMLFileName = null;
         }
 
-        const url = HelpersUrl.ParsedUrl(window.location.href);
+        const url = HelpersUrl.parsedUrl(Constants.appWindow.location.href);
         // here we check for cors
-        const tempUrl = HelpersUrl.ParsedUrl(url.search.substring(1).replace(/doc=|file=/, ''));
+        const tempUrl = HelpersUrl.parsedUrl(url.search.substring(1).replace(/doc=|file=/, ''));
         const tempUrlHost = tempUrl.protocol + '//' + tempUrl.host;
         const host = url.protocol + '//' + url.host;
         if (tempUrlHost !== host) {
@@ -208,8 +218,8 @@ export const HelpersUrl = {
         HelpersUrl.fullURL = url.href;
         // we are going to set all of the URL Params as a simple object
         if (url.search) {
-            HelpersUrl.getAllParams = HelpersUrl.returnURLParamsAsObject(window.location.search);
-            HelpersUrl.getAllParams.hostName = window.location.hostname;
+            HelpersUrl.getAllParams = HelpersUrl.returnURLParamsAsObject(Constants.appWindow.location.search);
+            HelpersUrl.getAllParams.hostName = Constants.appWindow.location.hostname;
 
             if (Object.prototype.hasOwnProperty.call(HelpersUrl.getAllParams, `metalinks`)) {
                 HelpersUrl.getExternalMeta = decodeURIComponent(HelpersUrl.getAllParams['metalinks']);
@@ -275,11 +285,10 @@ export const HelpersUrl = {
     },
 
     updateURLWithoutReload: () => {
-        window.history.pushState('Next Link', 'Inline XBRL Viewer', HelpersUrl.fullURL);
+        Constants.appWindow.history.pushState('Next Link', 'Inline XBRL Viewer', HelpersUrl.fullURL);
     },
 
-    //TODO: this is not valid camelCase
-    ParsedUrl: (url: string) => {
+    parsedUrl: (url: string) => {
         const parser = document.createElement("a");
         parser.href = url;
 
@@ -290,7 +299,7 @@ export const HelpersUrl = {
         // IE 7 and 6 wont load "protocol" and "host" even with the above workaround,
         // so we take the protocol/host from window.location and place them manually
         if (parser.host === "") {
-            const newProtocolAndHost = window.location.protocol + "//" + window.location.host;
+            const newProtocolAndHost = Constants.appWindow.location.protocol + "//" + Constants.appWindow.location.host;
             if (url.charAt(1) === "/") {
                 parser.href = newProtocolAndHost + url;
             }
@@ -319,7 +328,7 @@ export const HelpersUrl = {
 
         const properties: Array<keyof typeof urlInfo> = ['host', 'hostname', 'hash', 'href', 'port', 'protocol', 'search'];
 
-        for(let prop of properties)
+        for(const prop of properties)
         {
             urlInfo[prop] = parser[prop];
         }

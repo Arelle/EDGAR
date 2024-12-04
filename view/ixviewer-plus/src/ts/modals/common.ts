@@ -10,6 +10,7 @@ import { FactPages } from "./fact-pages";
 import { Pagination } from "../pagination/sideBarPagination";
 import { FactMap } from "../facts/map";
 import { ConstantsFunctions } from "../constants/functions";
+import { ErrorsMinor } from "../errors/minor";
 
 export const ModalsCommon = {
 	currentSlide: 0,
@@ -32,24 +33,26 @@ export const ModalsCommon = {
 
 	getAttributes: null,
 
-	clickEvent: (event: MouseEvent | KeyboardEvent, element: HTMLElement) => {
-		if (
-			Object.prototype.hasOwnProperty.call(event, 'key') &&
-			!((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space')
-		) {
+	clickEvent: (event: Event, element: HTMLElement) => {
+		if (event instanceof KeyboardEvent && !(event.key === 'Enter' || event.key === 'Space'))
 			return;
-		}
+
 		event.preventDefault();
 		event.stopPropagation();
 
-		const id = element.hasAttribute('continued-main-fact-id') ? element.getAttribute('continued-main-fact-id') : element.getAttribute('id');
+		const id = element.getAttribute('continued-main-fact-id') || element.getAttribute('id');
+		if(!id)
+		{
+			ErrorsMinor.factNotFound();
+			return;
+		}
 
 		document.getElementById("fact-nested-modal")?.classList.add("d-none");
 		document.getElementById("fact-modal")?.classList.remove("d-none");
 		document.getElementById("fact-modal-drag")?.focus();
 
 		ModalsCommon.carouselData(element);
-		ModalsCommon.createTitles(id as string, ModalsCommon.currentSlide);
+		ModalsCommon.createTitles(id, ModalsCommon.currentSlide);
 		ModalsCommon.createCarousel();
 		ModalsCommon.listeners();
 
@@ -113,26 +116,27 @@ export const ModalsCommon = {
 		document.getElementById('fact-modal-title')?.firstElementChild?.replaceWith(span);
 
 		const span1 = document.createElement('span');
-		const dialogSubTitle = document.createTextNode(`${ConstantsFunctions.getFactLabel(factInfo.labels)}`);
+		const dialogSubTitle = document.createTextNode(`${ConstantsFunctions.getFactLabel(factInfo?.labels || [])}`);
 		span1.appendChild(dialogSubTitle);
 		document.getElementById('fact-modal-subtitle')?.firstElementChild?.replaceWith(span1);
 	},
+
+	
 
 	createCarousel: () => {
 		new bootstrap.Carousel(document.getElementById('fact-modal-carousel') as HTMLElement, {});
 		const thisCarousel = document.getElementById('fact-modal-carousel');
 
-		thisCarousel?.addEventListener('slide.bs.carousel', (event) => {
-			ModalsCommon.currentSlide = event["to"] + 1;
-			const previousActiveIndicator = event["from"];
-			const newActiveIndicator = event["to"];
-			document
-				.getElementById("fact-modal-carousel-indicators")?.querySelector('[data-bs-slide-to="' + previousActiveIndicator + '"]')?.classList.remove("active");
-			document
-				.getElementById("fact-modal-carousel-indicators")?.querySelector('[data-bs-slide-to="' + newActiveIndicator + '"]')?.classList.add("active");
+		thisCarousel?.addEventListener('slide.bs.carousel' as any, (event: CarouselEvent) => {
+			ModalsCommon.currentSlide = event.to + 1;
+			const previousActiveIndicator = event.from;
+			const newActiveIndicator = event.to;
+			
+			document.querySelector(`#fact-modal-carousel-indicators [data-bs-slide-to="${previousActiveIndicator}"]`)?.classList.remove("active");
+			document.querySelector(`#fact-modal-carousel-indicators [data-bs-slide-to="${newActiveIndicator}"]`)?.classList.add("active");
 
 			const span = document.createElement('span');
-			const dialogTitle = document.createTextNode(`${ModalsCommon.carouselInformation[event['to']]['dialog-title']}`);
+			const dialogTitle = document.createTextNode(`${ModalsCommon.carouselInformation[event.to]['dialog-title']}`);
 			span.appendChild(dialogTitle);
 			document.getElementById('fact-modal-title')?.firstElementChild?.replaceWith(span);
 			ModalsCommon.currentDetailTab = newActiveIndicator;

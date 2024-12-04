@@ -5,6 +5,47 @@ This file was created by staff of the U.S. Securities and Exchange Commission.
 Data and content created by government employees within the scope of their employment
 are not subject to domestic copyright protection. 17 U.S.C. 105.
 -->
+     <!-- VIP 2024q4 -->
+    <Loc>
+        <Family>VIP</Family>
+        <Version>2024q4</Version>
+        <Href>https://xbrl.sec.gov/vip/2024q4/vip-2024q4.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://xbrl.sec.gov/vip/2024q4</Namespace>
+        <Prefix>vip</Prefix>
+    </Loc>
+    <Loc>
+        <Family>VIP</Family>
+        <Version>2024q4</Version>
+        <Href>https://xbrl.sec.gov/vip/2024q4/vip-n3-2024q4.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/vip-n3/2024q4</Namespace>
+        <Prefix>vip-n3</Prefix>
+    </Loc>
+    <Loc>
+        <Family>VIP</Family>
+        <Version>2024q4</Version>
+        <Href>https://xbrl.sec.gov/vip/2024q4/vip-n4-2024q4.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/vip-n4/2024q4</Namespace>
+        <Prefix>vip-n4</Prefix>
+    </Loc>
+    <Loc>
+        <Family>VIP</Family>
+        <Version>2024q4</Version>
+        <Href>https://xbrl.sec.gov/vip/2024q4/vip-n6-2024q4.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/vip-n6/2024q4</Namespace>
+        <Prefix>vip-n6</Prefix>
+    </Loc>
 	<!-- OEF 2024q3 -->
 	<Loc>
 		<Family>OEF</Family>
@@ -746,6 +787,47 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 		<Namespace>http://xbrl.sec.gov/vip-n6/2024</Namespace>
 		<Prefix>vip-n6</Prefix>
 	</Loc>
+	<!-- VIP 2024q4 -->
+	<Loc>
+        <Family>VIP</Family>
+        <Version>2024q4</Version>
+        <Href>https://xbrl.sec.gov/vip/2024q4/vip-2024q4.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://xbrl.sec.gov/vip/2024q4</Namespace>
+        <Prefix>vip</Prefix>
+    </Loc>
+    <Loc>
+        <Family>VIP</Family>
+        <Version>2024q4</Version>
+        <Href>https://xbrl.sec.gov/vip/2024q4/vip-n3-2024q4.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/vip-n3/2024q4</Namespace>
+        <Prefix>vip-n3</Prefix>
+    </Loc>
+    <Loc>
+        <Family>VIP</Family>
+        <Version>2024q4</Version>
+        <Href>https://xbrl.sec.gov/vip/2024q4/vip-n4-2024q4.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/vip-n4/2024q4</Namespace>
+        <Prefix>vip-n4</Prefix>
+    </Loc>
+    <Loc>
+        <Family>VIP</Family>
+        <Version>2024q4</Version>
+        <Href>https://xbrl.sec.gov/vip/2024q4/vip-n6-2024q4.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/vip-n6/2024q4</Namespace>
+        <Prefix>vip-n6</Prefix>
+    </Loc>
 	<!-- FFD 2024q2 -->
 	<Loc>
 		<Family>FFD</Family>
@@ -1650,6 +1732,15 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
         <Prefix>ecd-sub</Prefix>
     </Loc>
     <!-- BASE -->
+    <Loc>
+        <Family>BASE</Family>
+        <Version>2024</Version>
+        <Href>https://www.xbrl.org/dtr/type/2024-01-31/types.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://www.xbrl.org/dtr/type/2024-01-31</Namespace>
+    </Loc>
     <Loc>
         <Family>BASE</Family>
         <Version>2022</Version>

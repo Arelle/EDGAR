@@ -3801,11 +3801,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 for f in modelXbrl.factsByLocalName.get(n,()):
                                     if f.context is not None and f.context.endDatetime is not None and f.context.startDatetime is not None:
                                         yield f
-                            for n in ("{http://www.xbrl.org/dtr/type/non-numeric}textBlockItemType",
-                                      "{http://www.xbrl.org/dtr/type/2020-01-21}textBlockItemType"):
-                                for f in modelXbrl.factsByDatatype(True, qname(n)):
-                                    if f.context is not None and f.context.endDatetime is not None and f.context.startDatetime is not None:
-                                        yield f
+                            for f in modelXbrl.factsByDatatype(True, qname("dtr-types:textBlockItemType", modelXbrl.prefixedNamespaces)):
+                                if f.context is not None and f.context.endDatetime is not None and f.context.startDatetime is not None:
+                                    yield f
                         for f in r6facts():
                             durationDays = (f.context.endDatetime - f.context.startDatetime).days
                             if not (focusRange[0] <= durationDays <= focusRange[1]):

@@ -4,8 +4,9 @@
  */
 
 'use strict';
+import { Constants } from "../constants/constants";
 
-function ParsedUrl( url ) {
+function ParsedUrl( url: string ) {
   var parser = document.createElement("a");
   parser.href = url;
   
@@ -18,7 +19,7 @@ function ParsedUrl( url ) {
   // IE 7 and 6 wont load "protocol" and "host" even with the above workaround,
   // so we take the protocol/host from window.location and place them manually
   if ( parser.host === "" ) {
-    var newProtocolAndHost = window.location.protocol + "//" + window.location.host;
+    var newProtocolAndHost = Constants.appWindow.location.protocol + "//" + Constants.appWindow.location.host;
     if ( url.charAt(1) === "/" ) {
       parser.href = newProtocolAndHost + url;
     }

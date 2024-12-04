@@ -23,17 +23,17 @@ export const Tabs = {
 	populateTabs: () => {
 		const container = document.getElementById('tabs-container');
 		Constants.getInlineFiles.forEach((currentInlineDoc, inlineDocIndex) => {
-			// add Instance dropdown
+			// add Instance dropdown (if it's the first instance)
 			if (inlineDocIndex === 0 && Constants.getInstanceFiles.length > 1) {
 				const li = document.createElement('li');
 				li.classList.add('nav-item');
-				const a = document.createElement('a');
-				a.classList.add('nav-link');
-				a.setAttribute('aria-current', 'page');
-				a.classList.add('dropdown-toggle');
-				a.setAttribute('data-bs-toggle', 'dropdown');
-				a.setAttribute('aria-expanded', 'false');
-				a.setAttribute('data-cy', 'instance-dropdown');
+				const button = document.createElement('button');
+				button.classList.add('nav-link');
+				button.setAttribute('aria-current', 'page');
+				button.classList.add('dropdown-toggle');
+				button.setAttribute('data-bs-toggle', 'dropdown');
+				button.setAttribute('aria-expanded', 'false');
+				button.setAttribute('data-cy', 'instance-dropdown');
 				const ul = document.createElement('ul');
 				ul.classList.add('dropdown-menu');
 
@@ -60,9 +60,9 @@ export const Tabs = {
 				});
 
 				const text = document.createTextNode(`Instance`);
-				a.append(text);
-				a.append(ul);
-				li.append(a);
+				button.append(text);
+				button.append(ul);
+				li.append(button);
 				container?.append(li);
 			}
 			// END add Instance dropdown
@@ -75,38 +75,35 @@ export const Tabs = {
 			inlineDocTabElem.classList.add('nav-link');
 			inlineDocTabElem.setAttribute('aria-current', 'page');
 			inlineDocTabElem.setAttribute('data-cy', `inlineDocTab-${inlineDocIndex}`);
+			inlineDocTabElem.setAttribute('href', currentInlineDoc.slug);
+			inlineDocTabElem.setAttribute('data-link', currentInlineDoc.slug);
 
-			if (currentInlineDoc.current === false) {
-				inlineDocTabElem.setAttribute('href', currentInlineDoc.slug);
-				inlineDocTabElem.setAttribute('data-link', currentInlineDoc.slug);
-				inlineDocTabElem.addEventListener('click', (event: MouseEvent) => {
-					Tabs.clickEventInternal(event, inlineDocTabElem);
-				});
-				inlineDocTabElem.addEventListener('keyup', (event: KeyboardEvent) => {
-					Tabs.clickEventInternal(event, inlineDocTabElem);
-				});
-			} else {
+			if(currentInlineDoc.current === true)
+			{
 				inlineDocTabElem.classList.add('active');
 			}
-			const text = document.createTextNode(currentInlineDoc.slug);
 
+			const updateTabs = (e: Event) =>
+			{
+				e.stopPropagation();
+				e.preventDefault();
+				
+				ConstantsFunctions.switchDoc(currentInlineDoc.slug);
+			}
+
+			inlineDocTabElem.addEventListener('click', updateTabs, true);
+			inlineDocTabElem.addEventListener('keyup', updateTabs, true);
+			const text = document.createTextNode(currentInlineDoc.slug);
 			inlineDocTabElem.append(text);
-			inlineDocTabElem.addEventListener('click', () => {
-				Tabs.updateCurrent(inlineDocIndex);
-			});
-			inlineDocTabElem.addEventListener('keyup', () => {
-				Tabs.updateCurrent(inlineDocIndex);
-			});
 
 			const factCountSpan = document.createElement('span');
 			currentInlineDoc.table ? factCountSpan.classList.add('fact-total-count') : factCountSpan.classList.add('fact-file-total-count');
 
 			factCountSpan.classList.add('badge');
-			currentInlineDoc.current ? factCountSpan.classList.add('text-bg-light') : factCountSpan.classList.add('bg-sec');
 			factCountSpan.classList.add('ms-1');
-			currentInlineDoc.table ? null : factCountSpan.setAttribute('filing-slug', currentInlineDoc.slug);
+			currentInlineDoc.table ? null : factCountSpan.setAttribute('doc-slug', currentInlineDoc.slug);
 
-			const factText = document.createTextNode(FactMap.getFactCountForFile(currentInlineDoc.slug, true).toString());
+			const factText = document.createTextNode(FactMap.getFactCountForFile(currentInlineDoc.slug));
 
 			factCountSpan.setAttribute('data-bs-toggle', 'tooltip');
 			factCountSpan.setAttribute('title', 'Filtered Fact Count');
@@ -129,12 +126,13 @@ export const Tabs = {
 				factTableTabElem.setAttribute('data-container', '#fact-table-container');
 				factTableTabElem.setAttribute('data-cy', `factTableTab`);
 
-				factTableTabElem.addEventListener('click', () => {
-					Tabs.updateCurrent(inlineDocIndex + 1);
-				});
-				factTableTabElem.addEventListener('keyup', () => {
-					Tabs.updateCurrent(inlineDocIndex + 1);
-				});
+				//We don't show Facts Table; these handlers will need to be updated when we do
+				// factTableTabElem.addEventListener('click', () => {
+				// 	Tabs.updateCurrent(inlineDocIndex + 1);
+				// });
+				// factTableTabElem.addEventListener('keyup', () => {
+				// 	Tabs.updateCurrent(inlineDocIndex + 1);
+				// });
 				const text = document.createTextNode(`Fact Table`);
 				factTableTabElem.append(text);
 
@@ -165,12 +163,13 @@ export const Tabs = {
 				a.setAttribute('href', '#');
 				a.setAttribute('data-container', '#facts-breakdown-container');
 
-				a.addEventListener('click', () => {
-					Tabs.updateCurrent(inlineDocIndex + 2);
-				});
-				a.addEventListener('keyup', () => {
-					Tabs.updateCurrent(inlineDocIndex + 2);
-				});
+				//We don't show Facts Chart; these handlers will need to be updated when we do
+				// a.addEventListener('click', () => {
+				// 	Tabs.updateCurrent(inlineDocIndex + 2);
+				// });
+				// a.addEventListener('keyup', () => {
+				// 	Tabs.updateCurrent(inlineDocIndex + 2);
+				// });
 				const text = document.createTextNode(`Facts Chart`);
 				a.append(text);
 
@@ -185,14 +184,7 @@ export const Tabs = {
 
 	updateTabs: () =>
 	{
-		const progressBar = document.getElementById("tabs-container")?.querySelector("#loading");
 		ConstantsFunctions.emptyHTMLByID('tabs-container');
-		
-		if (progressBar)
-		{
-			document.getElementById("tabs-container")?.appendChild(progressBar);
-		}
-
 		Tabs.populateTabs();
 	},
 
@@ -204,14 +196,6 @@ export const Tabs = {
 		});
 	},
 
-	clickEventInternal: (event: MouseEvent | KeyboardEvent, element: HTMLElement) => {
-		// all element hrefs will be an absolute url
-		// all element data-link will be the form url
-		event.preventDefault();
-		ConstantsFunctions.changeInlineFiles(element.getAttribute('data-link') as string);
-		Tabs.updateTabs();
-	},
-
 	clickEventInstance: (event: MouseEvent | KeyboardEvent, instance: number) => {
 		event.preventDefault();
 		ConstantsFunctions.changeInstance(+instance as number, null, () => {
@@ -219,35 +203,4 @@ export const Tabs = {
 			Sections.applyFilterRadios();
 		});
 	},
-
-	updateCurrent: (navIndex: number) => {
-		Constants.getInstanceFiles.length > 1 ? navIndex++ : null;
-		const tabs = Array.from(document.getElementById('tabs-container')?.querySelectorAll('a.nav-link') as NodeListOf<Element>);
-		tabs.forEach((element, index: number) => {
-			const badge = element.querySelector('.text-bg-light');
-			if (index !== navIndex) {
-				element.classList.remove('active');
-				if (badge) {
-					badge.classList.remove('text-bg-light');
-					badge.classList.add('bg-sec');
-				}
-				if (element.hasAttribute('data-container')) {
-					const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(element.getAttribute('data-container') as string);
-					offcanvas.hide();
-				}
-			}
-			if (index === navIndex) {
-				element.classList.add('active');
-				if (badge) {
-					badge.classList.add('text-bg-light');
-					badge.classList.remove('bg-sec');
-				}
-				if (element.hasAttribute('data-container')) {
-					const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(element.getAttribute('data-container') as string);
-					offcanvas.show();
-				}
-			}
-		});
-	},
-
 };

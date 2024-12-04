@@ -64,7 +64,7 @@ export class Development {
         const triggerTabList = Array.from(document.querySelectorAll('#tabs button'));
         triggerTabList.forEach((current) => {
             const tabTrigger = new bootstrap.Tab(current);
-            current.addEventListener('click', (event: MouseEvent) => {
+            current.addEventListener('click', (event) => {
                 event.preventDefault();
                 tabTrigger.show();
             })
@@ -179,8 +179,6 @@ export class Development {
                     const alocal = document.createElement('a');
                     // alocal.setAttribute('href', `${window.location.href}?doc=${current['local'][0].replace('/src', '')}`);
                     alocal.setAttribute('href', `${window.location.href}?doc=${current['local'][0].replace('/Archives/edgar/data/', '/ixdocs/WebContent/documents/')}`);
-                    // https://www-test.sec.gov/ix.xhtml?doc=/Archives/edgar/data/0000007084-23-000037/adm-20231024.htm old
-                    // http://172.18.85.157:8082/ix.xhtml?doc=/ixdocs/WebContent/documents/0000014693-23-000155/bfb-20231002.htm new
                     alocal.setAttribute(`target`, `_blank`);
                     const viewerTextlocal = document.createTextNode(`Go See`);
                     alocal.append(viewerTextlocal);

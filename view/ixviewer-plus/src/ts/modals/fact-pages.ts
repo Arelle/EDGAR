@@ -5,7 +5,80 @@
 
 import { ConstantsFunctions } from "../constants/functions";
 import { xmlToDom } from "../helpers/utils";
-import { Facts } from "../interface/fact";
+import { LabelEnum, SegmentClass, SingleFact } from "../interface/fact";
+
+const formatSegment = (segment: string) => {
+	if (segment) {
+		let domain:string = segment.split(':')[0]
+		const concept:string = segment.split(':')[1]
+		domain = `<span class="font-weight-bold">${domain.toLocaleUpperCase()}</span>`;
+
+		const dimensionLabels = [
+			"Axis",
+			"Member",
+			"Domain",
+		];
+	
+		let conceptFormatted = ''
+		if (concept) {
+			const conceptArr: string[] | null = concept.match(/[A-Z][a-z]+/g);
+			conceptArr?.map((word, index, arr) => {
+				if (index === arr.length -1) {
+					if (dimensionLabels.includes(word)) {
+						word = `[${word}]`;  // wrap dimension labels (last word) in square brackets
+					}
+				}
+				if (word.length > 1) {
+					conceptFormatted += word + ' '
+				} else {
+					conceptFormatted += word
+				}
+			})
+		} else {
+			return null;
+		}
+	
+		const formattedSegment = [domain, conceptFormatted || concept].join(' ');
+		return formattedSegment;
+	}
+	return segment;
+}
+
+const getSegmentAttr = (segment: Array<SegmentClass[] | SegmentClass>, targetAttr: keyof SegmentClass) => {
+	if (segment) {
+		return segment.map(seg => {
+			if (Array.isArray(seg)) {
+				return seg.map(nestedSeg => formatSegment(nestedSeg[targetAttr])).filter(Boolean).join('<br />');
+			}
+			return formatSegment(seg[targetAttr] || "");
+		}).filter(Boolean).join('<br />')
+	}
+	return null;
+};
+
+const getMembersByType = (segment: Array<SegmentClass[] | SegmentClass>, targetType: string) => {
+	/*
+		Aka "dimension type" or dimension by type, per the "The XBRL Book, 6th Edition", p254
+		IMPROVE: Dimensions might be better displayed as table
+	*/
+	if (segment) {
+		const segsWithTargetType: SegmentClass[] = [];
+		segment.filter(seg => {
+			if (Array.isArray(seg)) {
+				seg.forEach(nestedSeg => {
+					if (nestedSeg.type === targetType) {
+						segsWithTargetType.push(nestedSeg);
+					}
+				})
+			}
+			else if (seg.type === targetType) {
+				segsWithTargetType.push(seg);
+			}
+		})
+		return segsWithTargetType.map(seg => seg.dimension).join('<br />')
+	}
+	return null;
+};
 
 // Build the pages for the fact modal
 export const FactPages = {
@@ -16,7 +89,7 @@ export const FactPages = {
 	 * @param {any} idToFill:string
 	 * @returns {any} html table containing all fact "attributes"
 	 */
-	firstPage: (factInfo: Facts, idToFill: string) => {
+	firstPage: (factInfo: SingleFact, idToFill: string) => {
 		const possibleLabels = [
 			{
 				label: "Tag",
@@ -39,23 +112,23 @@ export const FactPages = {
 			},
 			{
 				label: "Axis",
-				value: factInfo.segment ? factInfo.segment.map(element => element.axis).filter(Boolean).join('<br>') : null,
-				//html: true
+				value: getSegmentAttr(factInfo.segment || [], 'axis'),
+				html: true
 			},
 			{
 				label: "Member",
-				value: factInfo.segment ? factInfo.segment.map(element => element.dimension).filter(Boolean).join('<br>') : null,
-				//html: true
+				value: getSegmentAttr(factInfo.segment || [], "dimension"),
+				html: true
 			},
 			{
 				label: "Typed Member",
-				value: factInfo.segment ? factInfo.segment.map(element => element.value).filter(Boolean).join('<br>') : null
+				value: getMembersByType(factInfo.segment || [], 'implicit'),
+				html: true 
 			},
 			{
 				label: "Explicit Member",
-				value: factInfo.segment ? factInfo.segment.map(element => {
-					return element.type === 'explicit' ? element.dimension : null
-				}).filter(Boolean).join(' ') : null,
+				value: getMembersByType(factInfo.segment || [], 'explicit'),
+				html: true
 			},
 			{
 				label: "Measure",
@@ -75,7 +148,7 @@ export const FactPages = {
 			},
 			{
 				label: "Sign",
-				value: factInfo.sign
+				value: factInfo.isAmountsOnly ? (factInfo.isNegativeOnly ? "Negative" : "Positive") : null
 			},
 			{
 				label: "Type",
@@ -139,7 +212,7 @@ export const FactPages = {
 					tdContentsDiv.classList.add('fact-value-modal');
 					//divElement.setAttribute('id', 'fact-value-modal');
 					//divElement.classList.add("h-100");
-					tdContentsDiv.classList.add("posittion-relative");
+					tdContentsDiv.classList.add("position-relative");
 					//divElement.classList.add("overflow-auto");
 					const parser = new DOMParser();
 
@@ -147,7 +220,8 @@ export const FactPages = {
 					// const htmlDoc = parser.parseFromString(current.value, 'text/html');
 					const sanitizedHtml = ConstantsFunctions.sanitizeHtml(label.value);
 					const htmlDoc = parser.parseFromString(sanitizedHtml, 'text/html');
-					tdContentsDiv.append(htmlDoc.querySelector('body') as HTMLElement);
+					htmlDoc.body.classList.add('bg-inherit');
+					tdContentsDiv.append(htmlDoc.body as HTMLElement);
 					tdElement.appendChild(tdContentsDiv);
 				} else {
 
@@ -163,8 +237,8 @@ export const FactPages = {
 							label["value"] = factStringToNumber.toLocaleString("en-US", { "maximumFractionDigits": 10 });
 						}
 					}
-					// HF: changed from this -> divElement.innerHTML = current["value"];
-					tdContentsDiv.textContent = label["value"];
+
+					tdContentsDiv.textContent = label["value"].toString();
 					tdElement.appendChild(tdContentsDiv);
 				}
 
@@ -177,7 +251,7 @@ export const FactPages = {
 		FactPages.fillCarousel(idToFill, elementsToReturn.firstElementChild ? elementsToReturn : FactPages.noDataCarousel());
 	},
 
-	secondPage: (factInfo: Facts, idToFill: string) => {
+	secondPage: (factInfo: SingleFact, idToFill: string) => {
 		const elementsToReturn = document.createElement("tbody");
 		factInfo.labels.forEach((current) => {
 			for (const property in current) {
@@ -188,7 +262,7 @@ export const FactPages = {
 
 				const tdElement = document.createElement("td");
 				const divElement = document.createElement("div");
-				const divContent = document.createTextNode(current[property]);
+				const divContent = document.createTextNode((current as any)[property]);
 				divElement.appendChild(divContent);
 				tdElement.appendChild(divElement);
 
@@ -200,20 +274,20 @@ export const FactPages = {
 		FactPages.fillCarousel(idToFill, elementsToReturn.firstElementChild ? elementsToReturn : FactPages.noDataCarousel());
 	},
 
-	thirdPage: (factInfo: Facts, idToFill: string) => {
+	thirdPage: (factInfo: SingleFact, idToFill: string) => {
 
 		const elementsToReturn = document.createElement("tbody");
 		if (factInfo.references) {
-
-			factInfo.references.forEach((current, index, array) => {
-				current.forEach((nestedCurrent) => {
-					for (const [key, val] of Object.entries(nestedCurrent)) {
+			//TODO: fix typings
+			factInfo.references.forEach((topRef: any, index, array) => {
+				topRef.forEach((nestedRef: any) => {
+					for (const [key, val] of Object.entries(nestedRef)) {
 						const trElement = document.createElement("tr");
 	
 						const thElement = document.createElement("th");
 	
 						const aTag = document.createElement('a');
-						aTag.setAttribute('href', val);
+						aTag.setAttribute('href', String(val));
 						aTag.setAttribute('target', '_blank');
 						aTag.setAttribute('rel', 'noopener noreferrer');
 	
@@ -243,7 +317,7 @@ export const FactPages = {
 							aTag.appendChild(aContent);
 							tdElement.appendChild(aTag);
 						} else {
-							const divContent = document.createTextNode(val);
+							const divContent = document.createTextNode(String(val));
 							divElement.appendChild(divContent);
 							tdElement.appendChild(divElement);
 						}
@@ -266,16 +340,15 @@ export const FactPages = {
 		FactPages.fillCarousel(idToFill, elementsToReturn.firstElementChild ? elementsToReturn : FactPages.noDataCarousel());
 	},
 
-	fourthPage: (factInfo: Facts, idToFill: string) => {
+	fourthPage: (factInfo: SingleFact, idToFill: string) => {
 
 		const calculations = [...factInfo.calculations];
 
-		calculations.unshift([
-			{
-				label: 'Balance',
-				value: factInfo.balance ? factInfo.balance : 'N/A',
-			}
-		])
+		calculations.unshift(
+		[{
+			label: LabelEnum.Balance,
+			value: factInfo.balance ? factInfo.balance : 'N/A',
+		}]);
 
 		const elementsToReturn = document.createElement("tbody");
 

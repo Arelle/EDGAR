@@ -243,7 +243,7 @@
 	{"sub-types": ["N-2/A"], "xbrl-names": "ffd:FormTp", "where": {"ffd:FormTp": ["!not!", "absent"]}, "efm": "6.5.20", "validation": "xv", "value": ["N-2"], "dei/cover": "dei"},
 	{"sub-types": ["N-2ASR"], "xbrl-names": "ffd:FormTp", "where": {"ffd:FormTp": ["!not!", "absent"]}, "efm": "6.5.20", "validation": "xv", "value": ["N-2"], "dei/cover": "dei"},
 	{"sub-types": ["N-2MEF"], "xbrl-names": "ffd:FormTp", "where": {"ffd:FormTp": ["!not!", "absent"]}, "efm": "6.5.20", "validation": "xv", "value": ["N-2"], "dei/cover": "dei"},
-	{"sub-types": ["POS AM"], "xbrl-names": "ffd:FormTp", "where": {"ffd:FormTp": ["!not!", "absent"]}, "efm": "6.5.20", "validation": "xv", "value": ["F-1", "F-3", "F-4", "F-6", "S-1", "S-3", "S-4", "S-11", "S-20", "S-B", "SF-1", "SF-3"], "dei/cover": "dei"},
+	{"sub-types": ["POS AM"], "xbrl-names": "ffd:FormTp", "where": {"ffd:FormTp": ["!not!", "absent"]}, "efm": "6.5.20", "validation": "xv", "value": ["F-1", "F-3", "F-4", "S-1", "S-3", "S-4", "S-11", "SF-1", "SF-3"], "dei/cover": "dei"},
 	{"sub-types": ["POSASR"], "xbrl-names": "ffd:FormTp", "where": {"ffd:FormTp": ["!not!", "absent"]}, "efm": "6.5.20", "validation": "xv", "value": ["S-3", "F-3"], "dei/cover": "dei"},
 	{"sub-types": ["PRE 14A"], "xbrl-names": "ffd:FormTp", "where": {"ffd:FormTp": ["!not!", "absent"]}, "efm": "6.5.20", "validation": "xv", "value": ["SC 14A", "Schedule 14A"], "dei/cover": "dei"},
 	{"sub-types": ["PRE 14C"], "xbrl-names": "ffd:FormTp", "where": {"ffd:FormTp": ["!not!", "absent"]}, "efm": "6.5.20", "validation": "xv", "value": ["SC 14C", "Schedule 14C"], "dei/cover": "dei"},
