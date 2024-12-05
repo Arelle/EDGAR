@@ -78,6 +78,8 @@ export interface XhtmlFileMeta
     slug: string;
     url: string;
     xhtml: string;
+    dropdown?: boolean;
+    table?: boolean;
 }
 
 export interface InlineFileMeta

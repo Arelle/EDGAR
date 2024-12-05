@@ -8,7 +8,7 @@ export interface FilingSummary
     FootnotesReported: TextValue;
     HasCalculationLinkbase: TextValue;
     HasPresentationLinkbase: TextValue;
-    InputFiles: TextValue & { File: { _attributes?: { original?: string }}[] };
+    InputFiles: TextValue & { File: { _attributes?: { original?: string, isNcsr?: string }}[] };
     Logs: TextValue;
     MyReports: TextValue & { Report: Report[] };
     ProcessingTime: TextValue;

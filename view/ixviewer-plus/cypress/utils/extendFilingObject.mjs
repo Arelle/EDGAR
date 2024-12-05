@@ -1,7 +1,6 @@
 export const extendFilingObject = (filingObj) => {
 	const secBaseUrl = 'https://www.sec.gov/ix?doc='
 	const secDocPath = 'https://www.sec.gov/Archives/edgar/data/'
-	const devBaseUrl = 'http://172.18.85.157:8080/ixviewer2plus/?doc='
 	const devDocPath = './../ixviewer-2-getter/filings/'
 
 	/* typical filing object

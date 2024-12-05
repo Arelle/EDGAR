@@ -188,18 +188,12 @@ class Report(object):
             self.decideWhetherToSuppressPeriod('col', self.colList, self.embedding.columnPeriodPosition)
 
     def decideWhetherToSuppressPeriod(self, rowOrColStr, rowOrColList, periodPosition):
-        # returns if more than one period, otherwise represses period headings.  i use memberLabel, because it will treat an instant
-        # and duration ending at the same time as the instant as the same.
-        if rowOrColStr == 'row':
-            first = rowOrColList[0].factAxisMemberGroup.factAxisMemberRowList[periodPosition].memberLabel
-            for row in rowOrColList:
-                if first != row.factAxisMemberGroup.factAxisMemberRowList[periodPosition].memberLabel:
-                    return  # we're done, there are two periods
-        else:
-            first = rowOrColList[0].factAxisMemberGroup.factAxisMemberColList[periodPosition].memberLabel
-            for col in rowOrColList:
-                if first != col.factAxisMemberGroup.factAxisMemberColList[periodPosition].memberLabel:
-                    return  # we're done, there are two periods
+        # returns if more than one period, otherwise represses period headings
+        first = rowOrColList[0].factAxisMemberGroup.factAxisMemberList(rowOrColStr)[periodPosition].member
+        for row in rowOrColList:
+            other = row.factAxisMemberGroup.factAxisMemberList(rowOrColStr)[periodPosition].member
+            if not first.same(other):
+                return  # we're done, there are two periods
         self.repressPeriodHeadings = True  # there's only one period, don't show it.
 
     def proposeAxisPromotions(self, rowOrColStr, rowOrColList, pseudoAxisNameList):
@@ -1179,7 +1173,10 @@ class Report(object):
                     if fact.context.isInstantPeriod:
                         year = fact.context.instantDatetime.year
                     elif fact.context.isStartEndPeriod:
-                        year = fact.context.endDatetime.year
+                        try:
+                            year = fact.context.endDate.year
+                        except:
+                            year = fact.context.endDatetime.year
                     else:
                         continue
                     if fact.isNil:
@@ -1554,9 +1551,8 @@ class Column(object):
                                     modelObject=factAxisMemberGroup.fact,
                                     cube=report.cube.shortName, error=errorStr, column=self.index)
         self.startEndContext = startEndContext
-        if self.startEndContext is None:
+        if self.startEndContext is None and not report.cube.isStatementOfEquity:
             errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(report.embedding.factThatContainsEmbeddedCommand)
-            # message = ErrorMgr.getError('COLUMN_WITHOUT_CONTEXT_WARNING').format(report.cube.shortName, errorStr, self.index)
             filing.modelXbrl.debug("debug",
                                    _('In "%(cube)s%(error)s, column %(column)s has no startEndContext.'),
                                     modelObject=factAxisMemberGroup.fact,

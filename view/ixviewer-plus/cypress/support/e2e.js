@@ -16,6 +16,8 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 import { selectors } from '../utils/selectors.mjs'
+import { filings } from '../dataPlus/standardFilings.js'
+import { getByAccessionNum } from '../dataPlus/filingsFunnel.js'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
@@ -26,118 +28,73 @@ Cypress.on('uncaught:exception', (err, runnable) => {
     return false
 })
 
-Cypress.Commands.add('openSettings', () => {
-    cy.get(selectors.menu).click({force: true})
-    cy.get(selectors.settings).click({force: true})
+Cypress.Commands.add('loadByAccessionNum', (accessionNum) => {
+    //This function invokes the 'getByAccessionNum' function over in filingsFunnel.js
+    //Did it this way so we can keep this function usable by standalone scripts outside Cypress
+    let filingObj = getByAccessionNum(accessionNum)
+    if (filingObj) cy.loadFiling(filingObj);
 })
 
-Cypress.Commands.add('visitFiling', (cik, filingId, htmlFile) =>
-{
-    const HAS_CIK = !!cik;
-    cik = cik || "no-cik";
+//Sends Cypress browser to the filing with index X
+Cypress.Commands.add('loadByIndex', (index) => {
+    let filing = filings.find(filing => filing.index === index.toString())
+    if (filing) cy.loadFiling(filing);
+    else { console.error(`no filing matching accession number ${accessionNum}`) }
+})
 
-    const localUrl = `http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/${cik}/${filingId}/${htmlFile}`;
-    const dev1Url = `http://172.18.85.157:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/${cik}/${filingId}/${htmlFile}`;
-    const dev2Url = dev1Url;    //proceed as if dev2 no longer exists
-    const secUrl = HAS_CIK ? `https://www.sec.gov/ix?doc=/Archives/edgar/data/${cik}/${filingId}/${htmlFile}` : dev1Url;
-    const testSecUrl = secUrl;
+Cypress.Commands.add('loadFiling', (filing) => {
+    return cy.visit(filing.docPath).then(browser => {
+        //Standard mode of waiting until the filing has completely loaded
+        cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist');
+    })
+})
 
-    return cy.visitHost({ localUrl, dev1Url, dev2Url, secUrl, testSecUrl });
-});
+Cypress.Commands.add('openSettings', () => {
+    cy.get(selectors.menu).click({ force: true })
+    cy.get(selectors.settings).click({ force: true })
+})
 
-Cypress.Commands.add('visitHost', (filing) =>
-{
+Cypress.Commands.add('visitHost', (filing) => {
     // give app 15 secs per 1000 facts to load.
     let timeout = 15000;
     if (filing?.factCount > 1000 && filing.timeout) {
         timeout = filing.timeout;
     }
-    switch(Cypress.env('domain'))
-    {
-        case 'local':
-            return cy.visit(filing.localUrl, { timeout });
-        case 'sec':
-            return cy.visit(filing.secUrl, { timeout });
-        case 'dev1':
-            return cy.visit(filing.dev1Url, { timeout });
-        case 'dev2':
-            return cy.visit(filing.dev2Url, { timeout });
-        case 'testSec':
-            return cy.visit(filing.testSecUrl, { timeout });
-        default:
-            return cy.visit(filing.localUrl, { timeout });
-    }
+    return cy.visit()
 });
 
 Cypress.Commands.add('requestFilingSummaryPerHost', (filing) => {
     let FilingSummaryUrl
-    switch (Cypress.env('domain')) {
-        case 'local':
-            FilingSummaryUrl = filing.localUrl.replace(filing.docName + '.htm', 'FilingSummary.xml')
-            FilingSummaryUrl = FilingSummaryUrl.replace('ix.xhtml?doc=./', '')
-            FilingSummaryUrl = FilingSummaryUrl.replace('ix.xhtml?doc=/', '')
-            cy.request(FilingSummaryUrl)
-            break
-        case 'sec':
-            FilingSummaryUrl = filing.secUrl.replace(filing.docName + '.htm', 'FilingSummary.xml')
-            FilingSummaryUrl = FilingSummaryUrl.replace('ix?doc=/', '')
-            cy.request(FilingSummaryUrl)
-            break
-        case 'testSec':
-            FilingSummaryUrl = filing.testSecUrl.replace(filing.docName + '.htm', 'FilingSummary.xml')
-            FilingSummaryUrl = FilingSummaryUrl.replace('iy?doc=', '')
-            cy.request(FilingSummaryUrl)
-            break
-        case 'dev1':
-            FilingSummaryUrl = filing.dev1Url.replace(filing.docName + '.htm', 'FilingSummary.xml')
-            FilingSummaryUrl = FilingSummaryUrl.replace('ix3/ixviewer3/ix.xhtml?doc=../../', '')
-            cy.request(FilingSummaryUrl)
-            break
-        case 'dev2':
-            FilingSummaryUrl = filing.dev2Url.replace(filing.docName + '.htm', 'FilingSummary.xml')
-            FilingSummaryUrl = FilingSummaryUrl.replace('ix3/ixviewer3/ix.xhtml?doc=../../', '')
-            cy.request(FilingSummaryUrl)
-            break
-        default:
-            FilingSummaryUrl = filing.localUrl.replace(filing.docName + '.htm', 'FilingSummary.xml')
-            FilingSummaryUrl = FilingSummaryUrl.replace('ix.xhtml?doc=./', '')
-            cy.request(FilingSummaryUrl)
-    }
+    FilingSummaryUrl = (Cypress.config('baseUrl') + filing.docPath)
+    cy.prepUrl(FilingSummaryUrl).then(FilingSummaryUrl => {
+        FilingSummaryUrl = FilingSummaryUrl.replace(filing.docName + '.htm', 'FilingSummary.xml')
+        cy.request(FilingSummaryUrl)
+    })
 })
 
 Cypress.Commands.add('requestMetaLinksPerHost', (filing) => {
-    let metalinksUrl
-    switch (Cypress.env('domain')) {
-        case 'local':
-            metalinksUrl = filing.localUrl.replace(filing.docName + '.htm', 'MetaLinks.json')
-            metalinksUrl = metalinksUrl.replace('ix.xhtml?doc=./', '')
-            return cy.request(metalinksUrl);
-            break
-        case 'sec':
-            metalinksUrl = filing.secUrl.replace(filing.docName + '.htm', 'MetaLinks.json')
-            metalinksUrl = metalinksUrl.replace('ix?doc=/', '')
-            cy.request(metalinksUrl)
-            break
-        case 'testSec':
-            metalinksUrl = filing.testSecUrl.replace(filing.docName + '.htm', 'MetaLinks.json')
-            metalinksUrl = metalinksUrl.replace('iy?doc=', '')
-            cy.request(metalinksUrl)
-            break
-        case 'dev1':
-            metalinksUrl = filing.dev1Url.replace(filing.docName + '.htm', 'MetaLinks.json')
-            metalinksUrl = metalinksUrl.replace('ix3/ixviewer3/ix.xhtml?doc=../../', '')
-            cy.request(metalinksUrl)
-            break
-        case 'dev2':
-            metalinksUrl = filing.dev2Url.replace(filing.docName + '.htm', 'MetaLinks.json')
-            metalinksUrl = metalinksUrl.replace('ix3/ixviewer3/ix.xhtml?doc=../../', '')
-            cy.request(metalinksUrl)
-            break
-        default:
-            metalinksUrl = filing.localUrl.replace(filing.docName + '.htm', 'MetaLinks.json')
-            metalinksUrl = metalinksUrl.replace('ix.xhtml?doc=./', '')
-            cy.request(metalinksUrl)
-    }
+    let MetaLinksUrl
+    MetaLinksUrl = (Cypress.config('baseUrl') + filing.docPath)
+    cy.prepUrl(MetaLinksUrl).then(MetaLinksUrl => {
+        MetaLinksUrl = MetaLinksUrl.replace(filing.docName + '.htm', 'MetaLinks.json')
+        cy.request(MetaLinksUrl)
+    })
+})
+
+Cypress.Commands.add('prepUrl', (url) => {
+    /*
+    Replacing all these bits from the IXViewer URL when loading other docs like filingSummary or metaLinks.
+    Depending on what domain you're testing, you will likely have one or more of these.
+    They are essential for IXViewer, but must be removed for these other related docs.
+    */
+    url = url.replace('../..', '')
+    url = url.replace('/ix.xhtml?doc=.', '')
+    url = url.replace('/ix.xhtml?doc=', '')
+    url = url.replace('/ix?doc=', '')
+    url = url.replace('/iy?doc=', '')
+    url = url.replace('/ix3/ixviewer3', '')
+    url = url.replace('/ixviewer-ix-dev', '')
+    return url;
 })
 
 Cypress.Commands.add('checkAttr', (selector, attrName, attrVal) => {
@@ -149,7 +106,7 @@ Cypress.Commands.add('checkAttr', (selector, attrName, attrVal) => {
 Cypress.Commands.add('onClickShouldScrollDown', ($clickTarget) => {
     // find scroll pos in viewer elem
     let prevScrollPos = 0;
-    cy.get('div[id="dynamic-xbrl-form"]', {timeout: 2000}).then($viewerElem => {
+    cy.get('div[id="dynamic-xbrl-form"]', { timeout: 2000 }).then($viewerElem => {
         prevScrollPos = $viewerElem.scrollTop();
         cy.get($clickTarget).click().then(() => {
             cy.expect($viewerElem.scrollTop()).to.be.gt(prevScrollPos)
@@ -162,7 +119,7 @@ Cypress.Commands.add('onClickShouldScrollUp', ($clickTarget) => {
     // find scroll pos in viewer elem
     let prevScrollPos = 0;
     cy.log('onClickShouldScrollUp')
-    cy.get('div[id="dynamic-xbrl-form"]', {timeout: 2000}).then($inlineDocElem => {
+    cy.get('div[id="dynamic-xbrl-form"]', { timeout: 2000 }).then($inlineDocElem => {
         prevScrollPos = $inlineDocElem.scrollTop();
         cy.get($clickTarget).click().then(() => {
             cy.expect($inlineDocElem.scrollTop()).to.be.lt(prevScrollPos)
@@ -176,7 +133,7 @@ Cypress.Commands.add('onClickShouldScrollDownRecursive', ($targetCollection, cli
     // find scroll pos in viewer elem
     // let prevScrollPos = 0;
     cy.log('2 onClickShouldScrollDown')
-    cy.get('div[id="dynamic-xbrl-form"]', {timeout: 2000}).then($viewerElem => {
+    cy.get('div[id="dynamic-xbrl-form"]', { timeout: 2000 }).then($viewerElem => {
         let prevScrollPos = $viewerElem.scrollTop();
         cy.log('3 scrollTop')
         cy.wait(2000)
@@ -186,9 +143,9 @@ Cypress.Commands.add('onClickShouldScrollDownRecursive', ($targetCollection, cli
             cy.log('$clickTarget', $clickTarget)
             cy.wrap($clickTarget).click().then(() => {
                 cy.wait(2000)
-                
+
                 cy.log('4 expect')
-                
+
                 cy.expect($viewerElem.scrollTop()).to.be.gt(prevScrollPos)
                 // prevScrollPos = $viewerElem.scrollTop()
                 if ($targetCollection.length > 1) {
@@ -205,7 +162,7 @@ Cypress.Commands.add('onClickShouldScrollDownRecursive', ($targetCollection, cli
 Cypress.Commands.add('onClickShouldScrollDownFlat', ($clickTarget, clickSelector) => {
     // find scroll pos in viewer elem
     let prevScrollPos = 0;
-    cy.get('div[id="dynamic-xbrl-form"]', {timeout: 2000}).then($viewerElem => {
+    cy.get('div[id="dynamic-xbrl-form"]', { timeout: 2000 }).then($viewerElem => {
         prevScrollPos = $viewerElem.scrollTop();
         cy.get(clickSelector).click().then(() => {
             cy.expect($viewerElem.scrollTop()).to.be.gt(prevScrollPos)

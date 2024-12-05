@@ -5,17 +5,18 @@
 
 import { Constants } from "../constants/constants";
 import { ErrorsMinor } from "../errors/minor";
-import { SearchFunctions } from "../search/functions";
 import { Facts } from "../facts/facts";
+import { Balance } from "../interface/fact";
+import { SearchFunctions } from "../search/functions";
 
 export const UserFiltersState = {
     getAxes: [],
-    getMembers: [],
-    getBalance: [],
+    getMembers: [] as Array<{ parentID: unknown[] }>,
+    getBalance: [] as Balance[],
     getMeasure: [],
-    getPeriod: [],
+    getPeriod: [] as Array<{ contextref: string }>,
     getScale: [],
-    getType: [],
+    getType: [] as string[],
     getDataRadios: 0,
 
     setDataRadios: (input: number) => {
@@ -36,9 +37,9 @@ export const UserFiltersState = {
         }
     },
 
-    getUserSearch: {},
+    getUserSearch: {} as { options: { indexOf: (x: any) => number }, regex: RegExp },
 
-    setUserSearch: (input: object) => {
+    setUserSearch: (input: { options: { indexOf: (x: any) => number }, regex: RegExp }) => {
         UserFiltersState.getUserSearch = input;
     },
 
@@ -53,7 +54,7 @@ export const UserFiltersState = {
                     // Custom Only
 
                     if (!current.hasAttribute('isCustomOnly')) {
-                        const isCustomTag = current.getAttribute('name').split(':')[0].toLowerCase() === Constants.getMetaCustomPrefix;
+                        const isCustomTag = current.getAttribute('name')?.split(':')[0].toLowerCase() === Constants.getMetaCustomPrefix;
                         current.setAttribute('isCustomOnly', isCustomTag ? 'true' : 'false');
                     }
 
@@ -65,7 +66,7 @@ export const UserFiltersState = {
                 case 1: {
                     // Standard Only
                     if (!current.hasAttribute('isStandardOnly')) {
-                        const isStandardPrefix = current.getAttribute('name').split(':')[0].toLowerCase() !== Constants.getMetaCustomPrefix;
+                        const isStandardPrefix = current.getAttribute('name')?.split(':')[0].toLowerCase() !== Constants.getMetaCustomPrefix;
                         current.setAttribute('isStandardOnly', isStandardPrefix ? 'true' : 'false');
                     }
 
@@ -84,10 +85,10 @@ export const UserFiltersState = {
     },
 
     periods: (current: HTMLElement, enabledFact: boolean) => {
-        if (UserFiltersState.getPeriod.length && enabledFact) {
+        if (UserFiltersState.getPeriod.length > 0 && enabledFact) {
 
             for (let i = 0; i < UserFiltersState.getPeriod.length; i++) {
-                if (UserFiltersState.getPeriod[i]['contextref'].indexOf(current.getAttribute('contextref')) >= 0) {
+                if (UserFiltersState.getPeriod[i].contextref.indexOf(current.getAttribute('contextref') || "") >= 0) {
                     return true;
                 }
             }
@@ -107,8 +108,8 @@ export const UserFiltersState = {
                 }
             }
             return false;
-
         }
+
         return enabledFact;
     },
 
@@ -130,7 +131,7 @@ export const UserFiltersState = {
     members: (current: HTMLElement, enabledFact: boolean) => {
         if (UserFiltersState.getMembers.length && enabledFact) {
             for (let i = 0; i < UserFiltersState.getMembers.length; i++) {
-                for (let k = 0; k < UserFiltersState.getMembers[i]['parentID'].length; k++) {
+                for (let k = 0; k < UserFiltersState.getMembers[i].parentID.length; k++) {
                     if (current.getAttribute('contextref') === UserFiltersState.getMembers[i]['parentID'][k]) {
                         return true;
                     }
@@ -160,8 +161,8 @@ export const UserFiltersState = {
         if (current == null) return;
         if (UserFiltersState.getType.length && enabledFact) {
             for (let i = 0; i < UserFiltersState.getType.length; i++) {
-                if (current.hasAttribute('name') && current.getAttribute('name').split(':').length === 2) {
-                    if (UserFiltersState.getType[i].toLowerCase() === current.getAttribute('name').split(':')[0].toLowerCase()) {
+                if (current.hasAttribute('name') && current.getAttribute('name')?.split(':').length === 2) {
+                    if (UserFiltersState.getType[i].toLowerCase() === current.getAttribute('name')?.split(':')[0].toLowerCase()) {
                         return true;
                     }
                 }
@@ -217,7 +218,7 @@ export const UserFiltersState = {
         if (Facts.isElementContinued(current)) {
             UserFiltersState.setContinuedAtHighlight(current, highlight);
         } else {
-            current.setAttribute('highlight-fact', highlight);
+            current.setAttribute('highlight-fact', highlight.toString());
         }
 
     },

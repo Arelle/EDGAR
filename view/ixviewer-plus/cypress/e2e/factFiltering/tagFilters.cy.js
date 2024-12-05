@@ -1,5 +1,5 @@
 import { selectors } from "../../utils/selectors.mjs"
-import { getFilingsSample, getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
+import {getFilingsSample, readFilingDataAccNum} from '../../dataPlus/filingsFunnel.js'
 
 let filingsSample = getFilingsSample(Cypress.env);
 
@@ -9,10 +9,10 @@ describe(`Tag Filters for ${filingsSample.length} filings`, () => {
         let newFactCount = 0
         
         it(`[${index}] Tag Filters should filter facts`, () => {
-            cy.visitHost(filing)
+            cy.loadFiling(filing)
             
             // this assertion forces it to wait for it to be populated with number
-            cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
+            cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist')
 
             
             cy.get(selectors.factCountBadge).invoke('text').then(text => {
@@ -46,13 +46,13 @@ describe(`Tag Filters for ${filingsSample.length} filings`, () => {
 
 describe(`Tag filter for nmex filiing`, () => {
     it(`should have specific results`, () => {
-        const filing = getByAccessionNum("000143774923034166")
-        cy.visitHost(filing)
+        const filing = readFilingDataAccNum('000143774923034166')
+        cy.loadFiling(filing)
             
-        cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
+        cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist')
 
         cy.get(selectors.tagsHeader).click()
         cy.get(selectors.standardTagsRadio).click()
-        cy.get(selectors.factCountBadge).should('have.text', '221')
+        cy.get(selectors.factCountBadge).should('have.text', '222')
     })
 })

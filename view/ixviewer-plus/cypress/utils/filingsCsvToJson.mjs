@@ -1,6 +1,5 @@
 import * as fs from "fs"
 import { addendum } from '../dataPlus/addendum.mjs'
-import { baseUrls } from '../dataPlus/baseUrls.mjs'
 
 
 // csv requires either "docPath" or "secUrl" to populate urls
@@ -65,27 +64,8 @@ export const csvToJsonAsFlatObjects = (csvFilePathToRead, destinationFilePath, o
                 filing[sanitizeString(headers[columnNumber])] = sanitizeString(val);
             }
         })
-
-        // Add more fields
         console.log('processing', filing.docPath)
-        // only required url field is docPath
-        if (!headers.includes('secUrl')) {
-            filing.secUrl = baseUrls.sec + filing.docPath;
-        }
-        if (!headers.includes('localUrl')) {
-            filing.localUrl = baseUrls.localhost + filing.docPath;
-        }
-        if (!headers.includes('dev1Url')) {
-            filing.dev1Url = baseUrls.dev1 + filing.docPath;;
-        }
-        if (!headers.includes('testSecUrl')) {
-            filing.testSec = baseUrls.testSec + filing.docPath;
-        }
-        if (!headers.includes('docName')) {
-            filing.docName = filing.secUrl.substring(filing.secUrl.lastIndexOf('/') + 1, filing.secUrl.length - 4);
-        }
         filing = correctSectionsCount(filing);
-
         outputArray.push(filing)
     }
 

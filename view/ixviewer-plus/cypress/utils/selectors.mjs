@@ -38,7 +38,8 @@ export const selectors = {
     getNthInstanceLink: (n) => {
         return `#tabs-container [data-cy="instance-dropdown"] > ul > li:nth-child(${n}) > a`;
     },
-    
+    instanceContainer:'ul#tabs-container',
+    instanceDropDownMenu:'ul.dropdown-menu',
     search: 'input[data-test="global-search"]',
     submitSearchButton: 'form[data-test="global-search-form"] button[type="submit"]',
     searchSettingsGear: 'form[id="global-search-form"] button[data-name="global-search-options"]',
@@ -46,6 +47,7 @@ export const selectors = {
     searchRefOption: 'form[id="global-search-form"] div.form-check:nth-child(6) input',
 
     dataFiltersButton: 'a[data-test="nav-filter-data"]',
+    dataAllFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(1) > label > input',
     dataAmountsOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(2) > label > input',
     dataAdditionalOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(6) > label > input',
 
@@ -94,11 +96,6 @@ export const selectors = {
     tagShadingColorPicker: 'input[id="tag-shading-color-picker"]',
     tagShadingPickerSlider: 'div[id="tag-shading-color-picker"] .picker_slider.picker_hue',
     tagShadingColorPickerSave: 'div[id="tag-shading-color-picker"] div.picker_done button',
-    
-    textBlockPickerSlider: 'div[id="tag-shading-color-picker"] .picker_slider.picker_hue',
-    textBlockColorPicker: 'input[id="text-block-color-picker"]',
-    textBlockColorPickerSave: 'div[id="text-block-color-picker"] div.picker_done button',
-    textBlockIndicator: 'span.text-block-indicator-left',
 
     factsHeader: 'a[id="facts-menu-button"]',
     factInFactBrowser: 'a[data-id^="fact-identifier-"]',
@@ -111,8 +108,10 @@ export const selectors = {
     factModalCopyableContentEXP: 'textarea#fact-copy-content-textarea',
     factCloseCopyableContent: 'a#fact-copy-content-close',
     factModalClose: 'i#fact-modal-close',
+    factExpandMoreLess: 'a[data-cy="factExpandMoreLess"]',
 
     factValueInModal: '#fact-modal-carousel-page-1 > tbody > tr:nth-child(2) > td > div',
+
 
     factModalCarouselPrevArrow: 'div#fact-modal div.dialog-footer button[data-test="modal-fact-prev"]',
     factModalCarouselNextArrow: 'div#fact-modal div.dialog-footer button[data-test="modal-fact-next"]',
@@ -126,13 +125,17 @@ export const selectors = {
     factModalCarouselPage4: 'div#fact-modal-carousel > div.carousel-inner > div.carousel-item:nth-child(4)',
     getCarouselPage: (ordinal) => `div.carousel-inner > div.carousel-item:nth-child(${ordinal})`,
 
+    nestedFactModalCarouselPrevArrow: 'button[data-test="modal-fact-nested-prev"]',
+    nestedFactModalCarouselNextArrow: 'button[data-test="modal-fact-nested-next"]',
+    nestedFactModalClose: 'i#fact-nested-modal-close',
+
     factModalJump: 'div.dialog-header-actions i[id="fact-modal-jump"]',
     factSidebarToggleBtn: '#facts-menu-button',
     showFactInSidebar: 'div.dialog-header-actions i[id="fact-modal-jump"]',
     factSidebar: 'div[id="facts-menu"]',
     factSideBarClose: 'div#facts-menu div.offcanvas-header button.btn-close',
-    prevFact: 'div > ul.pagination li:nth-child(1)',
-    nextFact: 'div > ul.pagination li:nth-child(2)',
+    prevFact: 'a[id="PrevFact"]',
+    nextFact: 'a[id="NextFact"]',
     factModalSubtitle: 'p#fact-modal-subtitle',
     sidebarPaginationInfo: 'div.pagination-info',
     sidebarPaginationSelect: 'select#facts-menu-page-select',
@@ -140,6 +143,12 @@ export const selectors = {
     sidebarPaginationPrev: 'div#facts-menu-list-pagination nav ul.pagination li:nth-child(2)',
     sidebarPaginationNext: 'div#facts-menu-list-pagination nav ul.pagination li:nth-child(3)',
     sidebarPaginationLast: 'div#facts-menu-list-pagination nav ul.pagination li:nth-child(4)',
+    sidebarFact: (id) => `div[id="facts-menu"] a[data-id="fact-identifier-${id}"]`,
+    sidebarFactConcept: (id) => `div[id="facts-menu"] a[data-id="fact-identifier-${id}"] [data-cy=concept]`,
+    sidebarFactBadge: (id) => `div[id="facts-menu"] a[data-id="fact-identifier-${id}"] [data-cy=badge]`,
+    sidebarFactVal: (id) => `div[id="facts-menu"] a[data-id="fact-identifier-${id}"] [data-cy=factVal]`,
+    sidebarFactPeriod: (id) => `div[id="facts-menu"] a[data-id="fact-identifier-${id}"] [data-cy=factPeriod]`,
+    sidebarFactFile: (id) => `div[id="facts-menu"] a[data-id="fact-identifier-${id}"] [data-cy=factFile]`,
 
     nestedFactModal: '#fact-nested-modal',
     nestedFactCarouselLabel: '.nested-carousel.active',
@@ -148,6 +157,7 @@ export const selectors = {
     nestedCount: 'span[id="nested-count"]',
 
     // inline doc pagination
+    docPagination: '[data-cy="doc-pagination"]',
     goToTopOfDoc: 'a#to-top-btn',
     goToPrevInlinePage: 'a#to-prev-btn',
     goToNextInlinePage: 'a#to-next-btn',

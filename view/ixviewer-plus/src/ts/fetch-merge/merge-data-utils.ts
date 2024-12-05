@@ -16,7 +16,7 @@ export const buildSectionsArrayFlatter = (filingSummary: FilingSummary, metaLink
     
     const reportsContainStatements: boolean = filingSummaryReports
         .filter(r => r.MenuCategory)
-        .map(r => r.MenuCategory && r.MenuCategory._text.toLowerCase())
+        .map(r => r.MenuCategory._text?.toLowerCase())
         .some((menuCategory: string) => {
             return menuCategory == 'statement' || 'statements';
         })
@@ -66,7 +66,7 @@ export const buildSectionsArrayFlatter = (filingSummary: FilingSummary, metaLink
         if (metaReport.menuCat && metaReport.shortName) {
             section = addInstanceProps(section);
             section = addFactProps(section);
-            section.menuCatMapped = mapCategoryName(section.menuCat, reportsContainStatements);
+            section.menuCatMapped = mapCategoryName(section.menuCat, reportsContainStatements) || "";
             section.domId = `sectionDoc-${convertToSelector(section.instanceDocName, false)}`
 
             return section;
@@ -108,12 +108,13 @@ export const getFactAttrsFromAnchorProps = (section: Section) => {
 
 /**
  * Description
- * @param {any} input:string
- * @returns {any} => (string) mapped menu category name || 'INCOMPLETE SECTIONS DATA!'
+ * @param {string} input: string
+ * @returns {string} => (string) mapped menu category name || null
  * @description use only when there are no 'statement' menu categories
  */
-const mapCategoryName = (input: string, isStandard: boolean) => {
+const mapCategoryName = (input: string, isStandard: boolean): string | null => {
     const lowerCaseKey = input.toLowerCase();
+
     /*
         'When the FilingSummary does not have any ‘statement’ category reports for an instance, then the following mapping should be used.  
         “Reports” is generic and covers all the other things that don’t need their reports grouped into levels of detail.  
@@ -128,9 +129,9 @@ const mapCategoryName = (input: string, isStandard: boolean) => {
         "notes": "Reports",
         "policies": "Reports", /* very unlikely to happen */
         "tables": "Reports", /* very unlikely to happen */
-        "details": "Details", /* example here http://172.18.85.157:8082/ix-wh/oef24/oef05/out/FilingSummary.htm# */
+        "details": "Details",/* example here {baseUrl}/oef24/oef05/out/FilingSummary.htm# */
         "prospectus": "Prospectus",
-        "rr_summaries": "RR Summaries", /* example here http://172.18.85.157:8082/ix-wh/oef24/oef13/out/FilingSummary.htm we no longer make fancy menus for these */
+        "rr_summaries": "RR Summaries",/* example here {baseUrl}/oef24/oef13/out/FilingSummary.htm we no longer make fancy menus for these */
         "fee_exhibit": "RR Summaries",
         "risk/return": "RR Summaries"
     };
@@ -149,17 +150,20 @@ const mapCategoryName = (input: string, isStandard: boolean) => {
         "fee_exhibit": "RR Summaries",
         "risk/return": "RR Summaries"
     };
+
     if (isStandard) {
         if (lowerCaseKey in standardCatNameMap) {
             return standardCatNameMap[lowerCaseKey as keyof typeof standardCatNameMap];
         } else {
-            console.info(`standardCatNameMap doesn't contain key: %c${lowerCaseKey}`, "color: deepskyblue")
+            console.info(`standardCatNameMap doesn't contain key: %c${lowerCaseKey}`, "color: deepskyblue");
+            return null;
         }
     } else {
         if (lowerCaseKey in noStatementCatNameMap) {
             return noStatementCatNameMap[lowerCaseKey as keyof typeof noStatementCatNameMap];
         } else {
-            console.info(`noStatementCatNameMap doesn't contain key: %c${lowerCaseKey}`, "color: deepskyblue")
+            console.info(`noStatementCatNameMap doesn't contain key: %c${lowerCaseKey}`, "color: deepskyblue");
+            return null;
         }
     }
 };

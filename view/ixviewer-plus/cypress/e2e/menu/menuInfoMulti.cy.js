@@ -1,18 +1,19 @@
 // import { enrichedFilingsUniqueFormTypes } from '../data/enrichedFilingsUniqueFormTypes.js'
 // import { filings } from '../../dataPlus/enrichedFilingsPlus.mjs'
+import {getFilingsSample} from "../../dataPlus/filingsFunnel";
 import { filings } from '../../dataPlus/standardFilings.js'
 
 /*
 npx cypress run --spec 'cypress/e2e/menuInfoMulti.cy.js'
 */
 
-const filingsSample = filings.slice(0, Cypress.env('limitOfFilingsToTest'))
+const filingsSample = getFilingsSample(Cypress.env)
 
 describe(`Menu Info Modal`, () => {
     filingsSample.forEach((filing) => {
-		it(`should show correct data for ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-            cy.visitHost(filing)
-            cy.get('a[data-test="menu-dropdown-link"]', { timeout: filing.timeout }).click()
+		it(`Menu 'information' modal should function. ACC NUM ${filing.accessionNum}`, () => {
+            cy.loadFiling(filing)
+            cy.get('a[data-test="menu-dropdown-link"]', { timeout: Number(filing.timeout) }).click()
             cy.get('a[id="menu-dropdown-information"]').click()
             cy.get('div[data-test="form-information-modal"]').should('exist')
             

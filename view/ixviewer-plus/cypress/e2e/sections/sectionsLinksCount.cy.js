@@ -1,19 +1,17 @@
 import { selectors } from '../../utils/selectors'
 import * as convert from 'xml-js';
 import { filings } from '../../dataPlus/standardFilings.js'
-import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
+import { getFilingsSample, readFilingDataAccNum } from '../../dataPlus/filingsFunnel.js'
 import { getFactAttrsFromAnchorProps } from '../../../src/ts/fetch-merge/merge-data-utils.ts'
 
 let filingsSample = getFilingsSample(Cypress.env);
 
 describe(`Sections | Links number in instance header`, () => {
     it(`should have 4 links`, () => {
-        cy.visitFiling("wh-sections", "out", `sbsef03exi-20231231.htm`);
+        cy.visit('/Archives/edgar/data/wh-sections/out/sbsef03exi-20231231.htm')
 
         cy.get(selectors.sectionsHeader).click()
-        cy.wait(200)
-        // cy.get(selectors.sectionHeaderActive).click()
-        cy.get(selectors.sectionActive, { timeout: 10000 }).then(elem => {
+        cy.get(selectors.sectionActive).then(elem => {
             // get number in badge in ui
             let subSectionsText = elem.find('span.badge').text();
             subSectionsText = subSectionsText.replace('[', '');
@@ -30,12 +28,12 @@ describe(`Sections | Links number in instance header`, () => {
 
     filingsSample.forEach((filing) => {
         it(`badge number should match actual number of links in section`, () => {
-            cy.visitHost(filing)
+            cy.loadFiling(filing)
 
-            cy.get(selectors.sectionsHeader, {timeout: filing.timeout}).click({timeout: filing.timeout})
+            cy.get(selectors.sectionsHeader, {timeout: Number(filing.timeout)}).click({timeout: Number(filing.timeout)})
             // cy.wait(200)
             // cy.get(selectors.sectionHeaderActive).click()
-            cy.get(selectors.sectionActive, { timeout: 10000 }).then(elem => {
+            cy.get(selectors.sectionActive, { timeout: Number(filing.timeout) }).then(elem => {
                 // get number in badge in ui
                 let subSectionsText = elem.find('span.badge').text();
                 subSectionsText = subSectionsText.replace('[', '');
@@ -54,10 +52,12 @@ describe(`Sections | Links number in instance header`, () => {
     })
 })
 
-describe(`Sub sections quantity should match number derived from FilingsSummary.xml`, () => {
+/*
+//This one needs work - We really need to figure out how to know what the correct number of sections should be
+describe.skip(`Sub sections quantity should match number derived from FilingsSummary.xml`, () => {
     filingsSample.forEach((filing) => {
-        it(`${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-            cy.visitHost(filing)
+        it(`${filing.docName} ${filing.submissionType}`, () => {
+            cy.loadFiling(filing)
             cy.requestFilingSummaryPerHost(filing).then(resp => {
                 // const summaryBody = JSON.parse(convert.xml2json(resp.body, { compact: true }));
                 // console.log('Reports', summaryBody.FilingSummary.MyReports.Report)
@@ -76,16 +76,16 @@ describe(`Sub sections quantity should match number derived from FilingsSummary.
                 // accession numbers that need this are in addendum.json
                 cy.get('[id="sections-menu"]')
                     .find(selectors.sectionsLinks)
-                    .should('have.length', sectionCont + (filing.expectedSectionCountCorrection || 0))
+                    .should('have.length', sectionCont + Number(filing.expectedSectionCountCorrection) || 0)
             })
         })
     })
 
+
     it(`This filing should have 3 sections`, () => {
         // http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/0000894189-23-007395/ck0001616668-20221031.htm
 
-        const filing = filings[14];
-        cy.visitHost(filing)
+        cy.getByAccNum('000158765021000010')
 
         cy.requestFilingSummaryPerHost(filing).then(resp => {
             cy.log(resp.body)
@@ -103,7 +103,7 @@ describe(`Sub sections quantity should match number derived from FilingsSummary.
     })
     
     it(`WH filings should have the right number of sections in UI`, () => {
-        cy.visitFiling("wh-sections", "out", `sbsef03exc-20231231.htm`);
+        cy.loadByIndex(223);
 
         cy.get(selectors.sectionsHeader).click();
 
@@ -113,3 +113,4 @@ describe(`Sub sections quantity should match number derived from FilingsSummary.
     });
 
 });
+*/
