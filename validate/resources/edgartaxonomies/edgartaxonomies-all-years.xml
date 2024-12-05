@@ -1,10 +1,125 @@
 <?xml version='1.0' encoding='utf-8'?>
-<Erxl xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="70" xsi:noNamespaceSchemaLocation="erxl.xsd">
+<Erxl xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="73" xsi:noNamespaceSchemaLocation="erxl.xsd">
     <!-- 
 This file was created by staff of the U.S. Securities and Exchange Commission.
 Data and content created by government employees within the scope of their employment
 are not subject to domestic copyright protection. 17 U.S.C. 105.
 -->
+
+    
+    <!-- DEI 2025 -->
+    <Loc>
+        <Family>DEI</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/dei/2025/dei-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://xbrl.sec.gov/dei/2025</Namespace>
+        <Prefix>dei</Prefix>
+    </Loc>
+    <Loc>
+        <Family>DEI</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/dei/2025/dei-2025_def.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/dei-def/2025</Namespace>
+        <Prefix>dei-def</Prefix>
+    </Loc>
+    <Loc>
+        <Family>DEI</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/dei/2025/dei-2025_lab.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/dei-lab/2025</Namespace>
+        <Prefix>dei-lab</Prefix>
+    </Loc>
+    <Loc>
+        <Family>DEI</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/dei/2025/dei-2025_pre.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/dei-pre/2025</Namespace>
+        <Prefix>dei-pre</Prefix>
+    </Loc>
+    <Loc>
+        <Family>DEI</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/dei/2025/dei-sub-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/dei-sub/2025</Namespace>
+        <Prefix>dei-sub</Prefix>
+    </Loc>
+    <!-- SPAC 2025 -->
+    <Loc>
+        <Family>SPAC</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/spac/2025/spac-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://xbrl.sec.gov/spac/2025</Namespace>
+        <Prefix>spac</Prefix>
+    </Loc>
+    <Loc>
+        <Family>SPAC</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/spac/2025/spac-2025_lab.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://xbrl.sec.gov/spac/2025</Namespace>
+        <Prefix>spac</Prefix>
+    </Loc>
+    <Loc>
+        <Family>SPAC</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/spac/2025/spac-despac-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/spac-despac/2025</Namespace>
+        <Prefix>spac-despac</Prefix>
+    </Loc>
+    <Loc>
+        <Family>SPAC</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/spac/2025/spac-proj-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/spac-proj/2025</Namespace>
+        <Prefix>spac-proj</Prefix>
+    </Loc>
+    <Loc>
+        <Family>SPAC</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/spac/2025/spac-reg-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/spac-reg/2025</Namespace>
+        <Prefix>spac-reg</Prefix>
+    </Loc>
+    <Loc>
+        <Family>SPAC</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/spac/2025/spac-sponsor-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/spac-sponsor/2025</Namespace>
+        <Prefix>spac-sponsor</Prefix>
+    </Loc>
+
      <!-- VIP 2024q4 -->
     <Loc>
         <Family>VIP</Family>
