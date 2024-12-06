@@ -119,7 +119,28 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
         <Namespace>http://xbrl.sec.gov/spac-sponsor/2025</Namespace>
         <Prefix>spac-sponsor</Prefix>
     </Loc>
+    <Loc>
+        <Family>SPAC</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/spac/2025/spac-com-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/spac-com/2025</Namespace>
+        <Prefix>spac-com</Prefix>
+    </Loc>
 
+    <!-- US GAAP 2025 -->
+    <Loc>
+        <Family>US GAAP</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.fasb.org/srt/2025/elts/srt-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://fasb.org/srt/2025</Namespace>
+        <Prefix>srt</Prefix>
+    </Loc>
      <!-- VIP 2024q4 -->
     <Loc>
         <Family>VIP</Family>

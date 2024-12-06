@@ -117,7 +117,12 @@
                           "424A", "424B1", "424B2", "424B3", "424B4", "424B5", "424B7", "424B8",
                           "SC 13E3", "SC 13E3/A",
                           "DEF 14A", "DEF 14C", "DEFA14A", "DEFA14C", "DEFC14A", "DEFM14A", "DEFM14C", "DEFN14A", "DEFR14A", "DEFR14C"],
-        "CEF-all-sub-types": ["@8-K", "@10-K+Q", "@CEF-cover", "@CEF-non-cover", "@N-2"]
+        "CEF-all-sub-types": ["@8-K", "@10-K+Q", "@CEF-cover", "@CEF-non-cover", "@N-2"],
+
+        "comment5": "Used in SPAC compatibliity check",
+        "SC 14A": ["DEF 14A", "DEFC14A", "DEFM14A", "DEFR14A", "DEFA14A", "PREC14A", "PREM14A", "PRER14A", "PRE 14A"],
+        "SC 14C": ["DEF 14C", "DEFC14C", "DEFM14C", "DEFR14C", "DEFA14C", "PREC14C", "PREM14C", "PRER14C", "PRE 14C"],
+        "With EX98": ["S-1", "S-1/A", "S-1MEF", "F-1", "F-1/A", "F-1MEF", "S-4", "S-4/A", "S-4MEF", "S-4 POS", "F-4", "F-4/A", "F-4MEF", "F-4 POS", "POS AM"]
     },
     "sub-type-element-validations": [
 	{"sub-types": ["10-12B"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["10-12B"], "source": "both", "dei/cover": "dei"},
@@ -2392,6 +2397,17 @@
     {
         "sub-types": ["@N-3", "@N-4", "@N-6"],
         "xbrl-names": "vip:*",
+        "efm": "6.5.56",
+        "validation": "(supported-taxonomy)",
+        "source": "both",
+        "dei/cover": "dei"
+    },
+    {
+        "comment": "SPAC is only allowed for these submission types."
+    },
+    {
+        "sub-types": ["@8-K", "@20-F", "@20FR", "@SC 14A", "@SC 14C", "@With EX98"],
+        "xbrl-names": "spac:*",
         "efm": "6.5.56",
         "validation": "(supported-taxonomy)",
         "source": "both",
