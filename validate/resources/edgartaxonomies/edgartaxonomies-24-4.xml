@@ -398,6 +398,67 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
         <Namespace>http://xbrl.sec.gov/ecd-sub/2024</Namespace>
         <Prefix>ecd-sub</Prefix>
     </Loc>
+    <!-- FND 2024q3 -->
+    <Loc>
+        <Family>FND</Family>
+        <Version>2024q3</Version>
+        <Href>https://xbrl.sec.gov/fnd/2024q3/fnd-2024q3.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://xbrl.sec.gov/fnd/2024q3</Namespace>
+        <Prefix>fnd</Prefix>
+    </Loc>
+    <Loc>
+        <Family>FND</Family>
+        <Version>2024q3</Version>
+        <Href>https://xbrl.sec.gov/fnd/2024q3/fnd-2024q3_lab.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/fnd-lab/2024q3</Namespace>
+        <Prefix>fnd-lab</Prefix>
+    </Loc>
+    <Loc>
+        <Family>FND</Family>
+        <Version>2024q3</Version>
+        <Href>https://xbrl.sec.gov/fnd/2024q3/fnd-cef-2024q3.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/fnd-cef/2024q3</Namespace>
+        <Prefix>fnd-cef</Prefix>
+    </Loc>
+    <Loc>
+        <Family>FND</Family>
+        <Version>2024q3</Version>
+        <Href>https://xbrl.sec.gov/fnd/2024q3/fnd-cef-2024q3_pre.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/fnd-cef-pre/2024q3</Namespace>
+        <Prefix>fnd-cef-pre</Prefix>
+    </Loc>
+    <Loc>
+        <Family>FND</Family>
+        <Version>2024q3</Version>
+        <Href>https://xbrl.sec.gov/fnd/2024q3/fnd-oef-2024q3.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/fnd-oef/2024q3</Namespace>
+        <Prefix>fnd-oef</Prefix>
+    </Loc>
+    <Loc>
+        <Family>FND</Family>
+        <Version>2024q3</Version>
+        <Href>https://xbrl.sec.gov/fnd/2024q3/fnd-uit-2024q3.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/fnd-uit/2024q3</Namespace>
+        <Prefix>fnd-uit</Prefix>
+    </Loc>
     <!-- FND 2024 -->
     <Loc>
         <Family>FND</Family>
