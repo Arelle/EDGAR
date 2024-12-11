@@ -1158,7 +1158,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     if "value" in n.lower():
                         if isinstance(v, set):
                             v = sorted(v)
-                        if isinstance(v, list):
+                        if isinstance(v, (list, OrderedSet)):
+                            if isinstance(v, OrderedSet):
+                                v = list(v)
                             if len(v) == 1:
                                 logArgs[n] = sevMessageArgValue(v[0], pf)
                             elif len(v) == 2 and v[0] == "!not!":
@@ -1977,7 +1979,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         if f.xValue and (_fileNum.startswith("811-") or _fileNum.startswith("814-")):
                             sevMessage(sev, subType=submissionType, modelObject=f, tag=f.qname.localName, otherTag="entity file number",
                                        value="not starting with 811- or 814-", contextID=f.contextID)
-                elif validation in ("x", "xv", "r", "y", "n") or (validation and validation.startswith("ov")):
+                elif validation in ("x", "xv", "r", "y", "n", "xv-sbtpmap") or (validation and validation.startswith("ov")):
+                    if validation == "xv-sbtpmap":
+                        value = sev.get("value-map", {}).get(submissionType)
                     for name in names:
                         for f in sevFacts(sev, name, requiredContext=not axisKey, whereKey="where", fallback=True, sevCovered=subTypes != {"n/a"}):
                             # always fallback to None for these validations
@@ -2479,6 +2483,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         axesValidations = deiValidations["axis-validations"][axisKey]
                         axes = axesValidations["axes"]
                         members = axesValidations.get("members",())
+                        isValidValue = False if sev.get("store-db-valid-values") and f.xValue not in sev.get("store-db-valid-values") else True
                         if f is not None:
                             _axisKey = tuple(
                                 (lcStr(dim.dimensionQname.localName.replace("Axis","")),
@@ -2488,7 +2493,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 if qname(_axis, deiDefaultPrefixedNamespaces) == dim.dimensionQname
                                 )
                             if storeDbName:
-                                if not (storeDbInnerTextOnly and storeDbInnerTextTruncate): # only write truncated inner text to output file
+                                if not (storeDbInnerTextOnly and storeDbInnerTextTruncate) and isValidValue: # only write truncated inner text to output file
                                     storeDbObjectFacts.setdefault(storeDbObject,{}).setdefault(_axisKey,{})[
                                         _storeDbName] = getStoreDBValue(ftName(f), eloValueOfFact(names[0], f.xValue))
                                 if storeDbInnerTextTruncate:
@@ -2504,7 +2509,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     storeDbActions.setdefault(storeDbObject,{}).setdefault(_axisKey,{})[k] = getStoreDBValue(k, v, otherFact=f)
 
                         elif not axes:
-                            if storeDbName and _storeDbName not in storeDbObjectFacts:
+                            if storeDbName and _storeDbName not in storeDbObjectFacts and isValidValue:
                                 storeDbObjectFacts.setdefault(storeDbObject,{}).setdefault((),{})[_storeDbName] = eloValueOfFact(names[0], f.xValue)
                             if storeDbAction:
                                 for k, v in storeDbAction.items():
