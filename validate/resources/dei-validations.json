@@ -2414,6 +2414,14 @@
         "dei/cover": "dei"
     },
     {
+        "sub-types": ["@With EX98"],
+        "xbrl-names": "spac:*",
+        "efm": "6.5.56",
+        "validation": "(supported-taxonomy)",
+        "source": "both",
+        "dei/cover": "dei"
+    },
+    {
         "sub-types": ["@N-1A"],
         "xbrl-names": [],
         "efm": "6.5.56",
