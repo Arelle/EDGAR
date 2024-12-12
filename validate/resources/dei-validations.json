@@ -44,6 +44,7 @@
         "  elo-match-message: optional, overrides elo match message, default is dq-0540-{tag}-Value",
         "  facts-namespace: optional regex, use with item-facts-dependency validation to specify namespace facts should belong to.",
         "  elo-item: optional string, use with item-facts-dependency validation. The elo item that should be selected when facts in namespace are present.",
+        "  docType: optional array, use with (supported-taxonomy) validation to indicate attachmentDocumentTypes that are allowed.",
         "  comment: optional, comment string",
         "",
         "The messages object contains messages which may be referenced by validations",
@@ -2419,7 +2420,8 @@
         "efm": "6.5.56",
         "validation": "(supported-taxonomy)",
         "source": "both",
-        "dei/cover": "dei"
+        "dei/cover": "dei",
+        "docType": ["EX-98"]
     },
     {
         "sub-types": ["@N-1A"],
