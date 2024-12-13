@@ -91,19 +91,10 @@ class Cube(object):
         if self.isUncategorizedFacts:
             return ('', '', '', False, False, False)
 
-        cubeNumber, hyphen, rightOfHyphen = self.definitionText.partition('-')
-        cubeType, secondHyphen, cubeName = rightOfHyphen.partition('-')
-        cubeNumber = cubeNumber.strip()  # don't need casefold, it's a number
-        cubeType = cubeType.strip().casefold()
-        cubeName = cubeName.strip()
+        definitionTextPattern = re.compile("^(\d+(?:\.\d+)*) - (Statement|Disclosure|Schedule|Document) - ([^\n]*\S)$")
+        definitionMatchesPattern = definitionTextPattern.match(self.definitionText)
 
-        try:
-            int(cubeNumber)
-            cubeNumberIsANumber = True
-        except ValueError:
-            cubeNumberIsANumber = False
-
-        if not cubeNumberIsANumber or '' in (hyphen, secondHyphen, cubeNumber, cubeType, cubeName):
+        if not definitionMatchesPattern:
             if not self.filing.validatedForEFM:
                 self.filing.modelXbrl.error("EFM.6.07.12",  # use identical EFM message & parameters as Arelle Filing validation
                     _("The definition ''%(definition)s'' of role %(roleType)s does not match the expected format. "
@@ -111,7 +102,9 @@ class Cube(object):
                     edgarCode="rq-0712-Role-Definition-Mismatch",
                     modelObject=self.filing.modelXbrl, roleType=self.linkroleUri, definition=self.definitionText)
             return ('', '', '', False, False, False)
-
+        
+        cubeNumber, cubeType, cubeName = definitionMatchesPattern.groups()
+        
         indexList = [99999, 99999, 99999]  # in order transposed, unlabeled, elements
 
         def handleIndex(matchObj):
