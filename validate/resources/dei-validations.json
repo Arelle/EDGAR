@@ -44,6 +44,7 @@
         "  elo-match-message: optional, overrides elo match message, default is dq-0540-{tag}-Value",
         "  facts-namespace: optional regex, use with item-facts-dependency validation to specify namespace facts should belong to.",
         "  elo-item: optional string, use with item-facts-dependency validation. The elo item that should be selected when facts in namespace are present.",
+        "  docTypes: optional array, use with (supported-taxonomy-docType) validation to indicate attachmentDocumentTypes that are allowed.",
         "  comment: optional, comment string",
         "",
         "The messages object contains messages which may be referenced by validations",
@@ -117,7 +118,12 @@
                           "424A", "424B1", "424B2", "424B3", "424B4", "424B5", "424B7", "424B8",
                           "SC 13E3", "SC 13E3/A",
                           "DEF 14A", "DEF 14C", "DEFA14A", "DEFA14C", "DEFC14A", "DEFM14A", "DEFM14C", "DEFN14A", "DEFR14A", "DEFR14C"],
-        "CEF-all-sub-types": ["@8-K", "@10-K+Q", "@CEF-cover", "@CEF-non-cover", "@N-2"]
+        "CEF-all-sub-types": ["@8-K", "@10-K+Q", "@CEF-cover", "@CEF-non-cover", "@N-2"],
+
+        "comment5": "Used in SPAC compatibliity check",
+        "SC 14A": ["DEF 14A", "DEFC14A", "DEFM14A", "DEFR14A", "DEFA14A", "PREC14A", "PREM14A", "PRER14A", "PRE 14A"],
+        "SC 14C": ["DEF 14C", "DEFC14C", "DEFM14C", "DEFR14C", "DEFA14C", "PREC14C", "PREM14C", "PRER14C", "PRE 14C"],
+        "With EX98": ["S-1", "S-1/A", "S-1MEF", "F-1", "F-1/A", "F-1MEF", "S-4", "S-4/A", "S-4MEF", "S-4 POS", "F-4", "F-4/A", "F-4MEF", "F-4 POS", "POS AM"]
     },
     "sub-type-element-validations": [
 	{"sub-types": ["10-12B"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["10-12B"], "source": "both", "dei/cover": "dei"},
@@ -2398,6 +2404,26 @@
         "dei/cover": "dei"
     },
     {
+        "comment": "SPAC is only allowed for these submission types."
+    },
+    {
+        "sub-types": ["@8-K", "@20-F", "@20FR", "@SC 14A", "@SC 14C", "@With EX98"],
+        "xbrl-names": "spac:*",
+        "efm": "6.5.56",
+        "validation": "(supported-taxonomy)",
+        "source": "both",
+        "dei/cover": "dei"
+    },
+    {
+        "sub-types": ["@With EX98"],
+        "xbrl-names": "spac:*",
+        "efm": "6.5.56",
+        "validation": "(supported-taxonomy-docType)",
+        "source": "both",
+        "dei/cover": "dei",
+        "docTypes": ["EX-98"]
+    },
+    {
         "sub-types": ["@N-1A"],
         "xbrl-names": [],
         "efm": "6.5.56",
@@ -2694,6 +2720,10 @@
 		},
         "(supported-taxonomy)": {
             "message": "dq-{efmSection}-{taxonomy}-Facts-Unexpected",
+            "severity": "warning"
+        },
+        "(supported-taxonomy-docType)": {
+            "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected",
             "severity": "warning"
         },
         "taxonomy-version-required": {
@@ -3038,6 +3068,7 @@
 		"dq-{efmSection}-{tags}-Missing": "Submission type {subType} {severityVerb} have a non-empty value for at least one of {tags} in the {context}.",
         "dq-{efmSection}-{tag}-Unexpected": "Submission type {subType} {severityVerb} not have a value for {tag} in the {context}.",
         "dq-{efmSection}-{taxonomy}-Facts-Unexpected": "Submission type {subType} {severityVerb} not report {taxonomy} namespace facts.",
+        "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected": "Submission type {subType} {severityVerb} not report {taxonomy} namespace facts for {docType} document type.",
         "dq-{efmSection}-{taxonomy}-Version-Required": "Submission type {subType} {severityVerb} use {taxonomy} version {earliestTaxonomy} or later.",
         "dq-{efmSection}-Taxonomy-Url-Required": "Submission type {subType} document type {docType} {severityVerb} contain a taxonomy URL matching {taxonomyPattern} in its DTS.",
         "dq-{efmSection}-Taxonomy-Url-Unexpected": "Submission type {subType} document type {docType} {severityVerb} contain a taxonomy URL matching {taxonomyPattern} in its DTS.{msgCoda}",

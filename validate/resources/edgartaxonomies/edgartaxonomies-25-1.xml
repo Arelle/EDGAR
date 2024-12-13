@@ -57,6 +57,47 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
         <Namespace>http://xbrl.sec.gov/dei-sub/2025</Namespace>
         <Prefix>dei-sub</Prefix>
     </Loc>
+    <!-- US GAAP 2025 -->
+    <Loc>
+        <Family>US GAAP</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.fasb.org/srt/2025/elts/srt-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://fasb.org/srt/2025</Namespace>
+        <Prefix>srt</Prefix>
+    </Loc>
+    <Loc>
+        <Family>US GAAP</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.fasb.org/srt/2025/elts/srt-types-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://fasb.org/srt-types/2025</Namespace>
+        <Prefix>srt-types</Prefix>
+    </Loc>
+    <Loc>
+        <Family>US GAAP</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.fasb.org/srt/2025/elts/srt-roles-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Roles/Arcroles</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://fasb.org/srt-roles/2025</Namespace>
+    </Loc>
+    <!-- COUNTRY 2025 -->
+    <Loc>
+        <Family>COUNTRY</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/country/2025/country-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://xbrl.sec.gov/country/2025</Namespace>
+        <Prefix>country</Prefix>
+    </Loc>
     <!-- SPAC 2025 -->
     <Loc>
         <Family>SPAC</Family>
@@ -117,6 +158,16 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
         <Elements>0</Elements>
         <Namespace>http://xbrl.sec.gov/spac-sponsor/2025</Namespace>
         <Prefix>spac-sponsor</Prefix>
+    </Loc>
+    <Loc>
+        <Family>SPAC</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.sec.gov/spac/2025/spac-com-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Entry Point</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.sec.gov/spac-com/2025</Namespace>
+        <Prefix>spac-com</Prefix>
     </Loc>
 
     <!-- VIP 2024q4 -->
