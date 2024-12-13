@@ -44,6 +44,7 @@
         "  elo-match-message: optional, overrides elo match message, default is dq-0540-{tag}-Value",
         "  facts-namespace: optional regex, use with item-facts-dependency validation to specify namespace facts should belong to.",
         "  elo-item: optional string, use with item-facts-dependency validation. The elo item that should be selected when facts in namespace are present.",
+        "  docTypes: optional array, use with (supported-taxonomy-docType) validation to indicate attachmentDocumentTypes that are allowed.",
         "  comment: optional, comment string",
         "",
         "The messages object contains messages which may be referenced by validations",
@@ -2414,6 +2415,15 @@
         "dei/cover": "dei"
     },
     {
+        "sub-types": ["@With EX98"],
+        "xbrl-names": "spac:*",
+        "efm": "6.5.56",
+        "validation": "(supported-taxonomy-docType)",
+        "source": "both",
+        "dei/cover": "dei",
+        "docTypes": ["EX-98"]
+    },
+    {
         "sub-types": ["@N-1A"],
         "xbrl-names": [],
         "efm": "6.5.56",
@@ -2710,6 +2720,10 @@
 		},
         "(supported-taxonomy)": {
             "message": "dq-{efmSection}-{taxonomy}-Facts-Unexpected",
+            "severity": "warning"
+        },
+        "(supported-taxonomy-docType)": {
+            "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected",
             "severity": "warning"
         },
         "taxonomy-version-required": {
@@ -3054,6 +3068,7 @@
 		"dq-{efmSection}-{tags}-Missing": "Submission type {subType} {severityVerb} have a non-empty value for at least one of {tags} in the {context}.",
         "dq-{efmSection}-{tag}-Unexpected": "Submission type {subType} {severityVerb} not have a value for {tag} in the {context}.",
         "dq-{efmSection}-{taxonomy}-Facts-Unexpected": "Submission type {subType} {severityVerb} not report {taxonomy} namespace facts.",
+        "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected": "Submission type {subType} {severityVerb} not report {taxonomy} namespace facts for {docType} document type.",
         "dq-{efmSection}-{taxonomy}-Version-Required": "Submission type {subType} {severityVerb} use {taxonomy} version {earliestTaxonomy} or later.",
         "dq-{efmSection}-Taxonomy-Url-Required": "Submission type {subType} document type {docType} {severityVerb} contain a taxonomy URL matching {taxonomyPattern} in its DTS.",
         "dq-{efmSection}-Taxonomy-Url-Unexpected": "Submission type {subType} document type {docType} {severityVerb} contain a taxonomy URL matching {taxonomyPattern} in its DTS.{msgCoda}",
