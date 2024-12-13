@@ -24,7 +24,7 @@ interface SearchParams {
     value: string,
 }
 
-interface SearchFacts {
+interface SearchFacts { // eslint-disable-line
     (searchParams:SearchParams): void
 }
 

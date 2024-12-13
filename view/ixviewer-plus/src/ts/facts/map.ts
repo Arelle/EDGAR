@@ -1,19 +1,21 @@
 import { ErrorsMinor } from "../errors/minor";
-import { Facts, SingleFact } from "../interface/fact";
+import { isTruthy } from "../helpers/utils";
+import { SingleFact } from "../interface/fact";
 import { UserFiltersState } from "../user-filters/state";
 
 export const FactMap: {
-    map: Map<string, Facts>,
+    map: Map<string, SingleFact>,
     init: (mapOfFacts: Map<string, unknown>) => void,
+    asArray: () => Array<SingleFact>,
     setHighlightedFacts: (arrayOfIDs: Array<string>) => void,
     setEnabledFacts: (arrayOfIDs: Array<string>) => void,
     resetEnabledFacts: () => void,
     getAllMeasures: () => Array<string>,
     getAllAxis: () => Array<string>,
-    getByID: (id: string) => Facts | void,
+    getByID: (id: string) => SingleFact | null,
     getEnabledFacts: () => Array<{ id: string, isAdditional: boolean }>,
     getEnabledHighlightedFacts: () => Array<{ id: string, isAdditional: boolean }>,
-    getFactCountForFile: (input: string, returnAsString: boolean) => string | number,
+    getFactCountForFile: (fileName: string) => string,
     getFactCount: () => string,
     getTextFactCount: () => number,
     getNumberFactCount: () => number,
@@ -23,17 +25,16 @@ export const FactMap: {
     getAllScales: () => Array<string>,
     getAllMembers: () => Array<string>,
     getAllPeriods: () => { [key: string]: [] },
-    getTagLine: () => [],
+    getTagLine: () => any[],
     setIsSelected: (input: string | null) => void,
 } = {
 
-    map: new Map(),
+    map: new Map<string, SingleFact>(),
 
     init: (mapOfFacts: Map<string, unknown>): void => {
-
         FactMap.map.clear();
 
-        Array.from(new Map([...mapOfFacts]), (entry) => {
+        Array.from(new Map([...mapOfFacts]), (entry: any) => {
             if (entry[1].id) {
                 FactMap.map.delete(entry[0]);
                 FactMap.map.set(entry[1].id, entry[1]);
@@ -41,29 +42,27 @@ export const FactMap: {
         });
     },
 
-    asArray: () => {
-        const mapArr = Array.from([...FactMap.map]);
-        return mapArr.map(f => f[1]);
+    asArray: (): SingleFact[] =>
+    {
+        return [...FactMap.map.values()];
     },
 
-    setHighlightedFacts: (arrayOfIDs) => {
-        FactMap.map.forEach((currentValue) => {
-            if (arrayOfIDs.includes(currentValue.id)) {
-                currentValue.isHighlight = true;
-            } else {
-                currentValue.isHighlight = false;
-            }
-        });
+    setHighlightedFacts: (arrayOfIDs) =>
+    {
+        const setOfIDs = new Set(arrayOfIDs);
+        for(let [key, current] of FactMap.map)
+        {
+            current.isHighlight = setOfIDs.has(current.id);
+        }
     },
 
-    setEnabledFacts: (arrayOfIDs) => {
-        FactMap.map.forEach((currentValue) => {
-            if (arrayOfIDs.includes(currentValue.id)) {
-                currentValue.isEnabled = true;
-            } else {
-                currentValue.isEnabled = false;
-            }
-        });
+    setEnabledFacts: (arrayOfIDs) =>
+    {
+        const setOfIDs = new Set(arrayOfIDs);
+        for(let [key, current] of FactMap.map)
+        {
+            current.isEnabled = setOfIDs.has(current.id);
+        }
     },
 
     resetEnabledFacts: () => {
@@ -75,11 +74,11 @@ export const FactMap: {
     getAllPeriods: () => {
         const periods = Array.from(new Map([...FactMap.map]), (entry) => {
             return entry[1].period;
-        }).filter(Boolean).sort((first, second) => {
+        }).filter(Boolean).sort((first: any, second: any) => {
             return second.slice(-4) - first.slice(-4);
         });
 
-        return [...new Set(periods)].reduce((acc, current) => {
+        return [...new Set(periods)].reduce((acc: any, current: any) => {
             if (Object.prototype.hasOwnProperty.call(acc, current.slice(-4))) {
                 acc[current.slice(-4)].values.push(current);
             } else {
@@ -92,15 +91,17 @@ export const FactMap: {
     },
 
     getAllMeasures: () => {
-        const measures = Array.from(new Map([...FactMap.map]), (entry) => {
-            return entry[1].measure;
-        }).filter(Boolean).sort();
-        return [...new Set(measures)]
+        const measures = [...FactMap.map]
+            .map(([_, entry]) => entry.measure)
+            .filter(isTruthy)
+            .sort();
+
+        return [...new Set(measures)];
     },
 
     getAllAxis: () => {
-        const axis = Array.from(new Map([...FactMap.map]), (entry) => {
-            return entry[1].segment ? entry[1].segment.map((current) => {
+        const axis = Array.from(new Map([...FactMap.map]), (entry: any) => {
+            return entry[1].segment ? entry[1].segment.map((current: any) => {
                 if (current.type) {
                     return { type: current.type, value: current.axis };
                 } else if (Array.isArray(current)) {
@@ -121,8 +122,8 @@ export const FactMap: {
     },
 
     getAllMembers: () => {
-        const members = Array.from(new Map([...FactMap.map]), (entry) => {
-            return entry[1].segment ? entry[1].segment.map((current) => {
+        const members = Array.from(new Map([...FactMap.map]), (entry: any) => {
+            return entry[1].segment ? entry[1].segment.map((current: any) => {
                 if (current.dimension) {
                     return { type: current.type, value: current.dimension };
                 } else if (Array.isArray(current)) {
@@ -165,7 +166,7 @@ export const FactMap: {
 
         const uniqueScales = [...new Set(Array.from(new Map([...FactMap.map]), (entry) => {
             return entry[1].scale;
-        }).filter(Boolean))].sort((a, b) => {
+        }).filter(isTruthy))].sort((a, b) => {
             return scalesOrder.indexOf(a) - scalesOrder.indexOf(b);
         });
         return uniqueScales;
@@ -173,23 +174,21 @@ export const FactMap: {
 
     getByID: (id: string) => {
         if (FactMap.map.has(id)) {
-            return FactMap.map.get(id);
+            return FactMap.map.get(id) || null;
         } else {
             ErrorsMinor.factNotFound();
-            return;
+            return null;
         }
-
     },
 
     getByName: (firstName: string, secondName: string | boolean = false) => {
-        const names = Array.from(new Map([...FactMap.map]), (entry) => {
+        const names: any = Array.from(new Map([...FactMap.map]), (entry: any) => {
             if (entry[1].name === firstName) {
-
                 return entry[1].value;
             }
         }).filter(Boolean);
         if (secondName) {
-            return names.length ? `${names[0]} / ${FactMap.getByName(secondName)}` : 'Not Available.'
+            return names.length ? `${names[0]} / ${FactMap.getByName(secondName as any)}` : 'Not Available.'
         }
         return names.length ? names[0] : 'Not Available.'
     },
@@ -197,7 +196,7 @@ export const FactMap: {
     getByNameContextRef: (name: string, contextRef: string) => {
         // console.log('getByNameContextRef', name, contextRef)
         // console.log('FactMap.map', FactMap.map)
-        const fact = Array.from(new Map([...FactMap.map]), (entry) => {
+        const fact: any = Array.from(new Map([...FactMap.map]), (entry) => {
             if (entry[1].name === name && entry[1].contextRef === contextRef) {
                 return entry[1];
             }
@@ -207,30 +206,30 @@ export const FactMap: {
     },
 
     getEnabledFacts: () => {
-        return Array.from(new Map([...FactMap.map]), (entry) => {
+        return Array.from(new Map([...FactMap.map]), (entry: any) => {
             if (entry[1].isEnabled) {
                 return {
                     id: entry[1].id,
                     isAdditional: entry[1].isAdditional,
                 };
             }
-        }).filter(Boolean);
+        }).filter(Boolean) as any;
     },
 
     getEnabledHighlightedFacts: () => {
-        return Array.from(new Map([...FactMap.map]), (entry) => {
+        return Array.from(new Map([...FactMap.map]), (entry: any) => {
             if (entry[1].isEnabled && entry[1].isHighlight) {
                 return {
                     id: entry[1].id,
                     isAdditional: entry[1].isAdditional,
                 };
             }
-        }).filter(Boolean);
+        }).filter(Boolean) as any;
     },
 
     getFullFacts: () => {
         const includeHighlights = Object.keys(UserFiltersState.getUserSearch).length !== 0;
-        return Array.from(new Map([...FactMap.map]), (entry) => {
+        return Array.from(new Map([...FactMap.map]), (entry: any) => {
             if (includeHighlights) {
                 if (entry[1].isEnabled && entry[1].isHighlight) {
                     return entry[1];
@@ -240,28 +239,17 @@ export const FactMap: {
                     return entry[1];
                 }
             }
-        }).filter(Boolean);
+        }).filter(Boolean) as any;
     },
 
-    getFactCount: () => {
+    /** Returns the number of facts as a string with "," inserted as appropriate */
+    getFactCount: (): string => {
         const includeHighlights = Object.keys(UserFiltersState.getUserSearch).length !== 0;
-        const toReturn = Array.from(new Map([...FactMap.map]), (entry) => {
-            if (includeHighlights) {
-                if (entry[1].isEnabled && entry[1].isHighlight) {
-                    return {
-                        file: entry[1].file
-                    };
-                }
-            } else {
-                if (entry[1].isEnabled) {
-                    return {
-                        file: entry[1].file
-                    };
-                }
-            }
-        }).filter(Boolean)
+        const count = [...FactMap.map.values()]
+            .filter((fact) => fact.isEnabled && (!includeHighlights || fact.isHighlight))
+            .length;
 
-        return toReturn.length.toString()
+        return count.toString()
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
 
@@ -279,76 +267,72 @@ export const FactMap: {
         return numFacts.length;
     },
 
-    getFactCountForFile: (docSlug: string, returnAsString = false) => {
+    getFactCountForFile: (docSlug: string): string => {
         const includeHighlights = Object.keys(UserFiltersState.getUserSearch).length !== 0;
-        const toReturn = Array.from(new Map([...FactMap.map]), (entry) => {
-            if (entry[1].file === docSlug) {
-                if (includeHighlights) {
-                    if (entry[1].isEnabled && entry[1].isHighlight) {
-                        return { file: entry[1].file };
-                    }
-                } else {
-                    if (entry[1].isEnabled) {
-                        return { file: entry[1].file };
-                    }
-                }
-            }
-        }).filter(Boolean).length;
+        const count = [...FactMap.map.values()]
+            .filter((fact) => fact.file == docSlug)
+            .filter((fact) => fact.isEnabled && (!includeHighlights || fact.isHighlight))
+            .length;
 
-        if (returnAsString) {
-            return toReturn.toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-        return toReturn;
+        return count.toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
 
     setIsSelected: (input: string | null) => {
-        FactMap.map.forEach((currentValue) => {
-            const inlineFactElem = document.getElementById(currentValue.id);
-            if (input === currentValue.id) {
-                currentValue.isSelected = true;
+        FactMap.map.forEach((currentFact) => {
+            const inlineFactElem = document.getElementById(currentFact.id);
+            if (input === currentFact.id) {
+                currentFact.isSelected = true;
                 inlineFactElem?.setAttribute('selected-fact', 'true')
+                currentFact.continuedIDs?.forEach((continuationId: string) => {
+                    document.getElementById(continuationId)?.setAttribute('selected-fact', 'true');
+                });
             } else {
-                currentValue.isSelected = false;
+                currentFact.isSelected = false;
                 inlineFactElem?.setAttribute('selected-fact', 'false')
+                currentFact.continuedIDs?.forEach((continuationId: string) => {
+                    document.getElementById(continuationId)?.setAttribute('selected-fact', 'false');
+                });
+
             }
         });
     },
 
-
     getTagLine: () => {
-        return Array.from(new Map([...(FactMap.map as Map<string, Facts>)]), (entry: [string, Facts]) => {
+        return [...FactMap.map].map((entry: [string, SingleFact]) => {
             if (entry[1].isAmountsOnly) {
                 return {
                     name: entry[1].name,
-                    period_dates: entry[1].period_dates,
-                    value: +entry[1].value,
+                    periodDates: entry[1].periodDates,
+                    value: +(entry[1].value || 0),
                 };
             }
-        }).filter(Boolean).reduce((
-            acc: Array<{ name: string, data: Array<{ period_dates: Array<string>, value: number }> }> = [],
-            current: { name: string, period_dates: Array<string>, value: number }
+        }).filter(isTruthy).reduce((
+            acc: Array<{ name: string, data: Array<{ periodDates?: string[], value: number }> }> = [],
+            current: { name: string, periodDates?: string[], value: number }
         ) => {
             const index = acc.findIndex(element => element.name === current.name);
             if (index > -1) {
-                acc[index].data.push({ period_dates: current.period_dates, value: current.value });
+                acc[index].data.push({ periodDates: current.periodDates, value: current.value });
             } else {
-                acc.push({ name: current.name, data: [{ period_dates: current.period_dates, value: current.value }] });
+                acc.push({ name: current.name, data: [{ periodDates: current.periodDates, value: current.value }] });
             }
             return acc;
         }, [])?.filter(element => {
-            //const data = new Set();
             element.data = element.data.map(nestedElement => {
                 const data = new Set();
-                nestedElement.period_dates.filter((finalElement) => {
-                    if (data.has(finalElement.period_dates)) {
+
+                //TODO: this logic doesn't "work" because `finalElement` is a string... 
+                nestedElement.periodDates?.filter((finalElement) => {
+                    if (data.has((finalElement as any).periodDates)) {
                         return false;
                     }
-                    data.add(finalElement.period_dates);
+
+                    data.add((finalElement as any).periodDates);
                     return true;
                 });
-                return nestedElement.period_dates.length > 1 ? nestedElement : null;
-            }).filter(Boolean);
+                return nestedElement.periodDates!.length > 1 ? nestedElement : null;
+            }).filter(isTruthy);
             return element.data.length > 1;
         }).sort((first, second) => {
             return first.name.localeCompare(second.name);

@@ -55,7 +55,8 @@ docTypesAttachmentDocumentType = {
     # default is attachmentDocumentType parameter is the same as dei:DocumentType
     }
 docTypesSubType = {
-    "2.01 SD": "SD"
+    "2.01 SD": "SD",
+    "EX-99.4R HISTORIC": "N-4"
     # default is submissionType parameter is the same as dei:DocumentType
     }
 
