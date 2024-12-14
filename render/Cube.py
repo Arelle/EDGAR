@@ -104,6 +104,7 @@ class Cube(object):
             return ('', '', '', False, False, False)
         
         cubeNumber, cubeType, cubeName = definitionMatchesPattern.groups()
+        cubeType = cubeType.casefold()
         
         indexList = [99999, 99999, 99999]  # in order transposed, unlabeled, elements
 
