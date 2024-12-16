@@ -87,7 +87,7 @@
      />
    <DisclosureSystem
       names="US SEC (Edgar Filing Manual, Liberal)|efm-nonblocking|efm-liberal"
-      description="US SEC Edgar Filing Manual v72 Release 25.0.1\n
+      description="US SEC Edgar Filing Manual v73 Release 25.1\n
       Default language en-US (en allowed in some cases per EFM)\n
       CIK identifier patterns\n
       Allowed references http://www.sec.gov/info/edgar/edgartaxonomies.shtml\n
