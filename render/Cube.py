@@ -86,6 +86,16 @@ class Cube(object):
 
     def __str__(self):
         return "[Cube R{!s} {} {}]".format(self.fileNumber, self.cubeType, self.shortName)
+    
+    @property
+    def isStandardTaxonomy(self):
+        modelRoleTypes = self.filing.modelXbrl.roleTypes[self.linkroleUri]
+        if modelRoleTypes:
+            targetNamespace = modelRoleTypes[0].modelDocument.targetNamespace
+            if self.filing.nspattern.match(targetNamespace or ''):
+                # the targetNameSpace matches one of the standard taxonomy namespaces
+                return True
+        return False
 
     def getCubeInfo(self):
         if self.isUncategorizedFacts:
@@ -95,7 +105,7 @@ class Cube(object):
         definitionMatchesPattern = definitionTextPattern.match(self.definitionText)
 
         if not definitionMatchesPattern:
-            if not self.filing.validatedForEFM:
+            if not self.filing.validatedForEFM and not self.isStandardTaxonomy: # This validation is duplicated in EFM Validate. Only applies to custom taxonomies
                 self.filing.modelXbrl.error("EFM.6.07.12",  # use identical EFM message & parameters as Arelle Filing validation
                     _("The definition ''%(definition)s'' of role %(roleType)s does not match the expected format. "
                       "Please check that the definition matches {number} - {type} - {text}."),
