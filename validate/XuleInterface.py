@@ -88,13 +88,14 @@ def xuleValidate(val):
         # if we got here Xule should be active (force it otherwise)
         xuleValidateFinally(val, extra_options={
             "block_Validate.Finally": True,
+            "block_deregister": True,
             "xule_rule_set": f"/__xule_resources_dir__/dqcrt-us-{usgYr}-ruleset.zip",
             "xule_args_file": f"/__xule_resources_dir__/dqcrt-us-{usgYr}-constants.json",
             "xule_time": 1.0,
             # to trace whether contexts are reloaded properly from build process, uncomment
             #"xule_output_constants": "ACCRUAL_ITEMS,TAXONOMY_DEFAULTS"
             # "xule_debug": True # causes trace of  each rule as it runs
-            #"xule_crash": True # causes stacktrace on xule exceptions
+            "xule_crash": True # causes stacktrace on xule exceptions
             })
         val.modelXbrl.modelManager.validateDisclosureSystem = validateDisclosureSystem
         return True
