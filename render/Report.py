@@ -532,7 +532,7 @@ class Report(object):
             for moneyFact in monetaryExampleFactSet:
                 matchingFact = None
                 for moneyPerShareFact in monetaryPerShareExampleFactSet:
-                    if moneyFact.unit.measures[0][0].localName == moneyPerShareFact.unit.measures[0][0].localName:
+                    if moneyFact.unit and moneyFact.unit.measures[0][0].localName == moneyPerShareFact.unit.measures[0][0].localName:
                         matchingFact = moneyPerShareFact
                         break
                 if matchingFact is not None and matchingFact.unitID not in self.scalingFactorsQuantaSymbolTupleDict:
@@ -555,7 +555,7 @@ class Report(object):
 
         # note: we just need to sort by scaling factor, but we additionally sort by unit because we don't want the user
         # to render a filing twice and have each run look different.  we want the orderings to be the same every time.
-        for scalingFactor, ignore, unitSymbol in reversed(sorted(self.scalingFactorsQuantaSymbolTupleDict.values(), key=lambda thing: (thing[0], thing[2]))):
+        for scalingFactor, ignore, unitSymbol in reversed(sorted(self.scalingFactorsQuantaSymbolTupleDict.values(), key=lambda thing: (thing[0], thing[2] or ''))): # unit may be undefined
             try:
                 scalingWord = scalingWordDict[scalingFactor]
             except KeyError:
@@ -876,7 +876,7 @@ class Report(object):
         for arelleFactSet in sortedListOfFactSets:
             # we need a fact for each unit, why?  because the type of the unit is actually in the element declaration
             # so we do all this just to pull the fact out and pass it to getUnitAndSymbolStr, which will probably call fact.unitSymbol()
-            for fact in sorted(arelleFactSet, key=lambda thing: thing.unit.sourceline or 0):
+            for fact in sorted(arelleFactSet, key=lambda thing: getattr(thing.unit, "sourceline", None) or 0):
                 if fact.unit not in unitSet:
                     unitSet.add(fact.unit)
                     unitSymbolStr = Utils.getUnitAndSymbolStr(fact)
