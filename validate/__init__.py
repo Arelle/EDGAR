@@ -630,6 +630,7 @@ def testcaseVariationXbrlLoaded(testcaseModelXbrl, instanceModelXbrl, modelTestc
             # this event is called for filings (of instances) as well as test cases, for test case it just keeps options accessible
             for pluginXbrlMethod in pluginClassMethods("EdgarRenderer.Filing.Start"):
                 pluginXbrlMethod(cntlr, options, entrypointFiles, modelManager.efmFiling)
+        xuleInit(cntlr)
         modelManager.efmFiling.addReport(instanceModelXbrl)
         _report = modelManager.efmFiling.reports[-1]
         _report.entryPoint = entrypointFiles[0]
@@ -666,6 +667,7 @@ def testcaseVariationValidated(testcaseModelXbrl, instanceModelXbrl, errors=None
         filingEnd(modelManager.cntlr, efmFiling.options, modelManager.filesource, [])
         # flush logfile (assumed to be buffered, empty the buffer for next filing)
         testcaseModelXbrl.modelManager.cntlr.logHandler.flush()
+        xuleClose(modelManager.cntlr)
 
 def fileSourceFile(cntlr, filepath, binary, stripDeclaration):
     modelManager = cntlr.modelManager
