@@ -532,7 +532,7 @@ class Report(object):
             for moneyFact in monetaryExampleFactSet:
                 matchingFact = None
                 for moneyPerShareFact in monetaryPerShareExampleFactSet:
-                    if moneyFact.unit and moneyFact.unit.measures[0][0].localName == moneyPerShareFact.unit.measures[0][0].localName:
+                    if moneyFact.unit is not None and moneyFact.unit.measures[0][0].localName == moneyPerShareFact.unit.measures[0][0].localName:
                         matchingFact = moneyPerShareFact
                         break
                 if matchingFact is not None and matchingFact.unitID not in self.scalingFactorsQuantaSymbolTupleDict:
