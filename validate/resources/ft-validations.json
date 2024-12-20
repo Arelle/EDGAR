@@ -3582,7 +3582,6 @@
         "sub-types": ["@429"],
         "xbrl-names": [
             "ffd:Rule429EarlierFileNb",
-            "ffd:Rule429EarlierFormTp",
         	"ffd:Rule429SctyTp"
         ],
         "efm": "ft.rule429CmbndPrspctsItems",
@@ -3590,6 +3589,19 @@
         "axis": "cp",
         "store-db-name": "@lcName",
         "store-db-object": "cmbndPrspctsTable",
+        "comment": "items may be present and if so are output to store-db-object table, no other validation here"
+    },
+    {
+        "sub-types": ["@429"],
+        "xbrl-names": [
+            "ffd:Rule429EarlierFormTp"
+        ],
+        "efm": "ft.rule429CmbndPrspctsItems",
+        "validation": "fo",
+        "axis": "cp",
+        "store-db-name": "@lcName",
+        "store-db-object": "cmbndPrspctsTable",
+        "store-db-valid-values": ["@table-3-1"],
         "comment": "items may be present and if so are output to store-db-object table, no other validation here"
     },
     {
