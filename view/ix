@@ -66,10 +66,8 @@
                                            });
                                         }
                                        });
-                                   if (numInstances > 1 || maxDocsPerInst > 1 || hasIxvPlusExhibit || url.includes("&redline=true") )
-                                       loadViewer("/ixviewer-plus/ix.xhtml" + ixParams);
-                                   else
-                                       loadViewer("/ixviewer/ix.html" + ixParams);
+                                    // starting 2025 we load all filings in the plus viewer.
+                                    loadViewer("/ixviewer-plus/ix.xhtml" + ixParams);
                                 }
                             } else {
                                     console.log("Unable to read MetaLinks.json for this accession");
