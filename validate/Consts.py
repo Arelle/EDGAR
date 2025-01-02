@@ -71,6 +71,7 @@ supplementalAttachmentDocumentTypesPattern = re.compile(r"EX-FILING FEES.*|EX-99
 exhibitTypesStrippingOnErrorPattern = re.compile(r"EX-26.*|EX-99\.[C-S]\.SBSEF.*")
 exhibitTypesPrivateNotDisseminated = re.compile(r"EX-99\.[DEFHIJKNOPQRS]\.SBSEF")
 primaryAttachmentDocumentTypesPattern = re.compile(r"(?!EX-)")
+attachmentDocumentTypeReqSubDocTypePattern = re.compile(r"EX-98")
 
 rxpAlternativeReportingRegimes = ["EU", "UK", "NO", "CA"]
 
