@@ -42,9 +42,12 @@
         "  source: inline or both",
         "  dei/cover: cover - warning if inline and not visible, COVER - error if inline and not visible, dei - no visibility requirement for inline",
         "  elo-match-message: optional, overrides elo match message, default is dq-0540-{tag}-Value",
+        "  message: optional unless validation has severity then required, overrides the validation message",        
         "  facts-namespace: optional regex, use with item-facts-dependency validation to specify namespace facts should belong to.",
         "  elo-item: optional string, use with item-facts-dependency validation. The elo item that should be selected when facts in namespace are present.",
         "  docTypes: optional array, use with (supported-taxonomy-docType) validation to indicate attachmentDocumentTypes that are allowed.",
+        "  severity: optional string, overrides the validation's severity",
+        "  severityVerb: optional string, overrides the validation's severityVerb",
         "  comment: optional, comment string",
         "",
         "The messages object contains messages which may be referenced by validations",
@@ -2430,7 +2433,9 @@
         "validation": "(supported-taxonomy-docType)",
         "source": "both",
         "dei/cover": "dei",
-        "docTypes": ["EX-98"]
+        "docTypes": ["EX-98"],
+        "severity": "error",
+        "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected"
     },
     {
         "sub-types": ["@N-1A"],
