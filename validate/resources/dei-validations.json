@@ -2433,7 +2433,8 @@
         "source": "both",
         "dei/cover": "dei",
         "docTypes": ["EX-98"],
-        "severity": "error"
+        "severity": "error",
+        "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected"
     },
     {
         "sub-types": ["@N-1A"],
