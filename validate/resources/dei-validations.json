@@ -2733,7 +2733,7 @@
         },
         "(supported-taxonomy-docType)": {
             "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected",
-            "severity": "warning"
+            "severity": "error"
         },
         "taxonomy-version-required": {
             "message": "dq-{efmSection}-{taxonomy}-Version-Required",
