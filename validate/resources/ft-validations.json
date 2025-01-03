@@ -59,6 +59,8 @@
         "         Specify as a datetime directive matching the reference string date format. eg. %m/%d/%y",
         "  source: inline or both",
         "  elo-match-message: optional, overrides elo match message, default is dq-0540-{tag}-Value",
+        "  severity: optional string, overrides the validation's severity",
+        "  severityVerb: optional string, overrides the validation's severityVerb",
         "  comment: optional, comment string",
         "  skip-if-ft-json: set to true to skip writing validation message when modelXbrl object was loadedFromFtJson",
         "  comparison-element-match: optional, a list of xbrl-names that should have matching values when comparing across 2 contexts.",

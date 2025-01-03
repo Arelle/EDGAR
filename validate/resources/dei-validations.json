@@ -45,6 +45,8 @@
         "  facts-namespace: optional regex, use with item-facts-dependency validation to specify namespace facts should belong to.",
         "  elo-item: optional string, use with item-facts-dependency validation. The elo item that should be selected when facts in namespace are present.",
         "  docTypes: optional array, use with (supported-taxonomy-docType) validation to indicate attachmentDocumentTypes that are allowed.",
+        "  severity: optional string, overrides the validation's severity",
+        "  severityVerb: optional string, overrides the validation's severityVerb",
         "  comment: optional, comment string",
         "",
         "The messages object contains messages which may be referenced by validations",
@@ -2430,7 +2432,8 @@
         "validation": "(supported-taxonomy-docType)",
         "source": "both",
         "dei/cover": "dei",
-        "docTypes": ["EX-98"]
+        "docTypes": ["EX-98"],
+        "severity": "error"
     },
     {
         "sub-types": ["@N-1A"],
@@ -2733,7 +2736,7 @@
         },
         "(supported-taxonomy-docType)": {
             "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected",
-            "severity": "error"
+            "severity": "warning"
         },
         "taxonomy-version-required": {
             "message": "dq-{efmSection}-{taxonomy}-Version-Required",
