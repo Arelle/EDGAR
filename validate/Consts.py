@@ -68,7 +68,7 @@ attachmentDocumentTypeValidationRulesFiles = ( # match attachment doc type patte
     (None, "dei-validations.json")
     )
 supplementalAttachmentDocumentTypesPattern = re.compile(r"EX-FILING FEES.*|EX-99\.[C-S]\.SBSEF.*")
-exhibitTypesStrippingOnErrorPattern = re.compile(r"EX-26.*|EX-99\.[C-S]\.SBSEF.*")
+exhibitTypesStrippingOnErrorPattern = re.compile(r"EX-26.*|EX-99\.[C-S]\.SBSEF.*|EX-98")
 exhibitTypesPrivateNotDisseminated = re.compile(r"EX-99\.[DEFHIJKNOPQRS]\.SBSEF")
 primaryAttachmentDocumentTypesPattern = re.compile(r"(?!EX-)")
 attachmentDocumentTypeReqSubDocTypePattern = re.compile(r"EX-98")
