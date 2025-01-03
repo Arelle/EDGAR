@@ -124,7 +124,8 @@
         "SC 14A": ["DEF 14A", "DEFC14A", "DEFM14A", "DEFR14A", "DEFA14A", "PREC14A", "PREM14A", "PRER14A", "PRE 14A"],
         "SC 14C": ["DEF 14C", "DEFC14C", "DEFM14C", "DEFR14C", "DEFA14C", "PREC14C", "PREM14C", "PRER14C", "PRE 14C"],
         "SC SPAC": ["SC TO-I", "SC TO-I/A", "SC TO-T", "SC TO-T/A", "SC TO-C", "SC13E4F", "SC13E4F/A", "SC14D1F", "SC14D1F/A", "SC14D9F", "SC14D9F/A", "SC 14D9", "SC 14D9/A", "SC14D9C"],
-        "With EX98": ["S-1", "S-1/A", "S-1MEF", "F-1", "F-1/A", "F-1MEF", "S-4", "S-4/A", "S-4MEF", "F-4", "F-4/A", "F-4MEF", "POS AM", "POS462B"]
+        "SPAC": ["S-1", "S-1/A", "S-1MEF", "F-1", "F-1/A", "F-1MEF", "S-4", "S-4/A", "S-4MEF", "F-4", "F-4/A", "F-4MEF", "POS AM", "POS462B"],
+        "With EX98": ["S-1§EX-98", "S-1/A§EX-98", "S-1MEF§EX-98", "F-1§EX-98", "F-1/A§EX-98", "F-1MEF§EX-98", "S-4§EX-98", "S-4/A§EX-98", "S-4MEF§EX-98", "F-4§EX-98", "F-4/A§EX-98", "F-4MEF§EX-98", "POS AM§EX-98", "POS462B§EX-98"]
     },
     "sub-type-element-validations": [
 	{"sub-types": ["10-12B"], "xbrl-names": "DocumentType", "efm": "6.5.20", "validation": "xv", "value": ["10-12B"], "source": "both", "dei/cover": "dei"},
@@ -2409,7 +2410,7 @@
         "comment": "SPAC is only allowed for these submission types."
     },
     {
-        "sub-types": ["@8-K", "@20-F", "@20FR", "@SC 14A", "@SC 14C", "@SC SPAC", "@With EX98"],
+        "sub-types": ["@8-K", "@20-F", "@20FR", "@SC 14A", "@SC 14C", "@SC SPAC", "@SPAC", "@With EX98"],
         "xbrl-names": "spac:*",
         "efm": "6.5.56",
         "validation": "(supported-taxonomy)",
