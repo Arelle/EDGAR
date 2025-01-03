@@ -39,7 +39,7 @@ from .Consts import submissionTypesAllowingSeriesClasses, \
                     untransformableTypes, rrUntransformableEltsPattern, \
                     hideableNamespacesPattern, linkbaseValidations, \
                     feeTaggingAttachmentDocumentTypePattern, docTypesAttachmentDocumentType, docTypesSubType, \
-                    docTypesAllowingRedact, rxpAlternativeReportingRegimes
+                    docTypesAllowingRedact, rxpAlternativeReportingRegimes, attachmentDocumentTypeReqSubDocTypePattern
 
 from .Dimensions import checkFilingDimensions
 from .PreCalAlignment import checkCalcsTreeWalk
@@ -186,6 +186,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         if not hasSubmissionType: # infer submissionType parameter from dei:DocumentType
                             submissionType = docTypesSubType.get(f.xValue, f.xValue)
                         break
+        if attachmentDocumentTypeReqSubDocTypePattern.match(attachmentDocumentType):
+            hasSubmissionType = False
+            submissionType = f"{submissionType}§{attachmentDocumentType}"
         _setParams = []
         if (not hasSubmissionType and submissionType):
             _setParams.append (f"submissionType {submissionType}")
