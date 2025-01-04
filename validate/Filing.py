@@ -1777,6 +1777,20 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         if matchingPair not in found:
                                             sevMessage(sev, ftContext=ftContext(currentAxisKey, otherGroupData["refFact"]), otherftContext=ftContext(currentAxisKey, groupData["refFact"]))
                                             found.append(matchingPair)
+                # For validation doc-type-facts-dependency check if the attachment document type exists and is in the list of document types passed in from the validation
+                elif validation == "doc-type-facts-dependency" and attachmentDocumentType is not None and attachmentDocumentType in docTypes:
+                    factsFound = False
+                    namespace = sev.get("namespace", "")
+                    # Get from the validation the namespace that facts should belong to
+                    pattern = re.compile(sev.get("facts-namespace", ""))
+                    # Loop through the facts until one is found that matches has a matching namespace
+                    for f in modelXbrl.facts:
+                        if pattern.match(f.qname.namespaceURI):
+                            factsFound = True
+                            break
+                    # If a fact that matched the namespace wasn't found send the severity message
+                    if not factsFound:
+                        sevMessage(sev, subType=submissionType, modelObject=modelXbrl, namespace=namespace, docType=attachmentDocumentType)
                 elif validation == "item-facts-dependency" and "itemsList" in val.params: # don't validate if no itemList (e.g. stand alone)
                     factsFound = False
                     eloItem = sev.get("elo-item", )
