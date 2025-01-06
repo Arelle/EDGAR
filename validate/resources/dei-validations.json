@@ -48,6 +48,7 @@
         "  docTypes: optional array, use with (supported-taxonomy-docType) validation to indicate attachmentDocumentTypes that are allowed.",
         "  severity: optional string, overrides the validation's severity",
         "  severityVerb: optional string, overrides the validation's severityVerb",
+        "  taxonomy: optional string for passing a taxonomy argument",
         "  comment: optional, comment string",
         "",
         "The messages object contains messages which may be referenced by validations",
@@ -2438,6 +2439,17 @@
         "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected"
     },
     {
+        "sub-types": ["@SPAC EX98", "@8-K EX98", "@20-F EX98", "@20FR EX98", "@SC 14A EX98", "@SC 14C EX98", "@SC SPAC EX98"],
+        "xbrl-names": "spac:*",
+        "efm": "6.5.56",
+        "validation": "doc-type-facts-dependency",
+        "source": "both",
+        "dei/cover": "dei",
+        "docTypes": ["EX-98"],
+        "facts-namespace": ".*sec.gov/spac/.*",
+        "taxonomy": "SPAC"
+    },
+    {
         "sub-types": ["@N-1A"],
         "xbrl-names": [],
         "efm": "6.5.56",
@@ -2739,6 +2751,11 @@
         "(supported-taxonomy-docType)": {
             "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected",
             "severity": "warning"
+        },
+        "doc-type-facts-dependency": {
+            "message": "dq-{docType}-{taxonomy}-Facts-Dependency",
+            "severity": "error",
+            "validation": "Document type requires at least one taxonomy fact."
         },
         "taxonomy-version-required": {
             "message": "dq-{efmSection}-{taxonomy}-Version-Required",
@@ -3122,7 +3139,8 @@
 		"dq-0540-EntityExTransitionPeriod-EntityEmergingGrowthCompany-Dependency": "In submission type {subType}, EntityExTransitionPeriod must have a value if EntityEmergingGrowthCompany has value \"true\" in context {contextID}, else it should not be provided.",
 		"dq-0540-{headerTag}-Unexpected": "Header element {headerTag} value {value} is not applicable for {subType} submission type.",
 		"dq-sro-1yr-period": "In submission type {subType}, {tag} {severityVerb} have a one-year period ending on {otherTag} in context {contextID}.",
-		"dq-sro-monthly-facts": "In submission type {subType}, there {severityVerb} at least one fact per month of reporting year, missing months {missingMonths}."
+		"dq-sro-monthly-facts": "In submission type {subType}, there {severityVerb} at least one fact per month of reporting year, missing months {missingMonths}.",
+        "dq-{docType}-{taxonomy}-Facts-Dependency": "In submission type {subType}, for document type {docType}, there {severityVerb} be at least one {taxonomy} taxonomy element."
     },
 	"extraction-cover-tags": [
 		"TradingSymbol",
