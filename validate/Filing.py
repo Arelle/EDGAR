@@ -1665,6 +1665,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 bindIfAbsent = sev.get("bind-if-absent")
                 axisKey = sev.get("axis","")
                 value = sev.get("value")
+                taxonomy = sev.get("taxonomy")
                 isCoverVisible = {"cover":False, "COVER":True, "dei": None, None: None
                                   }[sev.get("dei/cover")]
                 referenceTag = sev.get("references")
@@ -1790,7 +1791,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             break
                     # If a fact that matched the namespace wasn't found send the severity message
                     if not factsFound:
-                        sevMessage(sev, subType=submissionType, modelObject=modelXbrl, namespace=namespace, docType=attachmentDocumentType)
+                        sevMessage(sev, subType=submissionType, modelObject=modelXbrl, namespace=namespace, taxonomy=taxonomy, docType=attachmentDocumentType)
                 elif validation == "item-facts-dependency" and "itemsList" in val.params: # don't validate if no itemList (e.g. stand alone)
                     factsFound = False
                     eloItem = sev.get("elo-item", )

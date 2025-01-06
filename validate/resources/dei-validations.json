@@ -48,6 +48,7 @@
         "  docTypes: optional array, use with (supported-taxonomy-docType) validation to indicate attachmentDocumentTypes that are allowed.",
         "  severity: optional string, overrides the validation's severity",
         "  severityVerb: optional string, overrides the validation's severityVerb",
+        "  taxonomy: optional string for passing a taxonomy argument",
         "  comment: optional, comment string",
         "",
         "The messages object contains messages which may be referenced by validations",
@@ -2445,7 +2446,8 @@
         "source": "both",
         "dei/cover": "dei",
         "docTypes": ["EX-98"],
-        "facts-namespace": ".*sec.gov/spac/.*"
+        "facts-namespace": ".*sec.gov/spac/.*",
+        "taxonomy": "SPAC"
     },
     {
         "sub-types": ["@N-1A"],
