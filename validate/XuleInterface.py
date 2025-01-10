@@ -68,7 +68,7 @@ def init(cntlr):
         if xuleValidateFinally is not None: # xule is loaded
             # add EDGAR mapping for resource files to disclosureSystem.mappings
             if cntlr.modelManager.disclosureSystem:
-                cntlr.modelManager.disclosureSystem.mappedPaths.append(("/__xule_resources_dir__", _xule_resources_dir))
+                cntlr.modelManager.disclosureSystem.mappedPaths.append((f"{os.sep}__xule_resources_dir__", _xule_resources_dir))
         
 def close(cntlr): # unhook Xule's 'Validate.Finally' from validate/EFM
     global xuleValidateFinally
@@ -89,8 +89,8 @@ def xuleValidate(val):
         xuleValidateFinally(val, extra_options={
             "block_Validate.Finally": True,
             "block_deregister": True,
-            "xule_rule_set": f"/__xule_resources_dir__/dqcrt-us-{usgYr}-ruleset.zip",
-            "xule_args_file": f"/__xule_resources_dir__/dqcrt-us-{usgYr}-constants.json",
+            "xule_rule_set": f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-ruleset.zip",
+            "xule_args_file": f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-constants.json",
             "xule_time": 1.0,
             # to trace whether contexts are reloaded properly from build process, uncomment
             #"xule_output_constants": "ACCRUAL_ITEMS,TAXONOMY_DEFAULTS"
