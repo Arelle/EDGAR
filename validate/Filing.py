@@ -39,7 +39,8 @@ from .Consts import submissionTypesAllowingSeriesClasses, \
                     untransformableTypes, rrUntransformableEltsPattern, \
                     hideableNamespacesPattern, linkbaseValidations, \
                     feeTaggingAttachmentDocumentTypePattern, docTypesAttachmentDocumentType, docTypesSubType, \
-                    docTypesAllowingRedact, rxpAlternativeReportingRegimes, attachmentDocumentTypeReqSubDocTypePattern
+                    docTypesAllowingRedact, rxpAlternativeReportingRegimes, attachmentDocumentTypeReqSubDocTypePattern, \
+                    nsPatternNotAllowedinxBRLXML
 
 from .Dimensions import checkFilingDimensions
 from .PreCalAlignment import checkCalcsTreeWalk
@@ -309,6 +310,11 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 filerIdentifier=",".join(sorted(val.params["cikNameList"].keys()) if "cikNameList" in val.params else []))
             val.modelXbrl.profileActivity("... filer identifier checks", minTimeToShow=1.0)
 
+        # taxonomy not allowed in xml-XBRL
+        if not isInlineXbrl:
+            for prefix, nsURL in modelXbrl.prefixedNamespaces.items():
+                if nsPatternNotAllowedinxBRLXML.match(nsURL):
+                    modelXbrl.error("EXG.10.8.0", f"The namespace \"{nsURL}\" is not allowed when the document is in xBRL-XML format.")
         #6.5.7 duplicated contexts
         contexts = modelXbrl.contexts.values()
         contextIDs = set()
