@@ -1067,6 +1067,12 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         return
 
                 logArgs = kwargs.copy()
+                if "§" in logArgs.get("subType", ""):
+                    # If we added the separator because we want to handle the docType as its own subType
+                    # we revert the subType back to the original subType without the docType for the message
+                    subType, attachmentDocType = logArgs["subType"].split("§")
+                    if attachmentDocumentTypeReqSubDocTypePattern.match(attachmentDocType):
+                        logArgs["subType"] = subType
                 validation = deiValidations["validations"][sev["validation"]]
                 severity = kwargs.get("severity", sev.get("severity", validation["severity"]))
                 if "severity" not in logArgs:
