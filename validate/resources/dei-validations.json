@@ -124,7 +124,7 @@
                           "DEF 14A", "DEF 14C", "DEFA14A", "DEFA14C", "DEFC14A", "DEFM14A", "DEFM14C", "DEFN14A", "DEFR14A", "DEFR14C"],
         "CEF-all-sub-types": ["@8-K", "@10-K+Q", "@CEF-cover", "@CEF-non-cover", "@N-2"],
 
-        "comment5": "Used in SPAC compatibliity check",
+        "comment5": "Used in SPAC validations",
         "SC 14A": ["DEF 14A", "DEFC14A", "DEFM14A", "DEFR14A", "DEFA14A", "PREC14A", "PREM14A", "PRER14A", "PRE 14A"],
         "SC 14C": ["DEF 14C", "DEFC14C", "DEFM14C", "DEFR14C", "DEFA14C", "PREC14C", "PREM14C", "PRER14C", "PRE 14C"],
         "SC SPAC": ["SC TO-I", "SC TO-I/A", "SC TO-T", "SC TO-T/A", "SC TO-C", "SC13E4F", "SC13E4F/A", "SC14D1F", "SC14D1F/A", "SC14D9F", "SC14D9F/A", "SC 14D9", "SC 14D9/A", "SC14D9C"],
@@ -2428,6 +2428,9 @@
         "dei/cover": "dei"
     },
     {
+        "comment": "SPAC with EX98 is only allowed for these submission types."
+    },
+    {
         "sub-types": ["@SPAC EX98"],
         "xbrl-names": "spac:*",
         "efm": "6.5.56",
@@ -2436,6 +2439,9 @@
         "dei/cover": "dei",
         "docTypes": ["EX-98"],
         "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected"
+    },
+    {
+        "comment": "EX98 should have a SPAC element."
     },
     {
         "sub-types": ["@SPAC EX98"],
