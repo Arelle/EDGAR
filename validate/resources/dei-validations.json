@@ -2434,7 +2434,6 @@
         "source": "both",
         "dei/cover": "dei",
         "docTypes": ["EX-98"],
-        "severity": "error",
         "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected"
     },
     {
@@ -2753,7 +2752,7 @@
         },
         "doc-type-facts-dependency": {
             "message": "dq-{docType}-{taxonomy}-Facts-Dependency",
-            "severity": "error",
+            "severity": "warning",
             "validation": "Document type requires at least one taxonomy fact."
         },
         "taxonomy-version-required": {
