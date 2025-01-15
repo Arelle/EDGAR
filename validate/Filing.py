@@ -386,10 +386,10 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                                 modelObject=context, context=contextID, content=childTags, count=len(_childTagNames),
                                                 elementName=contextName.partition("}")[2].title())
             for dim in context.qnameDims.values():
-                if isEFM and dim.dimension is not None and dim.dimensionQname.namespaceURI not in disclosureSystem.standardTaxonomiesDict:
+                if isEFM and dim.dimension is not None and getattr(dim.dimensionQname, "namespaceURI", None) not in disclosureSystem.standardTaxonomiesDict:
                     if dim.isTyped:
                         nonStandardTypedDimensions[dim.dimensionQname].add(context)
-                    if customAxesReplacements.customNamePatterns.match(dim.dimensionQname.localName):
+                    if customAxesReplacements.customNamePatterns.match(getattr(dim.dimensionQname, "localName", "")):
                         nonStandardReplacableDimensions[dim.dimensionQname].add(context)
                 for _qname in (dim.dimensionQname, dim.memberQname):
                     if _qname in deprecatedConceptDates: # none if typed and then won't be in deprecatedConceptDates
@@ -577,7 +577,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                           dim.memberQname not in nonNegFacts.excludedAxesMembers[dim.dimensionQname])) and
                          dim.memberQname not in nonNegFacts.excludedMembers and
                          (nonNegFacts.excludedMemberNamesPattern is None or
-                          not nonNegFacts.excludedMemberNamesPattern.search(dim.memberQname.localName)))
+                          not nonNegFacts.excludedMemberNamesPattern.search(getatrr(dim.memberQname, "localName", ""))))
                         for dim in context.qnameDims.values()))):
                     modelXbrl.warning("EFM.6.05.43",
                         _("Concept %(element)s in %(taxonomy)s has a negative value %(value)s in context %(context)s.  Correct the sign, use a more appropriate concept, or change the context."),
@@ -1427,7 +1427,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 for dim in context.qnameDims.values():
                                     if dim.dimensionQname in axesQNs:
                                         if (not members or
-                                            (dim.memberQname and dim.memberQname.localName in members)):
+                                            (getattr(dim.memberQname, "localName", None) in members)):
                                             hasDimMatch = True
                                             if not deduplicate or notdup(f):
                                                 if not excludesAxes:
@@ -1507,14 +1507,14 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         return ()
                     if all(axisQN in cntx.qnameDims and (not cubes or (any(modelXbrl.relationshipSet("XBRL-dimensions",elr).isRelated(axisQN, "descendant", cntx.dimMemberQname(axisQN)) for elr in cubes)))
                            for axisQN in axesQNs
-                           if (not members or cntx.dimMemberQname(axisQN).localName in members)):
+                           if (not members or getattr(cntx.dimMemberQname(axisQN), "localName", None) in members)):
                         return tuple(
-                            dim.typedMember.xValue if dim.isTyped else dim.memberQname.localName
+                            getattr(dim.typedMember, "xValue", None) if dim.isTyped else getattr(dim.memberQname, "localName", None)
                             for axisQN in axesQNs
                             for dim in (cntx.qnameDims[axisQN],))
                 elif presentAxisQN:
                     return tuple(
-                        dim.typedMember.xValue if dim.isTyped else dim.memberQname.localName
+                        getattr(dim.typedMember, "xValue", None) if dim.isTyped else getattr(dim.memberQname, "localName", None)
                         for axisQN in presentAxisQN
                         for dim in (cntx.qnameDims[axisQN],))
                 return None # context doesn't match expected dimensions
@@ -1582,7 +1582,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
 
             def isADR(f):
                 return f is not None and f.context is not None and (
-                    any(d.dimensionQname.localName in deiValidations["axis-validations"]["c"]["axes"]
+                    any(getattr(d.dimensionQname, "localName", None) in deiValidations["axis-validations"]["c"]["axes"]
                         and d.memberQname == deiADRmember
                         for d in f.context.qnameDims.values()))
 
@@ -2506,8 +2506,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         isValidValue = False if sev.get("store-db-valid-values") and f.xValue not in sev.get("store-db-valid-values") else True
                         if f is not None:
                             _axisKey = tuple(
-                                (lcStr(dim.dimensionQname.localName.replace("Axis","")),
-                                 str(dim.typedMember.xValue) if dim.isTyped else dim.memberQname.localName)
+                                (lcStr(getattr(dim.dimensionQname, "localName", "").replace("Axis","")),
+                                 str(getattr(dim.typedMember, "xValue", "")) if dim.isTyped else getattr(dim.memberQname, "localName", ""))
                                 for _axis in axes
                                 for dim in f.context.qnameDims.values()
                                 if qname(_axis, deiDefaultPrefixedNamespaces) == dim.dimensionQname
@@ -2703,7 +2703,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             for name, facts in extractedCoverFacts.items():
                 for f in facts:
                     cEqualCoverFacts[f.context.contextDimAwareHash][name] = f
-                    if not hasADR and any(d.dimensionQname.localName in deiCAxes
+                    if not hasADR and any(getattr(d.dimensionQname, "localName", None) in deiCAxes
                                           and d.memberQname == deiADRmember
                                           for d in f.context.qnameDims.values()):
                         hasADR = True
@@ -2731,7 +2731,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             cntx = cEqualFacts[contextualFactNames[0]].context # can be any fact's context as they're all same context
                             classOfStockDim = None
                             for d in cntx.qnameDims.values():
-                                if d.dimensionQname.localName in deiCAxes:
+                                if getattr(d.dimensionQname, "localName", None) in deiCAxes:
                                     classOfStockDim = d
                                     break
                             if hasADR and (d is None or d.memberQname != deiADRmember):
@@ -3901,14 +3901,14 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     if (f.qname in concepts and f.isNumeric and not f.isNil and f.xValid >= VALID and f.xValue < 0 and f.context is not None and (
                         not isDQC0013 or f.context.contextDimAwareHash in posIncomeBeforeTax) and (
                         all((d.isTyped and # typed member exclusion
-                             d.dimensionQname.localName not in excludedConceptTypedDimensions.get(f.qname.localName, EMPTY_SET)
+                             getattr(d.dimensionQname, "localName", None) not in excludedConceptTypedDimensions.get(f.qname.localName, EMPTY_SET)
                             ) or (d.isExplicit and # explicit dimension exclusion
                             (d.dimensionQname not in dqc0015.excludedAxesMembers or
                              ("*" not in dqc0015.excludedAxesMembers[d.dimensionQname] and
                               d.memberQname not in dqc0015.excludedAxesMembers[d.dimensionQname])) and
                              d.memberQname not in dqc0015.excludedMembers and
                              (dqc0015.excludedMemberNamesPattern is None or
-                              not dqc0015.excludedMemberNamesPattern.search(d.memberQname.localName)))
+                              not dqc0015.excludedMemberNamesPattern.search(getattr(d.memberQname, "localName", ""))))
                             for d in f.context.qnameDims.values())) and (
                         f.qname.localName not in additionalExcludedNames)):
                         if not any(f.isDuplicateOf(warnedFact) for warnedFact in warnedFactsByQn[f.qname]):
