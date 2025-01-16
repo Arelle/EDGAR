@@ -1092,7 +1092,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     if n.lower().endswith("tag"):
                         if isinstance(v, list):
                             logArgs[n] = "".join(v)
-                if "efmSection" not in logArgs:
+                if "efmSection" not in logArgs and not sev.get("msgSection"):
                     logArgs["efmSection"] = sev.get("efm")
                 if logArgs.get("efmSection"):
                     efm = logArgs["efmSection"].split(".")
@@ -1104,6 +1104,18 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 e = e.zfill(2)
                         logArgs["efmSection"] += e
                         logArgs["arelleCode"] += "." + e
+                        
+                # replacement for efmSection. Based on sev msgSection
+                if sev.get("msgSection"):
+                    msgPrefix, _, msgSectionNumber = sev["msgSection"].partition(":")
+                    logArgs[f"{msgPrefix.lower()}Section"] = msgPrefix
+                    logArgs["arelleCode"] = msgPrefix
+                    for i, e in enumerate(msgSectionNumber.split(".")):
+                        if i > 0 :
+                            if e.isnumeric(): # e.g. [6,5,2] -> "6.05.02"
+                                e = e.zfill(2)
+                        logArgs["arelleCode"] += "." + e
+
                 logArgs["edgarCode"] = messageKey # edgar code is the un-expanded key for message with {...}'s
                 try:
                     m = messageKeySectionPattern.match(messageKey or "")

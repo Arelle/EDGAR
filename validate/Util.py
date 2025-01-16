@@ -151,11 +151,17 @@ def loadDeiValidations(modelXbrl, isInlineXbrl, attachmentDocumentType):
         for field in (
             ("xbrl-names",) if "store-db-name" in sev else
             ("xbrl-names", "validation") if hasAttachmentDocumentTypeRules else
-            ("xbrl-names", "validation", "efm", "source")):
+            ("xbrl-names", "validation", "efm" if not "msgSection" in sev else "msgSection", "source")):
             if field not in sev:
                 modelXbrl.error("arelle:loadDeiValidations",
                                 _("Missing sub-type-element-validation[\"%(field)s\"] from %(validation)s."),
                                 field=field, validation=sev)
+            elif field == "msgSection":
+                pattern = re.compile(".*:\d+(\.\d+)*")
+                if not pattern.match(sev[field]):
+                    modelXbrl.error("arelle:loadDeiValidations",
+                                    _("Invalid format for \"%(field)s\" in %(validation)s. Value \"%(value)s\" does not match regex \"%(pattern)s\"."),
+                                    field=field, validation=sev, value=sev[field], pattern=pattern.pattern)
         if "severity" in sev and not any(field.startswith("message") for field in sev) and not hasAttachmentDocumentTypeRules:
             modelXbrl.error("arelle:loadDeiValidations",
                             _("Missing sub-type-element-validation[\"%(field)s\"] from %(validation)s."),

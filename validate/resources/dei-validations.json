@@ -32,6 +32,7 @@
         "  store-db-name: optional ELO db name if elo value to be stored in EDGAR db",
         "  store-db-object: optional ELO object for DB parameter passing, e.g., eloValuesFromFacts or submissionFacts",
         "  efm: section in EFM, e.g., 6.5.21,",
+        "  msgSection: replacement for efm above. The section in the specific guide. Format guidePrefix:section eg. EXG:10.8.10",
         "  validation: cell reference per FRD (replace below), required except for store-db-name entries",
         "  axis: optional, when an element has an axis specification",
         "  value: optional, when an element must have a certain value",
@@ -2422,7 +2423,7 @@
     {
         "sub-types": ["@8-K", "@20-F", "@20FR", "@SC 14A", "@SC 14C", "@SC SPAC", "@SPAC", "@SPAC EX98", "@8-K EX98", "@20-F EX98", "@20FR EX98", "@SC 14A EX98", "@SC 14C EX98", "@SC SPAC EX98"],
         "xbrl-names": "spac:*",
-        "efm": "6.5.56",
+        "msgSection": "EXG:10.8.10",
         "validation": "(supported-taxonomy)",
         "source": "both",
         "dei/cover": "dei"
@@ -2430,7 +2431,7 @@
     {
         "sub-types": ["@SPAC EX98", "@8-K EX98", "@20-F EX98", "@20FR EX98", "@SC 14A EX98", "@SC 14C EX98", "@SC SPAC EX98"],
         "xbrl-names": "spac:*",
-        "efm": "6.5.56",
+        "msgSection": "EXG:10.8.10",
         "validation": "(supported-taxonomy-docType)",
         "source": "both",
         "dei/cover": "dei",
@@ -2441,7 +2442,7 @@
     {
         "sub-types": ["@SPAC EX98", "@8-K EX98", "@20-F EX98", "@20FR EX98", "@SC 14A EX98", "@SC 14C EX98", "@SC SPAC EX98"],
         "xbrl-names": "spac:*",
-        "efm": "6.5.56",
+        "msgSection": "EXG:10.8.10",
         "validation": "doc-type-facts-dependency",
         "source": "both",
         "dei/cover": "dei",
