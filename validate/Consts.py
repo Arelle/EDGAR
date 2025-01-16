@@ -72,6 +72,7 @@ exhibitTypesStrippingOnErrorPattern = re.compile(r"EX-26.*|EX-99\.[C-S]\.SBSEF.*
 exhibitTypesPrivateNotDisseminated = re.compile(r"EX-99\.[DEFHIJKNOPQRS]\.SBSEF")
 primaryAttachmentDocumentTypesPattern = re.compile(r"(?!EX-)")
 attachmentDocumentTypeReqSubDocTypePattern = re.compile(r"EX-98")
+nsPatternNotAllowedinxBRLXML = re.compile(r".*sec.gov/spac/.*")
 
 rxpAlternativeReportingRegimes = ["EU", "UK", "NO", "CA"]
 
