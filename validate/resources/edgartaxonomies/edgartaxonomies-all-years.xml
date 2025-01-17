@@ -141,6 +141,25 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
         <Namespace>http://fasb.org/srt/2025</Namespace>
         <Prefix>srt</Prefix>
     </Loc>
+    <Loc>
+		<Family>US GAAP</Family>
+		<Version>2025</Version>
+		<Href>https://xbrl.fasb.org/srt/2025/elts/srt-types-2025.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Schema</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://fasb.org/srt-types/2025</Namespace>
+		<Prefix>srt-types</Prefix>
+	</Loc>
+	<Loc>
+		<Family>US GAAP</Family>
+		<Version>2025</Version>
+		<Href>https://xbrl.fasb.org/srt/2025/elts/srt-roles-2025.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Roles/Arcroles</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://fasb.org/srt-roles/2025</Namespace>
+	</Loc>    
      <!-- VIP 2024q4 -->
     <Loc>
         <Family>VIP</Family>
