@@ -533,6 +533,29 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 		<Namespace>http://xbrl.sec.gov/cef-pre/2024</Namespace>
 		<Prefix>cef-pre</Prefix>
 	</Loc>
+	
+	<!-- COUNTRY 2025 -->
+	<Loc>
+		<Family>COUNTRY</Family>
+		<Version>2025</Version>
+		<Href>https://xbrl.sec.gov/country/2025/country-2025.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Schema</FileTypeName>
+		<Elements>1</Elements>
+		<Namespace>http://xbrl.sec.gov/country/2025</Namespace>
+		<Prefix>country</Prefix>
+	</Loc>
+
+	<Loc>
+		<Family>COUNTRY</Family>
+		<Version>2025</Version>
+		<Href>https://xbrl.sec.gov/country/2025/country-2025_def.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Entry Point</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://xbrl.sec.gov/country-def/2025</Namespace>
+		<Prefix>country-def</Prefix>
+	</Loc>
 
 	<!-- COUNTRY 2024 -->
 	<Loc>
