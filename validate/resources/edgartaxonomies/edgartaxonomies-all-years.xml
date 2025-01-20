@@ -131,6 +131,35 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
     </Loc>
 
     <!-- US GAAP 2025 -->
+     <Loc>
+        <Family>US GAAP</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.fasb.org/us-gaap/2025/elts/us-gaap-2025.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://fasb.org/us-gaap/2025</Namespace>
+        <Prefix>us-gaap</Prefix>
+    </Loc>
+    <Loc>
+		<Family>US GAAP</Family>
+		<Version>2025</Version>
+		<Href>https://xbrl.fasb.org/us-gaap/2025/elts/us-types-2025.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Schema</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://fasb.org/us-types/2025</Namespace>
+		<Prefix>us-types</Prefix>
+	</Loc>
+	<Loc>
+		<Family>US GAAP</Family>
+		<Version>2025</Version>
+		<Href>https://xbrl.fasb.org/us-gaap/2025/elts/us-roles-2025.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Roles/Arcroles</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://fasb.org/us-roles/2025</Namespace>
+	</Loc>   
     <Loc>
         <Family>US GAAP</Family>
         <Version>2025</Version>
@@ -159,8 +188,8 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
 		<FileTypeName>Roles/Arcroles</FileTypeName>
 		<Elements>0</Elements>
 		<Namespace>http://fasb.org/srt-roles/2025</Namespace>
-	</Loc>    
-     <!-- VIP 2024q4 -->
+	</Loc>
+    <!-- VIP 2024q4 -->
     <Loc>
         <Family>VIP</Family>
         <Version>2024q4</Version>
