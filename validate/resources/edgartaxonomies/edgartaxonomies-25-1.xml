@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Erxl xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="73" xsi:noNamespaceSchemaLocation="erxl.xsd">
-    <!-- 
+  <!-- 
 This file was created by staff of the U.S. Securities and Exchange Commission.
 Data and content created by government employees within the scope of their employment
 are not subject to domestic copyright protection. 17 U.S.C. 105.
@@ -609,7 +609,7 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
     </Loc>
     <!-- 
         keeping http version of 2020 extensible-enumerations-2.0.xsd for backward compatibility.
-        IFRS used the http version up to 8/29/2025 and then replaced it with the https version.
+        IFRS used the http version up to 8/29/2024 and then replaced it with the https version.
     -->
     <Loc>
         <Family>IFRS</Family>
@@ -830,64 +830,165 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
     </Loc>
         <Loc>
     <Family>CYD</Family>
-        <Version>2024</Version>
-        <Href>https://xbrl.sec.gov/cyd/2024/cyd-8k-sub-2024.xsd</Href>
-        <AttType>SCH</AttType>
-        <FileTypeName>Entry Point</FileTypeName>
-        <Elements>0</Elements>
-        <Namespace>http://xbrl.sec.gov/cyd-8k-sub/2024</Namespace>
-        <Prefix>cyd-8k-sub</Prefix>
-    </Loc>
-    <Loc>
-        <Family>CYD</Family>
-        <Version>2024</Version>
-        <Href>https://xbrl.sec.gov/cyd/2024/cyd-6k-sub-2024.xsd</Href>
-        <AttType>SCH</AttType>
-        <FileTypeName>Entry Point</FileTypeName>
-        <Elements>0</Elements>
-        <Namespace>http://xbrl.sec.gov/cyd-6k-sub/2024</Namespace>
-        <Prefix>cyd-6k-sub</Prefix>
-    </Loc>
-    <!-- IFRS 2024-->
-    <Loc>
-        <Family>IFRS</Family>
-        <Version>2024</Version>
-        <Href>https://xbrl.ifrs.org/taxonomy/2024-03-27/full_ifrs/full_ifrs-cor_2024-03-27.xsd</Href>
-        <AttType>SCH</AttType>
-        <FileTypeName>Schema</FileTypeName>
-        <Elements>1</Elements>
-        <Namespace>https://xbrl.ifrs.org/taxonomy/2024-03-27/ifrs-full</Namespace>
-        <Prefix>ifrs-full</Prefix>
-    </Loc>
-    <Loc>
-        <Family>IFRS</Family>
-        <Version>2024</Version>
-        <Href>https://xbrl.ifrs.org/taxonomy/2024-03-27/full_ifrs/dimensions/dim_full_ifrs_2024-03-27_role-995000.xml</Href>
-        <AttType>DEF</AttType>
-        <FileTypeName>Definition, Dimensions</FileTypeName>
-        <Elements>0</Elements>
-    </Loc>
-    <Loc>
-        <Family>IFRS</Family>
-        <Version>2024</Version>
-        <Href>https://xbrl.ifrs.org/taxonomy/2024-03-27/full_ifrs/dimensions/rol_full_ifrs-dim_2024-03-27.xsd</Href>
-        <AttType>SCH</AttType>
-        <FileTypeName>Roles</FileTypeName>
-        <Elements>0</Elements>
-        <Namespace>https://xbrl.ifrs.org/role/ifrs/dimensions_2024-03-27</Namespace>
-        <Prefix>rol_dim</Prefix>
-    </Loc>
-    <Loc>
-        <Family>IFRS</Family>
-        <Version>2024</Version>
-        <Href>https://xbrl.org/2020/extensible-enumerations-2.0.xsd</Href>
-        <AttType>SCH</AttType>
-        <FileTypeName>Schema</FileTypeName>
-        <Elements>0</Elements>
-        <Namespace>http://xbrl.org/2020/extensible-enumerations-2.0</Namespace>
-        <Prefix>enum2</Prefix>
-    </Loc>
-    <!-- 
+    <Version>2025</Version>
+    <Href>https://xbrl.sec.gov/cyd/2025/cyd-2025.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Schema</FileTypeName>
+    <Elements>1</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd/2025</Namespace>
+    <Prefix>cyd</Prefix>
+  </Loc>
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2025</Version>
+    <Href>https://xbrl.sec.gov/cyd/2025/cyd-cr-2025.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Entry Point</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd-cr/2025</Namespace>
+    <Prefix>cyd-cr</Prefix>
+  </Loc>
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2025</Version>
+    <Href>https://xbrl.sec.gov/cyd/2025/cyd-af-2025.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Entry Point</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd-af/2025</Namespace>
+    <Prefix>cyd-af</Prefix>
+  </Loc>
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2025</Version>
+    <Href>https://xbrl.sec.gov/cyd/2025/cyd-af-sub-2025.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Entry Point</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd-af-sub/2025</Namespace>
+    <Prefix>cyd-af-sub</Prefix>
+  </Loc>
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2025</Version>
+    <Href>https://xbrl.sec.gov/cyd/2025/cyd-8k-sub-2025.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Entry Point</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd-8k-sub/2025</Namespace>
+    <Prefix>cyd-8k-sub</Prefix>
+  </Loc>
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2025</Version>
+    <Href>https://xbrl.sec.gov/cyd/2025/cyd-6k-sub-2025.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Entry Point</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd-6k-sub/2025</Namespace>
+    <Prefix>cyd-6k-sub</Prefix>
+  </Loc>
+  <!-- CYD 2024 -->
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2024</Version>
+    <Href>https://xbrl.sec.gov/cyd/2024/cyd-2024.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Schema</FileTypeName>
+    <Elements>1</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd/2024</Namespace>
+    <Prefix>cyd</Prefix>
+  </Loc>
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2024</Version>
+    <Href>https://xbrl.sec.gov/cyd/2024/cyd-cr-2024.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Entry Point</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd-cr/2024</Namespace>
+    <Prefix>cyd-cr</Prefix>
+  </Loc>
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2024</Version>
+    <Href>https://xbrl.sec.gov/cyd/2024/cyd-af-2024.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Entry Point</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd-af/2024</Namespace>
+    <Prefix>cyd-af</Prefix>
+  </Loc>
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2024</Version>
+    <Href>https://xbrl.sec.gov/cyd/2024/cyd-af-sub-2024.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Entry Point</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd-af-sub/2024</Namespace>
+    <Prefix>cyd-af-sub</Prefix>
+  </Loc>
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2024</Version>
+    <Href>https://xbrl.sec.gov/cyd/2024/cyd-8k-sub-2024.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Entry Point</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd-8k-sub/2024</Namespace>
+    <Prefix>cyd-8k-sub</Prefix>
+  </Loc>
+  <Loc>
+    <Family>CYD</Family>
+    <Version>2024</Version>
+    <Href>https://xbrl.sec.gov/cyd/2024/cyd-6k-sub-2024.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Entry Point</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.sec.gov/cyd-6k-sub/2024</Namespace>
+    <Prefix>cyd-6k-sub</Prefix>
+  </Loc>
+  <!-- IFRS 2024-->
+  <Loc>
+    <Family>IFRS</Family>
+    <Version>2024</Version>
+    <Href>https://xbrl.ifrs.org/taxonomy/2024-03-27/full_ifrs/full_ifrs-cor_2024-03-27.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Schema</FileTypeName>
+    <Elements>1</Elements>
+    <Namespace>https://xbrl.ifrs.org/taxonomy/2024-03-27/ifrs-full</Namespace>
+    <Prefix>ifrs-full</Prefix>
+  </Loc>
+  <Loc>
+    <Family>IFRS</Family>
+    <Version>2024</Version>
+    <Href>https://xbrl.ifrs.org/taxonomy/2024-03-27/full_ifrs/dimensions/dim_full_ifrs_2024-03-27_role-995000.xml</Href>
+    <AttType>DEF</AttType>
+    <FileTypeName>Definition, Dimensions</FileTypeName>
+    <Elements>0</Elements>
+  </Loc>
+  <Loc>
+    <Family>IFRS</Family>
+    <Version>2024</Version>
+    <Href>https://xbrl.ifrs.org/taxonomy/2024-03-27/full_ifrs/dimensions/rol_full_ifrs-dim_2024-03-27.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Roles</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>https://xbrl.ifrs.org/role/ifrs/dimensions_2024-03-27</Namespace>
+    <Prefix>rol_dim</Prefix>
+  </Loc>
+  <Loc>
+    <Family>IFRS</Family>
+    <Version>2024</Version>
+    <Href>https://xbrl.org/2020/extensible-enumerations-2.0.xsd</Href>
+    <AttType>SCH</AttType>
+    <FileTypeName>Schema</FileTypeName>
+    <Elements>0</Elements>
+    <Namespace>http://xbrl.org/2020/extensible-enumerations-2.0</Namespace>
+    <Prefix>enum2</Prefix>
+  </Loc>
+  <!-- 
         keeping http version of 2020 extensible-enumerations-2.0.xsd for backward compatibility.
         IFRS used the http version up to 8/29/2024 and then replaced it with the https version.
     -->
