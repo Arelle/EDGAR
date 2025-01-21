@@ -36,6 +36,7 @@ $Change: 22782 $
 DOCSKIP
 """
 import optparse, os, json
+import regex as re
 from arelle import PluginManager
 from arelle.PythonUtil import attrdict
 from .Util import usgaapYear
@@ -81,24 +82,37 @@ def close(cntlr): # unhook Xule's 'Validate.Finally' from validate/EFM
         
 def xuleValidate(val):
     usgYr = usgaapYear(val.modelXbrl)
-    if xuleValidateFinally is not None and usgYr >= "2023":
-        # must run without disclosure system blockage of URLs
-        validateDisclosureSystem = val.modelXbrl.modelManager.validateDisclosureSystem
-        val.modelXbrl.modelManager.validateDisclosureSystem = False
-        # if we got here Xule should be active (force it otherwise)
-        xuleValidateFinally(val, extra_options={
-            "block_Validate.Finally": True,
-            "block_deregister": True,
-            "xule_rule_set": f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-ruleset.zip",
-            "xule_args_file": f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-constants.json",
-            "xule_time": 1.0,
-            # to trace whether contexts are reloaded properly from build process, uncomment
-            #"xule_output_constants": "ACCRUAL_ITEMS,TAXONOMY_DEFAULTS"
-            # "xule_debug": True # causes trace of  each rule as it runs
-            "xule_crash": True # causes stacktrace on xule exceptions
-            })
-        val.modelXbrl.modelManager.validateDisclosureSystem = validateDisclosureSystem
-        return True
+    m = re.match(".*XULE:([0-9]{4})",val.params.get("dqcRuleFilter",""))
+    if m:
+        usgMinYr = m.group(1)
+    else:
+        usgMinYr = "2025"
+    if xuleValidateFinally is not None:
+        if usgYr >= usgMinYr:
+            # must run without disclosure system blockage of URLs
+            validateDisclosureSystem = val.modelXbrl.modelManager.validateDisclosureSystem
+            val.modelXbrl.modelManager.validateDisclosureSystem = False
+            # if we got here Xule should be active (force it otherwise)
+            xuleValidateFinally(val, extra_options={
+                "block_Validate.Finally": True,
+                "block_deregister": True,
+                "xule_rule_set": f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-ruleset.zip",
+                "xule_args_file": f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-constants.json",
+                "xule_time": 1.0,
+                # to trace whether contexts are reloaded properly from build process, uncomment
+                #"xule_output_constants": "ACCRUAL_ITEMS,TAXONOMY_DEFAULTS"
+                #"xule_trace": True, # causes trace of  each rule as it runs
+                "xule_debug": True, # causes trace of  each rule as it runs
+                "xule_crash": True # causes stacktrace on xule exceptions
+                })
+            val.modelXbrl.modelManager.validateDisclosureSystem = validateDisclosureSystem
+            return True
+        else:
+            xuleValidateFinally(val, extra_options={
+                "block_Validate.Finally": True,
+                "block_deregister": True,
+                "block_runXule": True
+                })
     return False
         
 

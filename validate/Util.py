@@ -14,6 +14,7 @@ from arelle.XmlValidateConst import VALID
 from .Consts import standardNamespacesPattern, latestTaxonomyDocs, latestEntireUgt, attachmentDocumentTypeValidationRulesFiles, feeTaggingAttachmentDocumentTypePattern
 
 EMPTY_DICT = {}
+EMPTY_SET = set()
 
 def conflictClassFromNamespace(namespaceURI):
     match = standardNamespacesPattern.match(namespaceURI or "")
@@ -287,7 +288,7 @@ def loadDeprecatedConceptDates(val, deprecatedConceptDates):
                 for localName, date in _deprecatedConceptDates.items():
                     deprecatedConceptDates[qname(ns, localName)] = date
 
-def resourcesFilePath(modelManager, fileName):
+def resourcesFilePath(modelManager, *paths):
     # resourcesDir can be in cache dir (production) or in validate/EFM/resources (for development)
     _resourcesDir = os.path.join( os.path.dirname(__file__), "resources") # dev/testing location
     _target = "validate/EFM/resources"
@@ -296,7 +297,7 @@ def resourcesFilePath(modelManager, fileName):
     if not os.path.exists(_resourcesDir): # production location
         _resourcesDir = os.path.join(modelManager.cntlr.webCache.cacheDir, "resources", "validation", "EFM")
         _target = "web-cache/resources"
-    return os.path.join(_resourcesDir, fileName)
+    return os.path.join(_resourcesDir, *paths)
 
 def deprecatedConceptDatesFile(modelManager, abbrNs, latestTaxonomyDoc):
     cntlr = modelManager.cntlr
@@ -416,7 +417,8 @@ def loadUgtRelQnames(modelXbrl, dqcRules):
            "accrual-items": set(ugtRels["accrual-items"])}
     for ugtItem in ("730000-items", "non-CF", "non-CF-abstracts1", "SHE-exceptions"):
         ugt[ugtItem] = ugtRels[ugtItem]
-     # dqc0015
+    # dqc0015 now uses XULE reloadable constants
+    '''
     if "DQC.US.0015" in ugtRels:
         dqc0015 = ugtRels["DQC.US.0015"]
         concepts = set()
@@ -452,6 +454,7 @@ def loadUgtRelQnames(modelXbrl, dqcRules):
                                   excludedMemberNamesPattern=re.compile("|".join(excludedMemberStrings), re.IGNORECASE)
                                                if excludedMemberStrings else None,
                                                conceptRuleIDs=conceptRuleIDs)
+    '''
     return ugt
 
 def addDomMems(rel, mems, useLocalName=False, baseTaxonomyOnly=False, visited=None):
@@ -566,6 +569,8 @@ def buildUgtFullRelsFiles(modelXbrl, dqcRules):
             ugtInstance.close()
             del ugtInstance # dereference closed modelXbrl
 
+            # use DQC reloadable constants instead
+            '''
             if dqcrtUrl: # none for pre-2020
                 modelManager.addToLog(_("loading {} DQC Rules {}").format(ugtAbbr, dqcrtUrl), messageCode="info")
                 dqcrtInstance = ModelXbrl.load(modelManager,
@@ -623,6 +628,7 @@ def buildUgtFullRelsFiles(modelXbrl, dqcRules):
                         for objVal in obj.values():
                             sortDqcLists(objVal)
                 sortDqcLists(dqc0015)
+            '''
             jsonStr = json.dumps(ugtRels, ensure_ascii=False, indent=2)
             _ugtRelsFileName = resourcesFilePath(modelManager, "us-gaap-rels-{}.json".format(ugtAbbr.rpartition("/")[2]))
             saveFile(cntlr, _ugtRelsFileName, jsonStr)  # 2.7 gets unicode this way
@@ -651,7 +657,8 @@ def loadDqcRules(modelXbrl): # returns match expression, standard patterns
         namespaceUsage[ns] = namespaceUsage.get(ns, 0) + 1
     numUsGaapFacts = sum(n for ns,n in namespaceUsage.items() if "us-gaap" in ns)
     numIfrsFacts = sum(n for ns,n in namespaceUsage.items() if "ifrs" in ns)
-    if (usgaapYear(modelXbrl) >= "2020" and # DQCRT usage begins in 2020
+    usGaapYr = usgaapYear(modelXbrl)
+    if (usGaapYr >= "2020" and # DQCRT usage begins in 2020
         # if there are both us-gaap and ifrs facts in the instance the filing might be either
         # an ifrs or a us-gaap filing.  If ifrs the FASB DQCRT rules do not apply.
         # When a filing contains both ifrs and us-gaap facts deem the filing to be us-gaap
@@ -663,17 +670,76 @@ def loadDqcRules(modelXbrl): # returns match expression, standard patterns
         _file = openFileStream(modelXbrl.modelManager.cntlr, resourcesFilePath(modelXbrl.modelManager, "dqc-us-rules.json"), 'rt', encoding='utf-8')
         dqcRules = json.load(_file, object_pairs_hook=OrderedDict) # preserve order of keys
         _file.close()
+        if usGaapYr >= "2020":
+            dqcRules["XULE-constants-file"] = resourcesFilePath(modelXbrl.modelManager, "xule", f"dqcrt-us-{usGaapYr}-constants.json")
         return dqcRules
     return {}
 
-def factBindings(modelXbrl, localNames, nils=False, noAdditionalDims=False, coverPeriod=False, coverDimQnames=None, alignDims=None, coverUnit=False, cube=None, cubeRelSet=None):
+def xuleReloadConstValue(obj, elt_type=None):
+    # this method reproduces XuleConstant.py method reload_value
+    if obj is None:
+        return None
+    elif isinstance(obj, str):
+        if elt_type == 'qname':
+            return qname(obj) # obj is a clark name
+        elif elt_type == 'decimal':
+            return Decimal(obj)
+        str(obj) # should be a string
+    elif isinstance(obj, (float, int)):
+        return obj
+    elif isinstance(obj, list):
+        _type = obj[0]
+        if _type == "decimal" and len(obj) == 2:
+            return Decimal(obj[1])
+        elif _type == "qname" and len(obj) == 2:
+            return qname(obj[1])
+        elif _type == "network":
+            return tuple(obj[1:-1])
+        elif _type == "reference":
+            # this is not usable, value is ModelReference which would require a PrototypeDtsObject.py PrototypeObject to be implemented
+            return tuple(obj[1:-1])
+        elif _type == 'dictionary':
+            values = []
+            for item in obj[1:]:
+                values.append( tuple(xuleReloadConstValue(elt, None) for elt in item) )
+            return dict(values)
+        else:
+            collection_elt_type = _type.split()
+            collection_type = collection_elt_type[0]
+            if collection_type in ('set', 'list'):
+                try:
+                    elt_type = _type.split()[1]
+                except IndexError:
+                    elt_type = None
+                values = []
+                for elt in obj[1:]:
+                    values.append( xuleReloadConstValue(elt, elt_type) )
+                if collection_type == "set":
+                    frozenset(values)
+                else:
+                    tuple(values)    
+
+def loadXuleConstantsForPythonRules(val, dqcRules):
+    xuleConsts = {}
+    if "XULE-constants-file" in dqcRules:
+        # reload XULE constants built for XULE rule operaition
+        _file = openFileStream(val.modelXbrl.modelManager.cntlr, dqcRules["XULE-constants-file"], 'rt', encoding='utf-8')
+        xuleReloadableConstants = json.load(_file)
+        _file.close()
+        for name, obj in xuleReloadableConstants.items():
+            xuleConsts[name] = xuleReloadConstValue(obj)
+    return xuleConsts
+    
+
+def factBindings(modelXbrl, localNames, nils=False, noAdditionalDims=False, coverPeriod=False, coverDimQnames=EMPTY_SET, coverDimNames=EMPTY_SET, absentDimNames=EMPTY_SET, alignDims=None, coverUnit=False, cube=None, cubeRelSet=None):
     bindings = defaultdict(dict)
     def addMostAccurateFactToBinding(f):
         cntx = f.context
         if (f.xValid >= VALID
             and (nils or not f.isNil)
             and cntx is not None
-            and (not noAdditionalDims or not cntx.qnameDims)):
+            and (not noAdditionalDims or not (cntx.qnameDims.keys() - coverDimQnames))
+            and (not absentDimNames or not any(k.localName in absentDimNames for k in cntx.qnameDims.keys()))):
             if cubeRelSet:
                 if not all(cubeRelSet.isRelated(cube, "descendant", dim.member, isDRS=True) for dim in cntx.qnameDims.values()):
                     return
@@ -682,8 +748,8 @@ def factBindings(modelXbrl, localNames, nils=False, noAdditionalDims=False, cove
                 hper = cntx.periodHash
             elif alignDims:
                 h = hash( (cntx.periodHash, frozenset(hash(dim) for qn,dim in cntx.qnameDims.items() if qn in alignDims)) )
-            elif coverDimQnames:
-                h = hash( (cntx.periodHash, frozenset(dim for qn,dim in cntx.qnameDims.items() if qn not in coverDimQnames)) )
+            elif coverDimQnames or coverDimNames:
+                h = hash( (cntx.periodHash, frozenset(dim for qn,dim in cntx.qnameDims.items() if qn not in coverDimQnames and qn.localName not in coverDimNames)) )
                 hCvrDims = hash( frozenset(dim for qn,dim in cntx.qnameDims.items() if qn in coverDimQnames) )
             else:
                 h = cntx.contextDimAwareHash
@@ -694,7 +760,7 @@ def factBindings(modelXbrl, localNames, nils=False, noAdditionalDims=False, cove
                     binding[ln] = defaultdict(dict)
                 if hper not in binding[ln] or inferredDecimals(f) > inferredDecimals(binding[ln][hper]):
                     binding[ln][hper] = f
-            elif coverDimQnames:
+            elif coverDimQnames or coverDimNames:
                 if ln not in binding:
                     binding[ln] = defaultdict(dict)
                 if hCvrDims not in binding[ln] or inferredDecimals(f) > inferredDecimals(binding[ln][hCvrDims]):
