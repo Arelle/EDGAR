@@ -2264,622 +2264,621 @@
 					"PremiumsWrittenGross"
 	       		]
         	}
-        },
-		"DQC.US.0108": {
-			"name": "Fact Value Consistency Over Time",
-		    "description" : [
-		        "DQC.US 0108 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0108/DQC_0108.md"
-		    ],
-			"year-introduced": 2025,
-			"report-type-exclusions": ["S-1", "S-3", "S-4", "S-6", "S-8", "S-11", "S-20", "S-1/A", "S-3/A", "S-4/A", "S-6/A", "S-8/A", "S-11/A", "S-20/A", "F-1","F-3","10-12G", "10-12G/A"],
-			"message": "The concept {fact1} with a period duration starting on {fact1Start} and ending on {fact1End} or {fact1Days} days with a reported value of {value} has a value greater than the value of the same element with a longer or equivalent period duration that starts on {largeStart} and ends on {largeEnd} with a value of {largeValue}. \n\nThe value  {value} for the period of {fact1Days} days should be less or the same as the value {largeValue} with a duration of {largeDays} days assuming that the concept {fact1} cannot have a negative value. If the difference between the two numbers is insignificant, check that the decimals of the two values are appropriate. The decimal value of {fact1} is {fact1Decimals}, and the decimals of {large} is {largeDecimals}. \n\nThe properties of this {fact1} fact are: \nContext: {contextID} \nUnit: {unitID}.",
-		    "rules": {
-				"9564": {
-					"exclude-names": [
-						"CapitalExpendituresIncurredButNotYetPaid",
-						"ConstructionInProgressExpendituresIncurredButNotYetPaid",
-						"EquitySecuritiesFvNiUnrealizedLoss",
-						"EquitySecuritiesFvNiUnrealizedGain",
-						"LeaseCost"
-						]
-				},
-				"10095": {
-					"names": [
-						"DerivativeFairValueOfDerivativeLiability",
-						"DerivativeLiabilities",
-						"FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetValue",
-						"FairValueMeasurementWithUnobservableInputsReconciliationsRecurringBasisLiabilityValue",
-						"LiabilitiesFairValueDisclosure",
-						"AmortizationOfIntangibleAssets",
-						"DerivativeFairValueOfDerivativeLiabilityAmountNotOffsetAgainstCollateral",
-						"DerivativeAssets",
-						"FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetTransfersOutOfLevel3",
-						"DerivativeFairValueOfDerivativeAssetAmountOffsetAgainstCollateral",
-						"DerivativeFairValueOfDerivativeLiabilityAmountOffsetAgainstCollateral",
-						"DerivativeFairValueOfDerivativeAssetAmountNotOffsetAgainstCollateral",
-						"DerivativeLiabilityFairValueGrossAsset",
-						"FinancialInstrumentsOwnedAtFairValue",
-						"DerivativeAssetFairValueGrossLiability",
-						"CashDividendsPaidToParentCompany",
-						"DerivativeFairValueOfDerivativeAsset",
-						"DerivativeLiabilitiesCurrent",
-						"InvestmentsFairValueDisclosure",
-						"CashDividendsPaidToParentCompanyByConsolidatedSubsidiaries",
-						"DerivativeCollateralObligationToReturnCash",
-						"Goodwill",
-						"LoansAndLeasesReceivableAllowance",
-						"FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetTransfersIntoLevel3",
-						"PriceRiskDerivativeLiabilitiesAtFairValue",
-						"DerivativeAssetsNoncurrent",
-						"ConversionOfStockSharesConverted1",
-						"ConversionOfStockAmountConverted1",
-						"OtherLiabilitiesNoncurrent",
-						"ConversionOfStockSharesIssued1",
-						"FairValueMeasurementWithUnobservableInputsReconciliationLiabilityTransfersOutOfLevel3",
-						"RevenueFromContractWithCustomerIncludingAssessedTax",
-						"RevenueFromContractWithCustomerExcludingAssessedTax",
-						"CostOfGoodsAndServicesSold",
-						"CostOfRevenue",
-						"CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization"
-						]
-				}
-		    }
-		},
-		"DQC.US.0109": {
-			"name": "Concentration Risk",
-		    "description" : [
-		        "DQC.US 0109 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0109/DQC_0109.md"
-		    ],
-			"year-introduced": 2025,
-		    "rules": {
-				"9565": {
-					"name": "ConcentrationRiskPercentage1",
-					"axes": false,
-					"value": 1,
-					"message": "The concept {name} with value {value} should always be used with the ConcentrationRiskByTypeAxis and ConcentrationRiskByBenchmarkAxis.  This element has no meaning without these axis at a minimum.  Any data provided needs to be used in combination with an additional axis to define the actual risk as the numerator. The member used on the ConcentrationRiskByBenchmarkAxis represents the benchmark denominator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
-				},
-				"9566": {
-					"name": "ConcentrationRiskPercentage1",
-					"axes": {"ConcentrationRiskByBenchmarkAxis": false, "ConcentrationRiskByTypeAxis": false},
-					"message": "The concept {name} with value {value} should always be used with the ConcentrationRiskByTypeAxis and ConcentrationRiskByBenchmarkAxis.  This element has no meaning without these axis at a minimum.  Any data provided needs to be used in combination with an additional axis to define the actual risk as the numerator. The member used on the ConcentrationRiskByBenchmarkAxis represents the benchmark denominator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
-				},
-				"9567": {
-					"name": "ConcentrationRiskPercentage1",
-					"axes": {"ConcentrationRiskByBenchmarkAxis": false, "ConcentrationRiskByTypeAxis": true},
-					"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the numerator of ConcentrationRiskByTypeAxis, and not the member used on the ConcentrationRiskByBenchmarkAxis which represents the benchmark denominator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
-				},
-				"9568": {
-					"name": "ConcentrationRiskPercentage1",
-					"axes": {"ConcentrationRiskByBenchmarkAxis": true, "ConcentrationRiskByTypeAxis": false},
-					"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
-				},
-				"9569": {
-					"name": "ConcentrationRiskPercentage1",
-					"were": "value!=1",
-					"axes": {"ConcentrationRiskByBenchmarkAxis": true, 
-							 "ConcentrationRiskByTypeAxis": ["LaborForceConcentrationRiskMember", "UnionizedEmployeesConcentrationRiskMember"]},
-					"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
-				},
-				"9570": {
-					"name": "ConcentrationRiskPercentage1",
-					"axes": {"ConcentrationRiskByBenchmarkAxis": true, "ConcentrationRiskByTypeAxis": true},
-					"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
-					"BENCHMARK_WITH_RISK_TYPE": {
-						"SalesRevenueNetMember": ["GeographicConcentrationRiskMember",
-													"CustomerConcentrationRiskMember", 
-													"ProductConcentrationRiskMember", 
-													"RevenueFromRightsConcentrationRiskMember", 
-													"GovernmentContractsConcentrationRiskMember",
-													"SupplierConcentrationRiskMember"],
-						"SalesRevenueProductLineMember": ["GeographicConcentrationRiskMember",
-													"CustomerConcentrationRiskMember", 
-													"ProductConcentrationRiskMember", 
-													"RevenueFromRightsConcentrationRiskMember", 
-													"GovernmentContractsConcentrationRiskMember",
-													"SupplierConcentrationRiskMember"],
-						"SalesRevenueSegmentMember": ["GeographicConcentrationRiskMember",
-													"CustomerConcentrationRiskMember", 
-													"ProductConcentrationRiskMember", 
-													"RevenueFromRightsConcentrationRiskMember", 
-													"GovernmentContractsConcentrationRiskMember",
-													"SupplierConcentrationRiskMember"],
-						"RevenueFromContractWithCustomerMember": ["GeographicConcentrationRiskMember",
-													"CustomerConcentrationRiskMember", 
-													"ProductConcentrationRiskMember", 
-													"RevenueFromRightsConcentrationRiskMember", 
-													"GovernmentContractsConcentrationRiskMember",
-													"SupplierConcentrationRiskMember"],
-						"RevenueFromContractWithCustomerProductAndServiceBenchmarkMember": ["GeographicConcentrationRiskMember",
-													"CustomerConcentrationRiskMember", 
-													"ProductConcentrationRiskMember", 
-													"RevenueFromRightsConcentrationRiskMember", 
-													"GovernmentContractsConcentrationRiskMember",
-													"SupplierConcentrationRiskMember"],
-						"RevenueFromContractWithCustomerSegmentBenchmarkMember": ["GeographicConcentrationRiskMember",
-													"CustomerConcentrationRiskMember", 
-													"ProductConcentrationRiskMember", 
-													"RevenueFromRightsConcentrationRiskMember", 
-													"GovernmentContractsConcentrationRiskMember",
-													"SupplierConcentrationRiskMember"],                             
-						"AccountsReceivableMember": ["CreditConcentrationRiskMember", 
-													"GeographicConcentrationRiskMember",
-													"CustomerConcentrationRiskMember"],
-						"CostOfGoodsTotalMember": ["GeographicConcentrationRiskMember", 
-													"SupplierConcentrationRiskMember",
-													"ProductConcentrationRiskMember", 
-													"LaborForceConcentrationRiskMember", 
-													"UnionizedEmployeesConcentrationRiskMember"],
-						"ReinsuranceRecoverableMember": ["ReinsurerConcentrationRiskMember"]
-					}
+        }
+	},
+	"DQC.US.0108": {
+		"name": "Fact Value Consistency Over Time",
+	    "description" : [
+	        "DQC.US 0108 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0108/DQC_0108.md"
+	    ],
+		"year-introduced": 2025,
+		"report-type-exclusions": ["S-1", "S-3", "S-4", "S-6", "S-8", "S-11", "S-20", "S-1/A", "S-3/A", "S-4/A", "S-6/A", "S-8/A", "S-11/A", "S-20/A", "F-1","F-3","10-12G", "10-12G/A"],
+		"message": "The concept {fact1} with a period duration starting on {fact1Start} and ending on {fact1End} or {fact1Days} days with a reported value of {value} has a value greater than the value of the same element with a longer or equivalent period duration that starts on {largeStart} and ends on {largeEnd} with a value of {largeValue}. \n\nThe value  {value} for the period of {fact1Days} days should be less or the same as the value {largeValue} with a duration of {largeDays} days assuming that the concept {fact1} cannot have a negative value. If the difference between the two numbers is insignificant, check that the decimals of the two values are appropriate. The decimal value of {fact1} is {fact1Decimals}, and the decimals of {large} is {largeDecimals}. \n\nThe properties of this {fact1} fact are: \nContext: {contextID} \nUnit: {unitID}.",
+	    "rules": {
+			"9564": {
+				"exclude-names": [
+					"CapitalExpendituresIncurredButNotYetPaid",
+					"ConstructionInProgressExpendituresIncurredButNotYetPaid",
+					"EquitySecuritiesFvNiUnrealizedLoss",
+					"EquitySecuritiesFvNiUnrealizedGain",
+					"LeaseCost"
+					]
+			},
+			"10095": {
+				"names": [
+					"DerivativeFairValueOfDerivativeLiability",
+					"DerivativeLiabilities",
+					"FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetValue",
+					"FairValueMeasurementWithUnobservableInputsReconciliationsRecurringBasisLiabilityValue",
+					"LiabilitiesFairValueDisclosure",
+					"AmortizationOfIntangibleAssets",
+					"DerivativeFairValueOfDerivativeLiabilityAmountNotOffsetAgainstCollateral",
+					"DerivativeAssets",
+					"FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetTransfersOutOfLevel3",
+					"DerivativeFairValueOfDerivativeAssetAmountOffsetAgainstCollateral",
+					"DerivativeFairValueOfDerivativeLiabilityAmountOffsetAgainstCollateral",
+					"DerivativeFairValueOfDerivativeAssetAmountNotOffsetAgainstCollateral",
+					"DerivativeLiabilityFairValueGrossAsset",
+					"FinancialInstrumentsOwnedAtFairValue",
+					"DerivativeAssetFairValueGrossLiability",
+					"CashDividendsPaidToParentCompany",
+					"DerivativeFairValueOfDerivativeAsset",
+					"DerivativeLiabilitiesCurrent",
+					"InvestmentsFairValueDisclosure",
+					"CashDividendsPaidToParentCompanyByConsolidatedSubsidiaries",
+					"DerivativeCollateralObligationToReturnCash",
+					"Goodwill",
+					"LoansAndLeasesReceivableAllowance",
+					"FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetTransfersIntoLevel3",
+					"PriceRiskDerivativeLiabilitiesAtFairValue",
+					"DerivativeAssetsNoncurrent",
+					"ConversionOfStockSharesConverted1",
+					"ConversionOfStockAmountConverted1",
+					"OtherLiabilitiesNoncurrent",
+					"ConversionOfStockSharesIssued1",
+					"FairValueMeasurementWithUnobservableInputsReconciliationLiabilityTransfersOutOfLevel3",
+					"RevenueFromContractWithCustomerIncludingAssessedTax",
+					"RevenueFromContractWithCustomerExcludingAssessedTax",
+					"CostOfGoodsAndServicesSold",
+					"CostOfRevenue",
+					"CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization"
+					]
+			}
+	    }
+	},
+	"DQC.US.0109": {
+		"name": "Concentration Risk",
+	    "description" : [
+	        "DQC.US 0109 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0109/DQC_0109.md"
+	    ],
+		"year-introduced": 2025,
+	    "rules": {
+			"9565": {
+				"name": "ConcentrationRiskPercentage1",
+				"axes": false,
+				"value": 1,
+				"message": "The concept {name} with value {value} should always be used with the ConcentrationRiskByTypeAxis and ConcentrationRiskByBenchmarkAxis.  This element has no meaning without these axis at a minimum.  Any data provided needs to be used in combination with an additional axis to define the actual risk as the numerator. The member used on the ConcentrationRiskByBenchmarkAxis represents the benchmark denominator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9566": {
+				"name": "ConcentrationRiskPercentage1",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": false, "ConcentrationRiskByTypeAxis": false},
+				"message": "The concept {name} with value {value} should always be used with the ConcentrationRiskByTypeAxis and ConcentrationRiskByBenchmarkAxis.  This element has no meaning without these axis at a minimum.  Any data provided needs to be used in combination with an additional axis to define the actual risk as the numerator. The member used on the ConcentrationRiskByBenchmarkAxis represents the benchmark denominator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9567": {
+				"name": "ConcentrationRiskPercentage1",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": false, "ConcentrationRiskByTypeAxis": true},
+				"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the numerator of ConcentrationRiskByTypeAxis, and not the member used on the ConcentrationRiskByBenchmarkAxis which represents the benchmark denominator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9568": {
+				"name": "ConcentrationRiskPercentage1",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": true, "ConcentrationRiskByTypeAxis": false},
+				"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9569": {
+				"name": "ConcentrationRiskPercentage1",
+				"were": "value!=1",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": true, 
+						 "ConcentrationRiskByTypeAxis": ["LaborForceConcentrationRiskMember", "UnionizedEmployeesConcentrationRiskMember"]},
+				"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9570": {
+				"name": "ConcentrationRiskPercentage1",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": true, "ConcentrationRiskByTypeAxis": true},
+				"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
+				"BENCHMARK_WITH_RISK_TYPE": {
+					"SalesRevenueNetMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember", 
+												"ProductConcentrationRiskMember", 
+												"RevenueFromRightsConcentrationRiskMember", 
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"SalesRevenueProductLineMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember", 
+												"ProductConcentrationRiskMember", 
+												"RevenueFromRightsConcentrationRiskMember", 
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"SalesRevenueSegmentMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember", 
+												"ProductConcentrationRiskMember", 
+												"RevenueFromRightsConcentrationRiskMember", 
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"RevenueFromContractWithCustomerMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember", 
+												"ProductConcentrationRiskMember", 
+												"RevenueFromRightsConcentrationRiskMember", 
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"RevenueFromContractWithCustomerProductAndServiceBenchmarkMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember", 
+												"ProductConcentrationRiskMember", 
+												"RevenueFromRightsConcentrationRiskMember", 
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"RevenueFromContractWithCustomerSegmentBenchmarkMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember", 
+												"ProductConcentrationRiskMember", 
+												"RevenueFromRightsConcentrationRiskMember", 
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],                             
+					"AccountsReceivableMember": ["CreditConcentrationRiskMember", 
+												"GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember"],
+					"CostOfGoodsTotalMember": ["GeographicConcentrationRiskMember", 
+												"SupplierConcentrationRiskMember",
+												"ProductConcentrationRiskMember", 
+												"LaborForceConcentrationRiskMember", 
+												"UnionizedEmployeesConcentrationRiskMember"],
+					"ReinsuranceRecoverableMember": ["ReinsurerConcentrationRiskMember"]
 				}
 			}
-		},
-		"DQC.US.0112": {
-			"name": "Line Items Requiring the Business Acquisition Axis",
-		    "description" : [
-		        "DQC.US 0112 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0112/DQC_0112.md"
-		    ],
-			"year-introduced": 2025,
-			"message": "The company has reported a value of {value} for the concept {name}. It is expected that this fact also uses the BusinessAcquisitionAxis with a member indicating the business acquisition that the fact was related to.  This fact must include the business acquisition axis (BusinessAcquisitionAxis). \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
-		    "rules": {
-				"9561": {
-					"axis": "BusinessAcquisitionAxis",
-					"conceptsNeedingBusinessAcquisitionAxis": [
-						"BusinessAcquisitionNameOfAcquiredEntity",
-						"BusinessAcquisitionPercentageOfVotingInterestsAcquired",
-						"BusinessAcquisitionDescriptionOfAcquiredEntity",
-						"BusinessAcquisitionSharePrice",
-						"BusinessCombinationReasonForBusinessCombination",
-						"BusinessAcquisitionRevenueReportedByAcquiredEntityForLastAnnualPeriod",
-						"BusinessAcquisitionDateOfAcquisitionAgreement1",
-						"BusinessAcquisitionEffectiveDateOfAcquisition1",
-						"BusinessAcquisitionPeriodResultsIncludedInCombinedEntity1",
-						"BusinessCombinationIndemnificationAssetsDescription",
-						"BusinessCombinationIndemnificationAssetsBasisForAmount",
-						"BusinessCombinationIndemnificationAssetsRangeOfOutcomesValueHigh",
-						"BusinessCombinationIndemnificationAssetsRangeOfOutcomesValueLow",
-						"BusinessCombinationIndemnificationAssetsRangeOfOutcomesInestimable",
-						"BusinessCombinationIndemnificationAssetsRangeOfOutcomesMaximumUnlimited",
-						"BusinessCombinationIndemnificationAssetsAmountAsOfAcquisitionDate",
-						"BusinessCombinationBargainPurchaseGainRecognizedDescription",
-						"BusinessCombinationStepAcquisitionEquityInterestInAcquireeDescription",
-						"BusinessCombinationStepAcquisitionEquityInterestInAcquireeFairValue1",
-						"BusinessCombinationStepAcquisitionEquityInterestInAcquireeIncludingSubsequentAcquisitionPercentage",
-						"BusinessCombinationStepAcquisitionEquityInterestInAcquireePercentage",
-						"BusinessAcquisitionEquityInterestIssuedOrIssuableDescription",
-						"BusinessAcquisitionEquityInterestIssuedOrIssuableBasisForDeterminingValue",
-						"BusinessAcquisitionEquityInterestsIssuedOrIssuableNumberOfSharesIssued",
-						"BusinessAcquisitionEquityInterestIssuedOrIssuableValueAssigned",
-						"BusinessCombinationContingentConsiderationArrangementsDescription",
-						"BusinessCombinationContingentConsiderationArrangementsBasisForAmount",
-						"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesValueHigh",
-						"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesValueLow",
-						"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesInestimable",
-						"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesMaximumUnlimited"						
-					]
-				}
-		    }
-		},
-		"DQC.US.0118": {
-			"name": "Financial Statement Tables Calculation Check of Required Context",
-		    "description" : [
-		        "DQC.US 0118 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0118/DQC_0118.md"
-		    ],
-			"year-introduced": 2025,
-		    "rules": {
-				"9575": {
-					"statement-cubes-definition-pattern": "(?!.*(schedule iii|schedule iv)).*- Statement -",
-					"statement-ELR-exclusion-pattern": ".*(parenthetical|equity|equity|stockholders|capital|investment|changes|shareholder|convertible|preferred|temporaryequity|redeemable|netproceedsfromallsources|membersinterest",
-					"excluded-concepts": ["ScheduleOfInvestmentsTable", "SummaryOfInvestmentHoldingsTable", "InvestmentsSoldNotYetPurchasedTable", "OpenOptionContractsWrittenTable", "OpenFuturesContractTable", "OpenForwardForeignCurrencyContractTable", "OpenSwapContractTable"]
-					
-				}
-		    }
-		},
-		"DQC.US.0119": {
-			"name": "Income Before Tax Equity Method",
-		    "description" : [
-		        "DQC.US 0119 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0119/DQC_0119.md"
-		    ],
-			"year-introduced": 2025,
-		    "rules": {
-				"9576": {
-					"name": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
-					"reqd-names": ["IncomeLossFromEquityMethodInvestments", "IncomeLossFromEquityMethodInvestmentsNetOfDividendsOrDistributions", "IncomeLossFromAffordableHousingProjectsEquityMethodInvestments"],
-					"message": "The company has reported a value for the concept representing Income before income tax, Non Controlling Interest and Equity Method Investments with a value of {value}. However the company has not reported a value for equity method investments. If the company has no equity method investments then the filer should use the element IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"
-				},
-				"9577": {
-					"name": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
-					"not-names": ["IncomeLossFromEquityMethodInvestments", "IncomeLossFromEquityMethodInvestmentsNetOfDividendsOrDistributions", "IncomeLossFromAffordableHousingProjectsEquityMethodInvestments"],
-					"message": "The company has included {name} as a component of the concept \"Income Loss From Continuing Operations Before Income Taxes Minority Interest And Income Loss From Equity Method Investments\". The element {name} cannot be included as a component of \"Income Loss From Continuing Operations Before Income Taxes Minority Interest And Income Loss From Equity Method Investments\" as this element excludes equity method investments.  The filer should use the concept IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest instead. \n\nElement: {name}"					
-				}
-		    }
-		},
-		"DQC.US.0123": {
-			"name": "Missing Components of Equity Axis",
-		    "description" : [
-		        "DQC.US 0123 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0123/DQC_0123.md"
-		    ],
-			"year-introduced": 2025,
-			"message": "The company has reported a value for {name} with the axis StatementClassOfStockAxis with a value of {$equityFactNoEquityComponent} to represent the monetary value of the class of stock in equity. This fact however when used in the Statement of Shareholders Equity must include the Component of Equity and associated member indicating if it is preferred stock, common stock or treasury stock. This error could occur because the filer has either 1) used the incorrect element or 2) has NOT included the Statement Equity Components Axis with the Common Stock or Preferred Stock member on the fact. \n\nThe filer should either add the Statement Equity Components Axis and respective stock member in addition to the class of stock axis to the fact, or change the element name from {name} to the appropriate element if the value is not included in Stockholders Equity. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
-		    "rules": {
-				"9583": {
-					"names": ["StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest", "StockholdersEquity"],
-					"name2": "StockholdersEquity",
-					"axis": "StatementClassOfStockAxis"
-				}
-		    }
-		},
-		"DQC.US.0126": {
-			"name": "FS Calculation Check with Non Dimensional Data",
-		    "description" : [
-		        "DQC.US 0126 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0126/DQC_0126.md"
-		    ],
-			"year-introduced": 2025,
-		    "rules": {
-		    }
-		},
-		"DQC.US.0128": {
-			"name": "Dimensional Values Larger than the Default",
-		    "description" : [
-		        "DQC.US 0128 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0128/DQC_0128.md"
-		    ],
-			"year-introduced": 2025,
-			"message": "The concept {name} with a value of {value} and dimensions of {dimensions} is greater than the default value for this concept of {defaultValue}. Dimension values should aggregate to a value no greater than the default value of {defaultValue}. Either update the default value or the dimension value. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
-		    "rules": {
-				"9594": {
-					"collective_dimensions": [
-						"PropertyPlantAndEquipmentByTypeAxis",
-						"StatementClassOfStockAxis",
-						"LongtermDebtTypeAxis",
-						"srt:ProductOrServiceAxis",
-						"FiniteLivedIntangibleAssetsByMajorClassAxis",
-						"DebtInstrumentAxis"]
-				}
-		    }
-		},
-		"DQC.US.0133": {
-			"name": "Equity Method Investment Reporting",
-		    "description" : [
-		        "DQC.US 0133 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0133/DQC_0133.md"
-		    ],
-			"year-introduced": 2025,
-		    "rules": {
-				"9831": {
-					"names": ["EquityMethodInvestmentOwnershipPercentage", "EquityMethodInvestmentDescriptionOfPrincipalActivities"],
-					"axis": "srt:ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
-					"axis-expected": false,
-					"message": "The filer has reported a value for the element {name} with a value of {value} without using the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. This axis must be used when reporting a value for {name}. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
-				},
-				"9832": {
-					"axis": "srt:ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
-					"axis-expected": true,
-					"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. This axis must be not be used when reporting a value for {name}. The filer should use the axis EquityMethodInvestmentNonconsolidatedInvesteeAxis without the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
-					
-				},
-				"9833": {
-					"axis": "EquityMethodInvestmentNonconsolidatedInvesteeAxis",
-					"axis-expected": true,
-					"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis EquityMethodInvestmentNonconsolidatedInvesteeAxis. This axis must not be used when reporting a value for {name}. The filer should use the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
-				}
-		    }
-		},
-		"DQC.US.0134": {
-			"name": "Investment Schedule - Financial Instrument Axis",
-		    "description" : [
-		        "DQC.US 0134 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0134/DQC_0134.md"
-		    ],
-			"year-introduced": 2025,
-			"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis {invalidDimensions}. The axis listed must not be used when reporting a value for {name}. The filer should use the axis FinancialInstrumentAxis instead of this axis. {FIAxisMessage}\n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
-			"FI-axis-message": "The fact only requires the axis FinancialInstrumentAxis and should not contain the additional axis {invalidDimensions}. If there is a subtotal the members on the FinancialInstrumentAxis should be organized in a hierarchy to reflect the breakdown of financial instruments.  ",
-		    "rules": {
-				"9834": {
-					"names": [
-						"AvailableForSaleDebtSecuritiesAmortizedCostBasis", 
-						"DebtSecuritiesAvailableForSaleAmortizedCostCurrent", 
-						"DebtSecuritiesAvailableForSaleAmortizedCostNoncurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLoss",
-						"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLoss",
-						"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent", 
-						"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLoss",
-						"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossCurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossNoncurrent",
-						"AvailableForSaleSecuritiesDebtSecurities",
-						"AvailableForSaleSecuritiesDebtSecuritiesCurrent",
-						"AvailableForSaleSecuritiesDebtSecuritiesNoncurrent",
-						"DebtSecuritiesAvailableForSaleExcludingAccruedInterest",
-						"DebtSecuritiesAvailableForSaleExcludingAccruedInterestCurrent", 
-						"DebtSecuritiesAvailableForSaleExcludingAccruedInterestNoncurrent"						
-					],
-					"allowed-axis": "InvestmentTypeAxis",
-					"allowed-members": ["FixedMaturitiesMember", "ShortTermInvestmentsMember"],
-					"invalid-axes": ["CashAndCashEquivalentsAxis", "RestrictedCashAndCashEquivalentsCashAndCashEquivalentsAxis", "InvestmentTypeAxis"]
-				}
-		    }
-		},
-		"DQC.US.0135": {
-			"name": "Extensible Enumerations for Financial Statement Captions",
-		    "description" : [
-		        "DQC.US 0135 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0135/DQC_0135.md"
-		    ],
-			"year-introduced": 2025,
-			"document-types": ["10-K","10-KT","10-K/A","20-F"],
-		    "rules": {
-				"9835": {
-					"decimal_tolerance_factor": 20,
-					"message": "The element {name} has been used in the filing but does not appear in the financial statements of the filing. This disclosure should appear in the face financials unless it is included in another account caption. If this is the case the following element(s) {related_ext_enum_list} should be used to identify the account where the financial statement element {name} is included. \n\n{pension_message} \n\nIf the filing does not disclose the financial statement captions where the amounts appear, an extension element {NotDisclosedAsImmaterial} can be used. If this element is used, the rule will not produce an error. \n\nThe following is an example of a fact that does not have an extensible list: \nConcept: {name} \nContext: {contextID} \nUnit: {unitID}"
-				},
-				"9836": {
-					"message": "The element {name} with a value of {value} has been used in the filing but does not appear in the financial statements of the filing. This disclosure should appear in the face financials unless it is included in another account caption. If this is the case the element {related_ext_enum} should be used to identify the account where the element {name} is included.  Because this value uses a statement location axis the enumerated value should also include the appropriate statement location axis. If there is only one statement location axis value the location axis does not have to be used. \n\nIf the filing does not disclose the financial statement captions where the amounts appear, an extension element {NotDisclosedAsImmaterial} can be used. If this element is used, the rule will not produce an error. \nConcept: {name} \nContext: {contextID} \nUnit: {unitID}"
-				}
-		    },
-			"LEASE_ITEMS": ["FinanceLeaseLiability", "FinanceLeaseLiabilityCurrent", "FinanceLeaseLiabilityNoncurrent", "FinanceLeaseRightOfUseAsset", "OperatingLeaseRightOfUseAsset", "OperatingLeaseLiability", "OperatingLeaseLiabilityCurrent", "OperatingLeaseLiabilityNoncurrent"],
-			"NON_REQUIRED_CAPTION_DISCLOSURE": ["DefinedBenefitPlanOtherCosts", "RestrictedCash", "RestrictedCashAndCashEquivalents", "RestrictedCashAndCashEquivalentsAtCarryingValue", "RestrictedCashAndCashEquivalentsNoncurrent", "RestrictedCashCurrent", "RestrictedCashEquivalents", "RestrictedCashEquivalentsCurrent", "RestrictedCashEquivalentsNoncurrent", "RestrictedCashNoncurrent"],
-			"FS_Concepts_With_OCI": ["FairValueAssetLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueAssetRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueNetDerivativeAssetLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueRecurringBasisUnobservableInputReconciliationAssetLiabilityGainLossOci"],
-			"scheduleAxisNames": ["FairValueByAssetClassAxis", "FairValueByLiabilityClassAxis", "FinancialInstrumentAxis", "RetirementPlanNameAxis", "RetirementPlanTypeAxis", "RetirementPlanSponsorLocationAxis", "DerivativeInstrumentRiskAxis", "DerivativeInstrumentsGainLossByHedgingRelationshipAxis", "EnvironmentalRemediationSiteAxis"],
-			"FairValueBreakdownItemsNotChecked": ["FairValueInputsLevel2Member", "FairValueInputsLevel1Member", "FairValueMeasuredAtNetAssetValuePerShareMember", "FairValueInputsLevel12And3Member"]
-
-		},
-		"DQC.US.0136": {
-			"name": "Caption Value Matches Financial Statements",
-		    "description" : [
-		        "DQC.US 0136 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0136/DQC_0136.md"
-		    ],
-			"year-introduced": 2025,
-			"message": "The extensible list item {related_ext_enum} has a value of {$x}. This item refers to the location of this item in the financial statements.  However, the concept {x} does not appear in the face financial statements. Either update the value of the extensible list item {x} with the correct element or add the line item {x} to the presentation and calculation linkbase in the appropriate statement role.",
-		    "rules": {
-				"9837": {
-					"LEASE_ITEMS": ["FinanceLeaseLiability", "FinanceLeaseLiabilityCurrent", "FinanceLeaseLiabilityNoncurrent", "FinanceLeaseRightOfUseAsset", "OperatingLeaseRightOfUseAsset", "OperatingLeaseLiability", "OperatingLeaseLiabilityCurrent", "OperatingLeaseLiabilityNoncurrent"]
-				}
-		    }
-		},
-		"DQC.US.0137": {
-			"name": "Location Axis with a Single Member",
-		    "description" : [
-		        "DQC.US 0137 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0137/DQC_0137.md"
-		    ],
-			"year-introduced": 2025,
-			"document-types": ["10-K","10-KT","10-K/A","20-F", "10-Q", "10-Q/A", "20-F/A","40-F","40-F/A"],
-			"message": "The element {name} with a value of {value} has been used in the filing with the axis {axis}.  This is the only fact reported with this element.  Rather than using the {axis} the filer should use the extensible enumeration element to indicate the location of the item in the financial statements. In this case the element {extEnum} should be used to identify the account where the element {name} is included. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",				
-		    "rules": {
-				"9838": {
-				}
-		    }
-		},
-		"DQC.US.0141": {
-			"name": "Inconsistent Accrued Interest Elements",
-		    "description" : [
-		        "DQC.US 0141 rule entries are formatted is as follows:",
-		        "",
-		        "A JSON object with key that is the rule id and value object as follows:",
-		        "",
-		        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0141/DQC_0141.md"
-		    ],
-			"year-introduced": 2025,
-			"message": "The filing reports values that use the including accrued interest items and the excluding accrued interest items. Review the accounting policy elections to determine if you should be using the excluding accrued interest items or the including accrued interest items. \n\nReview the following {setType} are appropriate given the majority of disclosure items are {$setTypeContra}: \n\n{incorrectElements}. \n\nThe  {setTypeContra} are as follows: {correctElements}. \n\n{IncludingInterestSourceCalcs}: \n\nContext: {contextID} \nUnit: {unitID}",
-		    "rules": {
-				"9863": {
-					"accrued-interest-classes": [
-						"AccountsRec","DebtSecuritiesHeldToMaturity","AvailableForSaleSecuritiesDebtSecurities","DirectFinancingLeaseNet","FinancingReceivable","NetInvestmentInLease","SalesTypeLeaseNet"						
-					],
-					"INCLUDING_ACCRUED_INTEREST_DICT": {
-						"AccountsRec": [
-						"AccountsReceivableNetNoncurrent",
-						"AccountsReceivableGrossNoncurrent",
-						"AllowanceForDoubtfulAccountsReceivableNoncurrent"],
-						"DebtSecuritiesHeldToMaturity": [
-						"DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLossCurrent",
-						"HeldToMaturitySecuritiesCurrent",
-						"DebtSecuritiesHeldToMaturityAllowanceForCreditLossCurrent",
-						"DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLoss",
-						"HeldToMaturitySecurities",
-						"DebtSecuritiesHeldToMaturityAllowanceForCreditLoss",
-						"DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLossNoncurrent",
-						"HeldToMaturitySecuritiesNoncurrent",
-						"DebtSecuritiesHeldToMaturityAllowanceForCreditLossNoncurrent",
-						"DebtSecuritiesHeldToMaturityOriginatedInCurrentFiscalYear",
-						"DebtSecuritiesHeldToMaturityOriginatedInFiscalYearBeforeLatestFiscalYear",
-						"DebtSecuritiesHeldToMaturityOriginatedTwoYearsBeforeLatestFiscalYear",
-						"DebtSecuritiesHeldToMaturityOriginatedThreeYearsBeforeLatestFiscalYear",
-						"DebtSecuritiesHeldToMaturityOriginatedFourYearsBeforeLatestFiscalYear",
-						"DebtSecuritiesHeldToMaturityOriginatedFiveOrMoreYearsBeforeLatestFiscalYear"],
-						"AvailableForSaleSecuritiesDebtSecurities": [
-						"AvailableForSaleSecuritiesDebtSecuritiesNoncurrent",
-						"AvailableForSaleSecuritiesDebtSecuritiesCurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLoss",
-						"AvailableForSaleDebtSecuritiesAmortizedCostBasis",
-						"DebtSecuritiesAvailableForSaleAllowanceForCreditLoss",
-						"AvailableForSaleSecuritiesDebtSecurities",
-						"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossCurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostCurrent",
-						"DebtSecuritiesAvailableForSaleAllowanceForCreditLossCurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossNoncurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostNoncurrent",
-						"DebtSecuritiesAvailableForSaleAllowanceForCreditLossNoncurrent"],
-						"DirectFinancingLeaseNet": [
-						"DirectFinancingLeaseNetInvestmentInLeaseAfterAllowanceForCreditLoss",
-						"DirectFinancingLeaseNetInvestmentInLease",
-						"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLoss",
-						"DirectFinancingLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossCurrent",
-						"DirectFinancingLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossCurrent",
-						"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossCurrent",
-						"DirectFinancingLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossNoncurrent",
-						"DirectFinancingLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossNoncurrent",
-						"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossNoncurrent"],
-						"NotesReceivable": [
-						"NotesReceivableNet",
-						"NotesReceivableGross",
-						"NotesAndLoansReceivableNetCurrent",
-						"NotesAndLoansReceivableGrossCurrent",
-						"AllowanceForNotesAndLoansReceivableCurrent",
-						"NotesAndLoansReceivableNetNoncurrent",
-						"NotesAndLoansReceivableGrossNoncurrent",
-						"AllowanceForNotesAndLoansReceivableNoncurrent"],
-						"FinancingReceivable": [
-						"NotesReceivableNet",
-						"FinancingReceivableAllowanceForCreditLosses",
-						"FinancingReceivableRevolvingConvertedToTermLoan",
-						"FinancingReceivableRevolving",
-						"FinancingReceivableOriginatedInCurrentFiscalYear",
-						"FinancingReceivableOriginatedInFiscalYearBeforeLatestFiscalYear",
-						"FinancingReceivableOriginatedTwoYearsBeforeLatestFiscalYear",
-						"FinancingReceivableOriginatedThreeYearsBeforeLatestFiscalYear",
-						"FinancingReceivableOriginatedFourYearsBeforeLatestFiscalYear",
-						"FinancingReceivableOriginatedFiveOrMoreYearsBeforeLatestFiscalYear"],
-						"NetInvestmentInLease": [
-						"NetInvestmentInLeaseAfterAllowanceForCreditLoss",
-						"NetInvestmentInLease",
-						"NetInvestmentInLeaseAllowanceForCreditLoss",
-						"NetInvestmentInLeaseAfterAllowanceForCreditLossCurrent",
-						"NetInvestmentInLeaseCurrent",
-						"NetInvestmentInLeaseAllowanceForCreditLossCurrent",
-						"NetInvestmentInLeaseAfterAllowanceForCreditLossNoncurrent",
-						"NetInvestmentInLeaseNoncurrent",
-						"NetInvestmentInLeaseAllowanceForCreditLossNoncurrent"],
-						"SalesTypeLeaseNet": [
-						"SalesTypeLeaseNetInvestmentInLeaseAfterAllowanceForCreditLoss",
-						"SalesTypeLeaseNetInvestmentInLease",
-						"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLoss",
-						"SalesTypeLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossCurrent",
-						"SalesTypeLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossCurrent",
-						"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossCurrent",
-						"SalesTypeLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossNoncurrent",
-						"SalesTypeLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossNoncurrent",
-						"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossNoncurrent"] },
-					"EXCLUDING_ACCRUED_INTEREST_DICT":  {
-						"AccountsRec": [
-						"AccountsReceivableExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
-						"AccountsReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
-						"AccountsReceivableAllowanceForCreditLossExcludingAccruedInterestNoncurrent"],
-						"DebtSecuritiesHeldToMaturity": [
-						"DebtSecuritiesHeldToMaturityAllowanceForCreditLossExcludingAccruedInterestCurrent",
-						"DebtSecuritiesHeldToMaturityAllowanceForCreditLossExcludingAccruedInterest",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLoss",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
-						"DebtSecuritiesHeldToMaturityAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestOriginatedMoreThanFiveYearsBeforeCurrentFiscalYear",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestBeforeAllowanceForCreditLoss",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearFiveOriginatedFourYearsBeforeCurrentFiscalYear",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearFourOriginatedThreeYearsBeforeCurrentFiscalYear",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearOneOriginatedCurrentFiscalYear",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearThreeOriginatedTwoYearsBeforeCurrentFiscalYear",
-						"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearTwoOriginatedFiscalYearBeforeCurrentFiscalYear"],
-						"AvailableForSaleSecuritiesDebtSecurities": [
-						"DebtSecuritiesAvailableForSaleExcludingAccruedInterest",
-						"DebtSecuritiesAvailableForSaleExcludingAccruedInterestCurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
-						"DebtSecuritiesAvailableForSaleExcludingAccruedInterestNoncurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLoss", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossCurrent", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLoss",
-						"DebtSecuritiesAvailableForSaleAmortizedCostAllowanceForCreditLossExcludingAccruedInterest", 
-						"DebtSecuritiesAvailableForSaleAmortizedCostAllowanceForCreditLossExcludingAccruedInterestCurrent",
-						"DebtSecuritiesAvailableForSaleAmortizedCostAllowanceForCreditLossExcludingAccruedInterestNoncurrent", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent"],
-						"DirectFinancingLeaseNet": [
-						"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLoss",
-						"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
-						"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
-						"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLoss",
-						"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestCurrent",
-						"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterest",
-						"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
-						"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
-						"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossCurrent"],
-						"FinancingReceivable": [
-						"FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss",
-						"FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLoss",
-						"FinancingReceivableExcludingAccruedInterestOriginatedMoreThanFiveYearsBeforeCurrentFiscalYear",
-						"FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest",
-						"FinancingReceivableAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
-						"FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
-						"FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
-						"FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
-						"FinancingReceivableExcludingAccruedInterestRevolvingConvertedToTermLoan",
-						"FinancingReceivableExcludingAccruedInterestYearFiveOriginatedFourYearsBeforeCurrentFiscalYear",
-						"FinancingReceivableExcludingAccruedInterestYearTwoOriginatedFiscalYearBeforeCurrentFiscalYear",
-						"FinancingReceivableExcludingAccruedInterestRevolving",
-						"FinancingReceivableExcludingAccruedInterestYearFourOriginatedThreeYearsBeforeCurrentFiscalYear",
-						"FinancingReceivableExcludingAccruedInterestYearOneOriginatedCurrentFiscalYear",
-						"FinancingReceivableAllowanceForCreditLossExcludingAccruedInterestCurrent",
-						"FinancingReceivableExcludingAccruedInterestYearThreeOriginatedTwoYearsBeforeCurrentFiscalYear",
-						"FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent"],
-						"NetInvestmentInLease": [
-						"NetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterest",
-						"NetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
-						"NetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
-						"NetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLoss",
-						"NetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
-						"NetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLoss",
-						"NetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
-						"NetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
-						"NetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestCurrent"],
-						"SalesTypeLeaseNet": [
-						"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
-						"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLoss",
-						"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
-						"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
-						"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
-						"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterest",
-						"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLoss",
-						"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestCurrent",
-						"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestNoncurrent"]}				}
-		    }
 		}
+	},
+	"DQC.US.0112": {
+		"name": "Line Items Requiring the Business Acquisition Axis",
+	    "description" : [
+	        "DQC.US 0112 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0112/DQC_0112.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The company has reported a value of {value} for the concept {name}. It is expected that this fact also uses the BusinessAcquisitionAxis with a member indicating the business acquisition that the fact was related to.  This fact must include the business acquisition axis (BusinessAcquisitionAxis). \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
+	    "rules": {
+			"9561": {
+				"axis": "BusinessAcquisitionAxis",
+				"conceptsNeedingBusinessAcquisitionAxis": [
+					"BusinessAcquisitionNameOfAcquiredEntity",
+					"BusinessAcquisitionPercentageOfVotingInterestsAcquired",
+					"BusinessAcquisitionDescriptionOfAcquiredEntity",
+					"BusinessAcquisitionSharePrice",
+					"BusinessCombinationReasonForBusinessCombination",
+					"BusinessAcquisitionRevenueReportedByAcquiredEntityForLastAnnualPeriod",
+					"BusinessAcquisitionDateOfAcquisitionAgreement1",
+					"BusinessAcquisitionEffectiveDateOfAcquisition1",
+					"BusinessAcquisitionPeriodResultsIncludedInCombinedEntity1",
+					"BusinessCombinationIndemnificationAssetsDescription",
+					"BusinessCombinationIndemnificationAssetsBasisForAmount",
+					"BusinessCombinationIndemnificationAssetsRangeOfOutcomesValueHigh",
+					"BusinessCombinationIndemnificationAssetsRangeOfOutcomesValueLow",
+					"BusinessCombinationIndemnificationAssetsRangeOfOutcomesInestimable",
+					"BusinessCombinationIndemnificationAssetsRangeOfOutcomesMaximumUnlimited",
+					"BusinessCombinationIndemnificationAssetsAmountAsOfAcquisitionDate",
+					"BusinessCombinationBargainPurchaseGainRecognizedDescription",
+					"BusinessCombinationStepAcquisitionEquityInterestInAcquireeDescription",
+					"BusinessCombinationStepAcquisitionEquityInterestInAcquireeFairValue1",
+					"BusinessCombinationStepAcquisitionEquityInterestInAcquireeIncludingSubsequentAcquisitionPercentage",
+					"BusinessCombinationStepAcquisitionEquityInterestInAcquireePercentage",
+					"BusinessAcquisitionEquityInterestIssuedOrIssuableDescription",
+					"BusinessAcquisitionEquityInterestIssuedOrIssuableBasisForDeterminingValue",
+					"BusinessAcquisitionEquityInterestsIssuedOrIssuableNumberOfSharesIssued",
+					"BusinessAcquisitionEquityInterestIssuedOrIssuableValueAssigned",
+					"BusinessCombinationContingentConsiderationArrangementsDescription",
+					"BusinessCombinationContingentConsiderationArrangementsBasisForAmount",
+					"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesValueHigh",
+					"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesValueLow",
+					"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesInestimable",
+					"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesMaximumUnlimited"						
+				]
+			}
+	    }
+	},
+	"DQC.US.0118": {
+		"name": "Financial Statement Tables Calculation Check of Required Context",
+	    "description" : [
+	        "DQC.US 0118 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0118/DQC_0118.md"
+	    ],
+		"year-introduced": 2025,
+	    "rules": {
+			"9575": {
+				"statement-cubes-definition-pattern": "(?!.*(schedule iii|schedule iv)).*- Statement -",
+				"statement-ELR-exclusion-pattern": ".*(parenthetical|equity|equity|stockholders|capital|investment|changes|shareholder|convertible|preferred|temporaryequity|redeemable|netproceedsfromallsources|membersinterest)",
+				"excluded-concepts": ["ScheduleOfInvestmentsTable", "SummaryOfInvestmentHoldingsTable", "InvestmentsSoldNotYetPurchasedTable", "OpenOptionContractsWrittenTable", "OpenFuturesContractTable", "OpenForwardForeignCurrencyContractTable", "OpenSwapContractTable"]
+				
+			}
+	    }
+	},
+	"DQC.US.0119": {
+		"name": "Income Before Tax Equity Method",
+	    "description" : [
+	        "DQC.US 0119 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0119/DQC_0119.md"
+	    ],
+		"year-introduced": 2025,
+	    "rules": {
+			"9576": {
+				"name": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
+				"reqd-names": ["IncomeLossFromEquityMethodInvestments", "IncomeLossFromEquityMethodInvestmentsNetOfDividendsOrDistributions", "IncomeLossFromAffordableHousingProjectsEquityMethodInvestments"],
+				"message": "The company has reported a value for the concept representing Income before income tax, Non Controlling Interest and Equity Method Investments with a value of {value}. However the company has not reported a value for equity method investments. If the company has no equity method investments then the filer should use the element IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"
+			},
+			"9577": {
+				"name": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
+				"not-names": ["IncomeLossFromEquityMethodInvestments", "IncomeLossFromEquityMethodInvestmentsNetOfDividendsOrDistributions", "IncomeLossFromAffordableHousingProjectsEquityMethodInvestments"],
+				"message": "The company has included {name} as a component of the concept \"Income Loss From Continuing Operations Before Income Taxes Minority Interest And Income Loss From Equity Method Investments\". The element {name} cannot be included as a component of \"Income Loss From Continuing Operations Before Income Taxes Minority Interest And Income Loss From Equity Method Investments\" as this element excludes equity method investments.  The filer should use the concept IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest instead. \n\nElement: {name}"					
+			}
+	    }
+	},
+	"DQC.US.0123": {
+		"name": "Missing Components of Equity Axis",
+	    "description" : [
+	        "DQC.US 0123 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0123/DQC_0123.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The company has reported a value for {name} with the axis StatementClassOfStockAxis with a value of {$equityFactNoEquityComponent} to represent the monetary value of the class of stock in equity. This fact however when used in the Statement of Shareholders Equity must include the Component of Equity and associated member indicating if it is preferred stock, common stock or treasury stock. This error could occur because the filer has either 1) used the incorrect element or 2) has NOT included the Statement Equity Components Axis with the Common Stock or Preferred Stock member on the fact. \n\nThe filer should either add the Statement Equity Components Axis and respective stock member in addition to the class of stock axis to the fact, or change the element name from {name} to the appropriate element if the value is not included in Stockholders Equity. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
+	    "rules": {
+			"9583": {
+				"names": ["StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest", "StockholdersEquity"],
+				"name2": "StockholdersEquity",
+				"axis": "StatementClassOfStockAxis"
+			}
+	    }
+	},
+	"DQC.US.0126": {
+		"name": "FS Calculation Check with Non Dimensional Data",
+	    "description" : [
+	        "DQC.US 0126 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0126/DQC_0126.md"
+	    ],
+		"year-introduced": 2025,
+	    "rules": {
+	    }
+	},
+	"DQC.US.0128": {
+		"name": "Dimensional Values Larger than the Default",
+	    "description" : [
+	        "DQC.US 0128 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0128/DQC_0128.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The concept {name} with a value of {value} and dimensions of {dimensions} is greater than the default value for this concept of {defaultValue}. Dimension values should aggregate to a value no greater than the default value of {defaultValue}. Either update the default value or the dimension value. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
+	    "rules": {
+			"9594": {
+				"collective_dimensions": [
+					"PropertyPlantAndEquipmentByTypeAxis",
+					"StatementClassOfStockAxis",
+					"LongtermDebtTypeAxis",
+					"srt:ProductOrServiceAxis",
+					"FiniteLivedIntangibleAssetsByMajorClassAxis",
+					"DebtInstrumentAxis"]
+			}
+	    }
+	},
+	"DQC.US.0133": {
+		"name": "Equity Method Investment Reporting",
+	    "description" : [
+	        "DQC.US 0133 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0133/DQC_0133.md"
+	    ],
+		"year-introduced": 2025,
+	    "rules": {
+			"9831": {
+				"names": ["EquityMethodInvestmentOwnershipPercentage", "EquityMethodInvestmentDescriptionOfPrincipalActivities"],
+				"axis": "srt:ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
+				"axis-expected": false,
+				"message": "The filer has reported a value for the element {name} with a value of {value} without using the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. This axis must be used when reporting a value for {name}. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
+			},
+			"9832": {
+				"axis": "srt:ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
+				"axis-expected": true,
+				"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. This axis must be not be used when reporting a value for {name}. The filer should use the axis EquityMethodInvestmentNonconsolidatedInvesteeAxis without the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
+				
+			},
+			"9833": {
+				"axis": "EquityMethodInvestmentNonconsolidatedInvesteeAxis",
+				"axis-expected": true,
+				"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis EquityMethodInvestmentNonconsolidatedInvesteeAxis. This axis must not be used when reporting a value for {name}. The filer should use the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
+			}
+	    }
+	},
+	"DQC.US.0134": {
+		"name": "Investment Schedule - Financial Instrument Axis",
+	    "description" : [
+	        "DQC.US 0134 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0134/DQC_0134.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis {invalidDimensions}. The axis listed must not be used when reporting a value for {name}. The filer should use the axis FinancialInstrumentAxis instead of this axis. {FIAxisMessage}\n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
+		"FI-axis-message": "The fact only requires the axis FinancialInstrumentAxis and should not contain the additional axis {invalidDimensions}. If there is a subtotal the members on the FinancialInstrumentAxis should be organized in a hierarchy to reflect the breakdown of financial instruments.  ",
+	    "rules": {
+			"9834": {
+				"names": [
+					"AvailableForSaleDebtSecuritiesAmortizedCostBasis", 
+					"DebtSecuritiesAvailableForSaleAmortizedCostCurrent", 
+					"DebtSecuritiesAvailableForSaleAmortizedCostNoncurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent", 
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLoss",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossNoncurrent",
+					"AvailableForSaleSecuritiesDebtSecurities",
+					"AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+					"AvailableForSaleSecuritiesDebtSecuritiesNoncurrent",
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterest",
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterestCurrent", 
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterestNoncurrent"						
+				],
+				"allowed-axis": "InvestmentTypeAxis",
+				"allowed-members": ["FixedMaturitiesMember", "ShortTermInvestmentsMember"],
+				"invalid-axes": ["CashAndCashEquivalentsAxis", "RestrictedCashAndCashEquivalentsCashAndCashEquivalentsAxis", "InvestmentTypeAxis"]
+			}
+	    }
+	},
+	"DQC.US.0135": {
+		"name": "Extensible Enumerations for Financial Statement Captions",
+	    "description" : [
+	        "DQC.US 0135 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0135/DQC_0135.md"
+	    ],
+		"year-introduced": 2025,
+		"document-types": ["10-K","10-KT","10-K/A","20-F"],
+	    "rules": {
+			"9835": {
+				"decimal_tolerance_factor": 20,
+				"message": "The element {name} has been used in the filing but does not appear in the financial statements of the filing. This disclosure should appear in the face financials unless it is included in another account caption. If this is the case the following element(s) {related_ext_enum_list} should be used to identify the account where the financial statement element {name} is included. \n\n{pension_message} \n\nIf the filing does not disclose the financial statement captions where the amounts appear, an extension element {NotDisclosedAsImmaterial} can be used. If this element is used, the rule will not produce an error. \n\nThe following is an example of a fact that does not have an extensible list: \nConcept: {name} \nContext: {contextID} \nUnit: {unitID}"
+			},
+			"9836": {
+				"message": "The element {name} with a value of {value} has been used in the filing but does not appear in the financial statements of the filing. This disclosure should appear in the face financials unless it is included in another account caption. If this is the case the element {related_ext_enum} should be used to identify the account where the element {name} is included.  Because this value uses a statement location axis the enumerated value should also include the appropriate statement location axis. If there is only one statement location axis value the location axis does not have to be used. \n\nIf the filing does not disclose the financial statement captions where the amounts appear, an extension element {NotDisclosedAsImmaterial} can be used. If this element is used, the rule will not produce an error. \nConcept: {name} \nContext: {contextID} \nUnit: {unitID}"
+			}
+	    },
+		"LEASE_ITEMS": ["FinanceLeaseLiability", "FinanceLeaseLiabilityCurrent", "FinanceLeaseLiabilityNoncurrent", "FinanceLeaseRightOfUseAsset", "OperatingLeaseRightOfUseAsset", "OperatingLeaseLiability", "OperatingLeaseLiabilityCurrent", "OperatingLeaseLiabilityNoncurrent"],
+		"NON_REQUIRED_CAPTION_DISCLOSURE": ["DefinedBenefitPlanOtherCosts", "RestrictedCash", "RestrictedCashAndCashEquivalents", "RestrictedCashAndCashEquivalentsAtCarryingValue", "RestrictedCashAndCashEquivalentsNoncurrent", "RestrictedCashCurrent", "RestrictedCashEquivalents", "RestrictedCashEquivalentsCurrent", "RestrictedCashEquivalentsNoncurrent", "RestrictedCashNoncurrent"],
+		"FS_Concepts_With_OCI": ["FairValueAssetLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueAssetRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueNetDerivativeAssetLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueRecurringBasisUnobservableInputReconciliationAssetLiabilityGainLossOci"],
+		"scheduleAxisNames": ["FairValueByAssetClassAxis", "FairValueByLiabilityClassAxis", "FinancialInstrumentAxis", "RetirementPlanNameAxis", "RetirementPlanTypeAxis", "RetirementPlanSponsorLocationAxis", "DerivativeInstrumentRiskAxis", "DerivativeInstrumentsGainLossByHedgingRelationshipAxis", "EnvironmentalRemediationSiteAxis"],
+		"FairValueBreakdownItemsNotChecked": ["FairValueInputsLevel2Member", "FairValueInputsLevel1Member", "FairValueMeasuredAtNetAssetValuePerShareMember", "FairValueInputsLevel12And3Member"]
 
-    }
+	},
+	"DQC.US.0136": {
+		"name": "Caption Value Matches Financial Statements",
+	    "description" : [
+	        "DQC.US 0136 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0136/DQC_0136.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The extensible list item {related_ext_enum} has a value of {$x}. This item refers to the location of this item in the financial statements.  However, the concept {x} does not appear in the face financial statements. Either update the value of the extensible list item {x} with the correct element or add the line item {x} to the presentation and calculation linkbase in the appropriate statement role.",
+	    "rules": {
+			"9837": {
+				"LEASE_ITEMS": ["FinanceLeaseLiability", "FinanceLeaseLiabilityCurrent", "FinanceLeaseLiabilityNoncurrent", "FinanceLeaseRightOfUseAsset", "OperatingLeaseRightOfUseAsset", "OperatingLeaseLiability", "OperatingLeaseLiabilityCurrent", "OperatingLeaseLiabilityNoncurrent"]
+			}
+	    }
+	},
+	"DQC.US.0137": {
+		"name": "Location Axis with a Single Member",
+	    "description" : [
+	        "DQC.US 0137 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0137/DQC_0137.md"
+	    ],
+		"year-introduced": 2025,
+		"document-types": ["10-K","10-KT","10-K/A","20-F", "10-Q", "10-Q/A", "20-F/A","40-F","40-F/A"],
+		"message": "The element {name} with a value of {value} has been used in the filing with the axis {axis}.  This is the only fact reported with this element.  Rather than using the {axis} the filer should use the extensible enumeration element to indicate the location of the item in the financial statements. In this case the element {extEnum} should be used to identify the account where the element {name} is included. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",				
+	    "rules": {
+			"9838": {
+			}
+	    }
+	},
+	"DQC.US.0141": {
+		"name": "Inconsistent Accrued Interest Elements",
+	    "description" : [
+	        "DQC.US 0141 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0141/DQC_0141.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The filing reports values that use the including accrued interest items and the excluding accrued interest items. Review the accounting policy elections to determine if you should be using the excluding accrued interest items or the including accrued interest items. \n\nReview the following {setType} are appropriate given the majority of disclosure items are {$setTypeContra}: \n\n{incorrectElements}. \n\nThe  {setTypeContra} are as follows: {correctElements}. \n\n{IncludingInterestSourceCalcs}: \n\nContext: {contextID} \nUnit: {unitID}",
+	    "rules": {
+			"9863": {
+				"accrued-interest-classes": [
+					"AccountsRec","DebtSecuritiesHeldToMaturity","AvailableForSaleSecuritiesDebtSecurities","DirectFinancingLeaseNet","FinancingReceivable","NetInvestmentInLease","SalesTypeLeaseNet"						
+				],
+				"INCLUDING_ACCRUED_INTEREST_DICT": {
+					"AccountsRec": [
+					"AccountsReceivableNetNoncurrent",
+					"AccountsReceivableGrossNoncurrent",
+					"AllowanceForDoubtfulAccountsReceivableNoncurrent"],
+					"DebtSecuritiesHeldToMaturity": [
+					"DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLossCurrent",
+					"HeldToMaturitySecuritiesCurrent",
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLossCurrent",
+					"DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLoss",
+					"HeldToMaturitySecurities",
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLoss",
+					"DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLossNoncurrent",
+					"HeldToMaturitySecuritiesNoncurrent",
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesHeldToMaturityOriginatedInCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityOriginatedInFiscalYearBeforeLatestFiscalYear",
+					"DebtSecuritiesHeldToMaturityOriginatedTwoYearsBeforeLatestFiscalYear",
+					"DebtSecuritiesHeldToMaturityOriginatedThreeYearsBeforeLatestFiscalYear",
+					"DebtSecuritiesHeldToMaturityOriginatedFourYearsBeforeLatestFiscalYear",
+					"DebtSecuritiesHeldToMaturityOriginatedFiveOrMoreYearsBeforeLatestFiscalYear"],
+					"AvailableForSaleSecuritiesDebtSecurities": [
+					"AvailableForSaleSecuritiesDebtSecuritiesNoncurrent",
+					"AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLoss",
+					"AvailableForSaleDebtSecuritiesAmortizedCostBasis",
+					"DebtSecuritiesAvailableForSaleAllowanceForCreditLoss",
+					"AvailableForSaleSecuritiesDebtSecurities",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostCurrent",
+					"DebtSecuritiesAvailableForSaleAllowanceForCreditLossCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostNoncurrent",
+					"DebtSecuritiesAvailableForSaleAllowanceForCreditLossNoncurrent"],
+					"DirectFinancingLeaseNet": [
+					"DirectFinancingLeaseNetInvestmentInLeaseAfterAllowanceForCreditLoss",
+					"DirectFinancingLeaseNetInvestmentInLease",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLoss",
+					"DirectFinancingLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossCurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossCurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossCurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossNoncurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossNoncurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossNoncurrent"],
+					"NotesReceivable": [
+					"NotesReceivableNet",
+					"NotesReceivableGross",
+					"NotesAndLoansReceivableNetCurrent",
+					"NotesAndLoansReceivableGrossCurrent",
+					"AllowanceForNotesAndLoansReceivableCurrent",
+					"NotesAndLoansReceivableNetNoncurrent",
+					"NotesAndLoansReceivableGrossNoncurrent",
+					"AllowanceForNotesAndLoansReceivableNoncurrent"],
+					"FinancingReceivable": [
+					"NotesReceivableNet",
+					"FinancingReceivableAllowanceForCreditLosses",
+					"FinancingReceivableRevolvingConvertedToTermLoan",
+					"FinancingReceivableRevolving",
+					"FinancingReceivableOriginatedInCurrentFiscalYear",
+					"FinancingReceivableOriginatedInFiscalYearBeforeLatestFiscalYear",
+					"FinancingReceivableOriginatedTwoYearsBeforeLatestFiscalYear",
+					"FinancingReceivableOriginatedThreeYearsBeforeLatestFiscalYear",
+					"FinancingReceivableOriginatedFourYearsBeforeLatestFiscalYear",
+					"FinancingReceivableOriginatedFiveOrMoreYearsBeforeLatestFiscalYear"],
+					"NetInvestmentInLease": [
+					"NetInvestmentInLeaseAfterAllowanceForCreditLoss",
+					"NetInvestmentInLease",
+					"NetInvestmentInLeaseAllowanceForCreditLoss",
+					"NetInvestmentInLeaseAfterAllowanceForCreditLossCurrent",
+					"NetInvestmentInLeaseCurrent",
+					"NetInvestmentInLeaseAllowanceForCreditLossCurrent",
+					"NetInvestmentInLeaseAfterAllowanceForCreditLossNoncurrent",
+					"NetInvestmentInLeaseNoncurrent",
+					"NetInvestmentInLeaseAllowanceForCreditLossNoncurrent"],
+					"SalesTypeLeaseNet": [
+					"SalesTypeLeaseNetInvestmentInLeaseAfterAllowanceForCreditLoss",
+					"SalesTypeLeaseNetInvestmentInLease",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLoss",
+					"SalesTypeLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossNoncurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossNoncurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossNoncurrent"] },
+				"EXCLUDING_ACCRUED_INTEREST_DICT":  {
+					"AccountsRec": [
+					"AccountsReceivableExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"AccountsReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"AccountsReceivableAllowanceForCreditLossExcludingAccruedInterestNoncurrent"],
+					"DebtSecuritiesHeldToMaturity": [
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLossExcludingAccruedInterestCurrent",
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLossExcludingAccruedInterest",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestOriginatedMoreThanFiveYearsBeforeCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearFiveOriginatedFourYearsBeforeCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearFourOriginatedThreeYearsBeforeCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearOneOriginatedCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearThreeOriginatedTwoYearsBeforeCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearTwoOriginatedFiscalYearBeforeCurrentFiscalYear"],
+					"AvailableForSaleSecuritiesDebtSecurities": [
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterest",
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterestCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterestNoncurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLoss", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossCurrent", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAllowanceForCreditLossExcludingAccruedInterest", 
+					"DebtSecuritiesAvailableForSaleAmortizedCostAllowanceForCreditLossExcludingAccruedInterestCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAllowanceForCreditLossExcludingAccruedInterestNoncurrent", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent"],
+					"DirectFinancingLeaseNet": [
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestCurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterest",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossCurrent"],
+					"FinancingReceivable": [
+					"FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"FinancingReceivableExcludingAccruedInterestOriginatedMoreThanFiveYearsBeforeCurrentFiscalYear",
+					"FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest",
+					"FinancingReceivableAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
+					"FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
+					"FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"FinancingReceivableExcludingAccruedInterestRevolvingConvertedToTermLoan",
+					"FinancingReceivableExcludingAccruedInterestYearFiveOriginatedFourYearsBeforeCurrentFiscalYear",
+					"FinancingReceivableExcludingAccruedInterestYearTwoOriginatedFiscalYearBeforeCurrentFiscalYear",
+					"FinancingReceivableExcludingAccruedInterestRevolving",
+					"FinancingReceivableExcludingAccruedInterestYearFourOriginatedThreeYearsBeforeCurrentFiscalYear",
+					"FinancingReceivableExcludingAccruedInterestYearOneOriginatedCurrentFiscalYear",
+					"FinancingReceivableAllowanceForCreditLossExcludingAccruedInterestCurrent",
+					"FinancingReceivableExcludingAccruedInterestYearThreeOriginatedTwoYearsBeforeCurrentFiscalYear",
+					"FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent"],
+					"NetInvestmentInLease": [
+					"NetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterest",
+					"NetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"NetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
+					"NetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"NetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"NetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"NetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"NetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
+					"NetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestCurrent"],
+					"SalesTypeLeaseNet": [
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterest",
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestNoncurrent"]}				}
+	    }
+	}
 }

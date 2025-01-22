@@ -684,7 +684,7 @@ def xuleReloadConstValue(obj, elt_type=None):
             return qname(obj) # obj is a clark name
         elif elt_type == 'decimal':
             return Decimal(obj)
-        str(obj) # should be a string
+        return str(obj) # should be a string
     elif isinstance(obj, (float, int)):
         return obj
     elif isinstance(obj, list):
@@ -715,9 +715,9 @@ def xuleReloadConstValue(obj, elt_type=None):
                 for elt in obj[1:]:
                     values.append( xuleReloadConstValue(elt, elt_type) )
                 if collection_type == "set":
-                    frozenset(values)
+                    return frozenset(values)
                 else:
-                    tuple(values)    
+                    return tuple(values)    
 
 def loadXuleConstantsForPythonRules(val, dqcRules):
     xuleConsts = {}

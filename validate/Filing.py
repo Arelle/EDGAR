@@ -3852,8 +3852,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     modelObject=b.values(), lesserName=lesserLn, lesserValue=str(lesserValue), greaterName=greaterLn, greaterValue=str(greaterValue),
                                     contextID=lesserFact.context.id, unitID=lesserFact.unit.id if lesserFact.unit is not None else "(none)",
                                     edgarCode=ruleEdgarCode, ruleElementId=id)
-            elif dqcRuleName in ("DQC.US.0013","DQC.US.0015") and "DQC.US.0015" in ugtRels:
-                dqc0015 = ugtRels["DQC.US.0015"]
+            elif dqcRuleName in ("DQC.US.0013","DQC.US.0015") and "NON_NEG_ITEMS" in xuleConstants:
+                #dqc0015 = ugtRels["DQC.US.0015"]
                 isDQC0013 = dqcRuleName == "DQC.US.0013"
                 posIncomeBeforeTax = {} # reported for 0013 by context hash
                 if isDQC0013: # 0013 has a precondition
@@ -3896,8 +3896,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                              not (d.memberQname and exclude_mem_pattern.search(d.memberQname.localName)) and
                              d.dimensionQname not in xuleConstants["EXCLUDE_NON_NEG_AXIS"] and
                              not(any(d.dimensionQname == l[0] and d.memberQname in l[2] for l in xuleConstants["EXCLUDE_NON_NEG_AXIS_MEMBERS"])))
-                            for d in f.context.qnameDims.values())) and (
-                        f.qname.localName not in additionalExcludedNames)):
+                            for d in f.context.qnameDims.values()))):
+                                # and (
+                                #f.qname.localName not in additionalExcludedNames)):
                         if not any(f.isDuplicateOf(warnedFact) for warnedFact in warnedFactsByQn[f.qname]):
                             id = conceptRuleIDs.get(f.qname, 9999)
                             warnedFactsByQn[f.qname].append(f)
@@ -4422,9 +4423,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     _msg = msg # report error
                                     _mbr = mdlDim.member.qname.localName
                                 if _msg:
-                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
-                                                      name=f.qname, contextID=f.contextID, unitID=f.unitID or "(none)",
-                                                      member=mbr,
+                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(_msg)),
+                                                      name=f.qname, value=f.xValue, contextID=f.contextID, unitID=f.unitID or "(none)",
+                                                      axis=axis.name, member=_mbr,
                                                       modelObject=f, edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0070":
                 # 0070 has only one id, rule
@@ -5032,7 +5033,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 conceptsNeedingBusinessAcquisitionAxis = rule["conceptsNeedingBusinessAcquisitionAxis"]
                 for axis in modelXbrl.nameConcepts.get(rule["axis"], ()):
                     for name in conceptsNeedingBusinessAcquisitionAxis:
-                        for f in modelXbrl.factsByLocalName(name):
+                        for f in modelXbrl.factsByLocalName.get(name, ()):
                             if axis not in f.qnameDims:
                                 modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(message)),
                                     modelObject=f,
@@ -5040,9 +5041,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0118":
                 # 0118 has only one id, rule
+                id, rule = next(iter(dqcRule["rules"].items()))
                 statementCubesDefPattern = re.compile(rule["statement-cubes-definition-pattern"])
                 statementELRexclusionPattern = re.compile(rule["statement-ELR-exclusion-pattern"])
-                id, rule = next(iter(dqcRule["rules"].items()))
                 for linkroleUri in OrderedSet(modelLink.role for modelLink in val.modelXbrl.baseSets[(XbrlConst.all,None,None,None)]): # role ELRs may be repeated in dim LB
                     roleTypes = val.modelXbrl.roleTypes.get(linkroleUri)
                     definition = (roleTypes[0].definition or linkroleUri) if roleTypes else linkroleUri
@@ -5051,7 +5052,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     tableRelSet = modelXbrl.relationshipSet("XBRL-dimensions", linkroleUri)
                     priItemRelSet = modelXbrl.relationshipSet(XbrlConst.domainMember, linkroleUri)
                     cubeRoots = tableRelSet.rootConcepts
-                    if any(c.name in rule["excluded-concepts"]):
+                    if c.name in rule["excluded-concepts"]:
                         continue
                     for cubeRoot in cubeRoots:
                         for cube in getDescendants("XBRL-dimensions", cubeRoot, linkroleUri, cubeOnly=True):
@@ -5131,7 +5132,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         edgarCode=edgarCode, ruleElementId=id)
                     elif id == "9577":
                         for c in modelXbrl.nameConcepts.get(rule["name"], ()):
-                            componentsOfIncome = getDescendants(XbrlConst.summationItems, c)
+                            componentsOfIncome = getDescendants(XbrlConst.summationItems, c, None)
                             for name in rule["not-names"]:
                                 if name in componentsOfIncome:
                                     modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
@@ -5141,7 +5142,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 # 0112 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))
                 for axis in modelXbrl.nameConcepts.get(rule["axis"], ()):
-                    for b in factBindings(modelXbrl, flattenToSet( rule["names"], rule["name2"] ), alignDims=(axis.qname,), coverUnit=True).values():
+                    for b in factBindings(modelXbrl, flattenToSet( (rule["names"], rule["name2"]) ), alignDims=(axis.qname,), coverUnit=True).values():
                         f = [b[n] for n in rule["names"] if n in b]
                         if len(f) and rule["name2"] not in b:
                             f = f[0]
@@ -5152,7 +5153,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             elif dqcRuleName == "DQC.US.0128":
                 # 0112 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))
-                for dimName in modelXbrl.nameConcepts.get(rule["collective_dimensions"], ()):
+                for dimName in rule["collective_dimensions"]:
                     for dimConcept in modelXbrl.nameConcepts.get(dimName, ()):
                         for qn in xuleConstants["NON_NEG_ITEMS"]:
                             c = modelXbrl.qnameConcepts.get(qn)
@@ -5172,10 +5173,10 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 for id, rule in dqcRule["rules"].items():
                     dimQn = qname(rule["axis"], deiDefaultPrefixedNamespaces)
                     dimExpected = rule["axis-expected"]
-                    for name in {"9831": rule["names"],
-                                 "9832": xuleConstants["FINANCIAL_DATA_EQUITY_METHOD_INVESTMENTS"],
-                                 "9833": xuleConstants["NON_FINANCIAL_DATA_EMI"]
-                                 }[id]:
+                    for name in (rule["names"] if id == "9831" else
+                                 xuleConstants["FINANCIAL_DATA_EQUITY_METHOD_INVESTMENTS"] if id == "9832" else
+                                 xuleConstants["NON_FINANCIAL_DATA_EMI"] # id "9833"
+                                 ):
                         for f in modelXbrl.factsByLocalName.get(name, ()):
                             if not f.isNil and ((dimQn in f.context.qnameDims) ^ dimExpected):
                                 modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
@@ -5203,7 +5204,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                             edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0135":
                 # used by 0135 and -136
-                EXT_ENUM_DICT = dict((n,v) for n.localName, v.localName in xuleConstants["EXT_ENUM"]) # use localNames
+                EXT_ENUM_DICT = dict((n.localName,v.localName) for n, v in xuleConstants["EXT_ENUM"]) # use localNames
                 FairValueBreakdownItemsNotChecked = set(dqcRule["FairValueBreakdownItemsNotChecked"])
                 scheduleAxisNames = set(dqcRule["scheduleAxisNames"])
                 fsConcepts = set()
@@ -5214,10 +5215,11 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     if not "- Statement " in definition:
                         continue
                     for stmtRoot in modelXbrl.relationshipSet(XbrlConst.parentChild, linkroleUri).rootConcepts:
-                        for stmtConcept in getDescendants(XbrlConst.parentChild, stmtRoot, linkroleUri):
-                            fsConcepts.add(stmtConcept)
-                            if stmtConcept.isMonetary:
-                                fsMonetaryConcepts.add(stmtConcept)
+                        for stmtConceptName in getDescendants(XbrlConst.parentChild, stmtRoot, linkroleUri):
+                            for stmtConcept in modelXbrl.nameConcepts.get(stmtConceptName,()):
+                                fsConcepts.add(stmtConcept)
+                                if stmtConcept.isMonetary:
+                                    fsMonetaryConcepts.add(stmtConcept)
                 if deiDocumentType in dqcRule["document-types"]:
                     # 0141 has only one id, rule
                     for id, rule in dqcRule["rules"].items():
@@ -5334,7 +5336,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                             # We need to check that either the BS Location or IS location axis has also been used with the item. If any of these axis are used then no error is reported
                                             if any(b3.values()
                                                    for b2 in factBindings((relatedExtEnumQn.localName,), coverDimNames=coverDimNames, absentDimNames=scheduleAxisNames, coverUnit=True)
-                                                   for cvrHash2, b3 in b2.values()
+                                                   for cvrHash2, b3 in b2.items()
                                                    if cvrHash2 == cvrHash):
                                                 continue # ignore this binding
 
@@ -5351,7 +5353,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                             for ext_pair in xuleConstants["EXT_ENUM"]
                                             if ext_pair[0] not in rule["LEASE_ITEMS"])
                 for FS_concept, related_ext_enum in Ext_Enum_Minus_Leases:
-                    for b in factBindings(modelXbrl, (FS_concept.localName,)):
+                    for b in factBindings(modelXbrl, (FS_concept.localName,)).values():
                         for f in b.values():
                             if f.concept not in fsMonetaryConcepts:
                                 modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
@@ -5405,7 +5407,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     sourceNames.add(rel.fromModelObject.name)
                     return sourceNames
                 for accrIntClass in rule["accrued-interest-classes"]:
-                    for bndHash, valuesReportedWithInterest in factBindings(rule["INCLUDING_ACCRUED_INTEREST_DICT"][accrIntClass]).items():
+                    for bndHash, valuesReportedWithInterest in factBindings(modelXbrl, rule["INCLUDING_ACCRUED_INTEREST_DICT"][accrIntClass]).items():
                         if len(valuesReportedWithInterest) > 0:
                             if accrIntClass == 'AvailableForSaleSecuritiesDebtSecurities':
                                 excludingInterest = len(factsOf(bndHash, ("DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLoss",))) > 0
@@ -5449,7 +5451,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     
                         
                             
-        except Exception:
+        except Exception as ex:
             modelXbrl.warning(f"{dqcRuleName}.{id}",
                               f"Validation was unable to complete rule {dqcRuleName} due to an internal error.  This is not considered an error in the filing.",
                               modelObject=modelXbrl)
