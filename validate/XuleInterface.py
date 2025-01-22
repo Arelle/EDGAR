@@ -42,7 +42,7 @@ from arelle.PythonUtil import attrdict
 from .Util import usgaapYear
 
 """ Xule validator specific variables."""
-_short_name = 'DQCRT' # EDGAR uses DQCRT as short_name instead of DQC (in XBRL.US distribution0
+_short_name = 'DQC'
 _name = 'DQCRT XULE Rules Validator'
 _version = 'Check version using Tools->DQC->Version on the GUI or --dqc-version on the command line'
 _version_prefix = '3.0.'
