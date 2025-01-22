@@ -297,9 +297,9 @@ linkbaseValidations = {
     # preSources - local names of allowed source elements
     # preCustELFs - true to allow custom linkroles in extension
     "cef": attrdict(
-        efmPre = "6.12.10",
-        efmCal = "6.14.06",
-        efmDef = "6.16.10",
+        exgPre = "10.08.01",
+        exgCal = "10.08.01",
+        exgDef = "10.08.01",
         elrPre = re.compile("http://xbrl.sec.gov/cef/role/N2"),
         elrPreDocTypes = ("N-2", "N-2/A"), # only these doc types are checked
         elrDefInNs = re.compile("http://xbrl.sec.gov/cef/role/N2"),
@@ -310,9 +310,9 @@ linkbaseValidations = {
         preCustELRs = False
     ),
     "vip": attrdict(
-        efmPre = "6.12.11",
-        efmCal = "6.14.07",
-        efmDef = "6.16.11",
+        exgPre = "10.08.06",
+        exgCal = "10.08.06",
+        exgDef = "10.08.06",
         elrPre = re.compile("http://xbrl.sec.gov/vip/role/N[346]"),
         elrDefInNs = re.compile("http://xbrl.sec.gov/vip/role/[^/]*Only"),
         elrDefExNs = re.compile("http://xbrl.sec.gov/vip/role/[^/]*Only"),
@@ -323,8 +323,8 @@ linkbaseValidations = {
     ),
     "ecd": attrdict(
         efmPre = None,
-        efmCal = "6.14.08",
-        efmDef = "6.16.12",
+        exgCal = "10.08.02",
+        exgDef = "10.08.02",
         elrPre = None,
         elrDefInNs = re.compile("http://xbrl.sec.gov/ecd/role/"),
         elrDefExNs = re.compile("http://xbrl.sec.gov/ecd/role/[^/]*Only"),
@@ -334,9 +334,9 @@ linkbaseValidations = {
         preCustELRs = True
     ),
     "oef": attrdict(
-        efmCal = "6.14.09",
+        exgCal = "10.08.04",
         elrCalDocTypes = ('N-CSR','N-CSRS','N-CSR/A','N-CSRS/A'),
-        efmDef = "6.16.13", #elrDefDocTypes = ('N-CSR','N-CSRS','N-CSR/A','N-CSRS/A'),
+        exgDef = "6.16.13", #elrDefDocTypes = ('N-CSR','N-CSRS','N-CSR/A','N-CSRS/A'),
         # Need to add the "Only" suffix to these rr roles for consistency.
         elrDefInNs = re.compile("http://xbrl.sec.gov/(oef/role/[^/]*Only|rr/role/(Series|Class|Coregistrant|Prospectus|Risk|PerformanceMeasure))"),
         elrDefExNs = re.compile("http://xbrl.sec.gov/(oef/role/[^/]*Only|rr/role/(Series|Class|Coregistrant|Prospectus|Risk|PerformanceMeasure))"),
@@ -347,9 +347,9 @@ linkbaseValidations = {
         preCustELRs = True
     ),
     "rxp": attrdict(
-        efmCal = "6.14.10",
+        exgCal = "10.08.05",
         elrCalDocTypes = ('2.01 SD',),
-        efmDef = "6.16.14",
+        exgDef = "10.08.05",
         elrDefDocTypes = ('2.01 SD',),
         elrDefInNs = re.compile("never permitted"),
         elrDefExNs = re.compile("http://xbrl.sec.gov/rxp/role/(Projects|Governments|Segments|Entities|Resources)Only"),
@@ -362,15 +362,15 @@ linkbaseValidations = {
         ),
         elrDefNoTgtRole = True,
         elrDefRgtMemsRole = re.compile("http://xbrl.sec.gov/rxp/"),
-        efmDefTgtMemsUnique = "6.16.14.04",
+        exgDefTgtMemsUnique = "10.08.05",
         preSources = (),
         efmPre = None,
         preCustELRs = True,
     ),
     "sro": attrdict(
-        efmPre = None, # nothing to be checked
-        efmCal = None,
-        efmDef = "6.16.15",
+        exgPre = None, # nothing to be checked
+        exgCal = None,
+        exgDef = "10.08.07",
         elrPre = None,
         elrDefInNs = re.compile("."), # skip this test
         elrDefExNs = re.compile("."), # skip this test
@@ -381,6 +381,21 @@ linkbaseValidations = {
                 re.compile(r".")), # match any QName
             (re.compile(r".*sec\.gov/17ad27/role/(?!(.*Only|ProgressTable))."),
                 re.compile(r"matchnothing^")) # match nothing
+        ),
+        elrDefNoTgtRole = False,
+        preSources = (),
+        preCustELRs = False
+    ),
+    "spac": attrdict(
+        exgPre = None, # nothing to be checked
+        exgCal = None,
+        exgDef = "10.08.08",
+        elrPre = None,
+        elrDefInNs = re.compile("."), # skip this test
+        elrDefExNs = re.compile("."), # skip this test
+        elrDefRoleSrc = (
+            (re.compile(r".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
+                re.compile(r".")), # match any member QName
         ),
         elrDefNoTgtRole = False,
         preSources = (),
