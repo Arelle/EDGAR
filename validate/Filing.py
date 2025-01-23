@@ -3514,7 +3514,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                      for name in lbVal.preSources
                                      for concept in modelXbrl.nameConcepts.get(name, ())
                                      if isStandardUri(val, concept.modelDocument.uri)) # want concept from std namespace not extension
-                if lbVal.exgPre and ('elrPreDocTypes' not in lbVal or deiDocumentType in lbVal.elrPreDocTypes):
+                if getattr(lbVal, 'exgPre', None) and ('elrPreDocTypes' not in lbVal or deiDocumentType in lbVal.elrPreDocTypes):
                     for rel in modelXbrl.relationshipSet(XbrlConst.parentChild).modelRelationships:
                         if not isStandardUri(val, rel.modelDocument.uri) and rel.modelDocument.targetNamespace not in val.otherStandardTaxonomies:
                             relFrom = rel.fromModelObject
@@ -3533,7 +3533,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         modelObject=(rel,relFrom,relTo), arc=rel.qname, arcrole=rel.arcrole,
                                         linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
                                         conceptFrom=relFrom.qname, conceptTo=relTo.qname)
-                if lbVal.exgCal and ('elrCalDocTypes' not in lbVal or deiDocumentType in lbVal.elrCalDocTypes):
+                if getattr(lbVal, 'exgCal', None) and ('elrCalDocTypes' not in lbVal or deiDocumentType in lbVal.elrCalDocTypes):
                     for rel in modelXbrl.relationshipSet(XbrlConst.summationItems).modelRelationships:
                         if not isStandardUri(val, rel.modelDocument.uri) and rel.modelDocument.targetNamespace not in val.otherStandardTaxonomies:
                             relFrom = rel.fromModelObject
@@ -3546,7 +3546,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         modelObject=(rel,relFrom,relTo), arc=rel.qname, arcrole=rel.arcrole,
                                         linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
                                         conceptFrom=relFrom.qname, conceptTo=relTo.qname)
-                if lbVal.exgDef and ('elrDefDocTypes' not in lbVal or deiDocumentType in lbVal.elrDefDocTypes):
+                if getattr(lbVal, 'exgDef', None) and ('elrDefDocTypes' not in lbVal or deiDocumentType in lbVal.elrDefDocTypes):
                     tgtMemRoles.clear()
                     tgtMemRels.clear()
                     for rel in modelXbrl.relationshipSet("XBRL-dimensions").modelRelationships:
