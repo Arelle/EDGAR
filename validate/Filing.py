@@ -1701,7 +1701,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 if (subTypes not in ({"all"}, {"n/a"})
                     and (subFormTypesCheck.isdisjoint(subTypes) ^ ("!not!" in subTypes))
                     and (not subTypesPattern or not subTypesPattern.match(submissionType))
-                    and (not docTypes or attachmentDocumentType in docTypes)):
+                    and (not docTypes or ((attachmentDocumentType in docTypes) ^ ("!not!" in docTypes)))):
                     if validation not in (None, "fany"): # don't process name for sev's which only store-db-field
                         for name in names:
                             if name.endswith(":*") and (validation == "(supported-taxonomy)" or validation == "(supported-taxonomy-docType)"): # taxonomy-prefix filter

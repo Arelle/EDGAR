@@ -2426,7 +2426,8 @@
         "msgSection": "EXG:10.8.10",
         "validation": "(supported-taxonomy)",
         "source": "both",
-        "dei/cover": "dei"
+        "dei/cover": "dei",
+        "docTypes": ["!not!", "EX-98"]
     },
     {
         "comment": "SPAC with EX98 is only allowed for these submission types."
@@ -2438,8 +2439,7 @@
         "validation": "(supported-taxonomy-docType)",
         "source": "both",
         "dei/cover": "dei",
-        "docTypes": ["EX-98"],
-        "message": "dq-{efmSection}-{taxonomy}-{docType}-Facts-Unexpected"
+        "docTypes": ["EX-98"]
     },
     {
         "comment": "EX98 should have a SPAC element."
