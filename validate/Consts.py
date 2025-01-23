@@ -79,7 +79,7 @@ rxpAlternativeReportingRegimes = ["EU", "UK", "NO", "CA"]
 standardNamespacesPattern = re.compile(
     # non-IFRS groups 1 - authority, 2 - taxonomy (e.g. us-gaap, us-types), 3 - year
     r"http://(xbrl\.us|fasb\.org|xbrl\.sec\.gov)/("
-            r"dei|us-gaap|srt|us-types|us-roles|srt-types|srt-roles|rr|cef|oef|country|currency|cyd|ecd|exch|invest|naics|rxp|sbs|sro|sic|stpr|vip"
+            r"dei|us-gaap|srt|us-types|us-roles|srt-types|srt-roles|rr|cef|oef|country|currency|cyd|ecd|exch|invest|naics|rxp|sbs|sro|sic|stpr|vip|spac"
             r")/([0-9]{4}|[0-9]{4}q[1-4])(-[0-9]{2}-[0-9]{2})?$"
     # ifrs groups 4 - year, 5 - taxonomy (e.g. ifrs-full)
     r"|https?://xbrl.ifrs.org/taxonomy/([0-9]{4})-[0-9]{2}-[0-9]{2}/(ifrs[\w-]*)$")
@@ -368,8 +368,8 @@ linkbaseValidations = {
         preCustELRs = True,
     ),
     "sro": attrdict(
-        exgPre = None, # nothing to be checked
-        exgCal = None,
+        exgPre = "10.08.07",
+        exgCal = "10.08.07",
         exgDef = "10.08.07",
         elrPre = None,
         elrDefInNs = re.compile("."), # skip this test
@@ -387,12 +387,12 @@ linkbaseValidations = {
         preCustELRs = False
     ),
     "spac": attrdict(
-        exgPre = None, # nothing to be checked
-        exgCal = None,
+        exgPre = "10.08.08",
+        exgCal = "10.08.08",
         exgDef = "10.08.08",
-        elrPre = None,
-        elrDefInNs = re.compile("."), # skip this test
-        elrDefExNs = re.compile("."), # skip this test
+        elrPre = re.compile("@match-nothing@"),
+        elrDefInNs = re.compile("never permitted"),
+        elrDefExNs = re.compile(".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
         elrDefRoleSrc = (
             (re.compile(r".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
                 re.compile(r".")), # match any member QName
