@@ -79,7 +79,7 @@ rxpAlternativeReportingRegimes = ["EU", "UK", "NO", "CA"]
 standardNamespacesPattern = re.compile(
     # non-IFRS groups 1 - authority, 2 - taxonomy (e.g. us-gaap, us-types), 3 - year
     r"http://(xbrl\.us|fasb\.org|xbrl\.sec\.gov)/("
-            r"dei|us-gaap|srt|us-types|us-roles|srt-types|srt-roles|rr|cef|oef|country|currency|cyd|ecd|exch|invest|naics|rxp|sbs|sro|sic|stpr|vip"
+            r"dei|us-gaap|srt|us-types|us-roles|srt-types|srt-roles|rr|cef|oef|country|currency|cyd|ecd|exch|invest|naics|rxp|sbs|sro|sic|stpr|vip|spac"
             r")/([0-9]{4}|[0-9]{4}q[1-4])(-[0-9]{2}-[0-9]{2})?$"
     # ifrs groups 4 - year, 5 - taxonomy (e.g. ifrs-full)
     r"|https?://xbrl.ifrs.org/taxonomy/([0-9]{4})-[0-9]{2}-[0-9]{2}/(ifrs[\w-]*)$")
@@ -287,7 +287,7 @@ latestEntireUgt = {
 
 linkbaseValidations = {
     # key - validation taxonomy prefix
-    # efmPre, Cal, Def - EFM section for linkbase constraint
+    # exgPre, Cal, Def - EXG section for linkbase constraint
     # elrPre - regex matching allowed linkrole for extension
     # elrPreDocTypes - list of doc types which are checked for this validation
     # elrDefInNs - regex of linkroles permitting extension relationships between base taxonomy concepts
@@ -297,9 +297,9 @@ linkbaseValidations = {
     # preSources - local names of allowed source elements
     # preCustELFs - true to allow custom linkroles in extension
     "cef": attrdict(
-        efmPre = "6.12.10",
-        efmCal = "6.14.06",
-        efmDef = "6.16.10",
+        exgPre = "10.08.01",
+        exgCal = "10.08.01",
+        exgDef = "10.08.01",
         elrPre = re.compile("http://xbrl.sec.gov/cef/role/N2"),
         elrPreDocTypes = ("N-2", "N-2/A"), # only these doc types are checked
         elrDefInNs = re.compile("http://xbrl.sec.gov/cef/role/N2"),
@@ -310,9 +310,9 @@ linkbaseValidations = {
         preCustELRs = False
     ),
     "vip": attrdict(
-        efmPre = "6.12.11",
-        efmCal = "6.14.07",
-        efmDef = "6.16.11",
+        exgPre = "10.08.06",
+        exgCal = "10.08.06",
+        exgDef = "10.08.06",
         elrPre = re.compile("http://xbrl.sec.gov/vip/role/N[346]"),
         elrDefInNs = re.compile("http://xbrl.sec.gov/vip/role/[^/]*Only"),
         elrDefExNs = re.compile("http://xbrl.sec.gov/vip/role/[^/]*Only"),
@@ -323,8 +323,8 @@ linkbaseValidations = {
     ),
     "ecd": attrdict(
         efmPre = None,
-        efmCal = "6.14.08",
-        efmDef = "6.16.12",
+        exgCal = "10.08.02",
+        exgDef = "10.08.02",
         elrPre = None,
         elrDefInNs = re.compile("http://xbrl.sec.gov/ecd/role/"),
         elrDefExNs = re.compile("http://xbrl.sec.gov/ecd/role/[^/]*Only"),
@@ -334,9 +334,9 @@ linkbaseValidations = {
         preCustELRs = True
     ),
     "oef": attrdict(
-        efmCal = "6.14.09",
+        exgCal = "10.08.04",
         elrCalDocTypes = ('N-CSR','N-CSRS','N-CSR/A','N-CSRS/A'),
-        efmDef = "6.16.13", #elrDefDocTypes = ('N-CSR','N-CSRS','N-CSR/A','N-CSRS/A'),
+        exgDef = "10.08.04", #elrDefDocTypes = ('N-CSR','N-CSRS','N-CSR/A','N-CSRS/A'),
         # Need to add the "Only" suffix to these rr roles for consistency.
         elrDefInNs = re.compile("http://xbrl.sec.gov/(oef/role/[^/]*Only|rr/role/(Series|Class|Coregistrant|Prospectus|Risk|PerformanceMeasure))"),
         elrDefExNs = re.compile("http://xbrl.sec.gov/(oef/role/[^/]*Only|rr/role/(Series|Class|Coregistrant|Prospectus|Risk|PerformanceMeasure))"),
@@ -347,9 +347,9 @@ linkbaseValidations = {
         preCustELRs = True
     ),
     "rxp": attrdict(
-        efmCal = "6.14.10",
+        exgCal = "10.08.05",
         elrCalDocTypes = ('2.01 SD',),
-        efmDef = "6.16.14",
+        exgDef = "10.08.05",
         elrDefDocTypes = ('2.01 SD',),
         elrDefInNs = re.compile("never permitted"),
         elrDefExNs = re.compile("http://xbrl.sec.gov/rxp/role/(Projects|Governments|Segments|Entities|Resources)Only"),
@@ -362,16 +362,16 @@ linkbaseValidations = {
         ),
         elrDefNoTgtRole = True,
         elrDefRgtMemsRole = re.compile("http://xbrl.sec.gov/rxp/"),
-        efmDefTgtMemsUnique = "6.16.14.04",
+        exgDefTgtMemsUnique = "10.08.05",
         preSources = (),
         efmPre = None,
         preCustELRs = True,
     ),
     "sro": attrdict(
-        efmPre = None, # nothing to be checked
-        efmCal = None,
-        efmDef = "6.16.15",
-        elrPre = None,
+        exgPre = "10.08.07",
+        exgCal = "10.08.07",
+        exgDef = "10.08.07",
+        elrPre = re.compile("@match-nothing@"),
         elrDefInNs = re.compile("."), # skip this test
         elrDefExNs = re.compile("."), # skip this test
         elrDefRoleSrc = (
@@ -381,6 +381,21 @@ linkbaseValidations = {
                 re.compile(r".")), # match any QName
             (re.compile(r".*sec\.gov/17ad27/role/(?!(.*Only|ProgressTable))."),
                 re.compile(r"matchnothing^")) # match nothing
+        ),
+        elrDefNoTgtRole = False,
+        preSources = (),
+        preCustELRs = False
+    ),
+    "spac": attrdict(
+        exgPre = "10.08.10",
+        exgCal = "10.08.10",
+        exgDef = "10.08.10",
+        elrPre = re.compile("@match-nothing@"),
+        elrDefInNs = re.compile("never permitted"),
+        elrDefExNs = re.compile(".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
+        elrDefRoleSrc = (
+            (re.compile(r".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
+                re.compile(r".")), # match any member QName
         ),
         elrDefNoTgtRole = False,
         preSources = (),

@@ -3514,7 +3514,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                      for name in lbVal.preSources
                                      for concept in modelXbrl.nameConcepts.get(name, ())
                                      if isStandardUri(val, concept.modelDocument.uri)) # want concept from std namespace not extension
-                if lbVal.efmPre and ('elrPreDocTypes' not in lbVal or deiDocumentType in lbVal.elrPreDocTypes):
+                if lbVal.exgPre and ('elrPreDocTypes' not in lbVal or deiDocumentType in lbVal.elrPreDocTypes):
                     for rel in modelXbrl.relationshipSet(XbrlConst.parentChild).modelRelationships:
                         if not isStandardUri(val, rel.modelDocument.uri) and rel.modelDocument.targetNamespace not in val.otherStandardTaxonomies:
                             relFrom = rel.fromModelObject
@@ -3527,26 +3527,26 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                              any(relset.isRelated(c, "descendant-or-self", relFrom) for c in preSrcConcepts))))
                                     or
                                     (not roleMatch and not lbVal.preCustELRs and  (relFrom.qname.namespaceURI == ns or relTo.qname.namespaceURI == ns))):
-                                    modelXbrl.error(f"EFM.{lbVal.efmPre}.relationshipNotPermitted",
+                                    modelXbrl.error(f"EXG.{lbVal.exgPre}.relationshipNotPermitted",
                                         _("The %(arcrole)s relationship from %(conceptFrom)s to %(conceptTo)s, link role %(linkroleDefinition)s, is not permitted."),
-                                        edgarCode=f"du-{lbVal.efmPre[2:4]}{lbVal.efmPre[5:]}-Relationship-Not-Permitted",
+                                        edgarCode=f"du-{lbVal.exgPre[3:5]}{lbVal.exgPre[6:]}-Relationship-Not-Permitted",
                                         modelObject=(rel,relFrom,relTo), arc=rel.qname, arcrole=rel.arcrole,
                                         linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
                                         conceptFrom=relFrom.qname, conceptTo=relTo.qname)
-                if lbVal.efmCal and ('elrCalDocTypes' not in lbVal or deiDocumentType in lbVal.elrCalDocTypes):
+                if lbVal.exgCal and ('elrCalDocTypes' not in lbVal or deiDocumentType in lbVal.elrCalDocTypes):
                     for rel in modelXbrl.relationshipSet(XbrlConst.summationItems).modelRelationships:
                         if not isStandardUri(val, rel.modelDocument.uri) and rel.modelDocument.targetNamespace not in val.otherStandardTaxonomies:
                             relFrom = rel.fromModelObject
                             relTo = rel.toModelObject
                             if relFrom is not None and relTo is not None:
                                 if relFrom.qname.namespaceURI == ns or relTo.qname.namespaceURI == ns:
-                                    modelXbrl.error(f"EFM.{lbVal.efmCal}.relationshipNotPermitted",
+                                    modelXbrl.error(f"EXG.{lbVal.exgCal}.relationshipNotPermitted",
                                         _("The %(arcrole)s relationship from %(conceptFrom)s to %(conceptTo)s, link role %(linkroleDefinition)s, is not permitted."),
-                                        edgarCode=f"du-{lbVal.efmCal[2:4]}{lbVal.efmCal[5:]}-Relationship-Not-Permitted",
+                                        edgarCode=f"du-{lbVal.exgCal[3:5]}{lbVal.exgCal[6:]}-Relationship-Not-Permitted",
                                         modelObject=(rel,relFrom,relTo), arc=rel.qname, arcrole=rel.arcrole,
                                         linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
                                         conceptFrom=relFrom.qname, conceptTo=relTo.qname)
-                if lbVal.efmDef and ('elrDefDocTypes' not in lbVal or deiDocumentType in lbVal.elrDefDocTypes):
+                if lbVal.exgDef and ('elrDefDocTypes' not in lbVal or deiDocumentType in lbVal.elrDefDocTypes):
                     tgtMemRoles.clear()
                     tgtMemRels.clear()
                     for rel in modelXbrl.relationshipSet("XBRL-dimensions").modelRelationships:
@@ -3564,34 +3564,34 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                       )
                                     )
                                    ):
-                                    modelXbrl.error(f"EFM.{lbVal.efmDef}.relationshipNotPermitted",
+                                    modelXbrl.error(f"EXG.{lbVal.exgDef}.relationshipNotPermitted",
                                         _("The %(arcrole)s relationship from %(conceptFrom)s to %(conceptTo)s, link role %(linkroleDefinition)s, is not permitted."),
-                                        edgarCode=f"du-{lbVal.efmDef[2:4]}{lbVal.efmDef[5:]}-Relationship-Not-Permitted",
+                                        edgarCode=f"du-{lbVal.exgDef[3:5]}{lbVal.exgDef[6:]}-Relationship-Not-Permitted",
                                         modelObject=(rel,relFrom,relTo), arc=rel.qname, arcrole=rel.arcrole,
                                         linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
                                         conceptFrom=relFrom.qname, conceptTo=relTo.qname)
                                 elif any(r.match(rel.linkrole) and not q.match(relFromQNstr) for r, q in lbVal.elrDefRoleSrc):
-                                    modelXbrl.error(f"EFM.{lbVal.efmDef}.roleSourceNotPermitted",
+                                    modelXbrl.error(f"EXG.{lbVal.exgDef}.roleSourceNotPermitted",
                                         _("The %(arcrole)s relationship source, %(conceptFrom)s, to %(conceptTo)s, link role %(linkroleDefinition)s, is not permitted."),
-                                        edgarCode=f"du-{lbVal.efmDef[2:4]}{lbVal.efmDef[5:]}-Role-Source-Not-Permitted",
+                                        edgarCode=f"du-{lbVal.exgDef[3:5]}{lbVal.exgDef[6:]}-Role-Source-Not-Permitted",
                                         modelObject=(rel,relFrom,relTo), arc=rel.qname, arcrole=rel.arcrole,
                                         linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
                                         conceptFrom=relFrom.qname, conceptTo=relTo.qname)
                                 if lbVal.elrDefNoTgtRole and rel.targetRole:
-                                    modelXbrl.error(f"EFM.{lbVal.efmDef}.targetRoleNotPermitted",
+                                    modelXbrl.error(f"EXG.{lbVal.exgDef}.targetRoleNotPermitted",
                                         _("The %(arcrole)s relationship targetRole from %(conceptFrom)s to %(conceptTo)s, link role %(linkroleDefinition)s, is not permitted."),
-                                        edgarCode=f"du-{lbVal.efmDef[2:4]}{lbVal.efmDef[5:]}-TargetRole-Not-Permitted",
+                                        edgarCode=f"du-{lbVal.exgDef[3:5]}{lbVal.exgDef[6:]}-TargetRole-Not-Permitted",
                                         modelObject=(rel,relFrom,relTo), arc=rel.qname, arcrole=rel.arcrole,
                                         linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
                                         conceptFrom=relFrom.qname, conceptTo=relTo.qname)
-                                if 'efmDefTgtMemsUnique' in lbVal and rel.arcrole == XbrlConst.domainMember and lbVal.elrDefRgtMemsRole.match(rel.linkrole):
+                                if 'exgDefTgtMemsUnique' in lbVal and rel.arcrole == XbrlConst.domainMember and lbVal.elrDefRgtMemsRole.match(rel.linkrole):
                                     tgtMemRoles[relTo].add(rel.linkrole)
                                     tgtMemRels[relTo].append(rel)
                     for tgtMem, roles in tgtMemRoles.items():
                         if len(roles) > 1:
-                            modelXbrl.error(f"EFM.{lbVal.efmDefTgtMemsUnique}",
+                            modelXbrl.error(f"EXG.{lbVal.exgDefTgtMemsUnique}",
                                 _("Member concept %(member)s appears in more than one %(taxonomy)s role: %(roles)s."),
-                                edgarCode=f"{abbrNs}-{lbVal.efmDefTgtMemsUnique[2:].replace('.','')}-Member-Multiple-{abbrNs.upper()}-Roles",
+                                edgarCode=f"{abbrNs}-{lbVal.exgDefTgtMemsUnique[3:].replace('.','')}-Member-Multiple-{abbrNs.upper()}-Roles",
                                 modelObject=tgtMemRels[tgtMem], member=tgtMem.qname, roles=", ".join(sorted(roles)), taxonomy=abbrNs.upper())
         del tgtMemRoles, tgtMemRels # dereference
 

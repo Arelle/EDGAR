@@ -157,7 +157,7 @@ def loadDeiValidations(modelXbrl, isInlineXbrl, attachmentDocumentType):
                                 _("Missing sub-type-element-validation[\"%(field)s\"] from %(validation)s."),
                                 field=field, validation=sev)
             elif field == "msgSection":
-                pattern = re.compile(".*:\d+(\.\d+)*")
+                pattern = re.compile(r".*:\d+(\.\d+)*")
                 if not pattern.match(sev[field]):
                     modelXbrl.error("arelle:loadDeiValidations",
                                     _("Invalid format for \"%(field)s\" in %(validation)s. Value \"%(value)s\" does not match regex \"%(pattern)s\"."),
