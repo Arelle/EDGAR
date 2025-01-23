@@ -336,7 +336,7 @@ linkbaseValidations = {
     "oef": attrdict(
         exgCal = "10.08.04",
         elrCalDocTypes = ('N-CSR','N-CSRS','N-CSR/A','N-CSRS/A'),
-        exgDef = "6.16.13", #elrDefDocTypes = ('N-CSR','N-CSRS','N-CSR/A','N-CSRS/A'),
+        exgDef = "10.08.04", #elrDefDocTypes = ('N-CSR','N-CSRS','N-CSR/A','N-CSRS/A'),
         # Need to add the "Only" suffix to these rr roles for consistency.
         elrDefInNs = re.compile("http://xbrl.sec.gov/(oef/role/[^/]*Only|rr/role/(Series|Class|Coregistrant|Prospectus|Risk|PerformanceMeasure))"),
         elrDefExNs = re.compile("http://xbrl.sec.gov/(oef/role/[^/]*Only|rr/role/(Series|Class|Coregistrant|Prospectus|Risk|PerformanceMeasure))"),
@@ -387,9 +387,9 @@ linkbaseValidations = {
         preCustELRs = False
     ),
     "spac": attrdict(
-        exgPre = "10.08.08",
-        exgCal = "10.08.08",
-        exgDef = "10.08.08",
+        exgPre = "10.08.10",
+        exgCal = "10.08.10",
+        exgDef = "10.08.10",
         elrPre = re.compile("@match-nothing@"),
         elrDefInNs = re.compile("never permitted"),
         elrDefExNs = re.compile(".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
