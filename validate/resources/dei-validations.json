@@ -2423,7 +2423,7 @@
     {
         "sub-types": ["@8-K", "@20-F", "@20FR", "@SC 14A", "@SC 14C", "@SC SPAC", "@SFP SPAC"],
         "xbrl-names": "spac:*",
-        "msgSection": "EXG:10.8.10",
+        "msgSection": "EXG:3.4",
         "validation": "(supported-taxonomy)",
         "source": "both",
         "dei/cover": "dei",
@@ -2435,7 +2435,7 @@
     {
         "sub-types": ["@SPAC EX98"],
         "xbrl-names": "spac:*",
-        "msgSection": "EXG:10.8.10",
+        "msgSection": "EXG:3.4",
         "validation": "(supported-taxonomy-docType)",
         "source": "both",
         "dei/cover": "dei",
