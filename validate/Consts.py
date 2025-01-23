@@ -287,7 +287,7 @@ latestEntireUgt = {
 
 linkbaseValidations = {
     # key - validation taxonomy prefix
-    # efmPre, Cal, Def - EFM section for linkbase constraint
+    # exgPre, Cal, Def - EXG section for linkbase constraint
     # elrPre - regex matching allowed linkrole for extension
     # elrPreDocTypes - list of doc types which are checked for this validation
     # elrDefInNs - regex of linkroles permitting extension relationships between base taxonomy concepts
@@ -371,7 +371,7 @@ linkbaseValidations = {
         exgPre = "10.08.07",
         exgCal = "10.08.07",
         exgDef = "10.08.07",
-        elrPre = None,
+        elrPre = re.compile("@match-nothing@"),
         elrDefInNs = re.compile("."), # skip this test
         elrDefExNs = re.compile("."), # skip this test
         elrDefRoleSrc = (
