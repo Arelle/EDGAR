@@ -129,7 +129,7 @@
         "SC 14A": ["DEF 14A", "DEFC14A", "DEFM14A", "DEFR14A", "DEFA14A", "PREC14A", "PREM14A", "PRER14A", "PRE 14A"],
         "SC 14C": ["DEF 14C", "DEFC14C", "DEFM14C", "DEFR14C", "DEFA14C", "PREC14C", "PREM14C", "PRER14C", "PRE 14C"],
         "SC SPAC": ["SC TO-I", "SC TO-I/A", "SC TO-T", "SC TO-T/A", "SC TO-C", "SC13E4F", "SC13E4F/A", "SC14D1F", "SC14D1F/A", "SC14D9F", "SC14D9F/A", "SC 14D9", "SC 14D9/A", "SC14D9C"],
-        "SFP SPAC": ["S-1", "S-1/A", "S-1MEF", "F-1", "F-1/A", "F-1MEF", "S-4", "S-4/A", "S-4MEF", "F-4", "F-4/A", "F-4MEF", "POS AM", "POS462B"],
+        "SFP SPAC": ["S-1", "S-1/A", "S-1MEF", "F-1", "F-1/A", "F-1MEF", "S-4", "S-4/A", "S-4MEF", "S-4EF", "S-4 POS", "F-4", "F-4/A", "F-4MEF", "POS AM", "POS462B"],
         "S-1 EX98": ["S-1§EX-98", "S-1/A§EX-98", "S-1MEF§EX-98"], 
         "F-1 EX98": ["F-1§EX-98", "F-1/A§EX-98", "F-1MEF§EX-98"], 
         "S-4 EX98": ["S-4§EX-98", "S-4/A§EX-98", "S-4MEF§EX-98"], 
@@ -2421,7 +2421,7 @@
         "comment": "SPAC is only allowed for these submission types."
     },
     {
-        "sub-types": ["@8-K", "@20-F", "@20FR", "@SC 14A", "@SC 14C", "@SC SPAC", "@SFP SPAC", "@SPAC EX98"],
+        "sub-types": ["@8-K", "@20-F", "@20FR", "@SC 14A", "@SC 14C", "@SC SPAC", "@SFP SPAC"],
         "xbrl-names": "spac:*",
         "msgSection": "EXG:10.8.10",
         "validation": "(supported-taxonomy)",
@@ -2447,7 +2447,7 @@
     {
         "sub-types": ["@SPAC EX98"],
         "xbrl-names": "spac:*",
-        "msgSection": "EXG:10.8.10",
+        "msgSection": "EXG:3.4",
         "validation": "doc-type-facts-dependency",
         "source": "both",
         "dei/cover": "dei",
@@ -3146,7 +3146,7 @@
 		"dq-0540-{headerTag}-Unexpected": "Header element {headerTag} value {value} is not applicable for {subType} submission type.",
 		"dq-sro-1yr-period": "In submission type {subType}, {tag} {severityVerb} have a one-year period ending on {otherTag} in context {contextID}.",
 		"dq-sro-monthly-facts": "In submission type {subType}, there {severityVerb} at least one fact per month of reporting year, missing months {missingMonths}.",
-        "dq-{docType}-{taxonomy}-Facts-Dependency": "In submission type {subType}, for document type {docType}, there {severityVerb} be at least one {taxonomy} taxonomy element."
+        "dq-{docType}-{taxonomy}-Facts-Dependency": "In submission type {subType}, for document type {docType}, there {severityVerb} be at least one {taxonomy} taxonomy element. {taxonomy} taxonomy element not found.”"
     },
 	"extraction-cover-tags": [
 		"TradingSymbol",
