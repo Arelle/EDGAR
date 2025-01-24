@@ -322,7 +322,7 @@ linkbaseValidations = {
         preCustELRs = False
     ),
     "ecd": attrdict(
-        efmPre = None,
+        exgPre = None,
         exgCal = "10.08.02",
         exgDef = "10.08.02",
         elrPre = None,
@@ -343,7 +343,7 @@ linkbaseValidations = {
         elrDefRoleSrc = (),
         elrDefNoTgtRole = False,
         preSources = (),
-        efmPre = None,
+        exgPre = None,
         preCustELRs = True
     ),
     "rxp": attrdict(
@@ -364,7 +364,7 @@ linkbaseValidations = {
         elrDefRgtMemsRole = re.compile("http://xbrl.sec.gov/rxp/"),
         exgDefTgtMemsUnique = "10.08.05",
         preSources = (),
-        efmPre = None,
+        exgPre = None,
         preCustELRs = True,
     ),
     "sro": attrdict(
