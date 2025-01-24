@@ -3146,7 +3146,7 @@
 		"dq-0540-{headerTag}-Unexpected": "Header element {headerTag} value {value} is not applicable for {subType} submission type.",
 		"dq-sro-1yr-period": "In submission type {subType}, {tag} {severityVerb} have a one-year period ending on {otherTag} in context {contextID}.",
 		"dq-sro-monthly-facts": "In submission type {subType}, there {severityVerb} at least one fact per month of reporting year, missing months {missingMonths}.",
-        "dq-{docType}-{taxonomy}-Facts-Dependency": "In submission type {subType}, for document type {docType}, there {severityVerb} be at least one {taxonomy} taxonomy element. {taxonomy} taxonomy element not found.”"
+        "dq-{docType}-{taxonomy}-Facts-Dependency": "In submission type {subType}, for document type {docType}, there {severityVerb} be at least one {taxonomy} taxonomy element. {taxonomy} taxonomy element not found."
     },
 	"extraction-cover-tags": [
 		"TradingSymbol",
