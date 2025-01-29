@@ -387,11 +387,10 @@ linkbaseValidations = {
         preCustELRs = False
     ),
     "spac": attrdict(
-        exgPre = "10.08.10",
+        exgPre = None,
         exgCal = "10.08.10",
         exgDef = "10.08.10",
-        elrPre = re.compile("@match-nothing@"),
-        elrDefInNs = re.compile("never permitted"),
+        elrDefInNs = re.compile("."),
         elrDefExNs = re.compile(".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
         elrDefRoleSrc = (
             (re.compile(r".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
