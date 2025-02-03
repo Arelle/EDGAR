@@ -3644,6 +3644,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     for axisConcept in modelXbrl.nameConcepts.get(rule["axis"],()):
                         membersOfExtensionAxis = axisMemQnames(modelXbrl, axisConcept.qname, rule["extensions-allowed"] == "Yes") # set of QNames
                         allowableMembers = ugtAxisMembers[axisConcept.name] if rule["axis-descendants"] == "Yes" else set()
+                        for xuleMbrsKey in rule.get("xuleConstants-members", EMPTY_LIST):
+                            for qn in xuleConstants.get(xuleMbrsKey, EMPTY_LIST):
+                                allowableMembers.add(qn.localName)
                         for otherAxis in rule.get("additional-axes",EMPTY_LIST):
                             allowableMembers |= ugtAxisMembers[otherAxis]
                         for otherMemName in rule.get("additional-members",EMPTY_LIST) + rule.get("extension-members",EMPTY_LIST):
@@ -3760,17 +3763,14 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 if not allIfNil:
                                     itemValues = tuple(roundValue(f.xValue * itemWeights.get(f.qname.localName, ONE), decimals=dec)
                                                        for f in itemFacts if not f.isNil)
-                                try:
-                                    if ((not (sfNil & allIfNil)) and (
-                                        (sfNil ^ allIfNil) or
-                                        abs(sumValue - sum(itemValues)) > pow(10, -dec) * tolerance)):
-                                        modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
-                                            modelObject=b.values(), sumName=_sumLn, sumValue=str(sumValue),
-                                            itemNames=", ".join(_itemLns), itemValues=" + ".join(str(v) for v in itemValues),
-                                            contextID=sumFact.contextID, unitID=sumFact.unitID or "(none)",
-                                            edgarCode=edgarCode, ruleElementId=id)
-                                except:
-                                    print("exception")
+                                if ((not (sfNil & allIfNil)) and (
+                                    (sfNil ^ allIfNil) or
+                                    abs(sumValue - sum(itemValues)) > pow(10, -dec) * tolerance)):
+                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
+                                        modelObject=b.values(), sumName=_sumLn, sumValue=str(sumValue),
+                                        itemNames=", ".join(_itemLns), itemValues=" + ".join(str(v) for v in itemValues),
+                                        contextID=sumFact.contextID, unitID=sumFact.unitID or "(none)",
+                                        edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0005" and  deiDocumentType not in dqcRule["excluded-document-types"] and maxEndDate:
                 for id, rule in dqcRule["rules"].items():
                     msg = rule.get("message") # each rule has a message
@@ -3801,14 +3801,18 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                   and deiDocumentType and "T" not in deiDocumentType):
                 for id, rule in dqcRule["rules"].items():
                     focusRange = rule["focus-range"].get(deiItems.get("DocumentFiscalPeriodFocus"))
-                    if focusRange and not any(modelXbrl.factsByLocalName.get(n,()) for n in rule["blocking-names"]):
+                    if focusRange and not any(f.xValue == "true"
+                                              for n in rule["blocking-names"]
+                                              for f in modelXbrl.factsByLocalName.get(n,())):
                         def r6facts():
                             for n in rule["names"]:
                                 for f in modelXbrl.factsByLocalName.get(n,()):
                                     if f.context is not None and f.context.endDatetime is not None and f.context.startDatetime is not None:
                                         yield f
                             for n in ("{http://www.xbrl.org/dtr/type/non-numeric}textBlockItemType",
-                                      "{http://www.xbrl.org/dtr/type/2020-01-21}textBlockItemType"):
+                                      "{http://www.xbrl.org/dtr/type/2020-01-21}textBlockItemType",
+                                      "{http://www.xbrl.org/dtr/type/2022-03-31}textBlockItemType",
+                                      "{http://www.xbrl.org/dtr/type/2024-01-31}textBlockItemType"):
                                 for f in modelXbrl.factsByDatatype(True, qname(n)):
                                     if f.context is not None and f.context.endDatetime is not None and f.context.startDatetime is not None:
                                         yield f
@@ -3840,7 +3844,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     msg = rule.get("use-message","message") # general message defaults to "message"
                     ruleMsg = dqcRule[msg]
                     ruleEdgarCode = edgarCode + msg.title()[7:]
-                    bindings = factBindings(val.modelXbrl, (lesserLn, greaterLn) )
+                    bindings = factBindings(modelXbrl, (lesserLn, greaterLn) )
                     for b in bindings.values():
                         if lesserLn in b and greaterLn in b:
                             dec = leastDecimals(b, (lesserLn, greaterLn) )
@@ -3859,7 +3863,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 if isDQC0013: # 0013 has a precondition
                     incomeBeforeTax = None # precondition, must be positive
                     for pre in dqcRule["precondition"]: # array of facts to bind and condition on if first is present
-                        for (ctxHash,_unitHash), b in factBindings(val.modelXbrl, pre).items():
+                        for (ctxHash,_unitHash), b in factBindings(modelXbrl, pre).items():
                             if pre[0] in b:
                                 incomeBeforeTax = sum(f.xValue for f in b.values())
                                 if incomeBeforeTax > 0 and ctxHash not in posIncomeBeforeTax:
@@ -4322,7 +4326,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             elif dqcRuleName == "DQC.US.0060":
                 for id, rule in dqcRule["rules"].items():
                     for eltLn, depLns in rule["element-dependencies"].items():
-                        bindings = factBindings(val.modelXbrl, flattenToSet( (eltLn, depLns )), nils=False, noAdditionalDims=True)
+                        bindings = factBindings(modelXbrl, flattenToSet( (eltLn, depLns )), nils=False, noAdditionalDims=True)
                         for b in bindings.values():
                             if eltLn in b and not any(depLn in b for depLn in depLns):
                                 f = b[eltLn]
@@ -4507,8 +4511,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 priItemNames = rule["primary-items"]
                 priItemConcepts = set(concept
                                       for name in priItemNames
-                                      if name in modelXbrl.nameConcepts
-                                      for concept in modelXbrl.nameConcepts[name])
+                                      for concept in modelXbrl.nameConcepts.get(name,()))
                 priItemQnames = sorted(concept.qname for concept in priItemConcepts)
 
                 def getDescendants(arcRoles, fromConcept, elr, startAtObj=None, descendants=None, visited=None, cubeOnly=False):
@@ -4545,22 +4548,22 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             domDescendants = getDescendants((XbrlConst.dimensionDomain, XbrlConst.domainMember),domConcept, linkroleUri)
                             if len(domDescendants) == 1:
                                 for boundFacts in factBindings(modelXbrl, priItemNames, coverDimQnames=(dimConcept.qname,)).values():
-                                    factsWithDim = set()
-                                    factsWithoutDim = set()
                                     for lnFacts in boundFacts.values():
+                                        factsWithDim = set()
+                                        factsWithoutDim = set()
                                         for f in lnFacts.values():
                                             if f.context is not None:
                                                 if dimConcept.qname in f.context.qnameDims and f.context.qnameDims[dimConcept.qname].member in domDescendants:
                                                     factsWithDim.add(f)
                                                 else:
                                                     factsWithoutDim.add(f)
-                                    if len(factsWithDim) == 1 and len(factsWithoutDim) == 0:
-                                        f = factsWithDim.pop()
-                                        modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
-                                            modelObject=f, name=f.qname,value=f.xValue, role=linkroleUri, table=cubeRoot.qname,
-                                            member=f.context.qnameDims[dimConcept.qname].memberQname,
-                                            contextID=f.contextID, unitID=f.unitID or "(none)",
-                                            edgarCode=edgarCode, ruleElementId=id)
+                                        if len(factsWithDim) == 1 and len(factsWithoutDim) == 0:
+                                            f = factsWithDim.pop()
+                                            modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
+                                                modelObject=f, name=f.qname,value=f.xValue, role=linkroleUri, table=cubeRoot.qname,
+                                                member=f.context.qnameDims[dimConcept.qname].memberQname,
+                                                contextID=f.contextID, unitID=f.unitID or "(none)",
+                                                edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0072":
                 # 0071 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))
@@ -4884,6 +4887,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 stmtPreNtwrkExclRolePattern = re.compile(dqcRule["statement-pre-networks-exclusions-patterns"]["linkrole"])
                 stmtPreNtwrkExclDescPattern = re.compile(dqcRule["statement-pre-networks-exclusions-patterns"]["description"])
                 calcRelSet = modelXbrl.relationshipSet(XbrlConst.summationItems)
+                STATEMENT_PRES_NETWORKS = set() # for rule 0126, 0127
                 def getMonetaryDescendants(fromConcept, elr, result, visited=None):
                     if visited is None: visited=set()
                     for rel in modelXbrl.relationshipSet(XbrlConst.parentChild, elr).fromModelObject(fromConcept):
@@ -4900,6 +4904,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     if (' - Statement - ' in definition and
                         not stmtPreNtwrkExclRolePattern.match(linkroleUri) and
                         not stmtPreNtwrkExclDescPattern.match(definition)):
+                        STATEMENT_PRES_NETWORKS.add(linkroleUri)
                         preConcepts = set()
                         for rel in modelXbrl.relationshipSet(XbrlConst.parentChild, linkroleUri).modelRelationships:
                             preConcepts.add(rel.fromModelObject)
@@ -5001,7 +5006,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         localDims = dict((n.localName, d) for n,d in f.context.qnameDims.values() if d.isExplicit)
                         if f.xValid >= VALID and not f.isNil:
                             if not axes:
-                                if not f.qnameDims:
+                                if not f.context.qnameDims:
                                     hasNondimValue = True
                                     if f.xValue == rule["value"]: 
                                         continue                                   
@@ -5034,66 +5039,91 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 for axis in modelXbrl.nameConcepts.get(rule["axis"], ()):
                     for name in conceptsNeedingBusinessAcquisitionAxis:
                         for f in modelXbrl.factsByLocalName.get(name, ()):
-                            if axis not in f.qnameDims:
-                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(message)),
+                            if axis not in f.context.qnameDims:
+                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                     modelObject=f,
                                     name=f.qname, value=f.xValue, contextID=f.contextID, unitID=f.unitID or "(none)",
                                     edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0118":
                 # 0118 has only one id, rule
+                # uses getDescendants from rule 0071
+                ''' for now impractical in Python
                 id, rule = next(iter(dqcRule["rules"].items()))
-                statementCubesDefPattern = re.compile(rule["statement-cubes-definition-pattern"])
-                statementELRexclusionPattern = re.compile(rule["statement-ELR-exclusion-pattern"])
+                if not hasDocPerEndDateFact:
+                    continue
+                docPerStart = documentPeriodEndDateFact.context.startDatetime
+                docPerEnd = documentPeriodEndDateFact.context.endDatetime
+                statementCubesDefPattern = re.compile(rule["statement-cubes-definition-pattern"],re.I)
+                statementELRexclusionPattern = re.compile(rule["statement-ELR-exclusion-pattern"],re.I)
+                rule118statementCubeUris = set() # for rule 0126
                 for linkroleUri in OrderedSet(modelLink.role for modelLink in val.modelXbrl.baseSets[(XbrlConst.all,None,None,None)]): # role ELRs may be repeated in dim LB
                     roleTypes = val.modelXbrl.roleTypes.get(linkroleUri)
                     definition = (roleTypes[0].definition or linkroleUri) if roleTypes else linkroleUri
                     if not statementCubesDefPattern.match(definition) or statementELRexclusionPattern.match(linkroleUri):
                         continue
-                    tableRelSet = modelXbrl.relationshipSet("XBRL-dimensions", linkroleUri)
                     priItemRelSet = modelXbrl.relationshipSet(XbrlConst.domainMember, linkroleUri)
-                    cubeRoots = tableRelSet.rootConcepts
-                    if c.name in rule["excluded-concepts"]:
-                        continue
-                    for cubeRoot in cubeRoots:
-                        for cube in getDescendants("XBRL-dimensions", cubeRoot, linkroleUri, cubeOnly=True):
-                            if (tableRelSet.isRelated(cube, "descendant", dimToSkipIfPresent, isDRS=True) or
-                                not tableRelSet.isRelated(cube, "descendant", dimConcept, isDRS=True) or not any(
-                                    priItemRelSet.isRelated(cubeRoot, "descendant", priItemConcept, isDRS=True)
-                                    for priItemConcept in priItemConcepts)):
-                                continue
-                            if any (priItemConcept.isMonetary and priItemConcept.periodType == "duration"
-                                    for priItemConcept in getDescendants(XbrlConst.domainMember, cubeRoot, linkroleUri)):
-                                continue
-                            domDescendants = getDescendants((XbrlConst.dimensionDomain, XbrlConst.domainMember), domConcept, linkroleUri)
-                            for binding in factBindings(modelXbrl, priItemNames, coverDimQnames=(dimConcept.qname,), cube=cube, cubeRelSet=tableRelSet).values():
-                                boundFacts = set(f for lnBinding in binding.values() for f in lnBinding.values())
-                                sumFact = None
-                                memberFacts = []
-                                for f in boundFacts:
-                                    if dimConcept.qname not in f.context.qnameDims:
-                                        sumFact = f
-                                    elif (f.context.qnameDims[dimConcept.qname].member in domDescendants and
-                                          not any(priItemRelSet.isRelated(a.context.qnameDims[dimConcept.qname].member, "descendant", f.context.qnameDims[dimConcept.qname].member, isDRS=True)
-                                                  for a in boundFacts
-                                                  if dimConcept.qname in a.context.qnameDims)):
-                                        memberFacts.append(f)
-                                if not memberFacts:
-                                    continue # only continue if there are member facts
-                                if boundFacts and sumFact is not None:
-                                    mbrSum = sum((f.xValue for f in memberFacts))
-                                    mbrStr = ", ".join(str(f.xValue) for f in boundFacts if dimConcept.qname in f.context.qnameDims)
-                                    minDec = leastDecimals(boundFacts)
-                                    difference = abs(sumFact.xValue - mbrSum)
-                                    if isinf(minDec):
-                                        maxDiff = 0
-                                    else:
-                                        maxDiff = pow(10, -minDec) * tolerance
-                                    if difference > maxDiff:
-                                        modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
-                                            modelObject=[sumFact]+memberFacts, value=sumFact.xValue, mbrSum=mbrSum, mbrStr=mbrStr, name=f.qname.localName,
-                                            linkroleUri=linkroleUri,
-                                            contextID=sumFact.context.id, unitID=sumFact.unit.id if sumFact.unit is not None else "(none)",
-                                            edgarCode=edgarCode, ruleElementId=id)
+                    for cubeRel in modelXbrl.relationshipSet(XbrlConst.all, linkroleUri).modelRelationships:
+                        tableRelSet = modelXbrl.relationshipSet("XBRL-dimensions", linkroleUri)
+                        priItemElt = cubeRel.fromModelObject()
+                        for cubeRoot in tableRelSet.rootConcepts:
+                            for cube in getDescendants("XBRL-dimensions", cubeRoot, linkroleUri, cubeOnly=True):
+                                if cube is None or cube.name in rule["excluded-concepts"] or priItemElt is None:
+                                    continue
+                                rule118statementCubeUris.add(linkroleUri)
+                                cubePriItems = getDescendants(XbrlConst.domainMember, cubeRoot, linkroleUri, isDRS=True)
+                                monPriItemNames = set(c.name for c in cubePriItems if c.isMonetary)
+                                calcConceptsInCube = set()
+                                for calcRel in modelXbrl.relationshipSet(XbrlConst.summationItems, linkroleUri).modelRelationships:
+                                    calcConcepts.add(calcRel.fromModelObject)
+                                    calcConcepts.add(calcRel.toModelObject)
+                                calcConceptsInCube &= cubePriItems
+                                dimElts = set(dimRel.toModelObject
+                                              for dimRel in modelXbrl.relationshipSet(XbrlConst.hypercubeDimension).modelRelationships
+                                              if dimRel.toModelObject is not None)
+                                defaultedDims = set(dimRel.fromModelObject
+                                                    for dimElt in dimElts
+                                                    for dimRel in modelXbrl.relationshipSet(XbrlConst.dimensionDefault).fromModelObject(dimElt))
+                                missingDefaults = dimElts - defaultedDims
+                                
+                                # check dimension default labels in pre LB
+                                dimsMissingDefLabel = set()
+                                for dimElt in dimElts:
+                                    for preRel in modelXbrl.relationshipSet(XbrlConst.parentChild, cubeRel.consecutiveLinkrole).fromModelObject(dimElt):
+                                        preDom = preRel.toModelObject
+                                        if preDom is not None and not "default" in str(preDom.label(preferredLabel=preRel.preferredLabel)).lower():
+                                            dimsMissingDefLabel.add(dimElt)
+
+                                for binding in factBindings(modelXbrl, monPriItemNames, cube=cube, cubeRelSet=tableRelSet).values():
+                                    boundFacts = set(f for lnBinding in binding.values() for f in lnBinding.values())
+                                    
+                                    sumFact = None
+                                    memberFacts = []
+                                    for f in boundFacts:
+                                        if dimConcept.qname not in f.context.qnameDims:
+                                            sumFact = f
+                                        elif (f.context.qnameDims[dimConcept.qname].member in domDescendants and
+                                              not any(priItemRelSet.isRelated(a.context.qnameDims[dimConcept.qname].member, "descendant", f.context.qnameDims[dimConcept.qname].member, isDRS=True)
+                                                      for a in boundFacts
+                                                      if dimConcept.qname in a.context.qnameDims)):
+                                            memberFacts.append(f)
+                                    if not memberFacts:
+                                        continue # only continue if there are member facts
+                                    if boundFacts and sumFact is not None:
+                                        mbrSum = sum((f.xValue for f in memberFacts))
+                                        mbrStr = ", ".join(str(f.xValue) for f in boundFacts if dimConcept.qname in f.context.qnameDims)
+                                        minDec = leastDecimals(boundFacts)
+                                        difference = abs(sumFact.xValue - mbrSum)
+                                        if isinf(minDec):
+                                            maxDiff = 0
+                                        else:
+                                            maxDiff = pow(10, -minDec) * tolerance
+                                        if difference > maxDiff:
+                                            modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
+                                                modelObject=[sumFact]+memberFacts, value=sumFact.xValue, mbrSum=mbrSum, mbrStr=mbrStr, name=f.qname.localName,
+                                                linkroleUri=linkroleUri,
+                                                contextID=sumFact.context.id, unitID=sumFact.unit.id if sumFact.unit is not None else "(none)",
+                                                edgarCode=edgarCode, ruleElementId=id)
+                '''
             elif dqcRuleName == "DQC.US.0119":
                 def getDescendants(arcRoles, fromConcept, elr, descendants=None, visited=None):
                     if descendants is None:
@@ -5146,10 +5176,16 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         f = [b[n] for n in rule["names"] if n in b]
                         if len(f) and rule["name2"] not in b:
                             f = f[0]
-                            modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(message)),
+                            modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                 modelObject=f,
                                 name=f.qname, value=f.xValue, contextID=f.contextID, unitID=f.unitID or "(none)",
                                 edgarCode=edgarCode, ruleElementId=id)
+            elif dqcRuleName == "DQC.US.0126":
+                ''' for now impractical in Python
+                id, rule = next(iter(dqcRule["rules"].items()))                
+                for linkroleUri in sorted(STATEMENT_PRES_NETWORKS): # see 0099
+                    if linkroleUri not in rule118statementCubeUris:
+                '''                        
             elif dqcRuleName == "DQC.US.0128":
                 # 0112 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))
@@ -5164,44 +5200,44 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         if not defF.context.qnameDims:
                                             for f in boundFacts:
                                                 if f.context.qnameDims and f.xValue > defF.xValue and f.decimals == defF.decimals:
-                                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(message)),
+                                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                                         modelObject=(defF,f), defaultValue=defF.xValue,
                                                         name=f.qname, value=f.xValue, contextID=f.contextID, unitID=f.unitID or "(none)",
-                                                        dimensions=", ".join("=".join(d.propertyView) for d in f.qnameDims.values()),
+                                                        dimensions=", ".join("=".join(d.propertyView) for d in f.context.qnameDims.values()),
                                                         edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0133":
                 for id, rule in dqcRule["rules"].items():
-                    dimQn = qname(rule["axis"], deiDefaultPrefixedNamespaces)
-                    dimExpected = rule["axis-expected"]
-                    for name in (rule["names"] if id == "9831" else
-                                 xuleConstants["FINANCIAL_DATA_EQUITY_METHOD_INVESTMENTS"] if id == "9832" else
-                                 xuleConstants["NON_FINANCIAL_DATA_EMI"] # id "9833"
-                                 ):
-                        for f in modelXbrl.factsByLocalName.get(name, ()):
-                            if not f.isNil and ((dimQn in f.context.qnameDims) ^ dimExpected):
-                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
-                                    modelObject=f, value=f.xValue, name=name,
-                                    contextID=f.context.id, unitID=f.unit.id if f.unit is not None else "(none)",
-                                    edgarCode=edgarCode, ruleElementId=id)
+                    for dimConcept in modelXbrl.nameConcepts.get(rule["axis"], ()):
+                        dimQn = dimConcept.qname
+                        dimExpected = rule["axis-expected"]
+                        for name in (rule["names"] if id == "9831" else
+                                     xuleConstants["FINANCIAL_DATA_EQUITY_METHOD_INVESTMENTS"] if id == "9832" else
+                                     xuleConstants["NON_FINANCIAL_DATA_EMI"] # id "9833"
+                                     ):
+                            for f in (modelXbrl.factsByQname.get(name,()) if isinstance(name, QName) else modelXbrl.factsByLocalName.get(name, ())):
+                                if not f.isNil and ((dimQn in f.context.qnameDims) ^ dimExpected):
+                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
+                                        modelObject=f, value=f.xValue, name=name,
+                                        contextID=f.context.id, unitID=f.unit.id if f.unit is not None else "(none)",
+                                        edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0134":
                 # 0112 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))
-                for dimName in modelXbrl.nameConcepts.get(rule["allowed-axis"], ()):
-                    for dimConcept in modelXbrl.nameConcepts.get(dimName, ()):
-                        for name in rule["names"]:
-                            for f in modelXbrl.factsByLocalName.get(name, ()):
-                                dimMemQname = f.context.dimMemberQname(dimConcept.qname)
-                                if dimMemQname is None or dimMemQname.localName not in rule["allowed-members"]:
-                                    invalidDimensions = [dimQn.localName for dimQn in f.context.qnameDims if dimQn.localName in rule["invalid-axes"]]
-                                    financialInstrumentAxisFlag = any(dimQn.localName == "FinancialInstrumentAxis" for dimQn in f.context.qnameDims)
-                                    if invalidDimensions:
-                                        modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
-                                            modelObject=f,
-                                            name=f.qname, value=f.xValue, contextID=f.contextID, unitID=f.unitID or "(none)",
-                                            invalidDimensions=", ".join(invalidDimensions),
-                                            FIAxisMessage=dqcRule["FI-axis-message"].replace("{invalidDimensions}", ", ".join(invalidDimensions)
-                                                            ) if financialInstrumentAxisFlag else "",
-                                            edgarCode=edgarCode, ruleElementId=id)
+                for dimConcept in modelXbrl.nameConcepts.get(rule["allowed-axis"], ()):
+                    for name in rule["names"]:
+                        for f in modelXbrl.factsByLocalName.get(name, ()):
+                            dimMemQname = f.context.dimMemberQname(dimConcept.qname)
+                            if dimMemQname is None or dimMemQname.localName not in rule["allowed-members"]:
+                                invalidDimensions = [dimQn.localName for dimQn in f.context.qnameDims if dimQn.localName in rule["invalid-axes"]]
+                                financialInstrumentAxisFlag = any(dimQn.localName == "FinancialInstrumentAxis" for dimQn in f.context.qnameDims)
+                                if invalidDimensions:
+                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
+                                        modelObject=f,
+                                        name=f.qname, value=f.xValue, contextID=f.contextID, unitID=f.unitID or "(none)",
+                                        invalidDimensions=", ".join(invalidDimensions),
+                                        FIAxisMessage=dqcRule["FI-axis-message"].replace("{invalidDimensions}", ", ".join(invalidDimensions)
+                                                        ) if financialInstrumentAxisFlag else "",
+                                        edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0135":
                 # used by 0135 and -136
                 EXT_ENUM_DICT = dict((n.localName,v.localName) for n, v in xuleConstants["EXT_ENUM"]) # use localNames
@@ -5226,8 +5262,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         if id == "9835":
                             fsConceptNames = set()
                             for c in fsMonetaryConcepts:
-                                for d in getDescendants(XbrlConst.summationItems, c):
-                                    fsConceptNames.add(d.name)
+                                for name in getDescendants(XbrlConst.summationItems, c, None):
+                                    fsConceptNames.add(c.name) # XULE specifies include start
+                                    fsConceptNames.add(name)
                         else:
                             fsConceptNames = fsMonetaryConcepts
                         hasOCI_SECURITY_RELATED_ITEMS = any(qn.localName in fsConceptNames for qn in xuleConstants["OCI_SECURITY_RELATED_ITEMS"])
@@ -5251,15 +5288,15 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             
                             if id == "9835":
                                 # get set of ancestor calculation concepts and test if in financial statement items to exclude from rule as has linkage back to financials through a calculation**/        
-                                fsAncestorNames = getAncestors(XbrlConst.summationItems, fsConcept)
+                                fsAncestorNames = getAncestors(XbrlConst.summationItems, fsConcept, None)
                 
                                 # We do not get calc ancestors defined in the taxonomy as this would potentially return something in the FS.  We deal with the pension case of NetPeriodicDefinedBenefitsExpenseReversalOfExpenseExcludingServiceCostComponent above as this calc will not be defined in the company calc
                                 # as it excludes service costs. **/
-                                if not any(n in fsConceptNames for n in fsAncestorNames):
+                                if any(n in fsConceptNames for n in fsAncestorNames):
                                     continue
                                 # Get a list of values for this element, but exclude detailed breakdowns of disclosure for financial instruments **/
                                 # But exclude some member items not to check **/
-                                for bndHash, valuesReportedWithInterest in factBindings((fsConceptName,), absentDimNames=scheduleAxisNames).items():
+                                for bndHash, valuesReportedWithInterest in factBindings(modelXbrl, (fsConceptName,), absentDimNames=scheduleAxisNames).items():
                                     FS_Concept_Items = [f for f in valuesReportedWithInterest.values() if f.xValue != 0 or not any(k.localName in FairValueBreakdownItemsNotChecked for k in f.context.qnameDims.keys())]
                                     if len(FS_Concept_Items) > 0:
                 
@@ -5279,7 +5316,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         # Get the children of the FS concept to see if any of these are in the ext enum list. We do this because the total amount reported could be broken up and allocated to different FS accounts.  So a total without an extensible enum is OK if its children have an ext enum showing the accounts in the FS they are allocated to. **/
                 
                                         related_ext_enum_item_list = [EXT_ENUM_DICT[child]
-                                                                      for child in getDescendants(XbrlConst.summationItems, FS_Concept_Items[0].concept)
+                                                                      for child in getDescendants(XbrlConst.summationItems, FS_Concept_Items[0].concept, None)
                                                                       if child in EXT_ENUM_DICT]
                 
                                         # This determines the allowable enum items that can be used for this concept
@@ -5293,13 +5330,13 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         # If any of location axis are used then no error is reported. The next rule checks that alignment is appropriate for location axis.
                                         # In some cases this may cause duplicates
                 
-                                        relExtEnBindings = factBindings(related_ext_enum_list)
+                                        relExtEnBindings = factBindings(modelXbrl, related_ext_enum_list)
                                         relExtEnFacts = [b.values() for b in relExtEnBindings.values()]
         
                                         if len(relExtEnFacts) > 0: 
                                             continue
                                         else:
-                                            fs_decimals = statistics.mode([f.decimals for f in modelXbrl.nonNilFactsInInstance if f.concept.isMonetary])
+                                            fs_decimals = statistics.mode([float(f.decimals) for f in modelXbrl.nonNilFactsInInstance if f.concept.isMonetary])
                                             tolerance = pow(10, -1 * fs_decimals) * rule["decimal_tolerance_factor"]
                                             # This gets the max value either neg or pos
                                             FS_Concept_Item_abs_only = [abs(f.xValue) for f in FS_Concept_Items]
@@ -5309,7 +5346,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                             FS_Concept_Item_max = FS_Concept_Item_max_first[1]
                                             # Test if amount is larger than tolerance
                                             if max(FS_Concept_Item_abs_only) > tolerance:
-                                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
+                                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
                                                     modelObject=FS_Concept_Items,
                                                     name=fsConceptQn, value=FS_Concept_Item_max, contextID=FS_Concept_Items[0].contextID, unitID=FS_Concept_Items[0].unitID or "(none)",
                                                     related_ext_enum_list=", ".join(related_ext_enum_list),
@@ -5326,21 +5363,20 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     coverDimNames = ("IncomeStatementLocationAxis", )
                                 # Get a list of values for this element, but exclude detailed breakdowns of disclosure for financial instruments **/
                                 # But exclude some member items not to check **/
-                                bindings = factBindings((fsConceptName,), coverDimNames=coverDimNames, absentDimNames=scheduleAxisNames, coverUnit=True).items()
-
-                                for bCvr in bindings.values(): # aligned except covered dimension
-                                    for cvrHash, b in bCvr.items():
-                                        for FS_Concept_Item in b.values():
+                                bindings = factBindings(modelXbrl, (fsConceptName,), coverDimNames=coverDimNames, absentDimNames=scheduleAxisNames, coverUnit=True).values()
+                                for bCvr in bindings: # aligned except covered dimension
+                                    for b in bCvr.values():
+                                        for cvrHash, FS_Concept_Item in b.items():
                                             # Determine if any the extensible list element has been used with a value 
                                             # In some cases the context does not need the related extension because it is provided at a different dimensional level.
                                             # We need to check that either the BS Location or IS location axis has also been used with the item. If any of these axis are used then no error is reported
-                                            if any(b3.values()
-                                                   for b2 in factBindings((relatedExtEnumQn.localName,), coverDimNames=coverDimNames, absentDimNames=scheduleAxisNames, coverUnit=True)
-                                                   for cvrHash2, b3 in b2.items()
-                                                   if cvrHash2 == cvrHash):
+                                            if any(len(b3) > 0
+                                                   for b2 in factBindings(modelXbrl, (relatedExtEnumQn.localName,), coverDimNames=coverDimNames, absentDimNames=scheduleAxisNames, coverUnit=True).values()
+                                                   for b2cvr in b2
+                                                   for b3 in b2cvr.values()):
                                                 continue # ignore this binding
 
-                                            modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
+                                            modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
                                                 modelObject=FS_Concept_Item,
                                                 name=fsConceptQn, value=FS_Concept_Item.xValue, contextID=FS_Concept_Item.contextID, unitID=FS_Concept_Item.unitID or "(none)",
                                                 related_ext_enum=relatedExtEnumQn,
@@ -5396,7 +5432,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     frozenNameSet = frozenset(names)
                     if frozenNameSet not in ruleBindings:
                         ruleBindings[frozenNameSet] = factBindings(modelXbrl, frozenNameSet)
-                    return ruleBindings[frozenNameSet].get(bndHash, ()).values()
+                    return ruleBindings[frozenNameSet].get(bndHash, EMPTY_DICT).values()
                 def sumItemChildren(fromNames, toNames):
                     calcRelSet = modelXbrl.relationshipSet(XbrlConst.summationItems)
                     sourceNames = set()

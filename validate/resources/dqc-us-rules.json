@@ -115,8 +115,9 @@
             "54": {
                 "axis": "LegalEntityAxis",
                 "axis-descendants": "Yes",
+				"xuleConstants-members": ["MEM_LEG_ENT_AXS", "MEM_FHLB_AXS"],
                 "additional-axes": ["FederalHomeLoanBankAdvancesBranchOfFHLBBankAxis"],
-                "additional-members": ["PredecessorMember", "CoVenturerMember", "SpinOffMember", "PartnershipMember", "LimitedLiabilityCompanyMember", "TrustForBenefitOfEmployeesMember", "EntityDomain"],
+                "additional-members": ["CoVenturerMember", "SpinOffMember", "PartnershipMember", "LimitedLiabilityCompanyMember", "TrustForBenefitOfEmployeesMember", "EntityDomain"],
                 "extensions-allowed": "Yes"
             },
             "56": {
@@ -128,7 +129,7 @@
             "57": {
                 "axis": "ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
                 "axis-descendants": "None",
-                "additional-members": ["EquityMethodInvesteeNameDomain", "OtherInvesteesMember"],
+				"xuleConstants-members": ["MBR_SCH_EQT_INV_NM_AXS"],
                 "extensions-allowed": "Yes"
             },
             "58": {
@@ -139,9 +140,16 @@
             },
             "59": {
                 "axis": "PlanNameAxis",
-                "axis-descendants": "Yes",
+				"axis-descendants": "None",
+				"xuleConstants-members": ["MBR_PLN_NM_AXS"],
                 "extensions-allowed": "Yes"
             },
+			"60": {
+			    "axis": "DefinedContributionPlanNameAxis",
+				"axis-descendants": "None",
+				"xuleConstants-members": ["MEM_DEF_CNT_PLN_NM_AXS"],
+			    "extensions-allowed": "Yes"
+			},
             "61": {
                 "axis": "RangeAxis",
                 "axis-descendants": "Yes",
@@ -269,6 +277,13 @@
                 "axis-descendants": "Yes",
                 "extensions-allowed": "Yes"
             },
+			"83": {
+			    "axis": "RetirementPlanSponsorLocationAxis",
+				"axis-descendants": "None",
+				"xuleConstants-members": ["MEMBR_STM_GEO_AXSM_DEF_CNT_PLN_NM_AXS"],
+				"additional-members": ["RetirementPlanSponsorLocationDomain", "DomesticPlanMember", "ForeignPlanMember"],
+			    "extensions-allowed": "Yes"
+			},
             "9366": {
                 "axis": "BusinessAcquisitionAxis",
                 "axis-descendants": "Yes",
@@ -579,7 +594,9 @@
 			"3002": "EffectiveIncomeTaxRateReconciliationNondeductibleExpenseMealsAndEntertainment",
 			"3439": "EffectiveIncomeTaxRateReconciliationDeductionsExtraterritorialIncomeExclusion",
 			"3440": "EffectiveIncomeTaxRateReconciliationNondeductibleExpenseCharitableContributions",
-			"3441": "EffectiveIncomeTaxRateReconciliationRepatriationForeignEarningsJobsCreationActOf2004"
+			"3441": "EffectiveIncomeTaxRateReconciliationRepatriationForeignEarningsJobsCreationActOf2004",
+			"9789": "EffectiveIncomeTaxRateReconciliationBeatPercent",
+			"9791": "EffectiveIncomeTaxRateReconciliationFdiiPercent"
 		},
 		"additional-excluded-names": [
 		]
@@ -634,7 +651,8 @@
 			"7651": "RevenueFromContractWithCustomerIncludingAssessedTax",
 			"7652": "RevenueFromContractWithCustomerExcludingAssessedTax",
 			"2695": "CostOfGoodsAndServicesSold",
-			"2697": "CostOfRevenue"
+			"2697": "CostOfRevenue",
+			"9093": "CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization"
 			},
 		"additional-excluded-names": [
 		]
@@ -1494,7 +1512,7 @@
             "A JSON object with key that is the rule id and value object as follows:",
             "   axis-qname, array of primary-items-names",
             "",
-            "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0071/DQC_0071.md"
+            "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0070/DQC_0070.md"
         ],
 		"year-introduced": 2024,
         "message": "The concept {name} with a defaulted value of {value} is not equal to the aggregated value of the dimensionally qualified components on the axis DefinedBenefitPlanByPlanAssetCategoriesAxis which has an aggregate value of {mbrSum} based on the data in the filing. \nThe aggregated value is calculated by adding the members in the network {linkroleUri}. The values of the calculation components are as follows:\n{mbrStr}.  \n\nThe value of a concept broken down by its components along the DefinedBenefitPlanByPlanAssetCategoriesAxis axis should  be equal to its component pieces. An error could occur for one of the following reasons:  \n\n1. The values of the plan assets by category have been further disaggregated by additional dimensions such as geography. Plan Asset categories should not be dimensionally disaggregated and members should be defined for each security class reported. i.e. Equity Securities in the US should be represented as a single member.  \n\n2. The  default value of {name} is incorrectly totaled for DefinedBenefitPlanFairValueOfPlanAssets  \n\n 3. Not all dimension members or additional dimensions have been defined on the category axis DefinedBenefitPlanByPlanAssetCategoriesAxis.  \n\n4. The filer has reported a sub component of plan assets that does not represent a complete breakdown of the total. In these cases the element DefinedBenefitPlanPlanAssetsInvestmentWithinPlanAssetCategoryAmount should be used instead of the element DefinedBenefitPlanFairValueOfPlanAssets.  \n\nThis rule aggregates the value of member components located on the axis at the highest level of aggregation to avoid double counting in the event that the company uses a hierarchy of members.  \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
@@ -2480,7 +2498,9 @@
 	        "",
 	        "A JSON object with key that is the rule id and value object as follows:",
 	        "",
-	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0118/DQC_0118.md"
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0118/DQC_0118.md",
+			"",
+			"This rule is impractical to translate into Python"
 	    ],
 		"year-introduced": 2025,
 	    "rules": {
@@ -2525,11 +2545,11 @@
 	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0123/DQC_0123.md"
 	    ],
 		"year-introduced": 2025,
-		"message": "The company has reported a value for {name} with the axis StatementClassOfStockAxis with a value of {$equityFactNoEquityComponent} to represent the monetary value of the class of stock in equity. This fact however when used in the Statement of Shareholders Equity must include the Component of Equity and associated member indicating if it is preferred stock, common stock or treasury stock. This error could occur because the filer has either 1) used the incorrect element or 2) has NOT included the Statement Equity Components Axis with the Common Stock or Preferred Stock member on the fact. \n\nThe filer should either add the Statement Equity Components Axis and respective stock member in addition to the class of stock axis to the fact, or change the element name from {name} to the appropriate element if the value is not included in Stockholders Equity. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
+		"message": "The company has reported a value for {name} with the axis StatementClassOfStockAxis with a value of {value} to represent the monetary value of the class of stock in equity. This fact however when used in the Statement of Shareholders Equity must include the Component of Equity and associated member indicating if it is preferred stock, common stock or treasury stock. This error could occur because the filer has either 1) used the incorrect element or 2) has NOT included the Statement Equity Components Axis with the Common Stock or Preferred Stock member on the fact. \n\nThe filer should either add the Statement Equity Components Axis and respective stock member in addition to the class of stock axis to the fact, or change the element name from {name} to the appropriate element if the value is not included in Stockholders Equity. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
 	    "rules": {
 			"9583": {
 				"names": ["StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest", "StockholdersEquity"],
-				"name2": "StockholdersEquity",
+				"name2": "NetAssetValuePerShare",
 				"axis": "StatementClassOfStockAxis"
 			}
 	    }
@@ -2541,7 +2561,9 @@
 	        "",
 	        "A JSON object with key that is the rule id and value object as follows:",
 	        "",
-	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0126/DQC_0126.md"
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0126/DQC_0126.md",
+		    "",
+			"This rule is impractical to translate into Python"
 	    ],
 		"year-introduced": 2025,
 	    "rules": {
@@ -2564,7 +2586,7 @@
 					"PropertyPlantAndEquipmentByTypeAxis",
 					"StatementClassOfStockAxis",
 					"LongtermDebtTypeAxis",
-					"srt:ProductOrServiceAxis",
+					"ProductOrServiceAxis",
 					"FiniteLivedIntangibleAssetsByMajorClassAxis",
 					"DebtInstrumentAxis"]
 			}
@@ -2583,19 +2605,19 @@
 	    "rules": {
 			"9831": {
 				"names": ["EquityMethodInvestmentOwnershipPercentage", "EquityMethodInvestmentDescriptionOfPrincipalActivities"],
-				"axis": "srt:ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
-				"axis-expected": false,
+				"axis": "ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
+				"axis-expected": true,
 				"message": "The filer has reported a value for the element {name} with a value of {value} without using the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. This axis must be used when reporting a value for {name}. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
 			},
 			"9832": {
-				"axis": "srt:ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
-				"axis-expected": true,
+				"axis": "ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
+				"axis-expected": false,
 				"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. This axis must be not be used when reporting a value for {name}. The filer should use the axis EquityMethodInvestmentNonconsolidatedInvesteeAxis without the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
 				
 			},
 			"9833": {
 				"axis": "EquityMethodInvestmentNonconsolidatedInvesteeAxis",
-				"axis-expected": true,
+				"axis-expected": false,
 				"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis EquityMethodInvestmentNonconsolidatedInvesteeAxis. This axis must not be used when reporting a value for {name}. The filer should use the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
 			}
 	    }
@@ -2677,7 +2699,7 @@
 	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0136/DQC_0136.md"
 	    ],
 		"year-introduced": 2025,
-		"message": "The extensible list item {related_ext_enum} has a value of {$x}. This item refers to the location of this item in the financial statements.  However, the concept {x} does not appear in the face financial statements. Either update the value of the extensible list item {x} with the correct element or add the line item {x} to the presentation and calculation linkbase in the appropriate statement role.",
+		"message": "The extensible list item {related_ext_enum} has a value of {x}. This item refers to the location of this item in the financial statements.  However, the concept {x} does not appear in the face financial statements. Either update the value of the extensible list item {x} with the correct element or add the line item {x} to the presentation and calculation linkbase in the appropriate statement role.",
 	    "rules": {
 			"9837": {
 				"LEASE_ITEMS": ["FinanceLeaseLiability", "FinanceLeaseLiabilityCurrent", "FinanceLeaseLiabilityNoncurrent", "FinanceLeaseRightOfUseAsset", "OperatingLeaseRightOfUseAsset", "OperatingLeaseLiability", "OperatingLeaseLiabilityCurrent", "OperatingLeaseLiabilityNoncurrent"]

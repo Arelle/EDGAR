@@ -87,6 +87,7 @@ def xuleValidate(val):
         usgMinYr = m.group(1)
     else:
         usgMinYr = "2025"
+    # print(f"*** trace usgYr {usgYr} usgMinYr {usgMinYr} param \"{val.params.get('dqcRuleFilter','')}\"")
     if xuleValidateFinally is not None:
         if usgYr >= usgMinYr:
             # must run without disclosure system blockage of URLs
