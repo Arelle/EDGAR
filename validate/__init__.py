@@ -142,7 +142,8 @@ from .Filing import validateFiling
 from .MessageNumericId import messageNumericId
 from .XuleInterface import (menuTools as xuleMenuTools, validateMenuTools as xuleValidateMenuTools,
                             cntrlrCmdLineUtilityRun as xuleCntrlrCmdLineUtilityRun,
-                            cmdOptions as xuleCmdOptions, init as xuleInit, close as xuleClose)
+                            cmdOptions as xuleCmdOptions, init as xuleInit, close as xuleClose,
+                            blockXuleValidateFinally)
 import regex as re
 from collections import defaultdict
 
@@ -319,6 +320,8 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
         efmFiling.submissionType = val.params.get("submissionType")
         efmFiling.attachmentDocumentType = val.params.get("attachmentDocumentType")
 
+    blockXuleValidateFinally(val) # block XULE Validate.Finally for RSS feed and testcases
+
 def severityReleveler(modelXbrl, level, messageCode, args, **kwargs):
     if getattr(modelXbrl.modelManager.disclosureSystem, "EFMplugin", False):
         if messageCode and feeTagMessageCodesRelevelable.match(messageCode) and level == "ERROR":
@@ -442,7 +445,8 @@ def testcasesStart(cntlr, options, modelXbrl, *args, **kwargs):
     # a test or RSS cases run is starting, in which case testcaseVariation... events have unique efmFilings
     modelManager = cntlr.modelManager
     if (hasattr(modelManager, "efmFiling") and
-        modelXbrl.modelDocument and modelXbrl.modelDocument.type in Type.TESTCASETYPES):
+        modelXbrl.modelDocument and
+        (modelXbrl.modelDocument.type in Type.TESTCASETYPES or modelXbrl.modelDocument.type == Type.RSSFEED)):
         efmFiling = modelManager.efmFiling
         efmFiling.close() # not needed, dereference
         del modelManager.efmFiling
@@ -611,8 +615,9 @@ def filingEnd(cntlr, options, filesource, entrypointFiles, sourceZipStream=None,
 
 def rssItemXbrlLoaded(modelXbrl, rssWatchOptions, rssItem, *args, **kwargs):
     # Validate of RSS feed item (simulates filing & cmd line load events
-    if hasattr(rssItem.modelXbrl, "efmOptions"):
-        testcaseVariationXbrlLoaded(rssItem.modelXbrl, modelXbrl)
+    if not hasattr(rssItem.modelXbrl, "efmOptions"): # may have already been set by EdgarRenderer in gui startup
+        rssItem.modelXbrl.efmOptions = rssWatchOptions  # save options in rss's modelXbrl
+    testcaseVariationXbrlLoaded(rssItem.modelXbrl, modelXbrl, None)
 
 def rssItemValidated(val, modelXbrl, rssItem, *args, **kwargs):
     # After validate of RSS feed item (simulates report and end of filing events)

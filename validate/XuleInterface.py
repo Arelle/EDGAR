@@ -79,7 +79,14 @@ def close(cntlr): # unhook Xule's 'Validate.Finally' from validate/EFM
         PluginManager.reset()
         xuleValidateFinally = None
     '''
-        
+def blockXuleValidateFinally(val):
+    if xuleValidateFinally is not None:
+        xuleValidateFinally(val, extra_options={
+            "block_Validate.Finally": True,
+            "block_deregister": True,
+            "block_runXule": True
+            })
+
 def xuleValidate(val):
     usgYr = usgaapYear(val.modelXbrl)
     m = re.match(".*XULE:([0-9]{4})",val.params.get("dqcRuleFilter",""))
