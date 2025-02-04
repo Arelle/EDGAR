@@ -387,7 +387,7 @@ export const Sections =
         const menuCatDoc = domParser.parseFromString(cardHeaderString, 'text/html');
         const menuCatElem = menuCatDoc.querySelector('body > div') as HTMLElement;
 
-        document.querySelector(`#${sectionItem.instanceSectionBodyId} div.accordion-body`)?.appendChild(menuCatElem);
+        document.querySelector(`#${CSS.escape(sectionItem.instanceSectionBodyId)} div.accordion-body`)?.appendChild(menuCatElem);
     },
 
     createSectionItemLink: (sectionItem: Section) => {
