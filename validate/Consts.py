@@ -368,10 +368,9 @@ linkbaseValidations = {
         preCustELRs = True,
     ),
     "sro": attrdict(
-        exgPre = "10.08.07",
+        exgPre = None,
         exgCal = "10.08.07",
         exgDef = "10.08.07",
-        elrPre = re.compile("@match-nothing@"),
         elrDefInNs = re.compile("."), # skip this test
         elrDefExNs = re.compile("."), # skip this test
         elrDefRoleSrc = (
