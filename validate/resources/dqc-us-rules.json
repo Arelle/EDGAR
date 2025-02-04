@@ -2382,9 +2382,10 @@
 			},
 			"9569": {
 				"name": "ConcentrationRiskPercentage1",
-				"were": "value!=1",
+				"where": "value!=1",
+				"not-members": ["LaborForceConcentrationRiskMember", "UnionizedEmployeesConcentrationRiskMember"],
 				"axes": {"ConcentrationRiskByBenchmarkAxis": true, 
-						 "ConcentrationRiskByTypeAxis": ["LaborForceConcentrationRiskMember", "UnionizedEmployeesConcentrationRiskMember"]},
+						 "ConcentrationRiskByTypeAxis": "not-members"},
 				"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
 			},
 			"9570": {
@@ -2438,6 +2439,18 @@
 												"UnionizedEmployeesConcentrationRiskMember"],
 					"ReinsuranceRecoverableMember": ["ReinsurerConcentrationRiskMember"]
 				}
+			},
+			"9571": {
+				"name": "ConcentrationRiskPercentage1",
+				"xule-const-members": "SET_CONCENTRATION_RISK_ITEMS",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": "xule-const-members"},
+				"message": "The concept {name} with value {value} is used with the ConcentrationRiskByBenchmarkAxis with a benchmark of {dimValue}.  This is an invalid benchmark as it is an actual type of risk and not a benchmark. The benchmark should reflect the accounting concept that the risk applies to such as revenues, receivables, loans etc. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9572": {
+				"name": "ConcentrationRiskPercentage1",
+				"xule-const-members": "SET_BENCHMARK_ITEMS",
+				"axes": {"ConcentrationRiskByTypeAxis": "xule-const-members"},
+				"message": "The concept {name} with value {value} is used with the ConcentrationRiskByTypeAxis with a risk of {dimValue}.  This is an invalid risk as it is an actual benchmark and not a type of risk. The type of risk should reflect the risk associated with a benchmark. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
 			}
 		}
 	},
