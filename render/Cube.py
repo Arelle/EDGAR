@@ -101,7 +101,7 @@ class Cube(object):
         if self.isUncategorizedFacts:
             return ('', '', '', False, False, False)
 
-        definitionTextPattern = re.compile("^(\d+(?:\.\d+)*) - (Statement|Disclosure|Schedule|Document) - ([^\n]*\S)$")
+        definitionTextPattern = re.compile(r"^(\d+(?:\.\d+)*) - (Statement|Disclosure|Schedule|Document) - ([^\n]*\S)$")
         definitionMatchesPattern = definitionTextPattern.match(self.definitionText)
 
         if not definitionMatchesPattern:
