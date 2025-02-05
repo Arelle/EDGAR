@@ -14,6 +14,7 @@ import regex as re
 from itertools import chain
 import arelle.ModelValue, arelle.XbrlConst
 from arelle.ModelDtsObject import ModelConcept
+from arelle.PythonUtil import OrderedSet
 from arelle.XmlUtil import collapseWhitespace
 from arelle.XmlValidateConst import VALID, VALID_NO_CONTENT
 from arelle.XbrlConst import parentChild
@@ -44,7 +45,7 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
             filing.embeddingDriverBeforeFlowThroughSuppression(embedding)
     controller.logDebug("Filing cubes {:.3f} secs.".format(time.time() - _funStartedAt)); _funStartedAt = time.time()
 
-    if not filing.hasEmbeddings:
+    if not bool(filing.hasEmbeddings):
         filing.filterOutColumnsWhereAllElementsAreInOtherReports(sortedCubeList)  # otherwise known as flow through suppression
     controller.logDebug("Filing flow thru suppression {:.3f} secs.".format(time.time() - _funStartedAt)); _funStartedAt = time.time()
 
@@ -70,7 +71,7 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     # handle excel writing
     xlWriter = None
     if controller.excelXslt:
-        if filing.hasEmbeddings:
+        if bool(filing.hasEmbeddings):
             modelXbrl.debug("debug",
                             _("Excel XSLT is not applied to instance %(instance)s having embedded commands."),
                             modelObject=modelXbrl.modelDocument, instance=modelXbrl.modelDocument.basename)
@@ -145,8 +146,13 @@ def mainFun(controller, modelXbrl, outputFolderName, transform=None, suplSuffix=
     # have to do some massaging of filing.usedOrBrokenFactDefDict.  can't just do set(filing.usedOrBrokenFactDefDict).
     # that's because when you remove if you remove every thing in the set for one of the keys, the key still stays.
     # so we need to make sure they key has a nonempty set associated with it.
-    filing.unusedFactSet = \
-            set(modelXbrl.facts) - {fact for fact, embeddingSet in filing.usedOrBrokenFactDefDict.items() if len(embeddingSet) > 0}
+    def hasNonemptyEmbeddingSet(fact):
+        return fact in filing.usedOrBrokenFactDefDict and len(filing.usedOrBrokenFactDefDict[fact]) > 0
+
+    filing.unusedFactSet = OrderedSet()
+    for f in modelXbrl.facts:
+        if not hasNonemptyEmbeddingSet(f):
+            filing.unusedFactSet.add(f)
 
     filing.strExplainSkippedFacts()
 
@@ -215,20 +221,20 @@ class Filing(object):
 
         self.embeddedCubeSet = set()
         self.usedOrBrokenFactDefDict = defaultdict(set)
-        self.unusedFactSet = set()
+        self.unusedFactSet = OrderedSet() # preserve order of discovery
         self.skippedFactsList = []
 
-        self.hasEmbeddings = False
+        self.hasEmbeddings = []
         self.disallowEmbeddings = True
 
         # These namespaces contain elements treated specially in some ways.
         # SEC and FASB namespaces have the same structure, IFRS namespaces not so much.
         self.stdNsTokens = set()
         self.ifrsNamespace = self.usgaapNamespace = self.deiNamespace = None
-        nspattern = re.compile(r'.*((xbrl\.sec\.gov|fasb\.org)/(?P<prefix>[^/]+)/20.*|ifrs\.org/taxonomy/20[^/]*/(?P<other>ifrs)).*')
+        self.nspattern = re.compile(r'.*((xbrl\.sec\.gov|fasb\.org)/(?P<prefix>[^/]+)/20.*|ifrs\.org/taxonomy/20[^/]*/(?P<other>ifrs)).*')
         for n in self.modelXbrl.namespaceDocs.keys():
             if n is None: continue
-            m = nspattern.match(n)
+            m = self.nspattern.match(n)
             if m is None: continue
             tk = m.groupdict()['prefix']
             if tk is not None and len(tk) > 0:
@@ -362,7 +368,7 @@ class Filing(object):
                     self.elementDict[fact.qname] = element
                     element.linkCube(uncategorizedCube)
             uncategorizedCube.presentationGroup = PresentationGroup.PresentationGroup(self, uncategorizedCube)
-            facts = self.unusedFactSet
+            facts = list(self.unusedFactSet)
 
         else:
             # build cubes
@@ -860,7 +866,7 @@ class Filing(object):
             outputList += [listToAddToOutput]
 
         cube.isEmbedded = True
-        self.hasEmbeddings = True
+        self.hasEmbeddings.append(cube)
         self.disallowEmbeddings = False
 
         embedding = Embedding.Embedding(self, cube, outputList, factThatContainsEmbeddedCommand=fact)
@@ -969,7 +975,7 @@ class Filing(object):
         report.generateRowsOrCols('row', sortedFAMGL)
 
         if not cube.isElements:
-            if self.hasEmbeddings:
+            if cube in (self.hasEmbeddings):
                 report.decideWhetherToRepressPeriodHeadings()
             if not cube.isUnlabeled:
                 report.proposeAxisPromotions('col', report.colList, [command.pseudoAxis for command in embedding.colCommands])
@@ -1054,20 +1060,24 @@ class Filing(object):
         maxMonths = max(col.startEndContext.numMonths for col in visibleColumns)
         minFacts = min(len(col.factList) for col in visibleColumns if col.startEndContext.numMonths == maxMonths)
         minToKeep = math.floor(.25 * minFacts)
+        thisCubeSet = {report.cube}
         for col in visibleColumns:
             if col.startEndContext.numMonths < maxMonths and len(col.factList) < minToKeep:
                 preserveColumn = False
+                factsInOtherReportsNotInOtherColumns = set()
                 for fact in col.factList:
                     appearsInOtherColumn = False
                     for otherCol in remainingVisibleColumns:
                         if otherCol != col and fact in otherCol.factList:
                             appearsInOtherColumn = True
                             break
-                    appearsInOtherReport = (len(fact.inCubes) > 1)
+                    appearsInOtherReport = bool(fact.inCubes - thisCubeSet)
+                    if appearsInOtherReport and not appearsInOtherColumn:
+                        factsInOtherReportsNotInOtherColumns.add(fact)
                     preserveColumn = (not appearsInOtherColumn and not appearsInOtherReport)
                     break
                 if preserveColumn:
-                    continue  # to next column, cannot remove this one
+                    continue  # to next column, cannot remove this one, leave its facts alone.
                 self.modelXbrl.info("info",
                                     _("Columns in cash flow \"%(presentationGroup)s\" have maximum duration %(maxDuration)s months and at least %(minNumValues)s "
                                       "values. Shorter duration columns must have at least one fourth (%(minToKeep)s) as many values. "
@@ -1075,13 +1085,18 @@ class Filing(object):
                                     modelObject=self.modelXbrl.modelDocument, presentationGroup=report.shortName,
                                     maxDuration=maxMonths, minNumValues=minFacts, minToKeep=minToKeep, startEndContext=col.startEndContext,
                                     months=col.startEndContext.numMonths, numValues=len(col.factList))
-                # first kick this fact out of report.embedding.factAxisMemberGroupList, our defacto list of facts
-                report.embedding.factAxisMemberGroupList = \
+                for fact in factsInOtherReportsNotInOtherColumns:
+                    # kick this fact out of report.embedding.factAxisMemberGroupList, our defacto list of facts
+                    report.embedding.factAxisMemberGroupList = \
                         [FAMG for FAMG in report.embedding.factAxisMemberGroupList if FAMG.fact != fact]
-                try:
-                    self.usedOrBrokenFactDefDict[fact].remove(report.embedding)
-                except KeyError:
-                    pass
+                    try:
+                        self.usedOrBrokenFactDefDict[fact].remove(report.embedding)
+                    except KeyError:
+                        pass
+                    try:
+                        fact.inCubes.remove(report.cube)
+                    except KeyError:
+                        pass
                 col.hide()
                 didWeHideAnyCols = True
                 remainingVisibleColumns.remove(col)
@@ -1228,6 +1243,13 @@ class StartEndContext(object):
             return "[{}]".format(self.endTimePretty[:10])
         else:
             return "[{} {}m {}]".format(self.startTimePretty[:10], self.numMonths, self.endTimePretty[:10])
+
+    def same(self, other):
+        return (self == other
+                or (type(other) == StartEndContext
+                    and self.periodTypeStr == other.periodTypeStr
+                    and self.startTime == other.startTime
+                    and self.endTime == other.endTime))
 
 
 class Axis(object):

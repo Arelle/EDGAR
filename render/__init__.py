@@ -143,7 +143,7 @@ Language of labels:
     GUI may use tools->language labels setting to override system language for labels
 
 """
-VERSION = '3.24.4'
+VERSION = '3.25.1'
 
 from collections import defaultdict
 from arelle import PythonUtil
@@ -177,11 +177,15 @@ def uncloseSelfClosedTags(doc):
     for e in doc.xmlRootElement.iter():
         # check if no text, no children and not self-closable element for EDGAR
         if (e.text is None and (not e.getchildren())
-            and e.tag not in tagsWithNoContent
-            # also skip ix elements which are nil
-            and not (e.get("{http://www.w3.org/2001/XMLSchema-instance}nil") in ("true", "1") and e.tag.startswith("{http://www.xbrl.org/2013/inlineXBRL}"))):
+            and e.tag not in tagsWithNoContent):
             e.text = ""  # prevents self-closing tag with etree.tostring for zip and dissem folders
 
+def recloseNilForSchemaRevalidation(doc):
+    for e in doc.xmlRootElement.iter("{http://www.xbrl.org/2013/inlineXBRL}nonFraction",
+                                     "{http://www.xbrl.org/2013/inlineXBRL}nonNumeric"):
+        # check if no text, no children and not self-closable element for EDGAR
+        if e.isNil and e.text == "":
+            e.text = None # remove text node content from element
 
 def allowableBytesForEdgar(bytestr):
     # encode xml-legal ascii bytes not acceptable to EDGAR
@@ -1274,7 +1278,9 @@ class EdgarRenderer(Cntlr.Cntlr):
                             for ixdsHtmlRootElt in getattr(report.modelXbrl, "ixdsHtmlElements", ()):
                                 if ixdsHtmlRootElt.modelDocument.basename in cntlr.redlineIxDocs:
                                     # revalidate schema validation
+                                    recloseNilForSchemaRevalidation(ixdsHtmlRootElt.modelDocument)
                                     xhtmlValidate(report.modelXbrl, ixdsHtmlRootElt)
+                                    uncloseSelfClosedTags(ixdsHtmlRootElt.modelDocument)
                             if revalidateXbrl:
                                 # revalidate after redaction
                                 Validate.validate(report.modelXbrl)

@@ -1,4 +1,4 @@
-import { getFilingsSample, getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
+import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
 import { selectors } from "../../utils/selectors.mjs"
 
 let filingsSample = getFilingsSample(Cypress.env);
@@ -8,11 +8,11 @@ describe(`Filter - Amounts Only`, () => {
         let filing = filingsSample[f]
         let initialFactCount = 0
         let newFactCount = 0
-        it(`[${f}] should filter facts for ${filing.docName}`, () => {
-            cy.visitHost(filing)
+        it(`[${f}] should filter facts for ${filing.docName || filing.docPath.split('/').pop() || 'another filing'}`, () => {
+            cy.loadFiling(filing)
             
             // this assertion forces it to wait for it to be populated with number
-            cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
+            cy.get(selectors.factCountClock).should('not.exist')
 
             cy.get(selectors.factCountBadge).invoke('text').then(text => {
                 initialFactCount = Number(text.replace(',', ''))
@@ -31,10 +31,9 @@ describe(`Filter - Amounts Only`, () => {
     }
 
     it(`nmex filing should have specific results`, () => {
-        const filing = getByAccessionNum("000143774923034166")
-        cy.visitHost(filing)
+        cy.loadByAccessionNum('000143774923034166')
             
-        cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
+        cy.get(selectors.factCountClock).should('not.exist')
 
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()

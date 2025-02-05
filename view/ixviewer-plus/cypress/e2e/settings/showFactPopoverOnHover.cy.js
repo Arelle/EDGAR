@@ -1,15 +1,15 @@
 import { selectors } from "../../utils/selectors.mjs"
-import { getFilingsSample, getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
+import {readFilingData, readFilingDataAccNum} from '../../dataPlus/filingsFunnel.js'
 
-const filing = getByAccessionNum('000080786323000002');
+const filing = readFilingDataAccNum('000080786323000002');
 
 
 describe(`Settings Show Popover on Hover`, () => {
     it(`${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-        cy.visitHost(filing)
+        cy.loadFiling(filing)
 
         // popover shouldn't show when setting off (default)
-        cy.get('[id="fact-identifier-2"]', {timeout: filing.timeout}).first().trigger('mouseover')
+        cy.get('[id="fact-identifier-2"]', {timeout: Number(filing.timeout)}).first().trigger('mouseover')
         cy.get('div[id^="popover"]')
             .should('not.exist')
 

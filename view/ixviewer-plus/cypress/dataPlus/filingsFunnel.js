@@ -3,6 +3,19 @@ import { filings as standardFilings } from './standardFilings.js'
 import { filings as set200 } from './enrichedFilingsPlus.mjs'
 // import addendum from './addendum.json'
 
+/*
+    ABOUT FILING SETS
+
+    standardFilings are filings that Loc has listed in a spreadsheet.  We use these for bulk tests, i.e. when we want to iterate 
+    over a set of filings to make sure a feature of the viewer works on all.
+    Not all filings we want to test belong in standardFilings - only the ones we want to bulk test do.
+    Generally, you can just add a filing to the test filings repo, and test it individually.  
+    Filings should only be added to bulk tests by adding it to the spread sheet first.
+    then you can dowload it, dress it up a bit, and run a script against it to generate a new standardFilings.js doc.
+*/
+
+const filings = [...standardFilings, ...set200];
+
 const getBaseSet = (setName) => {
     let filingSet = [];
     switch (setName) {
@@ -15,12 +28,12 @@ const getBaseSet = (setName) => {
             break;
         }
         case "set200": {
-            filingSet = experimentalFilings;
+            filingSet = set200;
             break;
         }
         case "all": {
             // should include standard and experimental, set200 is being deprecated probably.
-            filingSet =  [...standardFilings];
+            filingSet = [...standardFilings];
             break;
         }
         default: {
@@ -31,21 +44,25 @@ const getBaseSet = (setName) => {
     return filingSet;
 }
 
-export const getFilingsSample = (CyEnv) => {
+export const getFilingsSample = (CyEnv) =>
+{
     const cyEnvVars = CyEnv();
     let filingsSample = getBaseSet(cyEnvVars.filingSet);
 
-    console.log('cyEnvVars.targetFilingAccessionNum', cyEnvVars.targetFilingAccessionNum)
     if (cyEnvVars.targetFilingAccessionNum) {
         return filingsSample.filter(filing => {
             return filing.accessionNum == cyEnvVars.targetFilingAccessionNum;
         })
     }
-    
+
     if (cyEnvVars.limitNumOfFilingsForTestRun) {
-        filingsSample = filingsSample.slice(0, cyEnvVars.limitOfFilingsToTest)
+        return filingsSample.slice(0, cyEnvVars.limitOfFilingsToTest || Infinity);
+    } else {
+        return filingsSample;
     }
-    return filingsSample;
+
+    // return filings.sort(() => .5 - Math.random())
+    //     .slice(0, cyEnvVars.filingSet || Infinity);
 }
 
 export const getMultiInstance = (CyEnv) => {
@@ -60,12 +77,29 @@ export const getMultiDoc = (CyEnv) => {
     return filingsSample.filter(filing => filing.multiDoc)
 }
 
-export const getByAccessionNum = (accessionNum) => {
-    let filingsSample = getBaseSet("all");
-    // combine whatever sets once they are correctly structured (standardized fields) and ready to be imported
-    // let filingsSample = [...getBaseSet("all"), ...getBaseSet("set200")];
+// export const getByAccessionNum = (accessionNum) => {
+//     let filingsSample = getBaseSet("all");
+//     // combine whatever sets once they are correctly structured (standardized fields) and ready to be imported
+//     // let filingsSample = [...getBaseSet("all"), ...getBaseSet("set200")];
+//
+//     const filing = filingsSample.filter(filing => filing.accessionNum == accessionNum)[0];
+//     if (filing) return filing;
+//     else { console.error(`no filing matching accession number ${accessionNum}`) }
+//}
 
-    const filing = filingsSample.filter(filing => filing.accessionNum == accessionNum)[0];
-    if (filing) return filing;
+export const getByAccessionNum = (accessionNum) => {
+    let filing = filings.find(filing => filing.accessionNum === accessionNum.toString())
+    if (filing) return filing
     else { console.error(`no filing matching accession number ${accessionNum}`) }
+}
+
+//Returns an object containing filing information from standardFilings for filing index X
+export const readFilingData = (index) => {
+    const filing = filings.find(filing => filing.index === index.toString())
+    return filing
+}
+//The same as above, but looks up by accession number instead of index
+export const readFilingDataAccNum = (accessionNum) => {
+    const filing = filings.find(filing => filing.accessionNum === accessionNum.toString())
+    return filing
 }

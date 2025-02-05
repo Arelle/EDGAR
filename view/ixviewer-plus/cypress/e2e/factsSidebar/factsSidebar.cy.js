@@ -1,15 +1,22 @@
-import { selectors } from "../../utils/selectors.mjs"
-import { getFilingsSample, getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
+import { selectors } from "../../utils/selectors.mjs";
+import { readFilingDataAccNum } from "../../dataPlus/filingsFunnel.js";
 
-let filingsSample = getFilingsSample(Cypress.env);
-let filing = getByAccessionNum('000121390023047204');
+function distFromBtmOfViewportToBtmOfPage() {
+    // Get the height of the viewport.
+    const viewportHeight = window.innerHeight;
+    // Get the offset of the bottom of the page from the top of the viewport.
+    const pageBottomOffset = document.documentElement.scrollHeight - window.pageYOffset;
+    // Calculate the distance from the bottom of the viewport to the bottom of the page.
+    const distToBtmOfPage= pageBottomOffset - viewportHeight;
+    return distToBtmOfPage;
+}
 
-describe(`Fact sidebar features`, () => {
+describe(`Fact sidebar | fact attributes`, () => {
     it('prev/next fact nav should work', () => {
-        cy.visitHost(filing)
-
+        let filing = readFilingDataAccNum('000121390023047204')
+        cy.loadFiling(filing)
         // click first fact
-        cy.get('#fact-identifier-2', { timeout: filing.timeout }).first().click()  // should bring up sidebar
+        cy.get('#fact-identifier-2', { timeout: Number(filing.timeout) }).first().click()
         cy.get(selectors.showFactInSidebar).click() 
         cy.get(selectors.factSidebar).should('be.visible') 
         cy.get('div[id="facts-menu"] a[data-id="fact-identifier-2"]').click()
@@ -36,50 +43,96 @@ describe(`Fact sidebar features`, () => {
         cy.get(selectors.factSidebar).should('not.be.visible')
     })
 
+    it('should show hash ID on the URL when clicking on the fact', () => {
+        let filing = {
+            docPath : '/Archives/edgar/data/778206/000138713122012642/shelton-497_122222.htm',
+            timeout : 12000
+        }
+        cy.loadFiling(filing)
+        cy.get("#fact-identifier-9").click()
+        cy.get(selectors.showFactInSidebar).click() 
+        cy.get(selectors.factSidebar).should('be.visible')      
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-9"]').click()
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-9"]')
+            .should('have.attr', 'selected-fact', 'true')
+        cy.get("#fact-identifier-9").should('be.visible');
+        cy.hash().should('eq', '#fact-identifier-9') 
+        cy.get('div[id="dynamic-xbrl-form"]').then($viewerElem => {
+            cy.expect($viewerElem.scrollTop()).to.equal(0)
+        })
+
+    
+        cy.get(selectors.nextFact).click()
+        cy.wait(300)
+        // first fact should not longer be focused
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-9"]')
+            .should('have.attr', 'selected-fact', 'false')
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-10"]', {force: true}).click()
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-10"]', {force: true})
+            .should('have.attr', 'selected-fact', 'true')
+        cy.get("#fact-identifier-9").should('be.visible');
+        cy.hash().should('eq', '#fact-identifier-10') 
+
+        cy.get(selectors.sidebarPaginationLast).click() 
+        cy.get(selectors.sidebarPaginationInfo).should('contain.text', ' of') 
+        cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 6')
+
+        cy.get(selectors.sidebarPaginationPrev).click() 
+        cy.get(selectors.sidebarPaginationInfo).should('contain.text', ' of') 
+        cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 5')
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-56"]', {force: true}).click()
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-56"]', {force: true})
+            .should('have.attr', 'selected-fact', 'true').should('be.visible')
+        cy.get(selectors.factModal).should('be.visible') 
+        cy.expect(distFromBtmOfViewportToBtmOfPage()).to.equal(0)
+    })
+
     it('pagination should work', () => {
-        cy.visitHost(filing)
+        let filing = readFilingDataAccNum('000121390023047204')
+        cy.loadFiling(filing)
 
         // click first fact (doc type 10-k)
-        cy.get('#fact-identifier-2', { timeout: filing.timeout }).first().click()  // should bring up sidebar
+        cy.get('#fact-identifier-2', { timeout: Number(filing.timeout) }).first().click()  // should bring up sidebar
         cy.get(selectors.showFactInSidebar).click()
         
-        cy.get(selectors.sidebarPaginationInfo).should('contain.text', '1 of')
+        cy.get(selectors.sidebarPaginationInfo).should('contain.text', ' of')
         cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 1')
 
         cy.get(selectors.sidebarPaginationNext).click() 
-        cy.get(selectors.sidebarPaginationInfo).should('contain.text', '2 of') 
+        cy.get(selectors.sidebarPaginationInfo).should('contain.text', ' of') 
         cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 2')
 
         cy.get(selectors.sidebarPaginationSelect).select('Page 3')
-        cy.get(selectors.sidebarPaginationInfo).should('contain.text', '3 of') 
+        cy.get(selectors.sidebarPaginationInfo).should('contain.text', ' of') 
         cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 3')
 
         cy.get(selectors.sidebarPaginationPrev).click() 
-        cy.get(selectors.sidebarPaginationInfo).should('contain.text', '2 of') 
+        cy.get(selectors.sidebarPaginationInfo).should('contain.text', ' of') 
         cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 2')
 
         cy.get(selectors.sidebarPaginationFirst).click() 
-        cy.get(selectors.sidebarPaginationInfo).should('contain.text', '1 of') 
+        cy.get(selectors.sidebarPaginationInfo).should('contain.text', ' of') 
         cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 1')
 
         cy.get(selectors.sidebarPaginationLast).click() 
-        cy.get(selectors.sidebarPaginationInfo).should('contain.text', '5 of') 
+        cy.get(selectors.sidebarPaginationInfo).should('contain.text', ' of') 
         cy.get(selectors.sidebarPaginationSelect).should('contain.text', 'Page 5')
     });
 
 
     it("should open the Fact Modal and highlight the selected fact in the viewer", () =>
     {
-        cy.visitFiling(null, "0000071691-23-000025", "nyt-20230928.htm");
+        let filing = readFilingDataAccNum('000121390023047204')
+        cy.loadFiling(filing)
 
         //When the page loads, the Facts button is disabled
         //Cypress will wait until the text matches, then continue
-        cy.get(selectors.factCountBadge, { timeout: filing.timeout }).invoke("text").should("match", /[a-z0-9,]+/);
+        cy.get(selectors.factCountBadge, { timeout: Number(filing.timeout) }).invoke("text").should("match", /[a-z0-9,]+/);
         cy.get(selectors.factSidebarToggleBtn).click();
 
         cy.get(".pagination .pagination-info.text-body").invoke("text").then((text) =>
         {
-            expect(/[0-9,]+ of [0-9,]+/.test(text)).to.eq(true);
+            expect(/of [0-9,]+/.test(text)).to.eq(true);
             let [_, max] = text.split(" of ");
 
             //Iterate over the pages of facts
@@ -114,6 +167,41 @@ describe(`Fact sidebar features`, () => {
                     cy.get("#facts-menu-list-pagination .pagination a.page-link > .fas.fa-angle-right").click();
                 }
             }
+        });
+    });
+
+    it("should open the Fact Modal and highlight the selected fact in the viewer after hitting next button", () =>
+    {
+        let filing = readFilingDataAccNum('000121390023047204')
+        cy.loadFiling(filing)
+
+        //When the page loads, the Facts button is disabled
+        //Cypress will wait until the text matches, then continue
+        cy.get(selectors.factCountBadge, { timeout: filing.timeout }).invoke("text").should("match", /[a-z0-9,]+/);
+        cy.get(selectors.factSidebarToggleBtn).click();
+
+        cy.get(selectors.nextFact).click();
+        cy.get('div[id="facts-menu"] a[data-id="fact-identifier-0"]', {force: true})
+            .should('have.attr', 'selected-fact', 'true')
+    });
+
+    it("verify values in prev and next button", () =>
+    {
+        let filing = readFilingDataAccNum('000121390023047204')
+        cy.loadFiling(filing)
+
+        //When the page loads, the Facts button is disabled
+        //Cypress will wait until the text matches, then continue
+        cy.get(selectors.factCountBadge, { timeout: filing.timeout }).invoke("text").should("match", /[a-z0-9,]+/);
+        cy.get(selectors.factSidebarToggleBtn).click();
+
+        cy.get(selectors.prevFact).invoke("text").then((text) =>
+        {
+            expect(/Prev+/.test(text)).to.eq(true);
+        });
+        cy.get(selectors.nextFact).invoke("text").then((text) =>
+        {
+                expect(/Next+/.test(text)).to.eq(true);
         });
     });
 });

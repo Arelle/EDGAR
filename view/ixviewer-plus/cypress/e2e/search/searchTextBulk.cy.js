@@ -10,13 +10,9 @@ describe(`Search for ${filingsSample.length} filings`, () => {
         let expandedFactCount = 0
         
         // just checking for smaller or equal fact count
-        it(`[${index + 1}] Search text 'cash' should filter facts ${filing.formType || filing.submissionType}`, () => {
-            cy.visitHost(filing)
-            
-            // this assertion forces it to wait for it to be populated with number
-            cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
+        it(`[${index + 1}] Search text 'cash' should filter facts. AC : ${filing.accessionNum}`, () => {
+            cy.loadFiling(filing)
 
-            
             cy.get(selectors.factCountBadge).invoke('text').then(text => {
                 initialFactCount = Number(text.replace(',', ''))
 
@@ -51,12 +47,12 @@ describe(`Search for ${filingsSample.length} filings`, () => {
             })
         })
 
-        it(`[${index + 1}] Search text 'tp' should filter facts ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
+        it(`[${index + 1}] Search text 'tp' should filter facts. AC : ${filing.accessionNum}`, () => {
             // tp means type - Walter suggested this search term during a demo
-            cy.visitHost(filing)
+            cy.loadFiling(filing)
             
             // this assertion forces it to wait for it to be populated with number
-            cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
+            cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist')
 
             
             cy.get(selectors.factCountBadge).invoke('text').then(text => {
@@ -72,11 +68,11 @@ describe(`Search for ${filingsSample.length} filings`, () => {
             })
         })
 
-        it(`[${index + 1}] Search text 'form' should filter facts ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-            cy.visitHost(filing)
+        it(`[${index + 1}] Search text 'form' should filter facts. AC : ${filing.accessionNum}`, () => {
+            cy.loadFiling(filing)
             
             // this assertion forces it to wait for it to be populated with number
-            cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
+            cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist')
 
             
             cy.get(selectors.factCountBadge).invoke('text').then(text => {

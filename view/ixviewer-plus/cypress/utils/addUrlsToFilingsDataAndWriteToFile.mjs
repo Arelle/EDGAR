@@ -74,35 +74,6 @@ const getSecUrl = (filing) => {
     return secUrl
 }
 
-const getTestSecUrl = (filing) => {
-    // many filings are not in the test.sec archives folder
-    const html = filing.html[0]
-    let testSec = html.replace('www.sec.gov', 'www-test.sec.gov')
-    // just add 'ix?doc=' after .gov/
-    // 'https://www.sec.gov/ix?doc=/Archives/edgar/data/55785/000005578523000057/pre-20230913.htm'
-    //  https://www-test.sec.gov/iy?doc=
-    const indexAfterGovSlash = testSec.indexOf('.gov/') + 5
-    const secUrlBegin = testSec.substring(0, indexAfterGovSlash)
-    const secUrlEnd = testSec.substring(indexAfterGovSlash)
-    const secUrl = secUrlBegin + 'iy?doc=../../' + secUrlEnd
-    console.log('secUrl', secUrl)
-    return secUrl
-}
-
-const getDev1Url = (filing) => {
-    // html: 'https://www.sec.gov/Archives/edgar/data/1967680/000196768023000005/vlto-20230927.htm'
-    // dev1: 'http://172.18.85.157:8082/ix3/ixviewer3/ix.xhtml?doc=../../ixdocs/WebContent/documents/0001967680-23-000005/vlto-20230927.htm'
-    const dev1UrlBase = 'http://172.18.85.157:8082/ix3/ixviewer3/ix.xhtml?doc=../../ixdocs/WebContent/documents/'
-    const dev1Url = dev1UrlBase + filing.folderedDocPath
-    return dev1Url
-}
-
-const getDev2Url = (filing) => {
-    const dev1UrlBase = 'http://172.18.85.158:8082/ix3/ixviewer3/ix.xhtml?doc=../../ixdocs/WebContent/documents/'
-    const dev1Url = dev1UrlBase + filing.folderedDocPath
-    return dev1Url
-}
-
 export const parseFilingsAndWriteToFile = () => {
     const filingsFilePathNames = getFilingDotJsonFiles(FILING_PATH)
 
@@ -116,9 +87,6 @@ export const parseFilingsAndWriteToFile = () => {
         filing.folderedDocPath = getFolderedDocPath(filing)
         filing.localUrl = getLocalUrl(filing)
         filing.secUrl = getSecUrl(filing)
-        filing.dev1Url = getDev1Url(filing)
-        filing.dev2Url = getDev2Url(filing)
-        filing.testSecUrl = getTestSecUrl(filing)
         console.log(`${index + 1} got host urls for ${filing.docName}`)
     })
 

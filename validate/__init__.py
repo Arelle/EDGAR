@@ -334,19 +334,24 @@ def severityReleveler(modelXbrl, level, messageCode, args, **kwargs):
 
 def isolateSeparateIXDSes(modelXbrl, primaryIxdsDocument, *args, **kwargs):
     separateIXDSes = defaultdict(list)
+    entrypoint = kwargs.get("entrypoint") or {}
     for htmlElt in modelXbrl.ixdsHtmlElements:
         tp = "" # attachment document type inferred from document type and ffd:SubmissnTp
         for qn in ("dei:DocumentType", "ffd:FeeExhibitTp"):
             for elt in htmlElt.iterfind(f".//{{{htmlElt.modelDocument.ixNS}}}nonNumeric[@name='{qn}']"):
                 tp = elt.stringValue.strip()
                 if tp:
+                    # add the attachment document type if it was not specified in the entrypoint or entrypoint was a zip file
+                    for ep in entrypoint.get("ixds", []):
+                        if not ep.get("attachmentDocumentType") and ep.get("file") == htmlElt.document.filepath:
+                            ep["attachmentDocumentType"] = tp
                     break
         separateIXDSes[tp if supplementalAttachmentDocumentTypesPattern.match(tp) else ""].append(htmlElt)
-    entrypoint = kwargs.get("entrypoint") or {}
     # find targetDocumentPreferredFilename for primary ixds
     if "ixds" in entrypoint and "" in separateIXDSes:
         for ep in entrypoint["ixds"]:
-            if isinstance(ep,dict) and primaryAttachmentDocumentTypesPattern.match(ep.get("attachmentDocumentType","")) and "file" in ep:
+            if isinstance(ep,dict) and "attachmentDocumentType" in ep \
+                and primaryAttachmentDocumentTypesPattern.match(ep.get("attachmentDocumentType","")) and "file" in ep:
                 primaryIxdsDocument.targetDocumentPreferredFilename = os.path.splitext(os.path.basename(ep["file"]))[0] + ".xbrl"
                 modelXbrl.efmIxdsType = ep.get("attachmentDocumentType")
                 break
@@ -890,7 +895,7 @@ class Report:
 __pluginInfo__ = {
     # Do not use _( ) in pluginInfo itself (it is applied later, after loading
     'name': 'Validate EFM',
-    'version': '1.24.3', # SEC EDGAR release 24.3
+    'version': '1.25.1', # SEC EDGAR release 25.1
     'description': '''EFM Validation.''',
     'license': 'Apache-2',
     'import': ('EDGAR/transform',), # SEC inline can use SEC transformations

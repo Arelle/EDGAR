@@ -1,9 +1,6 @@
 // import { filings } from '../../dataPlus/enrichedFilingsPlus.mjs'
 import { selectors } from '../../utils/selectors'
 import { filings } from '../../dataPlus/standardFilings.js'
-import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
-
-let filingsSample = getFilingsSample(Cypress.env);
 
 //TODO: this line is unused -- delete?
 const multidocFilings = filings.filter(f => f.hasOwnProperty('cases') && f.cases.includes('multi-doc'));
@@ -12,7 +9,7 @@ const multidocFilings = filings.filter(f => f.hasOwnProperty('cases') && f.cases
 describe(`Changing instance`, () => {
     //TODO: change this description.  It's the same as in another spec (copy-paste?)
     it(`should be highlight and expaned instance section`, () => {
-        cy.visitFiling("wh-sections", "out", `sbsef03exc-20231231.htm`);
+        cy.visit("/Archives/edgar/data/wh-sections/out/sbsef03exc-20231231.htm");
 
         // open sections sidebar
         cy.get(selectors.sectionsHeader).click();

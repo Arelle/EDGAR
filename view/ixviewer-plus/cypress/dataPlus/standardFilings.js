@@ -9,11 +9,6 @@ export const filings = [
         "multiInstance": "",
         "multiDoc": "TRUE",
         "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1517396/000121390021056659/stratasys-6k.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1517396/000121390021056659/stratasys-6k.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1517396/000121390021056659/stratasys-6k.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1517396/000121390021056659/stratasys-6k.htm",
-        "docName": "stratasys-6k",
         "expectedSectionCountCorrection": -1
     },
     {
@@ -25,12 +20,7 @@ export const filings = [
         "timeout": 15000,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/807863/000080786323000002/mitk-20230104.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/807863/000080786323000002/mitk-20230104.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/807863/000080786323000002/mitk-20230104.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/807863/000080786323000002/mitk-20230104.htm",
-        "docName": "mitk-20230104"
+        "Instances": ""
     },
     {
         "submissionType": "8-K/A",
@@ -41,12 +31,7 @@ export const filings = [
         "timeout": 15000,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1852707/000106299321011674/form8ka.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1852707/000106299321011674/form8ka.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1852707/000106299321011674/form8ka.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1852707/000106299321011674/form8ka.htm",
-        "docName": "form8ka"
+        "Instances": ""
     },
     {
         "submissionType": "6-K/A",
@@ -58,11 +43,6 @@ export const filings = [
         "multiInstance": "",
         "multiDoc": "",
         "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1574232/000110465923127862/adxn-20230630xex99d1.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1574232/000110465923127862/adxn-20230630xex99d1.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1574232/000110465923127862/adxn-20230630xex99d1.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1574232/000110465923127862/adxn-20230630xex99d1.htm",
-        "docName": "adxn-20230630xex99d1",
         "expectedSectionCountCorrection": -1
     },
     {
@@ -75,11 +55,6 @@ export const filings = [
         "multiInstance": "",
         "multiDoc": "",
         "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1415744/000143774923034166/nmex20231031_10q.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1415744/000143774923034166/nmex20231031_10q.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1415744/000143774923034166/nmex20231031_10q.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1415744/000143774923034166/nmex20231031_10q.htm",
-        "docName": "nmex20231031_10q",
         "expectedSectionCountCorrection": -1
     },
     {
@@ -91,12 +66,7 @@ export const filings = [
         "timeout": 15000,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1500881/000121390023047204/ea179913-40fa1_encore.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1500881/000121390023047204/ea179913-40fa1_encore.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1500881/000121390023047204/ea179913-40fa1_encore.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1500881/000121390023047204/ea179913-40fa1_encore.htm",
-        "docName": "ea179913-40fa1_encore"
+        "Instances": ""
     },
     {
         "submissionType": "485BPOS",
@@ -108,11 +78,6 @@ export const filings = [
         "multiInstance": "",
         "multiDoc": "",
         "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1141819/000089418923007993/ck0001141819-20231031.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1141819/000089418923007993/ck0001141819-20231031.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1141819/000089418923007993/ck0001141819-20231031.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1141819/000089418923007993/ck0001141819-20231031.htm",
-        "docName": "ck0001141819-20231031",
         "expectedSectionCountCorrection": 5
     },
     {
@@ -124,12 +89,7 @@ export const filings = [
         "timeout": 15000,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1653876/000182912623008291/momentous_10kt.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1653876/000182912623008291/momentous_10kt.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1653876/000182912623008291/momentous_10kt.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1653876/000182912623008291/momentous_10kt.htm",
-        "docName": "momentous_10kt"
+        "Instances": ""
     },
     {
         "submissionType": "10-QT",
@@ -140,12 +100,7 @@ export const filings = [
         "timeout": 15000,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1879293/000149315224000139/form10-qt.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1879293/000149315224000139/form10-qt.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1879293/000149315224000139/form10-qt.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1879293/000149315224000139/form10-qt.htm",
-        "docName": "form10-qt"
+        "Instances": ""
     },
     {
         "submissionType": "F-1",
@@ -156,12 +111,7 @@ export const filings = [
         "timeout": 24480,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1950246/000110465923128439/mtal-20230630xf1.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1950246/000110465923128439/mtal-20230630xf1.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1950246/000110465923128439/mtal-20230630xf1.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1950246/000110465923128439/mtal-20230630xf1.htm",
-        "docName": "mtal-20230630xf1"
+        "Instances": ""
     },
     {
         "submissionType": "F-4",
@@ -173,11 +123,6 @@ export const filings = [
         "multiInstance": "",
         "multiDoc": "",
         "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1755281/000175528122000036/scl-20220621.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1755281/000175528122000036/scl-20220621.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1755281/000175528122000036/scl-20220621.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1755281/000175528122000036/scl-20220621.htm",
-        "docName": "scl-20220621",
         "expectedSectionCountCorrection": -2
     },
     {
@@ -189,12 +134,7 @@ export const filings = [
         "timeout": 15000,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1304409/000168316823002400/athenagold_posam.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1304409/000168316823002400/athenagold_posam.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1304409/000168316823002400/athenagold_posam.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1304409/000168316823002400/athenagold_posam.htm",
-        "docName": "athenagold_posam"
+        "Instances": ""
     },
     {
         "submissionType": "40-F",
@@ -205,12 +145,7 @@ export const filings = [
         "timeout": 15000,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1500881/000121390023047204/ea179913-40fa1_encore.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1500881/000121390023047204/ea179913-40fa1_encore.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1500881/000121390023047204/ea179913-40fa1_encore.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1500881/000121390023047204/ea179913-40fa1_encore.htm",
-        "docName": "ea179913-40fa1_encore"
+        "Instances": ""
     },
     {
         "submissionType": "PRE 14A",
@@ -221,12 +156,7 @@ export const filings = [
         "timeout": 15000,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1679688/000110465923037771/tm232053d4_pre14a.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1679688/000110465923037771/tm232053d4_pre14a.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1679688/000110465923037771/tm232053d4_pre14a.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1679688/000110465923037771/tm232053d4_pre14a.htm",
-        "docName": "tm232053d4_pre14a"
+        "Instances": ""
     },
     {
         "submissionType": "10-K",
@@ -237,12 +167,7 @@ export const filings = [
         "timeout": 15000,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1587650/000158765021000010/aep-20201231.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1587650/000158765021000010/aep-20201231.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1587650/000158765021000010/aep-20201231.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1587650/000158765021000010/aep-20201231.htm",
-        "docName": "aep-20201231"
+        "Instances": ""
     },
     {
         "submissionType": "S-4/A",
@@ -253,12 +178,7 @@ export const filings = [
         "timeout": 53874,
         "multiInstance": "",
         "multiDoc": "",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/93410/000119312524093570/d576159ds4a.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/93410/000119312524093570/d576159ds4a.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/93410/000119312524093570/d576159ds4a.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/93410/000119312524093570/d576159ds4a.htm",
-        "docName": "d576159ds4a"
+        "Instances": ""
     },
     {
         "submissionType": "10-Q",
@@ -270,11 +190,6 @@ export const filings = [
         "multiInstance": "",
         "multiDoc": "",
         "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/908315/000090831524000023/wina-20240330x10q.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/908315/000090831524000023/wina-20240330x10q.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/908315/000090831524000023/wina-20240330x10q.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/908315/000090831524000023/wina-20240330x10q.htm",
-        "docName": "wina-20240330x10q",
         "expectedSectionCountCorrection": -1
     },
     {
@@ -287,11 +202,6 @@ export const filings = [
         "multiInstance": "",
         "multiDoc": "TRUE",
         "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1837493/000101376223000425/ea185980ex99-1_inspiratech.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1837493/000101376223000425/ea185980ex99-1_inspiratech.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/1837493/000101376223000425/ea185980ex99-1_inspiratech.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/1837493/000101376223000425/ea185980ex99-1_inspiratech.htm",
-        "docName": "ea185980ex99-1_inspiratech",
         "expectedSectionCountCorrection": -1
     },
     {
@@ -303,11 +213,6 @@ export const filings = [
         "timeout": 82512,
         "multiInstance": "",
         "multiDoc": "TRUE",
-        "Instances": "",
-        "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/9631/000119312524147598/d783326d6k.htm",
-        "localUrl": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/9631/000119312524147598/d783326d6k.htm",
-        "dev1Url": "http://md-ud-edgxbrl01:8082/ixviewer-ix-dev/ix.xhtml?doc=/Archives/edgar/data/9631/000119312524147598/d783326d6k.htm",
-        "testSec": "https://www-test.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/9631/000119312524147598/d783326d6k.htm",
-        "docName": "d783326d6k"
+        "Instances": ""
     }
 ]

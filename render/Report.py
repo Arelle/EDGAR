@@ -188,18 +188,12 @@ class Report(object):
             self.decideWhetherToSuppressPeriod('col', self.colList, self.embedding.columnPeriodPosition)
 
     def decideWhetherToSuppressPeriod(self, rowOrColStr, rowOrColList, periodPosition):
-        # returns if more than one period, otherwise represses period headings.  i use memberLabel, because it will treat an instant
-        # and duration ending at the same time as the instant as the same.
-        if rowOrColStr == 'row':
-            first = rowOrColList[0].factAxisMemberGroup.factAxisMemberRowList[periodPosition].memberLabel
-            for row in rowOrColList:
-                if first != row.factAxisMemberGroup.factAxisMemberRowList[periodPosition].memberLabel:
-                    return  # we're done, there are two periods
-        else:
-            first = rowOrColList[0].factAxisMemberGroup.factAxisMemberColList[periodPosition].memberLabel
-            for col in rowOrColList:
-                if first != col.factAxisMemberGroup.factAxisMemberColList[periodPosition].memberLabel:
-                    return  # we're done, there are two periods
+        # returns if more than one period, otherwise represses period headings
+        first = rowOrColList[0].factAxisMemberGroup.factAxisMemberList(rowOrColStr)[periodPosition].member
+        for row in rowOrColList:
+            other = row.factAxisMemberGroup.factAxisMemberList(rowOrColStr)[periodPosition].member
+            if not first.same(other):
+                return  # we're done, there are two periods
         self.repressPeriodHeadings = True  # there's only one period, don't show it.
 
     def proposeAxisPromotions(self, rowOrColStr, rowOrColList, pseudoAxisNameList):
@@ -538,7 +532,7 @@ class Report(object):
             for moneyFact in monetaryExampleFactSet:
                 matchingFact = None
                 for moneyPerShareFact in monetaryPerShareExampleFactSet:
-                    if moneyFact.unit.measures[0][0].localName == moneyPerShareFact.unit.measures[0][0].localName:
+                    if moneyFact.unit is not None and moneyFact.unit.measures[0][0].localName == moneyPerShareFact.unit.measures[0][0].localName:
                         matchingFact = moneyPerShareFact
                         break
                 if matchingFact is not None and matchingFact.unitID not in self.scalingFactorsQuantaSymbolTupleDict:
@@ -561,7 +555,7 @@ class Report(object):
 
         # note: we just need to sort by scaling factor, but we additionally sort by unit because we don't want the user
         # to render a filing twice and have each run look different.  we want the orderings to be the same every time.
-        for scalingFactor, ignore, unitSymbol in reversed(sorted(self.scalingFactorsQuantaSymbolTupleDict.values(), key=lambda thing: (thing[0], thing[2]))):
+        for scalingFactor, ignore, unitSymbol in reversed(sorted(self.scalingFactorsQuantaSymbolTupleDict.values(), key=lambda thing: (thing[0], thing[2] or ''))): # unit may be undefined
             try:
                 scalingWord = scalingWordDict[scalingFactor]
             except KeyError:
@@ -882,7 +876,7 @@ class Report(object):
         for arelleFactSet in sortedListOfFactSets:
             # we need a fact for each unit, why?  because the type of the unit is actually in the element declaration
             # so we do all this just to pull the fact out and pass it to getUnitAndSymbolStr, which will probably call fact.unitSymbol()
-            for fact in sorted(arelleFactSet, key=lambda thing: thing.unit.sourceline or 0):
+            for fact in sorted(arelleFactSet, key=lambda thing: getattr(thing.unit, "sourceline", None) or 0):
                 if fact.unit not in unitSet:
                     unitSet.add(fact.unit)
                     unitSymbolStr = Utils.getUnitAndSymbolStr(fact)
@@ -1179,7 +1173,10 @@ class Report(object):
                     if fact.context.isInstantPeriod:
                         year = fact.context.instantDatetime.year
                     elif fact.context.isStartEndPeriod:
-                        year = fact.context.endDatetime.year
+                        try:
+                            year = fact.context.endDate.year
+                        except:
+                            year = fact.context.endDatetime.year
                     else:
                         continue
                     if fact.isNil:
@@ -1554,9 +1551,8 @@ class Column(object):
                                     modelObject=factAxisMemberGroup.fact,
                                     cube=report.cube.shortName, error=errorStr, column=self.index)
         self.startEndContext = startEndContext
-        if self.startEndContext is None:
+        if self.startEndContext is None and not report.cube.isStatementOfEquity:
             errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(report.embedding.factThatContainsEmbeddedCommand)
-            # message = ErrorMgr.getError('COLUMN_WITHOUT_CONTEXT_WARNING').format(report.cube.shortName, errorStr, self.index)
             filing.modelXbrl.debug("debug",
                                    _('In "%(cube)s%(error)s, column %(column)s has no startEndContext.'),
                                     modelObject=factAxisMemberGroup.fact,

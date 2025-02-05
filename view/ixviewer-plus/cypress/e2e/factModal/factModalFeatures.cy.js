@@ -1,26 +1,14 @@
-// import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
 import { selectors } from "../../utils/selectors.mjs"
-
-// let filingsSample = getFilingsSample(Cypress.env);
-const filing = {
-    "docPath": "14693/000001469323000155/bfb-20231002.htm",
-    "docName": "bfb-20231002",
-    "localUrl": "http://localhost:3000/ix.xhtml?doc=./Archives/edgar/data/no-cik/0000014693-23-000155/bfb-20231002.htm",
-    "secUrl": "https://www.sec.gov/ixviewer-plus/ix.xhtml?doc=/Archives/edgar/data/14693/000001469323000155/bfb-20231002.htm",
-    "dev1Url": "http://172.18.85.157:8082/ixviewer-ix-dev/ix.xhtml?doc=../../ixdocs/WebContent/documents/0000014693-23-000155/bfb-20231002.htm",
-    "dev2Url": "http://172.18.85.158:8082/ix3/ixviewer3/ix.xhtml?doc=../../ixdocs/WebContent/documents/0000014693-23-000155/bfb-20231002.htm",
-    "formType": "8-K",
-    "factCount": 31,
-    "timeout": 12000,
-};
+import { readFilingDataAccNum } from "../../dataPlus/filingsFunnel";
 
 describe(`Fact Modal`, () => {
     it('should be able to move with arrow icon', () => {
-        cy.visitHost(filing)
+        let filing = readFilingDataAccNum('000001469323000155')
+        cy.loadFiling(filing)
 
         let originalPos = {}
 
-        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
+        cy.get(selectors.factsHeader, { timeout: Number(filing.timeout) }).click()
 
         cy.get('a[data-id^="fact-identifier-"]', {timeout: 10000}).first().then($el => cy.wrap($el).click())
         cy.get(selectors.factModal).then(($modal) => {
@@ -38,9 +26,10 @@ describe(`Fact Modal`, () => {
     })
 
     it('should show copy-able content with copy icon', () => {
-        cy.visitHost(filing)
+        let filing = readFilingDataAccNum('000001469323000155')
+        cy.loadFiling(filing)
 
-        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
+        cy.get(selectors.factsHeader, { timeout: Number(filing.timeout) }).click()
 
         cy.get('a[data-id^="fact-identifier-"]').first().click()
 
@@ -60,8 +49,9 @@ describe(`Fact Modal`, () => {
     })
 
     it('Fact modal box copy contents should not change if you click the copy button multiple times', () => {
-        cy.visitHost(filing)
-        cy.get('#fact-identifier-4', { timeout: filing.timeout }).click()
+        let filing = readFilingDataAccNum('000001469323000155')
+        cy.loadFiling(filing)
+        cy.get('#fact-identifier-4', { timeout: Number(filing.timeout) }).click()
         cy.get(selectors.factModalToggleCopyContent).click()
         cy.get(selectors.factModalCopyableContentEXP).then(($copyBox) => {
             const copyText = $copyBox.text()
@@ -75,14 +65,15 @@ describe(`Fact Modal`, () => {
     })
 
     it('should be able to expand in size with corners icon', () => {
-        cy.visitHost(filing)
+        let filing = readFilingDataAccNum('000001469323000155')
+        cy.loadFiling(filing)
 
         let originalWidth = {}
         let subsequentWidth = {}
         let originalHeight = {}
         let subsequentHeight = {}
 
-        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
+        cy.get(selectors.factsHeader, { timeout: Number(filing.timeout) }).click()
 
         cy.get('a[data-id^="fact-identifier-"]').first().click()
 
@@ -104,9 +95,10 @@ describe(`Fact Modal`, () => {
     })
 
     it('should close when close icon clicked', () => {
-        cy.visitHost(filing)
+        let filing = readFilingDataAccNum('000001469323000155')
+        cy.loadFiling(filing)
 
-        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
+        cy.get(selectors.factsHeader, { timeout: Number(filing.timeout) }).click()
 
         cy.get(selectors.factModal).should('have.css', 'display', 'none')
         cy.get('a[data-id^="fact-identifier-"]').first().click()
@@ -117,9 +109,10 @@ describe(`Fact Modal`, () => {
     })
 
     it('should be navigable via carousel controls', () => {
-        cy.visitHost(filing)
+        let filing = readFilingDataAccNum('000001469323000155')
+        cy.loadFiling(filing)
 
-        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
+        cy.get(selectors.factsHeader, { timeout: Number(filing.timeout) }).click()
         cy.get('a[data-id^="fact-identifier-"]').first().click()
 
         let x = [1, 2, 3, 4]
@@ -142,9 +135,10 @@ describe(`Fact Modal`, () => {
     })
 
     it('should be able to click "breadcrumbs" to navigate carousel', () => {
-        cy.visitHost(filing)
+        let filing = readFilingDataAccNum('000001469323000155')
+        cy.loadFiling(filing)
 
-        cy.get(selectors.factsHeader, { timeout: filing.timeout }).click()
+        cy.get(selectors.factsHeader, { timeout: Number(filing.timeout) }).click()
         cy.get('a[data-id^="fact-identifier-"]').first().click()
 
         let x = [1, 2, 3, 4]
@@ -165,10 +159,11 @@ describe(`Fact Modal`, () => {
     })
 
     it('should jump to fact in side bar when header icon clicked', () => {
-        cy.visitHost(filing)
+        let filing = readFilingDataAccNum('000001469323000155')
+        cy.loadFiling(filing)
 
         // fact 1
-        cy.get('#fact-identifier-2', { timeout: filing.timeout }).click()
+        cy.get('#fact-identifier-2', { timeout: Number(filing.timeout) }).click()
         cy.get(selectors.factModalJump).click()
         
         cy.get('div[id="facts-menu"] a[data-id="fact-identifier-2"]')

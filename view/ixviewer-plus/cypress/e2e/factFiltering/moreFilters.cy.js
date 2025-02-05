@@ -1,11 +1,8 @@
 import { selectors } from "../../utils/selectors.mjs"
-import { getFilingsSample, getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
+import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
 
 let filingsSample = getFilingsSample(Cypress.env);
 // import { getFilingsWithHighestFactCount } from '../../utils/helpers'
-
-const filing = getByAccessionNum("000090831524000023")
-const nmexFiling = getByAccessionNum("000143774923034166")
 
 const testAddingMoreFilterCategories = (categoryHeaderSelector, filters, initialFactCount) => {
     let prevFactCount = 0
@@ -38,9 +35,7 @@ const testAddingMoreFilterCategories = (categoryHeaderSelector, filters, initial
 
 describe(`Filters | More`, () => {
     it(`More-period-2023 should have specific result for nmex filing`, () => {
-        cy.visitHost(nmexFiling)
-            
-        cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
+        cy.loadByAccessionNum('000143774923034166')
 
         cy.get(selectors.moreFiltersHeader).click()
         cy.get(selectors.periodFilterTagsDrawer).click()
@@ -48,10 +43,7 @@ describe(`Filters | More`, () => {
         cy.get(selectors.factCountBadge).should('have.text', '171')
     })
     it(`Period-2023 & 2022 should have specific result for nmex filing`, () => {
-        const filing = getByAccessionNum("000143774923034166")
-        cy.visitHost(nmexFiling)
-            
-        cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
+        cy.loadByAccessionNum('000143774923034166')
 
         cy.get(selectors.moreFiltersHeader).click()
         cy.get(selectors.periodFilterTagsDrawer).click()
@@ -66,20 +58,16 @@ describe(`Filters | More (bulk - more selected should have more results)`, () =>
     let initialFactCount = 0
 
     beforeEach(() => {
-        cy.visitHost(filing)
-        cy.get(selectors.moreFiltersHeader, { timeout: filing.timeout }).click()
-        
+        cy.loadByAccessionNum('000090831524000023')
+        cy.get(selectors.moreFiltersHeader).click()
+
         // highFactCountFilings.forEach(f => {
         //     cy.log('f.factCount', f.factCount)
         // })
     })
 
     // Periods
-    it(`Period Filters should filter facts ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-        // this assertion forces it to wait for it to be populated with number
-        cy.get(selectors.factCountClock).should('not.exist')
-
-
+    it('Period Filters should filter facts', () => {
         cy.get(selectors.factCountBadge).invoke('text').then(text => {
             initialFactCount = Number(text.replace(',', ''))
             const filtersArr = [selectors.period1Filter, selectors.period2Filter, selectors.period3Filter]
@@ -89,9 +77,7 @@ describe(`Filters | More (bulk - more selected should have more results)`, () =>
     })
 
     // Measures
-    it(`Measure Filters should filter facts ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-        cy.get(selectors.factCountClock).should('not.exist')
-
+    it('Measure Filters should filter facts', () => {
         let filtersArr = [selectors.measure1Filter, selectors.measure2Filter, selectors.measure3Filter]
 
         cy.get(selectors.factCountBadge).invoke('text').then(text => {
@@ -101,9 +87,7 @@ describe(`Filters | More (bulk - more selected should have more results)`, () =>
     })
 
     // Axis
-    it(`Axis Filters should filter facts ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-        cy.get(selectors.factCountClock).should('not.exist')
-
+    it('Axis Filters should filter facts', () => {
         let filtersArr = [selectors.axis1Filter]
 
         cy.get(selectors.factCountBadge).invoke('text').then(text => {
@@ -113,9 +97,7 @@ describe(`Filters | More (bulk - more selected should have more results)`, () =>
     })
 
     // Members
-    it(`Members Filters should filter facts ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-        cy.get(selectors.factCountClock).should('not.exist')
-
+    it('Members Filters should filter facts', () => {
         let filtersArr = [selectors.membersFilter1]
 
         cy.get(selectors.factCountBadge).invoke('text').then(text => {
@@ -125,9 +107,7 @@ describe(`Filters | More (bulk - more selected should have more results)`, () =>
     })
 
     // Scale
-    it(`Scale Filters should filter facts ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-        cy.get(selectors.factCountClock).should('not.exist')
-
+    it('Scale Filters should filter facts', () => {
         let filtersArr = [
             selectors.scaleFilter1, 
             selectors.scaleFilter2, 
@@ -141,9 +121,7 @@ describe(`Filters | More (bulk - more selected should have more results)`, () =>
     })
 
     // Balance
-    it(`Balance Filters should filter facts ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-        cy.get(selectors.factCountClock).should('not.exist')
-
+    it('Balance Filters should filter facts', () => {
         let filtersArr = [selectors.balanceFilter1, selectors.balanceFilter2]
 
         cy.get(selectors.factCountBadge).invoke('text').then(text => {

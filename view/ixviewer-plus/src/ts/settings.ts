@@ -13,11 +13,10 @@ export class SetCustomCSS {
 		const taggedData = localStorage.getItem("taggedData") || "FF6600";
 		const searchResults = localStorage.getItem("searchResults") || "FFD700";
 		const selectedFact = localStorage.getItem("selectedFact") || "003768";
-		const tagShading = localStorage.getItem("tagShading") || "rgba(255,0,0,0.3)";
-		const textBlock = localStorage.getItem("textBlock") || "#003768";
-		const cssObject = {
+		const tagShading = localStorage.getItem("tagShading") || "rgba(255,0,0,0.1)";
+		const cssObject: any = {
 			'#dynamic-xbrl-form [enabled-fact="true"][continued-fact="false"], #settings-modal .enabled-example': {
-				"box-shadow": `inset 0px 2px #${taggedData}, inset 0px -2px #${taggedData}`,
+				"box-shadow": `0px 2px #${taggedData}, 0px -2px #${taggedData}`,
 				display: "inline",
 			},
 			'#dynamic-xbrl-form [enabled-fact="true"][continued-main-fact="true"]': {
@@ -49,7 +48,7 @@ export class SetCustomCSS {
 			},
 
 			'#dynamic-xbrl-form [selected-fact="true"], #settings-modal .selected-fact-example': {
-				border: `3px solid #${selectedFact} !important`,
+				border: `2px solid #${selectedFact} !important`,
 				display: "inline"
 			},
 			'#dynamic-xbrl-form [selected-fact="true"][continued-main-fact="true"]': {
@@ -57,12 +56,14 @@ export class SetCustomCSS {
 					`-2px 0px 0px 0px #${searchResults}, 2px 0px 0px 0px #${searchResults}`
 			},
 			'#dynamic-xbrl-form [selected-fact="true"][text-block-fact="true"]': {
-				"box-shadow":
-					`-2px 0px 0px 0px #${selectedFact}, 2px 0px 0px 0px #${selectedFact}`
+				// "box-shadow":
+				// 	`-2px 0px 0px 0px #${selectedFact}, 2px 0px 0px 0px #${selectedFact}`
+				// possible fix below (fix text-block ticket)
+				border: `2px solid #${selectedFact} !important`,
 			},
 			'#dynamic-xbrl-form [selected-fact="true"][continued-fact="false"]': {
-				border: `3px solid #${selectedFact} !important`,
-				display: "inline"
+				border: `2px solid #${selectedFact} !important`,
+				// display: "inline" // probably remove this (fix text-block ticket)
 			},
 
 			'#dynamic-xbrl-form [enabled-fact="true"][continued-fact="false"]:hover, #settings-modal span.tag-shading-example': {
@@ -73,13 +74,6 @@ export class SetCustomCSS {
 			// },
 			'#dynamic-xbrl-form [hover-fact="true"] *, #dynamic-xbrl-form [hover-fact="true"]': {
 				"background-color": `${tagShading} !important`,
-			},
-
-			"#dynamic-xbrl-form .text-block-indicator-left, .text-block-indicator-left": {
-				"border-left-color": `#${textBlock}`
-			},
-			"#dynamic-xbrl-form .text-block-indicator-right, .text-block-indicator-right": {
-				"border-right-color": `#${textBlock}`
 			},
 		};
 
@@ -108,8 +102,7 @@ export class SetCustomCSS {
 		const taggedData = localStorage.getItem("taggedData") || "FF6600";
 		const searchResults = localStorage.getItem("searchResults") || "FFD700";
 		const selectedFact = localStorage.getItem("selectedFact") || "003768";
-		const tagShading = localStorage.getItem("tagShading") || "rgba(255,0,0,0.3)";
-		const textBlock = localStorage.getItem("textBlock") || "003768";
+		const tagShading = localStorage.getItem("tagShading") || "rgba(255,0,0,0.1)";
 		const pickrOptions = [
 			{
 				selector: "#tagged-data-color-picker",
@@ -133,18 +126,12 @@ export class SetCustomCSS {
 				selector: "#tag-shading-color-picker",
 				default: tagShading,
 				storage: "tagShading",
-				reset: "rgba(255,0,0,0.3)"
+				reset: "rgba(255,0,0,0.1)"
 			},
-			{
-				selector: "#text-block-color-picker",
-				default: textBlock,
-				storage: "textBlock",
-				reset: "003768"
-			}
 		];
 
 		const rgbToHex = (input: string) => {
-			const rgb = input.replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+),?([^,\s]+)?/i);
+			const rgb: any = input.replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+),?([^,\s]+)?/i);
 			if (rgb) {
 				const hex = [
 					(rgb[1] | 1 << 8).toString(16).slice(1),
@@ -156,7 +143,7 @@ export class SetCustomCSS {
 		};
 
 		const hexToRgb = (input: string) => {
-			const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(input);
+			const result: any = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(input);
 			return `rgba(${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)})`;
 		};
 

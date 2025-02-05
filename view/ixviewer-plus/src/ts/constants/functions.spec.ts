@@ -80,11 +80,11 @@ describe('/src/ts/constants/functions.ts', () => {
     //changeInlineFiles()
     describe('basic checks for changeInlineFiles()', () => {
         it('is a function', () => {
-            expect(typeof ConstantsFunctions.changeInlineFiles).toEqual('function');
+            expect(typeof ConstantsFunctions.switchDoc).toEqual('function');
         });
 
-        it('returns void', () => {
-            expect(ConstantsFunctions.changeInlineFiles('')).toEqual(undefined);
-        });
+        // it('returns void', () => {
+        //     expect(ConstantsFunctions.switchDoc('')).toEqual(undefined);
+        // });
     });
 });

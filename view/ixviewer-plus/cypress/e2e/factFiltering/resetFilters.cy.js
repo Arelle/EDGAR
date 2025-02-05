@@ -1,15 +1,15 @@
-import { getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
+import { readFilingDataAccNum } from '../../dataPlus/filingsFunnel.js'
 import { selectors } from "../../utils/selectors"
 
-const filing = getByAccessionNum("000080786323000002")
+const filing = readFilingDataAccNum('000080786323000002')
 
 describe(`Reset Filters`, () => {
     let initialFactCount = 0
 
-    // Select
+    console.log(filing)
     it(`should clear filters ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
-        cy.visitHost(filing)
-        cy.get(selectors.factCountClock, { timeout: filing.timeout }).should('not.exist')
+        cy.loadFiling(filing)
+        cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist')
 
         cy.get(selectors.factCountBadge).invoke('text').then(text => {
             initialFactCount = Number(text.replace(',', ''))
