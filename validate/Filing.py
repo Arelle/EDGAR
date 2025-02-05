@@ -1421,7 +1421,11 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                                 break
                                         conditionResults.append(foundOtherLine)
                                     else:
-                                        fexcl = sevFact(sev, exclName, f, sevCovered=False)
+                                        if " axis " in exclName:
+                                            _exclName, _sep, _axisKey = exclName.partition(" axis ")
+                                            fexcl = sevFact(sev, _exclName, axisKey=_axisKey, sevCovered=False)
+                                        else:
+                                            fexcl = sevFact(sev, exclName, f, sevCovered=False)
                                         fexclVal = "absent" if fexcl is None else fexcl.xValue
                                         conditionResults.append(not whereConditionIsFalse(fexclVal, exclCond))
                                 if all(conditionResults):
@@ -2163,7 +2167,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     isAnotherLine = validation.endswith("anotherLine")
                     referenceComparison = sev.get("references-comparison")
                     for name in names:
-                        for f in sevFacts(sev, name, deduplicate=True, whereKey="where", fallback=bindIfAbsent, sevCovered=False):
+                        for f in sevFacts(sev, name, deduplicate=True, whereKey="where", excludeKey="exclude", fallback=bindIfAbsent, sevCovered=False):
                             flagFactsFound = set()
                             if f is None:
                                 fMbrVals = () # process reference values
@@ -2176,7 +2180,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 for rName in referenceTag:
                                     if isAnotherLine:
                                         otherLinesFacts = list(
-                                                fr for fr in sevFacts(sev, rName, axisKey=sev.get("references-axes"), whereKey="references-where", sevCovered=False)
+                                                fr for fr in sevFacts(sev, rName, axisKey=sev.get("references-axes"), whereKey="references-where", excludeKey="references-exclude", sevCovered=False)
                                                 if fr.context.dimsHash != (f.context.dimsHash if f is not None else None) and
                                                 (referenceComparison is None or
                                                 (referenceComparison == "equal" and fValue == "absent" if fr is None else fValue == fr.xValue)
@@ -2184,7 +2188,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                             )
                                         fr = otherLinesFacts[0] if any(otherFact is not None for otherFact in otherLinesFacts) else None
                                     else:
-                                        fr = sevFact(sev, rName, f, axisKey=sev.get("references-axes"), whereKey="references-where", sevCovered=False) # dependent fact is of context of f or for "c" inherited context (less disaggregated)
+                                        fr = sevFact(sev, rName, f, axisKey=sev.get("references-axes"), whereKey="references-where", excludeKey="references-exclude", sevCovered=False) # dependent fact is of context of f or for "c" inherited context (less disaggregated)
                                     items = [f]
                                     if fr is None:
                                         frValue = "absent"
