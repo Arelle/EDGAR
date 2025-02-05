@@ -40,7 +40,7 @@ from .Consts import submissionTypesAllowingSeriesClasses, \
                     hideableNamespacesPattern, linkbaseValidations, \
                     feeTaggingAttachmentDocumentTypePattern, docTypesAttachmentDocumentType, docTypesSubType, \
                     docTypesAllowingRedact, rxpAlternativeReportingRegimes, attachmentDocumentTypeReqSubDocTypePattern, \
-                    nsPatternNotAllowedinxBRLXML
+                    nsPatternNotAllowedinxBRLXML, subTypesWarningforxBRLXml
 
 from .Dimensions import checkFilingDimensions
 from .PreCalAlignment import checkCalcsTreeWalk
@@ -187,9 +187,10 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         if not hasSubmissionType: # infer submissionType parameter from dei:DocumentType
                             submissionType = docTypesSubType.get(f.xValue, f.xValue)
                         break
-        if attachmentDocumentTypeReqSubDocTypePattern.match(attachmentDocumentType):
+        matchResult = attachmentDocumentTypeReqSubDocTypePattern.match(attachmentDocumentType)
+        if matchResult:
             hasSubmissionType = False
-            submissionType = f"{submissionType}§{attachmentDocumentType}"
+            submissionType = f"{submissionType}§{matchResult.group(matchResult.lastindex)}"
         _setParams = []
         if (not hasSubmissionType and submissionType):
             _setParams.append (f"submissionType {submissionType}")
@@ -315,6 +316,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             for prefix, nsURL in modelXbrl.prefixedNamespaces.items():
                 if nsPatternNotAllowedinxBRLXML.match(nsURL):
                     modelXbrl.error("EXG.12.08", f"The namespace \"{nsURL}\" is not allowed when the document is in xBRL-XML format.")
+            if submissionType in subTypesWarningforxBRLXml:
+                modelXbrl.warning("EXG.12.08", f"Submission type {submissionType}, only allows Inline XBRL filing.")
+                
         #6.5.7 duplicated contexts
         contexts = modelXbrl.contexts.values()
         contextIDs = set()
@@ -1701,7 +1705,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 if (subTypes not in ({"all"}, {"n/a"})
                     and (subFormTypesCheck.isdisjoint(subTypes) ^ ("!not!" in subTypes))
                     and (not subTypesPattern or not subTypesPattern.match(submissionType))
-                    and (not docTypes or ((attachmentDocumentType in docTypes) ^ ("!not!" in docTypes)))):
+                    # attachmentDocumentType can be EX-98.1 so we only want to check if startswith EX-98, etc.
+                    and (not docTypes or ((attachmentDocumentType is not None and any(attachmentDocumentType.startswith(dt) for dt in docTypes)) ^ ("!not!" in docTypes)))):
                     if validation not in (None, "fany"): # don't process name for sev's which only store-db-field
                         for name in names:
                             if name.endswith(":*") and (validation == "(supported-taxonomy)" or validation == "(supported-taxonomy-docType)"): # taxonomy-prefix filter
@@ -1803,7 +1808,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                             sevMessage(sev, ftContext=ftContext(currentAxisKey, otherGroupData["refFact"]), otherftContext=ftContext(currentAxisKey, groupData["refFact"]))
                                             found.append(matchingPair)
                 # For validation doc-type-facts-dependency check if the attachment document type exists and is in the list of document types passed in from the validation
-                elif validation == "doc-type-facts-dependency" and attachmentDocumentType is not None and attachmentDocumentType in docTypes:
+                elif validation == "doc-type-facts-dependency" and attachmentDocumentType is not None and any(attachmentDocumentType.startswith(dt) for dt in docTypes):
                     factsFound = False
                     namespace = sev.get("namespace", "")
                     # Get from the validation the namespace that facts should belong to
