@@ -68,11 +68,21 @@ attachmentDocumentTypeValidationRulesFiles = ( # match attachment doc type patte
     (None, "dei-validations.json")
     )
 supplementalAttachmentDocumentTypesPattern = re.compile(r"EX-FILING FEES.*|EX-99\.[C-S]\.SBSEF.*")
-exhibitTypesStrippingOnErrorPattern = re.compile(r"EX-26.*|EX-99\.[C-S]\.SBSEF.*|EX-98")
+exhibitTypesStrippingOnErrorPattern = re.compile(r"EX-26.*|EX-99\.[C-S]\.SBSEF.*|EX-98.*")
 exhibitTypesPrivateNotDisseminated = re.compile(r"EX-99\.[DEFHIJKNOPQRS]\.SBSEF")
 primaryAttachmentDocumentTypesPattern = re.compile(r"(?!EX-)")
-attachmentDocumentTypeReqSubDocTypePattern = re.compile(r"EX-98")
+# for the below, group the attachmentDocumentType so that we can extract the correct value.
+# Example EX-98.1 can become EX-98 based on the group
+attachmentDocumentTypeReqSubDocTypePattern = re.compile(r"(EX-98).*")
 nsPatternNotAllowedinxBRLXML = re.compile(r".*sec.gov/spac/.*")
+subTypesWarningforxBRLXml = [
+    "S-1", "S-1/A", "S-1MEF", "S-4", "S-4/A", "S-4MEF", "S-4EF", "S-4POS", "F-1", "F-1/A", "F-1MEF", "F-4", "F-4/A", "F-4MEF", 
+    "8-K", "8-K/A", "8-K12B", "8-K12B/A", "8-K12G3", "8-K12G3/A", "8-K15D5", "8-K15D5/A", "6-K", "6-K/A", "20-F", "20-F/A", 
+    "20FR12B", "20FR12B/A", "20FR12G", "20FR12G/A", "DEF 14A", "DEFA14A", "DEFC14A", "DEFM14A", "DEFR14A", "PREC14A", 
+    "PREM14A", "PRER14A", "PRE 14A", "DEF 14C", "DEFA14C", "DEFC14C", "DEFM14C", "DEFR14C", "PREM14C", "PREC14C", "PRER14C", 
+    "PRE 14C", "SC14D1F", "SC14D1F/A", "SC14D9F", "SC14D9F/A", "SC 14D9", "SC 14D9/A", "SC14D9C", "SC TO-I", "SC TO-I/A", 
+    "SC TO-C", "SC TO-T", "SC TO-T/A", "SC13E4F", "SC13E4F/A", "POS AM", "POS462B"
+]
 
 rxpAlternativeReportingRegimes = ["EU", "UK", "NO", "CA"]
 
