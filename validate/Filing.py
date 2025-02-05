@@ -5173,15 +5173,15 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     return ancestors
                 for id, rule in dqcRule["rules"].items():
                     if id == "9576":
-                        for f in modelXbrl.factsByLocalName.get(rule["name"], ()):
-                            if not f.context.qnameDims:
-                                bindings = factBindings(modelXbrl, rule["reqd-names"]).values()
-                                if bindings:
-                                    facts = [f] + [g for b in bindings for g in b.values()]
-                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
-                                        modelObject=facts, value=f.xValue,name=f.qname.localName,
-                                        contextID=f.context.id, unitID=f.unit.id if f.unit is not None else "(none)",
-                                        edgarCode=edgarCode, ruleElementId=id)
+                        nonDimFacts = list(f for f in modelXbrl.factsByLocalName.get(rule["name"], ()) if not f.context.qnameDims)
+                        if nonDimFacts:
+                            bindings = factBindings(modelXbrl, rule["reqd-names"]).values()
+                            if not bindings:
+                                f = nonDimFacts[0]
+                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
+                                    modelObject=nonDimFacts, value=f.xValue,name=f.qname.localName,
+                                    contextID=f.context.id, unitID=f.unit.id if f.unit is not None else "(none)",
+                                    edgarCode=edgarCode, ruleElementId=id)
                     elif id == "9577":
                         for c in modelXbrl.nameConcepts.get(rule["name"], ()):
                             componentsOfIncome = getDescendants(XbrlConst.summationItems, c, None)
@@ -5216,7 +5216,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         for qn in xuleConstants["NON_NEG_ITEMS"]:
                             c = modelXbrl.qnameConcepts.get(qn)
                             if c is not None and c.isMonetary:
-                                for b in factBindings(modelXbrl, (qn,), coverDimQnames=(dimConcept.qname,), coverUnit=True).values():
+                                for b in factBindings(modelXbrl, (c.name,), coverDimQnames=(dimConcept.qname,), coverUnit=True).values():
                                     boundFacts = b[qn.localName].values()
                                     for defF in boundFacts:
                                         if not defF.context.qnameDims:
