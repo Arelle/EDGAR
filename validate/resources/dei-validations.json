@@ -2459,6 +2459,14 @@
         "taxonomy": "SPAC"
     },
     {
+        "sub-types": ["@SPAC EX98 REQ"],
+        "xbrl-names": [],
+        "msgSection": "EXG:3.4",
+        "validation": "taxonomy-url-required-in-dts",
+        "value": "https://xbrl.sec.gov/spac/*/spac-proj-*.xsd",
+        "source": "both"
+    },
+    {
         "sub-types": ["@N-1A"],
         "xbrl-names": [],
         "efm": "6.5.56",
