@@ -1787,6 +1787,17 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             count > 0 for count in patternMatchCount.values()) == 0)):
                         sevMessage(sev, subType=submissionType, efmSection=efmSection, docType=deiDocumentType,
                                    taxonomyPattern=" or ".join(sorted(patternMatchCount.keys())))
+                elif validation == "taxonomy-ns-in-dts-fact-required":
+                    pattern = re.compile(value)                    
+                    for nsPrefix, nsuri in modelXbrl.prefixedNamespaces.items():
+                        if pattern.match(nsuri):
+                            factFound = False
+                            for f in modelXbrl.facts:
+                                if pattern.match(f.qname.namespaceURI):
+                                    factFound = True
+                                    break
+                            if not factFound:
+                                sevMessage(sev, subType=submissionType, taxonomyNSURi=nsuri, taxonomy=nsPrefix.upper())
                 elif validation == "noDups":
                     axes = deiValidations["axis-validations"][axisKey]["axes"]
                     axesQNs = [qname(axis, deiDefaultPrefixedNamespaces) for axis in axes]
