@@ -4768,14 +4768,14 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             elif dqcRuleName == "DQC.US.0089":
                 # 0089 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))
-                axisQname = qname(rule["axis"], deiDefaultPrefixedNamespaces)
-                for name in rule["names"]:
-                    for f in modelXbrl.factsByLocalName.get(name,()):
-                        if axisQname in f.context.qnameDims:
-                            modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
-                                modelObject=f, name=f.qname, value=f.xValue,
-                                contextID=f.contextID, unitID=f.unitID or "(none)",
-                                edgarCode=edgarCode, ruleElementId=id)
+                for axis in modelXbrl.nameConcepts.get(rule["axis"], ()):
+                    for name in rule["names"]:
+                        for f in modelXbrl.factsByLocalName.get(name,()):
+                            if axis.qname in f.context.qnameDims:
+                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
+                                    modelObject=f, name=f.qname, value=f.xValue,
+                                    contextID=f.contextID, unitID=f.unitID or "(none)",
+                                    edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0090" and  deiDocumentType in dqcRule["document-types"]:
                 def hasExtDescendant(fromConcept, elr=None, visited=None):
                     if visited is None: visited = set()
@@ -4790,25 +4790,27 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             visited.discard(toConcept)
                     return False
                 for id, rule in dqcRule["rules"].items():
-                    sumName = rule["sum"]
-                    addendNames = rule["addends"]
-                    for b in factBindings(modelXbrl, flattenToSet( (sumName, addendNames) ), noAdditionalDims=True).values(): # works on defaulted dim items only
-                        if sumName in b and addendNames[0] in b: # must bind sum and first addend
-                            minDec = leastDecimals(b.values())
-                            addendValue = sum( (b[n].xValue for n in addendNames if n in b) )
-                            difference = abs( b[sumName].xValue - addendValue )
-                            if isinf(minDec):
-                                maxDiff = 0
-                            else:
-                                maxDiff = pow(10, -minDec) * tolerance
-                            if difference > maxDiff:
-                                if (not hasExtDescendant(b[sumName].concept) or (
-                                    rule["allow-if-calc-addend1"] and
-                                    not modelXbrl.relationshipSet(XbrlConst.summationItems).isRelated(b[sumName].concept, "descendant", b[addendNames[0]].concept, consecutiveLinkrole=True))):
-                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
-                                        modelObject=b.values(), name=sumName, sumValue=b[sumName].xValue, addendValue=addendValue, differenceValue=difference,
-                                        contextID=f.contextID, unitID=f.unitID or "(none)",
-                                        edgarCode=edgarCode, ruleElementId=id)
+                    tolerance = rule["tolerance"]
+                    if len(modelXbrl.factsByLocalName.get(rule["opt-in"],())) == 0:
+                        sumName = rule["sum"]
+                        addendNames = rule["addends"]
+                        for b in factBindings(modelXbrl, flattenToSet( (sumName, addendNames) ), noAdditionalDims=True).values(): # works on defaulted dim items only
+                            if sumName in b and addendNames[0] in b: # must bind sum and first addend
+                                minDec = leastDecimals(b.values())
+                                addendValue = sum( (b[n].xValue for n in addendNames if n in b) )
+                                difference = abs( b[sumName].xValue - addendValue )
+                                if isinf(minDec):
+                                    maxDiff = 0
+                                else:
+                                    maxDiff = pow(10, -minDec) * tolerance
+                                if difference > maxDiff:
+                                    if (not hasExtDescendant(b[sumName].concept) or (
+                                        rule["allow-if-calc-addend1"] and
+                                        not modelXbrl.relationshipSet(XbrlConst.summationItems).isRelated(b[sumName].concept, "descendant", b[addendNames[0]].concept, consecutiveLinkrole=True))):
+                                        modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
+                                            modelObject=b.values(), name=sumName, sumValue=b[sumName].xValue, addendValue=addendValue, differenceValue=difference,
+                                            contextID=f.contextID, unitID=f.unitID or "(none)",
+                                            edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0091":
                 # 0091 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))

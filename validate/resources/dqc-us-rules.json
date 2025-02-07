@@ -2118,6 +2118,7 @@
 		"document-types": ["10-K", "10-KT", "20-F"],
         "rules": {
         	"9374": {
+				"opt-in": "LesseeOperatingLeaseLiabilityUndiscountedExcessAmountNotDisclosed",
         		"sum": "LesseeOperatingLeaseLiabilityPaymentsDue",
         		"addends": [
         			"OperatingLeaseLiability",
@@ -2128,6 +2129,7 @@
 		        "message": "The element {name} with a value of {sumValue} should be equal to the sum of OperatingLeaseLiability plus LesseeOperatingLeaseLiabilityUndiscountedExcessAmount. The value of these adds to {addendValue}.  A difference of {differenceValue}. In an annual filing this reconciliation is required and all elements should have a value in the current reporting period.  \n\nIf the difference is due to an extension reconciliation item, then the filer should add a calculation relationship. The calculation tree should show the parent element as LesseeOperatingLeaseLiabilityPaymentsDue with children of LesseeOperatingLeaseLiabilityUndiscountedExcessAmount + OperatingLeaseLiability + any extension items. There should already be a calculation tree defined for the components of LesseeOperatingLeaseLiabilityPaymentsDue comprised of LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths +  LesseeOperatingLeaseLiabilityPaymentsDueYearTwo etc.  These two beakdowns of LesseeOperatingLeaseLiabilityPaymentsDue should be in seperate calculation groups. If an extension item appears as a child calculation of LesseeOperatingLeaseLiabilityPaymentsDue then no error is produced. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
         	},
         	"9375": {
+				"opt-in": "FinanceLeaseLiabilityUndiscountedExcessAmountNotDisclosed",
         		"sum": "FinanceLeaseLiabilityPaymentsDue",
         		"addends": [
         			"FinanceLeaseLiability",
