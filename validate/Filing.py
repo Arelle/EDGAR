@@ -3899,7 +3899,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                              # not dqc0015.excludedMemberNamesPattern.search(d.memberQname.localName)))
                              not (d.memberQname and exclude_mem_pattern.search(d.memberQname.localName)) and
                              d.dimensionQname not in xuleConstants["EXCLUDE_NON_NEG_AXIS"] and
-                             not(any(d.dimensionQname == l[0] and d.memberQname in l[2] for l in xuleConstants["EXCLUDE_NON_NEG_AXIS_MEMBERS"])))
+                             not(any(d.dimensionQname == l[0] and d.memberQname in l[1] for l in xuleConstants["EXCLUDE_NON_NEG_AXIS_MEMBERS"])))
                             for d in f.context.qnameDims.values()))):
                                 # and (
                                 #f.qname.localName not in additionalExcludedNames)):
@@ -5396,7 +5396,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                             # We need to check that either the BS Location or IS location axis has also been used with the item. If any of these axis are used then no error is reported
                                             if any(len(b3) > 0
                                                    for b2 in factBindings(modelXbrl, (relatedExtEnumQn.localName,), coverDimNames=coverDimNames, absentDimNames=scheduleAxisNames, coverUnit=True).values()
-                                                   for b2cvr in b2
+                                                   for b2cvr in b2.values()
                                                    for b3 in b2cvr.values()):
                                                 continue # ignore this binding
 
@@ -5482,19 +5482,19 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
 
                             if len(valuesReportedExcludingInterest) > 0:
                             # LOOK Up all the calculation relationships and see if that calc relationship exists in the filing. This is used to determine if there is a reconciliation. //
-                                IncludingInterestSourceCalcs = sumItemChildren((f.qname.localName for f in valuesReportedWithInterest), rule["$EXCLUDING_ACCRUED_INTEREST_DICT"])
-                                IncludingInterestSourceToExcludingIntCalc = sumItemChildren(rule["INCLUDING_ACCRUED_INTEREST_DICT"], (f.qname.localName for f in valuesReportedExcludingInterest))
+                                IncludingInterestSourceCalcs = sumItemChildren(valuesReportedWithInterest.keys(), rule["EXCLUDING_ACCRUED_INTEREST_DICT"][accrIntClass])
+                                IncludingInterestSourceToExcludingIntCalc = sumItemChildren(rule["INCLUDING_ACCRUED_INTEREST_DICT"][accrIntClass], (f.qname.localName for f in valuesReportedExcludingInterest))
                                 warn = False
 
                                 # THIS SECTION IS FOR THE MESSAGE.  IT WORKS OUT THE BIGGEST LIST OF ITEMS IN THE FILING AND TEH SMALLEST AND RETURNS THE SMALLEST AS THEY ARE ASSUMED TO BE THE ERROR **/
                                 if len(valuesReportedWithInterest) > len(valuesReportedExcludingInterest):
                                     incorrectElements = set(f.qname.localName for f in valuesReportedExcludingInterest)
-                                    correctElements = set(f.qname.localName for f in valuesReportedWithInterest)
+                                    correctElements = set(valuesReportedWithInterest.keys())
                                     setType = "elements excluding interest"
                                     setTypeContra = "elements including interest"
                                     warn = len(IncludingInterestSourceCalcs & correctElements) == 0 and len(IncludingInterestSourceToExcludingIntCalc) == 0
                                 else:
-                                    incorrectElements = set(f.qname.localName for f in valuesReportedWithInterest)
+                                    incorrectElements = set(valuesReportedWithInterest.keys(),)
                                     correctElements = set(f.qname.localName for f in valuesReportedExcludingInterest)
                                     setType = "elements including interest"
                                     setTypeContra = "elements excluding interest"
@@ -5510,12 +5510,12 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 del ruleBindings # deref bindings across classes
 
         except Exception as ex:
-            modelXbrl.warning(f"{dqcRuleName}.{id}",
-                              f"Validation was unable to complete rule {dqcRuleName} due to an internal error.  This is not considered an error in the filing.",
-                              modelObject=modelXbrl)
+            modelXbrl.warning(f"{dqcRuleName}.{id}.incomplete",
+                              _("Validation was unable to complete rule %(dqcRuleName)s due to an internal error.  This is not considered an error in the filing."),
+                              modelObject=modelXbrl, dqcRuleName=dqcRuleName)
             modelXbrl.debug(
                 "arelle:dqcrtException",
-                _("An unexpected exception occurred in DQCRT"),
+                _("An unexpected exception occurred in DQCRT\n%(traceback)s"),
                 traceback=traceback.format_exception(*sys.exc_info())
             )
 
