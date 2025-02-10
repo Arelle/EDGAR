@@ -2472,7 +2472,7 @@
         "message": "dq-{efmSection}-Taxonomy-Url-Required"
     },
     {
-        "sub-types": ["@SFP SPAC", "SC 14A", "SC 14C"],
+        "sub-types": ["@SFP SPAC", "@SC 14A", "@SC 14C", "SC TO-I", "SC TO-I/A"],
         "xbrl-names": [],
         "msgSection": "EXG:3.4",
         "validation": "taxonomy-ns-in-dts-fact-required",
