@@ -2451,7 +2451,7 @@
         "comment": "EX98 should have a SPAC element."
     },
     {
-        "sub-types": ["@SPAC EX98 REQ", "@SPAC EX98 OPT"],
+        "sub-types": ["@SPAC EX98 REQ"],
         "xbrl-names": "spac:*",
         "msgSection": "EXG:3.4",
         "validation": "doc-type-facts-dependency",
