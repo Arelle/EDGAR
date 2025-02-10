@@ -140,7 +140,7 @@
         "SC EX98": ["SC TO-I§EX-98", "SC TO-I/A§EX-98", "DEF 14A§EX-98", "DEFC14A§EX-98", "DEFM14A§EX-98", "DEFR14A§EX-98", "DEFA14A§EX-98", "PREC14A§EX-98", "PREM14A§EX-98", "PRER14A§EX-98", "PRE 14A§EX-98", "DEF 14C§EX-98", "DEFC14C§EX-98", "DEFM14C§EX-98", "DEFR14C§EX-98", "DEFA14C§EX-98", "PREC14C§EX-98", "PREM14C§EX-98", "PRER14C§EX-98", "PRE 14C§EX-98"],
         "comment6": "SPAC EX98 REQ are submission types that require the EX98 document to be in inline XBRL.",
         "comment7": "SPAC EX98 OPT are submission types where the EX98 document can be submitted in plain HTML.",
-        "comment8": "The distinction above does not affect the xbrl validations.",
+        "comment8": "The SPAC EX98 OPT sub types will not have a warning if SPAC facts are not tagged.",
         "SPAC EX98 REQ": ["@S-1 EX98", "@F-1 EX98", "@S-4 EX98", "@F-4 EX98", "@SC EX98"],
         "SPAC EX98 OPT": ["@8-K EX98", "@POS EX98", "@6-K EX98", "SC13E4F§EX-98", "SC13E4F/A§EX-98"]
     },
@@ -2451,7 +2451,7 @@
         "comment": "EX98 should have a SPAC element."
     },
     {
-        "sub-types": ["@SPAC EX98 REQ", "@SPAC EX98 OPT"],
+        "sub-types": ["@SPAC EX98 REQ"],
         "xbrl-names": "spac:*",
         "msgSection": "EXG:3.4",
         "validation": "doc-type-facts-dependency",
