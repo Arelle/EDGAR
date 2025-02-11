@@ -5360,7 +5360,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         if len(relExtEnFacts) > 0:
                                             continue
                                         else:
-                                            fs_decimals = statistics.mode([float(f.decimals) for f in modelXbrl.nonNilFactsInInstance if f.concept.isMonetary and not f.concept.qnameDims])
+                                            fs_decimals = statistics.mode([float(f.decimals) for f in modelXbrl.nonNilFactsInInstance if f.concept.isMonetary and not f.context.qnameDims])
                                             tolerance = pow(10, -1 * fs_decimals) * rule["decimal_tolerance_factor"]
                                             # This gets the max value either neg or pos
                                             FS_Concept_Item_abs_only = [abs(f.xValue) for f in FS_Concept_Items]
