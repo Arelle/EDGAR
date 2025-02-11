@@ -132,7 +132,7 @@
         "SFP SPAC": ["S-1", "S-1/A", "S-1MEF", "F-1", "F-1/A", "F-1MEF", "S-4", "S-4/A", "S-4MEF", "S-4EF", "S-4 POS", "F-4", "F-4/A", "F-4MEF", "POS AM", "POS462B"],
         "S-1 EX98": ["S-1§EX-98", "S-1/A§EX-98", "S-1MEF§EX-98"], 
         "F-1 EX98": ["F-1§EX-98", "F-1/A§EX-98", "F-1MEF§EX-98"], 
-        "S-4 EX98": ["S-4§EX-98", "S-4/A§EX-98", "S-4MEF§EX-98"], 
+        "S-4 EX98": ["S-4§EX-98", "S-4/A§EX-98", "S-4MEF§EX-98", "S-4EF§EX-98", "S-4 POS§EX-98"], 
         "F-4 EX98": ["F-4§EX-98", "F-4/A§EX-98", "F-4MEF§EX-98"], 
         "8-K EX98": ["8-K§EX-98", "8-K/A§EX-98", "8-K12B§EX-98", "8-K12B/A§EX-98", "8-K12G3§EX-98", "8-K12G3/A§EX-98", "8-K15D5§EX-98", "8-K15D5/A§EX-98"],
         "6-K EX98": ["6-K§EX-98", "6-K/A§EX-98"],
