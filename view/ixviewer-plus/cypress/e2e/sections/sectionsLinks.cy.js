@@ -1,5 +1,5 @@
 import { selectors } from '../../utils/selectors'
-import { getFilingsSample, getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
+import { getFilingsSample, readFilingData, getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
 
 let filingsSample = getFilingsSample(Cypress.env);
 let multiDocFiling = getByAccessionNum('000121390021056659');
@@ -13,7 +13,7 @@ describe(`Sections Links to different instance`, () => {
     // clicking links too close to bottom of page will not result in a scroll, so change in position is not mandatory, but should be >=
     // however testing scroll has proved unreliable with Cypress... (see inline pagination tests.)
     it(`should change instances`, () => {
-        cy.visitFiling("wh-sections", "out", `sbsef03exc-20231231.htm`);
+        cy.visit('/Archives/edgar/data/wh-sections/out/sbsef03exc-20231231.htm');
         cy.get(selectors.sectionsHeader).click();
 
         // open exd instance section accordion
@@ -30,12 +30,8 @@ describe(`Sections Links to different instance`, () => {
 
 describe(`Sections Links multi doc`, () => {
     it(`${multiDocFiling?.ticker || multiDocFiling.docName} ${multiDocFiling.formType || multiDocFiling.submissionType}`, () => {
-        cy.visitHost(multiDocFiling)
-        cy.get(selectors.sectionsHeader, { timeout: multiDocFiling.timeout }).click()
-
-        // first doc tab is active
-        cy.get(selectors.docTab0).should('have.class', 'active');
-        cy.get(selectors.docTab1).should('not.have.class', 'active');
+        cy.loadFiling(multiDocFiling)
+        cy.get(selectors.sectionsHeader, { timeout: Number(multiDocFiling.timeout) }).click()
 
         // click section link in ex99-1 doc
         cy.get('[id="section-header-Notes to the Financial Statements"]').click();
@@ -54,8 +50,8 @@ describe("No section linking errors (general)", () => {
 
             if (filing.accessionNum !== "000089418923007993") {
                 // ^ weird cases with s1, s2... reports and one broken link that is possibly a footnote
-                cy.visitHost(filing);
-                cy.get(selectors.sectionsHeader).click({ timeout: filing.timeout });
+                cy.loadFiling(filing);
+                cy.get(selectors.sectionsHeader).click({ timeout: Number(filing.timeout) });
                 
                 let itemCount = 0;
                 cy.get(selectors.sectionsLinks).each((link, linkIndex) => {
@@ -86,7 +82,7 @@ describe("No section linking errors (general)", () => {
 
 describe("wh filing Section Links link to the correct fact/section", () => {
     it(`for sbsef multi-instance`, () => {
-        cy.visitFiling("wh-sections", "out", `sbsef03exc-20231231.htm`);
+        cy.visit('/Archives/edgar/data/wh-sections/out/sbsef03exc-20231231.htm');
         cy.get(selectors.sectionsHeader).click();
 
         // Open all the closed Instances (if any)

@@ -1,12 +1,10 @@
-import { filings } from '../../dataPlus/enrichedFilingsPlus.mjs'
+/*
+import { readFilingDataAccNum } from "../../dataPlus/filingsFunnel.js";
 import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
 import { selectors } from "../../utils/selectors.mjs"
 
 let filingsSample = getFilingsSample(Cypress.env);
-const filingWithId = filings.filter(f => {
-    return f["id"] == "0001096906-23-001881"
-})
-const filing = filingWithId[0]
+const filing = readFilingDataAccNum('000121390021056659')
 
 const expectColorVals = (actualColorVals, expectedColorVals, moe = 3) => {
     // TODO: removed moe since we're passing in literal vals to invoke now.
@@ -40,7 +38,7 @@ describe.skip(`Change Fact link and bg colors ${filing?.ticker || filing.docName
 
     it('should change Tagged Data colors', () => {
         // Tagged Data
-        cy.visitHost(filing)
+        cy.visitFiling(filing.index)
         cy.openSettings()
         // cy.get(selectors.taggedDataColorPickerOpen).click()
         cy.get(selectors.taggedDataColorPickerOpen)
@@ -60,7 +58,7 @@ describe.skip(`Change Fact link and bg colors ${filing?.ticker || filing.docName
 
     it('should change search Results colors', () => {
         // Search Results
-        cy.visitHost(filing)
+        cy.visitFiling(filing.index)
         cy.openSettings()
         // cy.get('.search-results-example-1').should('contain.text', 'Search')
         cy.get(selectors.searchResultsColorPicker)
@@ -82,7 +80,7 @@ describe.skip(`Change Fact link and bg colors ${filing?.ticker || filing.docName
 
     it('should change Tag Shading (hover) colors', () => {
         // Tag Shading (hover)
-        cy.visitHost(filing)
+        cy.visitFiling(filing.index)
         cy.openSettings()
         cy.get(selectors.tagShadingColorPicker)
             .invoke('val', 'rgb(80,250,0)')
@@ -101,7 +99,7 @@ describe.skip(`Change Fact link and bg colors ${filing?.ticker || filing.docName
 
     it('should change text block indicator colors', () => {
         // text block indicator
-        cy.visitHost(filing)
+        cy.visitFiling(filing.index)
         cy.openSettings()
         cy.get(selectors.textBlockColorPicker)
             .invoke('val', 'rgb(10, 20, 255)')
@@ -119,3 +117,4 @@ describe.skip(`Change Fact link and bg colors ${filing?.ticker || filing.docName
             })
     })
 })
+*/

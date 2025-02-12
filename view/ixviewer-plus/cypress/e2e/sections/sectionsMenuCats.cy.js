@@ -2,7 +2,7 @@ import { selectors } from '../../utils/selectors'
 
 describe(`Sections | Menu Categories`, () => {
     it(`should be listed only once per instance`, () => {
-        cy.visitFiling("1045609", "000095017024015979", `pld-20230331.htm`);
+        cy.loadByAccessionNum('000095017024015979');
 
         // open sections sidebar
         cy.get(selectors.sectionsHeader).click();

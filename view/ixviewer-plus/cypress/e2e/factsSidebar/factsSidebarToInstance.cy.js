@@ -2,7 +2,7 @@ import { selectors } from "../../utils/selectors"
 
 describe(`Fact side bar features`, () => {
     it('prev/next fact nav should work', () => {
-        cy.visitFiling(null, '0001013762-23-000425', 'ea185980ex99-1_inspiratech.htm')
+        cy.loadByAccessionNum('000101376223000425')
 
         // current instance tab is active
         cy.get(selectors.docTab1).should('have.class', 'active')

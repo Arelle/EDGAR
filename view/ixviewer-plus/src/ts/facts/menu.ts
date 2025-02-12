@@ -3,10 +3,7 @@
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  */
 
-import { FactMap } from "../facts/map";
-import { Pagination } from "../pagination/sideBarPagination";
-import { UserFiltersState } from "../user-filters/state";
-import { FactsGeneral } from "./general";
+import { ConstantsFunctions } from "../constants/functions";
 
 export const FactsMenu = {
 
@@ -30,18 +27,6 @@ export const FactsMenu = {
 	 * @Description passes filtered fact set to Pagination.init()
 	 */
 	prepareForPagination: () => {
-		let enabledFacts;
-		if (Object.keys(UserFiltersState.getUserSearch).length === 0) {
-			enabledFacts = FactMap.getEnabledFacts();
-		} else {
-			enabledFacts = FactMap.getEnabledHighlightedFacts();
-		}
-		const enabledFactsArray = FactsGeneral.specialSort(enabledFacts);
-		Pagination.init(
-			enabledFactsArray,
-			('#facts-menu-list-pagination .pagination'),
-			('#facts-menu-list-pagination .list-group'),
-			true
-		);
+		ConstantsFunctions.setPagination();
 	}
 };

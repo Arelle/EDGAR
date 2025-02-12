@@ -153,6 +153,20 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
     <Loc>
         <Family>IFRS</Family>
         <Version>2024</Version>
+        <Href>https://xbrl.org/2020/extensible-enumerations-2.0.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>http://xbrl.org/2020/extensible-enumerations-2.0</Namespace>
+        <Prefix>enum2</Prefix>
+    </Loc>
+    <!-- 
+        keeping http version of 2020 extensible-enumerations-2.0.xsd for backward compatibility.
+        IFRS used the http version up to 8/29/2024 and then replaced it with the https version.
+    -->
+    <Loc>
+        <Family>IFRS</Family>
+        <Version>2024</Version>
         <Href>http://xbrl.org/2020/extensible-enumerations-2.0.xsd</Href>
         <AttType>SCH</AttType>
         <FileTypeName>Schema</FileTypeName>

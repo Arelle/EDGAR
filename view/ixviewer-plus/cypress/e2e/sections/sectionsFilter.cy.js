@@ -1,11 +1,9 @@
 import { selectors } from '../../utils/selectors'
-import { getFilingsSample, getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
-
-const multidocFiling = getFilingsSample(Cypress.env).filter(f => f.multiDoc && !f.multiInstance)[0]
+import { readFilingData } from '../../dataPlus/filingsFunnel.js'
 
 describe(`Sections | All instances vs current only filter`, () => {
     it(`should work on multi-instance filing`, () => {
-        cy.visitFiling("wh-sections", "out", `sbsef03exc-20231231.htm`);
+        cy.visit('/Archives/edgar/data/wh-sections/out/sbsef03exc-20231231.htm')
 
         // open sections sidebar
         cy.get(selectors.sectionsHeader).click();
@@ -26,9 +24,7 @@ describe(`Sections | All instances vs current only filter`, () => {
         cy.get(selectors.getNthSection(2)).should('not.have.class', 'd-none');
     })
     it(`Multi doc, single instance should not have sections instance filter UI`, () => {
-        // cy.visitFiling("no-cik", "0001013762-23-000425", `ea185980-6k_inspiratech.htm`);
-        cy.visitHost(multidocFiling)
-        cy.get(selectors.factCountClock, { timeout: multidocFiling.timeout }).should('not.exist')
+        cy.loadByAccessionNum('000101376223000425')
 
         // open sections sidebar
         cy.get(selectors.sectionsHeader).click();

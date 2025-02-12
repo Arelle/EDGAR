@@ -1,12 +1,12 @@
 import { selectors } from "../../utils/selectors.mjs"
-import { getByAccessionNum } from '../../dataPlus/filingsFunnel.js'
+import {readFilingData, readFilingDataAccNum} from '../../dataPlus/filingsFunnel.js'
 
-const filing = getByAccessionNum('000080786323000002');
+const filing = readFilingDataAccNum('000080786323000002');
 
-describe(`Menu Help for ${filing.docName} ${filing.formType || filing.submissionType}`, () => {
+describe(`Menu Help`, () => {
     it('should show help info', () => {
-        cy.visitHost(filing)
-        cy.get(selectors.menu, { timeout: filing.timeout }).click({force: true})
+        cy.loadFiling(filing)
+        cy.get(selectors.menu, { timeout: Number(filing.timeout) }).click({force: true})
         cy.get(selectors.helpLink).click({force: true})
 
         cy.get(selectors.gettingStarted).click({force: true})
