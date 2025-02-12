@@ -161,7 +161,7 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
         return
 
     val.params = {}
-    parameterNames = ("CIK", "cik", "cikList", "cikNameList", "submissionType", "exhibitType", "attachmentDocumentType", # CIK or cik both allowed
+    parameterNames = {"CIK", "cik", "cikList", "cikNameList", "submissionType", "exhibitType", "attachmentDocumentType", # CIK or cik both allowed
                       "itemsList", "accessionNumber", "entity.repFileNum",
                       "periodOfReport", "entityRegistration.fyEnd", "submissionHeader.fyEnd", "voluntaryFilerFlag",
                       "wellKnownSeasonedIssuerFlag", "shellCompanyFlag", "acceleratedFilerStatus", "smallBusinessFlag",
@@ -170,7 +170,7 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
                       "rptIncludeAllClassesFlag", "rptSeriesClassInfo.classIds", "newClass2.classIds",
                       "eligibleFundFlag", "pursuantGeneralInstructionFlag", "filerNewRegistrantFlag",
                       "datetimeForTesting", "dqcRuleFilter", "saveCoverFacts",
-                      "feeRate", "feeValuesFromFacts", "saveFeeFacts", "fiscalYearEnd", "intrstRate", "issrNm", "fileNumber", "closedEndedCompanyFlag")
+                      "feeRate", "feeValuesFromFacts", "saveFeeFacts", "fiscalYearEnd", "intrstRate", "issrNm", "fileNumber", "closedEndedCompanyFlag"}
     boolParameterNames = {"voluntaryFilerFlag", "wellKnownSeasonedIssuerFlag", "shellCompanyFlag", "acceleratedFilerStatus",
                           "smallBusinessFlag", "emergingGrowthCompanyFlag", "exTransitionPeriodFlag", "rptIncludeAllSeriesFlag",
                           "filerNewRegistrantFlag", "pursuantGeneralInstructionFlag", "eligibleFundFlag", "closedEndedCompanyFlag"}
@@ -207,9 +207,9 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
                 else:
                     parameters[paramQName] = ("", "".join(eisElt.itertext()).strip())
     if parameters: # parameter-provided CIKs and registrant names
-        for paramName in parameterNames:
-            p = parameters.get(ModelValue.qname(paramName,noPrefixIsNoNamespace=True))
-            if p and len(p) == 2 and p[1] not in ("null", "None", None):
+        for paramQName, p in parameters.items():
+            paramName = paramQName.localName # allow parameters to be in any namespace (no xmlns="" required)
+            if paramName in parameterNames and p and len(p) == 2 and p[1] not in ("null", "None", None):
                 v = p[1] # formula dialog and cmd line formula parameters may need type conversion
                 if isinstance(v, str):
                     if paramName in boolParameterNames:
