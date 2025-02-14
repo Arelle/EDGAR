@@ -52,6 +52,7 @@ _author = 'XBRL US Inc.'
 _copyright = '(c) 2017-2023'
 _xule_resources_dir = os.path.join(os.path.dirname(__file__), "resources", "xule")
 _xule_resources_dir_for_json = json.dumps(_xule_resources_dir + os.sep)[1:-1]
+_plugin_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 _rule_set_map_name = os.path.join(_xule_resources_dir, "edgarRulesetMap.json")
 _latest_map_name = 'https://github.com/Arelle/EDGAR/tree/master/validate/resources/xule/edgarRulesetMapOnline.json' 
 
@@ -251,8 +252,16 @@ def getXulePlugin(cntlr):
             if plugin_info.get('moduleURL') == 'xule':
                 _xule_plugin_info = plugin_info
                 break
-        else:
-            cntlr.addToLog(_("Xule plugin is not loaded. Xule plugin is required to run DQC rules. This plugin should be automatically loaded."))
+        if _xule_plugin_info is None:
+            # attempt to find xule plugin
+            for path, childDirs, files in os.walk(_plugin_dir):
+                if path.endswith(os.sep + "xule") and childDirs in ([], ["__pycache__"]) and "__init__.py" in files:
+                    _xule_plugin_info = PluginManager.moduleModuleInfo(moduleURL=path)
+                    PluginManager.loadModule(_xule_plugin_info)
+                    _xule_plugin_info = PluginManager.modulePluginInfos[_xule_plugin_info["name"]]
+                    break
+    if _xule_plugin_info is None:
+        cntlr.addToLog(_("Xule plugin is not loaded. Xule plugin is required to run DQC rules. This plugin should be automatically loaded."))
     
     return _xule_plugin_info
 
