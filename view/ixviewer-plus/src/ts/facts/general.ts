@@ -30,7 +30,7 @@ export const FactsGeneral = {
 	 */
 	goToInlineFact: (event: MouseEvent | KeyboardEvent | Event, element: HTMLElement) =>
 	{
-		if (event instanceof KeyboardEvent && !((event).key === 'Enter' || (event).key === 'Space'))
+		if (event instanceof KeyboardEvent && !((event).key === 'Enter' || (event).key === 'Space' || (event).key===' '))
 			return;
 		
 		const fact = FactMap.getByID(element.getAttribute('data-id') as string);
@@ -50,7 +50,7 @@ export const FactsGeneral = {
 			tempDiv.setAttribute('id', fact.id);
 			ModalsCommon.clickEvent(event, tempDiv);
 
-			Facts.addURLHash(fact.id);
+			Facts.updateURLHash(fact.id);
 			// element.scrollIntoView(false);
 			Pagination.setSelectedFact(element, fact);
 		}
@@ -94,7 +94,7 @@ export const FactsGeneral = {
 		const conceptWrapper = document.createElement('div');
 		conceptWrapper.setAttribute('class', 'd-flex w-100 justify-content-between');
 		const conceptElem = document.createElement('p');
-		conceptElem.setAttribute('class', 'mb-0 font-weight-bold word-break');
+		conceptElem.setAttribute('class', 'mb-0 font-weight-bold break-word');
 		conceptElem.setAttribute('data-cy', 'concept');
 		const pElementContent = document.createTextNode(ConstantsFunctions.getFactLabel(factInfo?.labels || []));
 		conceptElem.appendChild(pElementContent);

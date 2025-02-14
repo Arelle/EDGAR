@@ -153,13 +153,13 @@ var FiltersNumber = {
   },
 
   numDotDecimalTR4: function (element) {
-    if (element && typeof element === "object" && element["innerText"]) {
+    if (element && typeof element === "object" && element["textContent"]) {
       if (
         /^[ \t\n\r]*[, \xA00-9]*(\.[ \xA00-9]+)?[ \t\n\r]*$/.exec(
-          element.innerText
+          element.textContent
         )
       ) {
-        return element.innerText
+        return element.textContent
           .replace(/\,/g, "")
           .replace(/ /g, "")
           .replace("/\u00A0/g", "");

@@ -3,6 +3,7 @@ import { getFilingsSample, readFilingData, getByAccessionNum } from '../../dataP
 
 let filingsSample = getFilingsSample(Cypress.env);
 let multiDocFiling = getByAccessionNum('000121390021056659');
+let inspira2023 = getByAccessionNum('000101376223000425');
 
 // const multidocFilings = filings.filter(f => f.hasOwnProperty('cases') && f.cases.includes('multi-doc'));
 // e.g. http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/0001013762-23-000425/ea185980ex99-1_inspiratech.htm
@@ -28,14 +29,14 @@ describe(`Sections Links to different instance`, () => {
     })
 })
 
-describe(`Sections Links multi doc`, () => {
-    it(`${multiDocFiling?.ticker || multiDocFiling.docName} ${multiDocFiling.formType || multiDocFiling.submissionType}`, () => {
+describe(`Sections Links multi doc (metalinks 2.1)`, () => {
+    it(`${multiDocFiling.accessionNum} ${multiDocFiling.formType || multiDocFiling.submissionType}`, () => {
         cy.loadFiling(multiDocFiling)
         cy.get(selectors.sectionsHeader, { timeout: Number(multiDocFiling.timeout) }).click()
 
         // click section link in ex99-1 doc
-        cy.get('[id="section-header-Notes to the Financial Statements"]').click();
-        cy.get('li.section-link[order="49"]').click();
+        cy.get('[id="section-header-Notes to Financial Statements"]').click();
+        cy.get('li.section-link[order="11"]').click();
         cy.get(selectors.docTab0).should('not.have.class', 'active');
         cy.get(selectors.docTab1).should('have.class', 'active');
 
@@ -44,9 +45,21 @@ describe(`Sections Links multi doc`, () => {
     })
 })
 
+describe(`Sections Links multi doc (metalinks 2.2)`, () => {
+    it(`${multiDocFiling.accessionNum} ${multiDocFiling.formType || multiDocFiling.submissionType}`, () => {
+        cy.loadFiling(inspira2023)
+        cy.get(selectors.sectionsHeader, { timeout: Number(multiDocFiling.timeout) }).click()
+
+        // click section link in ex99-1 doc
+        cy.get('li.section-link[order="2"]').click();
+        cy.get(selectors.docTab0).should('not.have.class', 'active');
+        cy.get(selectors.docTab1).should('have.class', 'active');
+    })
+})
+
 describe("No section linking errors (general)", () => {
     filingsSample.forEach((filing) => {
-        it(`${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType} - general`, () => {
+        it(`${filing.accessionNum} ${filing.formType || filing.submissionType} - general`, () => {
 
             if (filing.accessionNum !== "000089418923007993") {
                 // ^ weird cases with s1, s2... reports and one broken link that is possibly a footnote
@@ -120,4 +133,18 @@ describe("wh filing Section Links link to the correct fact/section", () => {
             }
         });
     });
+});
+describe("docType Parentheses Test", () => {
+    it('Filing should load even if there are parentheses in the docType tag ', () => {
+        cy.loadByAccessionNum('austin')
+        cy.get(selectors.sectionsHeader).click().then(() => {
+            cy.get(selectors.sectionSidebarBody).should('be.visible')
+        })
+        cy.get(selectors.sectionHeaderActive).click().then(() => {
+            cy.get(selectors.sectionSidebarBody).should('not.be.visible')
+        })
+        cy.get(selectors.sectionHeaderActive).click().then(() => {
+            cy.get(selectors.sectionSidebarBody).should('be.visible')
+        })
+   })
 });
