@@ -7,7 +7,7 @@ describe(`Fact Continuation`, () => {
         cy.loadByAccessionNum('000089418923007993');
         cy.get("#fact-identifier-29").click()
         cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'enabled-fact')
-        cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'text-block-fact')
+        cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'inline-block-fact')
         cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'continued-fact', 'true')
         cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.css', 'box-shadow')
 
@@ -15,7 +15,7 @@ describe(`Fact Continuation`, () => {
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.dataAllFilter).click()
         cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'enabled-fact')
-        cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'text-block-fact')
+        cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'inline-block-fact')
         cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'continued-fact', 'true')
         cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.css', 'box-shadow')
     })    
@@ -27,11 +27,13 @@ describe(`Fact Continuation`, () => {
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.dataAllFilter).click()
+        cy.get(selectors.dataFiltersButton).click() // close
 
         cy.get("#fact-identifier-29").click()
         cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'enabled-fact')
-        cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'text-block-fact')
+        cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'inline-block-fact')
         cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'continued-fact', 'true')
+        cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.attr', 'selected-fact', 'true')
         cy.get("[continued-main-fact-id='fact-identifier-29']").should('have.css', 'box-shadow')
     })    
 

@@ -16,8 +16,8 @@ export const FormInformation = {
     },
 
     xbrlInstance: () => {
-        const currentInstance = Constants.getInstanceFiles.find(element => element.current);
-        document.getElementById('form-information-instance')?.setAttribute('href', currentInstance?.xmlUrl || "#");
+       const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+       document.getElementById('form-information-instance')?.setAttribute('href', currentInstance?.xmlUrl || "#");
     },
 
     xbrlZip: () =>

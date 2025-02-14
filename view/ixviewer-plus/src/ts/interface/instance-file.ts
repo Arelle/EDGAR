@@ -1,7 +1,7 @@
 import { Reference, SingleFact } from "./fact";
 import { FormInformation } from "./form-information";
 import { Instance } from "./instance";
-import { Meta, Report, Section } from "./meta";
+import { Meta, MetalinksReport, Section } from "./meta";
 
 
 export interface InstanceFile
@@ -25,7 +25,7 @@ export interface MetaLinks
     meta: Meta;
     inlineFiles: Array<{ slug: string, current: boolean, loaded: boolean }>;
     version: string;
-    sections: Record<any, Report>;
+    sections: Record<any, MetalinksReport>;
     std_ref?: { [key: string]: Reference };
 }
 

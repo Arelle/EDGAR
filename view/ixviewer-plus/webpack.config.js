@@ -63,7 +63,7 @@ module.exports = (env = { copy: true, analyze: false }, argv = { mode: `producti
 
       env.analyze ? new BundleAnalyzerPlugin() : false,
 
-      forProd ? false : false,
+      forProd ? false : false, // why?
 
       new webpack.DefinePlugin({
         // vars below must be defined in ./typings.d.ts

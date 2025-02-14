@@ -68,7 +68,7 @@ export class XhtmlPrepper
         for(let factElem of factElements)
         {
             const id = $(factElem).attr("id") || this.idAllocator.getId($(factElem).attr('contextref'), $(factElem).attr('name'));
-            if(id)
+            if (id)
             {
                 this.updateMap(id, $(factElem), current.slug);
             }
