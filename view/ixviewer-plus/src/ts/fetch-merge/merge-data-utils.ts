@@ -1,6 +1,6 @@
-import { Report, Section, SectionFact } from '../interface/meta';
+import { MetalinksReport, Section, SectionFact } from '../interface/meta';
 import { convertToSelector } from "../helpers/utils";
-import { FilingSummary } from '../interface/filing-summary';
+import { FilingSummary, FilingSummReport } from '../interface/filing-summary';
 
 /**
  * Description
@@ -8,9 +8,9 @@ import { FilingSummary } from '../interface/filing-summary';
  * @param {any} metaLinksReports:any
  * @returns {any} => Flatter array of metalinks reports (section items).
  */
-export const buildSectionsArrayFlatter = (filingSummary: FilingSummary, metaLinksReports: Report[], metaVersion: string) => {
+export const buildSectionsArrayFlatter = (filingSummary:FilingSummary, metaLinksReports:MetalinksReport[], metaVersion:string) => {
     // 'sections' and 'reports' are synonymous here
-    const filingSummaryReports = filingSummary.MyReports.Report;
+    const filingSummaryReports: FilingSummReport[] = filingSummary.MyReports.Report;
     let filingSummaryInputFiles = filingSummary.InputFiles.File;
     if (!Array.isArray(filingSummaryInputFiles)) filingSummaryInputFiles = [filingSummaryInputFiles];
     
@@ -58,24 +58,44 @@ export const buildSectionsArrayFlatter = (filingSummary: FilingSummary, metaLink
         return section;
     }
 
-    const sectionsArray = metaLinksReports.map((metaReport: Report) => {
+    const getPositionFromFilingSumm = (metaReport:MetalinksReport) => {
+        let pos;
+        filingSummaryReports.forEach(fsRep => {
+            if (fsRep.ShortName._text === metaReport.shortName) {
+                pos = Number(fsRep.Position._text);
+            }
+        })
+        return pos;
+    }
+    const getMenuCategoryFromFilingSumm = (metaReport:MetalinksReport) => {
+        let menuCategory;
+        filingSummaryReports.find(fsRep => {
+            if (fsRep.ShortName._text === metaReport.shortName) {
+                menuCategory = fsRep.MenuCategory._text;
+            }
+        })
+        return menuCategory;
+    }
+
+    const sectionsArray = metaLinksReports.map((metaReport:MetalinksReport) => {
         let section: Section = metaReport as unknown as Section;
         if (Number(metaVersion) <= 2.1 || !section.menuCat) {
-            section.menuCat = section.subGroupType || section.groupType;
+            section.menuCat = getMenuCategoryFromFilingSumm(metaReport) || section.subGroupType || section.groupType;
         }
         if (metaReport.menuCat && metaReport.shortName) {
             section = addInstanceProps(section);
             section = addFactProps(section);
             section.menuCatMapped = mapCategoryName(section.menuCat, reportsContainStatements) || "";
+            section.position = getPositionFromFilingSumm(metaReport); // as a fallback if there's no "order" prop (rare)
             section.domId = `sectionDoc-${convertToSelector(section.instanceDocName, false)}`
 
             return section;
         } else {
-            console.error('Cannot determine Section menuCat');
+            if (!PRODUCTION) {
+                console.warn('Cannot determine Section menuCat');
+            }
         }
-    })
-    .filter((section): section is Section => !!(section?.fact && section.menuCatMapped));
-
+    }).filter((section): section is Section => !!(section?.fact && section.menuCatMapped));
     return sectionsArray || [];
 }
 
@@ -94,7 +114,9 @@ export const getFactAttrsFromAnchorProps = (section: Section) => {
         fact.file = section.firstAnchor.baseRef;
         fact.ancestors = section.firstAnchor.ancestors;
     } else {
-        console.warn(`no linkable fact for section ${section.shortName} (no anchor data)`)
+        if (!PRODUCTION) {
+            console.warn(`no linkable fact for section ${section.shortName} (no anchor data)`);
+        }
         /* DOC: "As I recall, the reason for the anchors computed during rendering was that 
                 some internal rendering process detail gets lost that neither filing summary.xml 
                 nor metalinks.json could preserve (I think it had to do with how chrome will insert 
@@ -141,7 +163,7 @@ const mapCategoryName = (input: string, isStandard: boolean): string | null => {
         "statement": "Financial Statements",
         "statements": "Financial Statements",
         "disclosure": "Notes to the Financial Statements",
-        "notes": "Notes to Financial Statements",
+        "notes": "Notes to Financial Statements", // is "the" intentionally omitted?  Probably
         "policies": "Accounting Policies",
         "tables": "Notes Tables",
         "details": "Notes Details",
@@ -155,14 +177,18 @@ const mapCategoryName = (input: string, isStandard: boolean): string | null => {
         if (lowerCaseKey in standardCatNameMap) {
             return standardCatNameMap[lowerCaseKey as keyof typeof standardCatNameMap];
         } else {
-            console.info(`standardCatNameMap doesn't contain key: %c${lowerCaseKey}`, "color: deepskyblue");
+            if (!PRODUCTION) {
+                console.info(`standardCatNameMap doesn't contain key: %c${lowerCaseKey}`, "color: deepskyblue");
+            }
             return null;
         }
     } else {
         if (lowerCaseKey in noStatementCatNameMap) {
             return noStatementCatNameMap[lowerCaseKey as keyof typeof noStatementCatNameMap];
         } else {
-            console.info(`noStatementCatNameMap doesn't contain key: %c${lowerCaseKey}`, "color: deepskyblue");
+            if (!PRODUCTION) {
+                console.info(`noStatementCatNameMap doesn't contain key: %c${lowerCaseKey}`, "color: deepskyblue");
+            }
             return null;
         }
     }

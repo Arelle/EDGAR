@@ -179,14 +179,14 @@ export const FactPages = {
 
 				const tdElement = document.createElement("td");
 				const tdContentsDiv = document.createElement("div");
-				tdContentsDiv.classList.add("word-break");
+				tdContentsDiv.classList.add(label["label"] === 'Tag' ? "break-all" : "break-word");
+				tdContentsDiv.setAttribute('data-cy', `${label["label"]}-value`);
 
-				const useExperimentalFootnoteRenderer = false;
+				const useExperimentalFootnoteRenderer = false; 
 
 				// footnotes
 				if (useExperimentalFootnoteRenderer && label["label"] == "Footnote") {
 					const parser = new DOMParser();
-					console.log('current.value', label.value)
 					const xmlDoc = parser.parseFromString(label.value, 'application/xml');
 
 					// Error: Namespace prefix xlink for label on footnote is not defined

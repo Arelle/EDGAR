@@ -43,7 +43,7 @@ export function fixImages(doc = document): void
         {
             const imgSrc = imgElem.getAttribute('src');
             const imageSlug = imgSrc?.split('/').pop() || "";
-            imgElem.setAttribute("src", `${HelpersUrl.getFormAbsoluteURL}${imageSlug}`);
+            imgElem.setAttribute("src", `${HelpersUrl.getFolderAbsUrl}${imageSlug}`);
             imgElem.setAttribute("loading", "lazy");
         }
     }
@@ -57,38 +57,41 @@ export function fixImages(doc = document): void
     }
 }
 
-export function fixLinks(doc = document): void
-{
+export function fixLinks(doc = document): void {
     const startPerformance = performance.now();
 
     const foundLinksArray = Array.from(doc.querySelectorAll("[data-link], :not(link)[href]"));
-    foundLinksArray.forEach((current) =>
-    {
-        const href = current.getAttribute("href");
-        if (href)
-        {
-            if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('#'))
-            {
-                // already an absolute url, just add tabindex=18
-                current.setAttribute('tabindex', '18');
+    foundLinksArray.forEach((linkElem) => {
+        linkElem.setAttribute('tabindex', '18');
 
-                // this anchor tag does not exist in the current XHTML file
-                if (href.startsWith("#") && doc.getElementById(href.slice(1)))
-                {
-                    current.setAttribute('xhtml-change', 'true');
+        const href = linkElem.getAttribute("href");
+        if (href) {
+            // internal links
+            if (href.startsWith('#') && href.length > 1) {
+                const linkInCurrentDoc = doc.getElementById(href.slice(1));
+                if (!linkInCurrentDoc) {
+                    linkElem.setAttribute('xhtml-change', 'true'); // ??? not sure why this is here
                 }
-            }
-            else
-            {
-                // create an absolute url, add tabindex=18
-                current.setAttribute('tabindex', '18');
-                current.setAttribute('href', `${HelpersUrl.getFormAbsoluteURL}${href}`);
-            }
-        }
 
-        if (current.getAttribute('data-link'))
-        {
-            current.setAttribute('tabindex', '18');
+                // if (Constants.loadedViaRedirect) {
+                //     // works but sets url to ixviewer-plus/ix.xhtml
+                //     linkElem.setAttribute('target', '_parent');
+                // }
+
+                // works but doesn't work with back / forward
+                linkElem.addEventListener('click', () => {
+                    HelpersUrl.updateAppWindowHash(href);
+                })
+            }
+            // external links
+            else if (href.startsWith('http://') || href.startsWith('https://')) {
+                linkElem.setAttribute('target', '_blank'); // new tab
+            }
+            // relative links to other docs in filing folder
+            else if (!href.includes('/')) {
+                linkElem.setAttribute('href', `${HelpersUrl.getFolderAbsUrl}${href}`);
+                linkElem.setAttribute('target', '_blank'); // new tab
+            }
         }
     });
 
@@ -99,7 +102,6 @@ export function fixLinks(doc = document): void
         log.debug(`AppHelper.fixLinks() completed in: ${(endPerformance - startPerformance).toFixed(2)}ms - ${items} items`);
     }
 }
-
 
 function getFirstStyleValue(el: Element, styles: string[]): string
 {
@@ -117,7 +119,7 @@ function getFirstStyleValue(el: Element, styles: string[]): string
 
     for(let style of styles)
     {
-        if(properties[style]) return properties[style];
+        if (properties[style]) return properties[style];
     }
 
     return "";
@@ -148,7 +150,7 @@ export function hiddenFacts(doc = document)
         const hiddenElemId = getFirstStyleValue(inlineElem, ["-sec-ix-hidden", "-esef-ix-hidden"]);
         const hiddenElement = hiddenElemId ? doc.getElementById(hiddenElemId) : null;
 
-        if(hiddenElement != null)
+        if (hiddenElement != null)
         {
             /**
              * 1. shallow-clone the linked hidden fact
@@ -181,7 +183,7 @@ export function hiddenFacts(doc = document)
 
 export function redLineFacts(doc = document)
 {
-    if(!HelpersUrl.getAllParams?.redline) return;
+    if (!HelpersUrl.getAllParams?.redline) return;
 
     const startPerformance = performance.now();
     let foundElements = [];
@@ -201,7 +203,7 @@ export function redLineFacts(doc = document)
     }
 
     const endPerformance = performance.now();
-    if(LOGPERFORMANCE)
+    if (LOGPERFORMANCE)
     {
         const items = foundElements?.length;
         const log: Logger<ILogObj> = new Logger();

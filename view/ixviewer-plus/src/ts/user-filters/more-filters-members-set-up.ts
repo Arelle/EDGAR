@@ -5,6 +5,7 @@
 
 import { FactMap } from "../facts/map";
 import { UserFiltersMoreFiltersMembers } from "./more-filters-members";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export const UserFiltersMoreFiltersMembersSetUp = {
 
@@ -60,7 +61,8 @@ export const UserFiltersMoreFiltersMembersSetUp = {
             input.addEventListener("click", () => {
                 UserFiltersMoreFiltersMembers.clickEvent(current.value);
             });
-            input.addEventListener("keyup", () => {
+            input.addEventListener("keyup", (event: KeyboardEvent)  => {
+                if (!defaultKeyUpHandler(event)) return;
                 UserFiltersMoreFiltersMembers.clickEvent(current.value);
             });
 
@@ -69,8 +71,7 @@ export const UserFiltersMoreFiltersMembersSetUp = {
             label.append(text);
             div2.append(label);
             div.append(div2);
-            document
-                .getElementById(`members-filters-accordion-${indexType}`)?.append(div);
+            document.getElementById(`members-filters-accordion-${indexType}`)?.append(div);
         });
         // update typed / explitic counts
         if (typedCount > 0) {
@@ -88,14 +89,35 @@ export const UserFiltersMoreFiltersMembersSetUp = {
             // just explicit
             UserFiltersMoreFiltersMembers.parentClick(
                 members.filter(element => element.type === 'explicit'),
-                document.getElementById("members-all-0") as HTMLInputElement);
+                document.getElementById("members-all-0") as HTMLInputElement
+            );
+        });
+        document.getElementById("members-all-0")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            // just explicit
+            if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' ')) {
+                document.getElementById("members-all-0")?.click();
+                UserFiltersMoreFiltersMembers.parentClick(
+                    members.filter(element => element.type === 'explicit'),
+                    document.getElementById("members-all-0") as HTMLInputElement
+                );
+            }
         });
         document.getElementById("members-all-1")?.addEventListener("click", () => {
-                // just implicit
+            // just implicit
+            UserFiltersMoreFiltersMembers.parentClick(
+                members.filter(element => element.type === 'implicit'),
+                document.getElementById("members-all-1") as HTMLInputElement
+            );
+        });
+        document.getElementById("members-all-1")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            // just explicit
+            if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' ')) {
+                document.getElementById("members-all-1")?.click();
                 UserFiltersMoreFiltersMembers.parentClick(
-                    members.filter(element => element.type === 'implicit'),
+                    members.filter(element => element.type === 'explicit'),
                     document.getElementById("members-all-1") as HTMLInputElement
                 );
-            });
+            }
+        });
     }
 };

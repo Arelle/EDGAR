@@ -17,17 +17,27 @@ import { UserFiltersDropdown } from "./user-filters/dropdown";
 import { UserFiltersGeneral } from "./user-filters/general";
 import { UserFiltersMoreFiltersBalances } from "./user-filters/more-filters-balance";
 import { UserFiltersTagsRadios } from "./user-filters/tags-radios";
+import { defaultKeyUpHandler } from "./helpers/utils";
+import { Constants } from "./constants/constants";
+import { ConstantsFunctions } from "./constants/functions";
 
 export class Listeners {
     constructor() {
         this.init();
     }
     init() {
+        Constants.appWindow.addEventListener('popstate', () => {
+            const newStateDoc = Constants.getInlineFiles.filter(file => Constants.appWindow.location.search.includes(file.slug))[0];
+            if (!newStateDoc.current) {
+                ConstantsFunctions.switchDoc(newStateDoc.slug, true);
+            } 
+        });
 
         document.getElementById('menu-dropdown-information')?.addEventListener('click', (event: MouseEvent) => {
             ModalsFormInformation.clickEvent(event);
         });
         document.getElementById('menu-dropdown-information')?.addEventListener('keyup', (event: KeyboardEvent) => {
+            if (!defaultKeyUpHandler(event)) return;
             ModalsFormInformation.clickEvent(event);
         });
 
@@ -42,12 +52,14 @@ export class Listeners {
             ModalsSettings.clickEvent(event);
         });
         document.getElementById('menu-dropdown-settings')?.addEventListener('keyup', (event: KeyboardEvent) => {
+            if (!defaultKeyUpHandler(event)) return;
             ModalsSettings.clickEvent(event);
         });
 
         document.getElementById('nav-filter-more')?.addEventListener('click', () => {
             UserFiltersGeneral.moreFiltersClickEvent();
         });
+
         document.getElementById('nav-filter-more')?.addEventListener('keyup', () => {
             UserFiltersGeneral.moreFiltersClickEvent();
         });
@@ -56,19 +68,43 @@ export class Listeners {
             UserFiltersMoreFiltersBalances.clickEvent(event, 1);
         });
         document.getElementById("user-filters-balances-credit")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            if (!defaultKeyUpHandler(event)) return;
             UserFiltersMoreFiltersBalances.clickEvent(event, 1);
         });
         document.getElementById("user-filters-balances-debit")?.addEventListener("click", (event: MouseEvent) => {
             UserFiltersMoreFiltersBalances.clickEvent(event, 0);
         });
         document.getElementById("user-filters-balances-debit")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            if (!defaultKeyUpHandler(event)) return;
             UserFiltersMoreFiltersBalances.clickEvent(event, 0);
         });
+
+        //Array includes: form-information-instance, form-information-zip, form-information-zip, form-information-help, form-information-html
+        //more-filters-menu-balance,more-filters-menu-periods,more-filters-menu-measures,more-filters-menu-axis,more-filters-menu-members,more-filters-scale
+        const links = [...document.querySelectorAll(`a[id*="form-information-"]`), ...document.querySelectorAll(`[id*="more-filters-menu-"]`),];
+
+        links.forEach(link => {
+            link.addEventListener('keyup', (event) => {
+                if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' '))
+                {
+                    const id= link.getAttribute('id');
+                    document.getElementById(id as string)?.click();
+                }
+            });
+        });
+        //#facts-menu-button          
+        document.getElementById('facts-menu-button')?.addEventListener("keyup", (event: KeyboardEvent) => {
+            if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' ')){
+                event.preventDefault();
+                document.getElementById('facts-menu-button')?.click();
+            }
+        });  
 
         document.getElementById("current-filters-reset-all")?.addEventListener("click", () => {
             UserFiltersDropdown.resetAll();
         });
-        document.getElementById("current-filters-reset-all")?.addEventListener("keyup", () => {
+        document.getElementById("current-filters-reset-all")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            if (!defaultKeyUpHandler(event)) return;
             UserFiltersDropdown.resetAll();
         });
 
@@ -76,6 +112,7 @@ export class Listeners {
             FactsMenu.toggle(event);
         });
         document.getElementById("fact-menu-secondary-toggle")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            if (!defaultKeyUpHandler(event)) return;
             FactsMenu.toggle(event);
         });
 
@@ -95,7 +132,8 @@ export class Listeners {
         document.getElementById('section-menu-search-btn-clear')?.addEventListener('click', () => {
             SectionsSearch.clear();
         });
-        document.getElementById('section-menu-search-btn-clear')?.addEventListener('keyup', () => {
+        document.getElementById('section-menu-search-btn-clear')?.addEventListener('keyup', (event: KeyboardEvent) => {
+            if (!defaultKeyUpHandler(event)) return;
             SectionsSearch.clear();
         });
 
@@ -125,20 +163,37 @@ export class Listeners {
             Search.clear();
         });
         document.getElementById('search-btn-clear')?.addEventListener("keyup", (event) => {
-            if (event.key === 'Enter' || event.key === 'Space') {
+            if (event.key === 'Enter' || event.key === 'Space' || event.key === ' ') {
                 Search.clear();
             }
         });
         
         const searchOptions = document.querySelectorAll('input[name="search-options"]');
+
         searchOptions.forEach(opt => {
-            ["keyup", "click"].forEach(action => {
-                opt.addEventListener(action, () => {
+            opt.addEventListener('keyup', (event) => {
+                const keyEvent = <KeyboardEvent> event;
+                if (keyEvent.key == 'Space' || keyEvent.key == ' ') {
+                    let search = document.getElementById('global-search') as HTMLInputElement;
+                    let searchText = search?.value;
+                    if (searchText?.length) {
+                        Search.submit();
+                    }
+                }
+            });
+            opt.addEventListener('click', () => {
+                const search = document.getElementById('global-search') as HTMLInputElement;
+                const searchText = search?.value;
+                if (searchText?.length) {
                     Search.submit();
-                });
-            })
+                }
+            });
         })
 
+        const search = document.getElementById('global-search') as HTMLInputElement;
+        search?.addEventListener('blur', () => {
+            ConstantsFunctions.emptyHTMLByID('suggestions');
+        })
 
         document.getElementById('hover-option-select')?.addEventListener("change", (event: Event) => {
             ModalsSettings.hoverOption(event);
@@ -200,7 +255,12 @@ export class Listeners {
             closeOtherSideBars('facts-menu');
             FactsMenu.prepareForPagination();
         })
-
+        //#facts-menu-button
+        document.getElementById('facts-menu-button')?.addEventListener("keyup", (event: KeyboardEvent) => {
+            if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' ')) {
+                document.getElementById('facts-menu-button')?.click();
+            }
+        });
         // #sections-dropdown-link
         const sectionsSidebar = document.getElementById('sections-menu');
         sectionsSidebar?.addEventListener('show.bs.collapse', () => {

@@ -1,4 +1,5 @@
 export const selectors = {
+
     webpackOverlay: "webpack-dev-server-client-overlay-div",
 
     factCountBadge: 'a[id="facts-menu-button"] span.fact-total-count',
@@ -10,12 +11,13 @@ export const selectors = {
     tableTabFactCount: 'a[data-cy="factTableTab > span',
     factCountClock: 'a[id="facts-menu-button"] span.fact-total-count i',
 
-    menu: 'a[data-test="menu-dropdown-link"]',
+    menu: 'button[data-test="menu-dropdown-link"]',
 
     taggedSections: '#tagged-sections',
-    sectionsHeader: 'a[id="sections-dropdown-link"]',
+    sectionsHeader: 'button[id="sections-dropdown-link"]',
     sectionActive: 'div.section-active',
-    sectionHeaderActive: 'div[id^="section-doc-"].section-active button[data-cy*="instance-header"]',
+    sectionHeaderActive: 'div[id^="sectionDoc-"].section-active button[data-cy*="instance-header"]',
+    sectionSidebarBody: 'div[id^=instance-body-sectionDoc-]',
     sectionsLinks: 'li.section-link',
     getNthSection: (n) => {
         return `div[id="tagged-sections"] > div:nth-child(${n})`;
@@ -45,18 +47,19 @@ export const selectors = {
     searchSettingsGear: 'form[id="global-search-form"] button[data-name="global-search-options"]',
     searchDataTypeCheckboxFilter: 'form[id="global-search-form"] div.form-check',
     searchRefOption: 'form[id="global-search-form"] div.form-check:nth-child(6) input',
+    searchSuggestBox: 'ul[id="suggestions"]',
 
-    dataFiltersButton: 'a[data-test="nav-filter-data"]',
+    dataFiltersButton: 'button[data-test="nav-filter-data"]',
     dataAllFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(1) > label > input',
     dataAmountsOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(2) > label > input',
     dataAdditionalOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(6) > label > input',
 
-    tagsHeader: 'nav ul > li > a[data-test="nav-filter-tags"]',
+    tagsHeader: 'nav ul > li > button[data-test="nav-filter-tags"]',
     allTagsRadio: 'form[data-name="tags-dropdown"] div input[aria-label*="All"]',
     standardTagsRadio: 'form[data-name="tags-dropdown"] div input[aria-label*="Standard"]',
     customTagsRadio: 'form[data-name="tags-dropdown"] div input[aria-label*="Custom"]',
 
-    moreFiltersHeader: 'a[id="nav-filter-more"]',
+    moreFiltersHeader: 'button[id="nav-filter-more"]',
     periodFilterTagsDrawer: 'form[data-test="more-filters-form"] a[data-test="Period"]',
     period1Filter: '#user-filters-periods > div > div:nth-child(1) input',
     period2Filter: '#user-filters-periods > div > div:nth-child(3) input',
@@ -134,8 +137,8 @@ export const selectors = {
     showFactInSidebar: 'div.dialog-header-actions i[id="fact-modal-jump"]',
     factSidebar: 'div[id="facts-menu"]',
     factSideBarClose: 'div#facts-menu div.offcanvas-header button.btn-close',
-    prevFact: 'a[id="PrevFact"]',
-    nextFact: 'a[id="NextFact"]',
+    prevFact: 'a[id="prevFact"]',
+    nextFact: 'a[id="nextFact"]',
     factModalSubtitle: 'p#fact-modal-subtitle',
     sidebarPaginationInfo: 'div.pagination-info',
     sidebarPaginationSelect: 'select#facts-menu-page-select',

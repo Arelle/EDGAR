@@ -19,28 +19,36 @@ export const ErrorsMajor: {
 
 	debug: (msg?: string) => {
 		if (!PRODUCTION && DEBUGCSS) {
-			const content = document.createTextNode(msg || 'Showing major errors container for debugging');
+			const content = 
+			`<div class="alert-height alert alert-danger show mb-0">
+				${msg ? msg : 'Showing major errors container for debugging'}
+			</div>`;
 
-			const errorDiv = document.createElement('div');
-			errorDiv.setAttribute('class', 'alert-height alert alert-danger show mb-0');
-			errorDiv.appendChild(content);
+			const parser = new DOMParser();
+			const labelDoc = parser.parseFromString(content,'text/html');
+
+			const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
 			const closeBtn = Errors.createBsCloseBtn();
-			errorDiv.appendChild(closeBtn);
-			document.getElementById('error-container')?.appendChild(errorDiv);
+			instanceHeader.appendChild(closeBtn);
+			document.getElementById('error-container')?.appendChild(instanceHeader);
 
 			Errors.updateMainContainerHeight();
 		}
 	},
 
 	formNotLoaded: () => {
-		const content = document.createTextNode('Inline XBRL is not usable in this state.');
+		const content = 
+						`<div class="alert-height alert alert-danger show mb-0">
+							'Inline XBRL is not usable in this state.'
+						</div>`;
+		
+		const parser = new DOMParser();
+		const labelDoc = parser.parseFromString(content,'text/html');
 
-		const errorDiv = document.createElement('div');
-		errorDiv.setAttribute('class', 'alert-height alert alert-danger show mb-0');
-		errorDiv.appendChild(content);
+		const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
 		const closeBtn = Errors.createBsCloseBtn();
-		errorDiv.appendChild(closeBtn);
-		document.getElementById('error-container')?.appendChild(errorDiv);
+		instanceHeader.appendChild(closeBtn);
+		document.getElementById('error-container')?.appendChild(instanceHeader);
 
 		Errors.updateMainContainerHeight();
 
@@ -51,21 +59,19 @@ export const ErrorsMajor: {
 	},
 
 	formLinksNotFound: () => {
-		const content = document.createTextNode(`${HelpersUrl.getFormAbsoluteURL + HelpersUrl.getHTMLFileName}`);
+		const content = 
+				`<div class="alert-height alert alert-danger show mb-0">
+					<a href="${HelpersUrl.getFolderAbsUrl}">"${HelpersUrl.getFolderAbsUrl! + HelpersUrl.getHTMLFileName}"</a>
+				</div>`;
 
-		const errorDiv = document.createElement('div');
-		errorDiv.setAttribute('class', 'alert-height alert alert-danger show mb-0');
+		const parser = new DOMParser();
+		const labelDoc = parser.parseFromString(content,'text/html');
 
-		const link = document.createElement('a');
-		link.setAttribute('href', `${HelpersUrl.getFormAbsoluteURL}`);
-
-		link.appendChild(content);
-		errorDiv.appendChild(link);
+		const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
 		const closeBtn = Errors.createBsCloseBtn();
-		errorDiv.appendChild(closeBtn);
-		document.getElementById('error-container')?.appendChild(errorDiv);
+		instanceHeader.appendChild(closeBtn);
+		document.getElementById('error-container')?.appendChild(instanceHeader);
 
-		// window.location.assign(`${HelpersUrl.getFormAbsoluteURL + HelpersUrl.getHTMLFileName}`);
 		Errors.updateMainContainerHeight();
 
 		if (!PRODUCTION) {
@@ -75,15 +81,18 @@ export const ErrorsMajor: {
 	},
 
 	urlParams: () => {
-		const content = document
-			.createTextNode('Inline XBRL requires a URL param (doc | file) that correlates to a Financial Report.');
+		const content = 
+				`<div class="alert-height alert alert-danger show mb-0">
+					Inline XBRL requires a URL param (doc | file) that correlates to a Financial Report.
+				</div>`;
 
-		const errorDiv = document.createElement('div');
-		errorDiv.setAttribute('class', 'alert-height alert alert-danger show mb-0');
-		errorDiv.appendChild(content);
+		const parser = new DOMParser();
+		const labelDoc = parser.parseFromString(content,'text/html');
+
+		const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
 		const closeBtn = Errors.createBsCloseBtn();
-		errorDiv.appendChild(closeBtn);
-		document.getElementById('error-container')?.appendChild(errorDiv);
+		instanceHeader.appendChild(closeBtn);
+		document.getElementById('error-container')?.appendChild(instanceHeader);
 
 		Errors.updateMainContainerHeight();
 
@@ -96,18 +105,20 @@ export const ErrorsMajor: {
 	cors: (doc) => {
 		const host = Constants.appWindow.location.protocol + '//' + Constants.appWindow.location.host;
 
-		const content = document.createTextNode('The protocol, host name, and port number of the "doc" field (' + doc.host
-			+ '), if provided, must be identical to that of the Inline XBRL viewer(' + host + ')');
+		const textContent = `The protocol, host name, and port number of the "doc" field (${doc.host}), if provided, must be identical to that of the Inline XBRL viewer(${host})`;
 
-		const errorDiv = document.createElement('div');
-		errorDiv.setAttribute('class', 'alert-height alert alert-danger show mb-0');
-		errorDiv.appendChild(content);
+		const content = 
+				`<div class="alert-height alert alert-danger show mb-0">
+					${textContent}
+				</div>`;
 
+		const parser = new DOMParser();
+		const labelDoc = parser.parseFromString(content,'text/html');
+
+		const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
 		const closeBtn = Errors.createBsCloseBtn();
-		errorDiv.appendChild(closeBtn);
-
-		document.getElementById('error-container')?.appendChild(errorDiv);
-
+		instanceHeader.appendChild(closeBtn);
+		document.getElementById('error-container')?.appendChild(instanceHeader);
 		Errors.updateMainContainerHeight();
 
 		if (!PRODUCTION) {
@@ -117,17 +128,19 @@ export const ErrorsMajor: {
 	},
 
 	message: (input) => {
-		const content = document.createTextNode(input);
+		const content = 
+		`<div class="alert-height alert alert-danger show mb-0">
+			${input}
+		</div>`;
 
-		const errorDiv = document.createElement('div');
-		errorDiv.setAttribute('class', 'alert-height alert alert-danger show mb-0');
-		errorDiv.appendChild(content);
-		
+		const parser = new DOMParser();
+		const labelDoc = parser.parseFromString(content,'text/html');
+
+		const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
 		const closeBtn = Errors.createBsCloseBtn();
-		errorDiv.appendChild(closeBtn);
-
-		document.getElementById('error-container')?.appendChild(errorDiv);
-
+		instanceHeader.appendChild(closeBtn);
+		document.getElementById('error-container')?.appendChild(instanceHeader);
+		
 		Errors.updateMainContainerHeight();
 
 		if (!PRODUCTION) {

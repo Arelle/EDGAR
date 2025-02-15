@@ -143,7 +143,7 @@ Language of labels:
     GUI may use tools->language labels setting to override system language for labels
 
 """
-VERSION = '3.25.0.1'
+VERSION = '3.25.1'
 
 from collections import defaultdict
 from arelle import PythonUtil
@@ -2094,7 +2094,7 @@ def edgarRendererRemoveRedlining(modelDocument, *args, **kwargs):
 __pluginInfo__ = {
     'name': 'Edgar Renderer',
     'version': VERSION,
-    'description': "This plug-in implements U.S. SEC Edgar Renderer.  ",
+    'description': "This plug-in implements U.S. SEC Edgar Renderer.  Arelle version at SEC: 2.36.14 ",
     'license': 'Apache-2',
     'author': 'U.S. SEC Employees and Mark V Systems Limited',
     'copyright': '(c) Portions by SEC Employees not subject to domestic copyright, otherwise (c) Copyright 2015 Mark V Systems Limited, All rights reserved.',

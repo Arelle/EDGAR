@@ -231,10 +231,10 @@ class Filing(object):
         # SEC and FASB namespaces have the same structure, IFRS namespaces not so much.
         self.stdNsTokens = set()
         self.ifrsNamespace = self.usgaapNamespace = self.deiNamespace = None
-        nspattern = re.compile(r'.*((xbrl\.sec\.gov|fasb\.org)/(?P<prefix>[^/]+)/20.*|ifrs\.org/taxonomy/20[^/]*/(?P<other>ifrs)).*')
+        self.nspattern = re.compile(r'.*((xbrl\.sec\.gov|fasb\.org)/(?P<prefix>[^/]+)/20.*|ifrs\.org/taxonomy/20[^/]*/(?P<other>ifrs)).*')
         for n in self.modelXbrl.namespaceDocs.keys():
             if n is None: continue
-            m = nspattern.match(n)
+            m = self.nspattern.match(n)
             if m is None: continue
             tk = m.groupdict()['prefix']
             if tk is not None and len(tk) > 0:
