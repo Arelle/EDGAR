@@ -319,7 +319,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     modelXbrl.error("EXG.12.08", f"The namespace \"{nsURL}\" is not allowed when the document is in xBRL-XML format.")
             if submissionType in subTypesWarningforxBRLXml:
                 modelXbrl.warning("EXG.12.08", f"Submission type {submissionType}, only allows Inline XBRL filing.")
-                
+
         #6.5.7 duplicated contexts
         contexts = modelXbrl.contexts.values()
         contextIDs = set()
@@ -1121,7 +1121,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 e = e.zfill(2)
                         logArgs["efmSection"] += e
                         logArgs["arelleCode"] += "." + e
-                        
+
                 # replacement for efmSection. Based on sev msgSection
                 if sev.get("msgSection"):
                     msgPrefix, _, msgSectionNumber = sev["msgSection"].partition(":")
@@ -1789,7 +1789,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         sevMessage(sev, subType=submissionType, efmSection=efmSection, docType=deiDocumentType,
                                    taxonomyPattern=" or ".join(sorted(patternMatchCount.keys())))
                 elif validation == "taxonomy-ns-in-dts-fact-required":
-                    pattern = re.compile(value)                    
+                    pattern = re.compile(value)
                     for nsPrefix, nsuri in modelXbrl.prefixedNamespaces.items():
                         if pattern.match(nsuri):
                             factFound = False
@@ -5266,7 +5266,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 id, rule = next(iter(dqcRule["rules"].items()))
                 for axis in modelXbrl.nameConcepts.get(rule["axis"], ()):
                     for b in factBindings(modelXbrl, flattenToSet( (rule["names"], rule["name2"]) ), alignDims=(axis.qname,), coverUnit=True).values():
-                        f = [b[n] for n in rule["names"] if n in b]
+                        f = [b[n] for n in rule["names"] if n in b and axis.qname in b[n].context.qnameDims]
                         if len(f) and rule["name2"] not in b:
                             f = f[0]
                             modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
@@ -5338,11 +5338,13 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 scheduleAxisNames = set(dqcRule["scheduleAxisNames"])
                 fsConcepts = set()
                 fsMonetaryConcepts = set()
+                hasStatementLinkrole = False
                 for linkroleUri in OrderedSet(modelLink.role for modelLink in val.modelXbrl.baseSets[(XbrlConst.parentChild,None,None,None)]): # role ELRs may be repeated in dim LB
                     roleTypes = val.modelXbrl.roleTypes.get(linkroleUri)
                     definition = (roleTypes[0].definition or linkroleUri) if roleTypes else linkroleUri
                     if not "- Statement " in definition:
                         continue
+                    hasStatementLinkrole = False
                     for stmtRoot in modelXbrl.relationshipSet(XbrlConst.parentChild, linkroleUri).rootConcepts:
                         for stmtConceptName in getDescendants(XbrlConst.parentChild, stmtRoot, linkroleUri):
                             for stmtConcept in modelXbrl.nameConcepts.get(stmtConceptName,()):
@@ -5475,7 +5477,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                                 related_ext_enum=relatedExtEnumQn,
                                                 NotDisclosedAsImmaterial=notDisclosedAsImmaterial,
                                                 edgarCode=edgarCode, ruleElementId=id)
-            elif dqcRuleName == "DQC.US.0136":
+            elif dqcRuleName == "DQC.US.0136" and hasStatementLinkrole:
                 # 0141 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))
                 Ext_Enum_Minus_Leases = set(ext_pair
