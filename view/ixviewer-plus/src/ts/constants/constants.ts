@@ -8,22 +8,32 @@ import { FormInformation } from "../interface/form-information";
 import { InlineFileMeta, InstanceFile } from "../interface/instance-file";
 import { Section } from "../interface/meta";
 
-
 //Not really used (see comment below)
 type MetaDocument = any;
 
-
-
 export const Constants =
 {
-	version: "24.4",
+	version: "25.1",
 	featureSet: "plus",
 
-	appWindow: typeof window !== 'undefined' 
-		? !!window.frameElement && window.frameElement.id === "ixvFrame"
-			? window.parent
-			: window
-		: {} as Window,
+	appWindow: (() => {
+		if (typeof window == 'undefined') return {} as Window;
+		// redirect iframe
+		if (!!window.frameElement && window.frameElement.id === "ixvFrame") {
+			return window.parent;
+		}
+		// Note: workstation iframe has id "dispDocFrame", I don't think we need to handle it though since the iframe
+		// in that cases seems intended to work as "subwindow" and links should open in the iframe (?)
+		return window;
+	})(),
+
+	loadedViaRedirect: (() => {
+		if (typeof window == 'undefined') return false;
+		// redirect iframe
+		if (!!window.frameElement && window.frameElement.id === "ixvFrame") {
+			return true;
+		}
+	})(),
 
 	isNcsr: false,
 

@@ -7,6 +7,7 @@ import { Constants } from "../constants/constants";
 import { ConstantsFunctions } from "../constants/functions";
 import { FactsGeneral } from "../facts/general";
 import { Pagination } from "./sideBarPagination";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export class SideBarPaginationPrevNext {
 
@@ -71,11 +72,10 @@ export class SideBarPaginationPrevNext {
 		} else {
 			if ((selectedFactIndex - 1) < 0) {
 				if (Constants.sideBarPaginationState.pageNumber - 1 > 0) {
-					Pagination.previousPage();
+					Pagination.previousPage(true);
 					this.previousFact(event, element);
 				}
 			} else {
-
 				const element = FactsGeneral.getMenuFactByDataID(currentFacts[(selectedFactIndex - 1)]);
 				FactsGeneral.goToInlineFact(event, element as HTMLElement);
 			}
@@ -99,7 +99,7 @@ export class SideBarPaginationPrevNext {
 		} else {
 			if ((selectedFactIndex + 1) >= currentFacts.length) {
 				if ((Constants.sideBarPaginationState.pageNumber - 1) !== (Constants.sideBarPaginationState.totalPages - 1)) {
-					Pagination.nextPage();
+					Pagination.nextPage(true);
 					this.nextFact(event, element);
 				}
 			} else {
@@ -111,30 +111,47 @@ export class SideBarPaginationPrevNext {
 
 	private getPrevNextControls() 
 	{
-		const prevhtmlString = `<div xmlns="http://www.w3.org/1999/xhtml">
-								<ul class="pagination pagination-sm mb-0">
-								<li class="page-item">
-								<a class="page-link text-body" tabindex="13" id="PrevFact">
-								Previous Fact</a></li>`;
+		const btnGroupHtmlString = 
+			`<ul class="pagination pagination-sm mb-0">
+				<li class="page-item">
+					<a class="page-link text-body" tabindex="13" id="prevFact">
+					Previous Fact
+					</a>
+				</li>
+				<li class="page-item">
+					<a class="page-link text-body" tabindex="13" id="nextFact">
+					Next Fact
+					</a>
+				</li>
+			</ul>`;
 		const parser = new DOMParser();
-		const prevdoc = parser.parseFromString(prevhtmlString, 'text/html');
-		const prevelem = prevdoc.querySelector('body > div') as HTMLElement
-		document.getElementById("tagged-sections")?.appendChild(prevelem);
-		prevelem.addEventListener('click', (e) => { this.previousFact(e, prevelem); });
+		const prevdoc = parser.parseFromString(btnGroupHtmlString, 'text/html');
+		const prevNextBtnGroup = prevdoc.querySelector('body > ul') as HTMLElement
 
-		const nexthtmlString = `<div xmlns="http://www.w3.org/1999/xhtml">
-								<ul class="pagination pagination-sm mb-0">
-								<li class="page-item">
-								<a class="page-link text-body" tabindex="13" id="NextFact">
-								Next Fact</a></li>`;
-		const nextdoc = parser.parseFromString(nexthtmlString, 'text/html');
-		const nextelem = nextdoc.querySelector('body > div') as HTMLElement
-		document.getElementById("tagged-sections")?.appendChild(nextelem);
-		nextelem.addEventListener('click', (e) => { this.nextFact(e, nextelem); });
+		const prevFactBtn = prevNextBtnGroup.querySelector('#prevFact') as HTMLElement
+		prevFactBtn.addEventListener('click', (e) => {			
+			e.stopPropagation();
+			e.preventDefault();
+			this.previousFact(e, prevFactBtn);			
+		});
+		prevFactBtn.addEventListener('keyup', (e: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(e)) return;
+			this.previousFact(e, prevFactBtn);
+		});
+
+		const nextFactBtn = prevNextBtnGroup.querySelector('#nextFact') as HTMLElement
+		nextFactBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			e.preventDefault();
+			this.nextFact(e, nextFactBtn);			
+		});
+		nextFactBtn.addEventListener('keyup', (e: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(e)) return;
+			this.nextFact(e, nextFactBtn);
+		});
 				
 		const elementToReturn = document.createDocumentFragment();
-		elementToReturn.appendChild(prevelem);
-		elementToReturn.appendChild(nextelem);
+		elementToReturn.appendChild(prevNextBtnGroup);
 		
 		return elementToReturn;
 	}

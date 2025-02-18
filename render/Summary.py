@@ -564,7 +564,7 @@ class InstanceSummary(object):
             self.roleDefinitionDict[r.role] = r.longName
 
         # Consider a concept in use if it appears as a fact or in a context explicitMember.
-        summationItemRelationshipSet = modelXbrl.relationshipSet(arelle.XbrlConst.summationItem)
+        summationItemRelationshipSet = modelXbrl.relationshipSet(arelle.XbrlConst.summationItems)
         summationItemRelationshipSet.loadModelRelationshipsTo()
         summationItemRelationshipSet.loadModelRelationshipsFrom()
 

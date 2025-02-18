@@ -207,7 +207,7 @@ def checkForCalculations(val, parentChildRels, siblingRels, iSibling, totalConce
             foundSummationItemSet = False
             leastMissingItemsSet = compatibleItemConcepts
             for ELR in val.summationItemRelsSetAllELRs.linkRoleUris:
-                relSet = val.modelXbrl.relationshipSet(XbrlConst.summationItem,ELR)
+                relSet = val.modelXbrl.relationshipSet(XbrlConst.summationItems,ELR)
                 missingItems = (compatibleItemConcepts -
                                 frozenset(r.toModelObject
                                           for r in relSet.fromModelObject(totalConcept)))

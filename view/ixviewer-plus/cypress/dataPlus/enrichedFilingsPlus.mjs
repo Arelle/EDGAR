@@ -3502,5 +3502,19 @@ export const filings = [
         "Instances": "",
         "docName": "ex-filingfees",
         "expectedSectionCountCorrection": "0"
+	},
+    {
+		"submissionType": "F-3",
+        "accessionNum": "austin",
+        "docPath": "/Archives/edgar/data/no-cik/austin/austin-20250115.htm",
+        "notes": "",
+        "factCount": "1",
+        "timeout": "15000",
+        "multiInstance": "",
+        "multiDoc": "",
+		"filingFees": false,
+        "Instances": "",
+        "docName": "austin-20250115.htm",
+        "expectedSectionCountCorrection": "0"
 	}
 ]

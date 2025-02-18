@@ -101,7 +101,7 @@ def messageNumericId(modelXbrl, level, messageCode, args):
     if isinstance(modelObject, (tuple, list)) and len(modelObject) > 0:
         modelObject = modelObject[0]
     ftContext = args.get("ftContext") or args.get("axis")
-    if isinstance(modelObject, (ModelFact,ModelXbrl)) and ftContext and messageCode.startswith("EFM.ft."):
+    if isinstance(modelObject, (ModelFact,ModelXbrl)) and ftContext is not None and messageCode.startswith("EFM.ft."):
         if isinstance(modelObject, (ModelFact, ModelXbrl)):
             tagName = None
             if "{tag}" in args.get("edgarCode"):

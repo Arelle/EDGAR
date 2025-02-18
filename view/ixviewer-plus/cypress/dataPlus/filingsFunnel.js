@@ -77,16 +77,6 @@ export const getMultiDoc = (CyEnv) => {
     return filingsSample.filter(filing => filing.multiDoc)
 }
 
-// export const getByAccessionNum = (accessionNum) => {
-//     let filingsSample = getBaseSet("all");
-//     // combine whatever sets once they are correctly structured (standardized fields) and ready to be imported
-//     // let filingsSample = [...getBaseSet("all"), ...getBaseSet("set200")];
-//
-//     const filing = filingsSample.filter(filing => filing.accessionNum == accessionNum)[0];
-//     if (filing) return filing;
-//     else { console.error(`no filing matching accession number ${accessionNum}`) }
-//}
-
 export const getByAccessionNum = (accessionNum) => {
     let filing = filings.find(filing => filing.accessionNum === accessionNum.toString())
     if (filing) return filing

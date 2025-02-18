@@ -10,7 +10,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="https://www.sec.gov/favicon.ico" />
     <title>Inline Viewer</title>
-<link href="/ixviewer-plus/styles.c5be9699433a2c004418.min.css" rel="stylesheet"/></head>
+<link href="/ixviewer-plus/styles.ef1e7a67569f832c29d7.min.css" rel="stylesheet"/></head>
 
 <body class="overflow-hidden">
     <noscript>
@@ -47,13 +47,12 @@
             <div class="navbar-height main-navbar collapse navbar-collapse bg-sec w-100" data-test="main-navbar" id="main-navbar">
                 <ul class="navbar-nav mr-auto bg-inherit">
                     <li class="nav-item dropdown my-auto ml-1">
-                        <a id="menu-dropdown-link" data-test="menu-dropdown-link"
-                            class="nav-link dropdown-toggle click disabled" role="button" data-bs-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false" tabindex="1" accesskey="1">
+                        <button id="menu-dropdown-link" data-test="menu-dropdown-link" class="nav-link dropdown-toggle click disabled"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="1" accesskey="1">
                             <i class="nav-loading fas fa-bars" title="Menu"></i>
                             <span class="d-md-none d-lg-inline">Menu</span>
                             <span class="sr-only sr-only-focusable">Menu</span>
-                        </a>
+                        </button>
                         <div class="dropdown-menu">
                             <a id="menu-dropdown-information" data-test="menu-dropdown-information"
                                 class="dropdown-item click text-body" tabindex="1">Information</a>
@@ -75,12 +74,12 @@
                         </div>
                     </li>
                     <li class="nav-item my-auto ml-1">
-                        <a id="sections-dropdown-link" data-bs-toggle="collapse" data-bs-target="#sections-menu"
+                        <button id="sections-dropdown-link" data-bs-toggle="collapse" data-bs-target="#sections-menu"
                             class="nav-link click disabled meta-required" tabindex="2" accesskey="2">
                             <i class="fas fa-layer-group" title="Sections"></i>
                             <span class="d-md-none d-lg-inline">Sections</span>
                             <span class="sr-only sr-only-focusable">Sections</span>
-                        </a>
+                        </button>
                     </li>
                     <li class="nav-item my-auto mx-1">
                         <form id="global-search-form" data-test="global-search-form"
@@ -162,13 +161,13 @@
                         </form>
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
-                        <a id="nav-filter-data" data-test="nav-filter-data"
-                            class="nav-link dropdown-toggle disabled click" role="button" data-bs-toggle="dropdown"
+                        <button id="nav-filter-data" data-test="nav-filter-data"
+                            class="nav-link dropdown-toggle disabled click" data-bs-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false" tabindex="7" accesskey="3">
                             <i class="nav-loading fas fa-list-alt" title="Data"></i>
                             <span class="d-md-none d-lg-inline">Data</span>
                             <span class="sr-only sr-only-focusable">Data</span>
-                        </a>
+                        </button>
                         <div class="dropdown-menu">
                             <form id="nav-filter-dropdown" data-name="data-dropdown" class="px-2">
                                 <div class="form-check">
@@ -217,13 +216,12 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
-                        <a id="nav-filter-tags" data-test="nav-filter-tags"
-                            class="nav-link dropdown-toggle disabled click" role="button" data-bs-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false" tabindex="8" accesskey="4">
+                        <button id="nav-filter-tags" data-test="nav-filter-tags" class="nav-link dropdown-toggle disabled click"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="8" accesskey="4">
                             <i class="nav-loading fas fa-tags" title="Tags"></i>
                             <span class="d-md-none d-lg-inline">Tags</span>
                             <span class="sr-only sr-only-focusable">Tags</span>
-                        </a>
+                        </button>
                         <div class="dropdown-menu">
                             <form id="nav-filter-tags-dropdown" data-name="tags-dropdown" class="px-2">
                                 <div class="form-check">
@@ -254,20 +252,19 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
-                        <a id="nav-filter-more" class="nav-link dropdown-toggle disabled click" role="button"
-                            data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
-                            aria-expanded="false" tabindex="9" accesskey="5">
+                        <button id="nav-filter-more" class="nav-link dropdown-toggle disabled click" data-bs-toggle="dropdown"
+                            data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false" tabindex="9" accesskey="5">
                             <i id="loading-more-filters" class="nav-loading fas fa-filter" title="More Filters"></i>
                             <span class="d-md-none d-lg-inline">More Filters</span>
                             <span class="sr-only sr-only-focusable">More Filters</span>
                             <span title="Total active filters." class="badge text-bg-secondary"></span>
-                        </a>
+                        </button>
                         <div class="dropdown-menu more-filters-dropdown-menu-width" style="max-height: 90vh; overflow: auto">
                             <div class="accordion" id="more-filters-accordion">
                                 <form class="mb-0" data-test="more-filters-form">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Period" data-bs-target="#user-filters-periods"
+                                            <a data-test="Period" id="more-filters-menu-periods" data-bs-target="#user-filters-periods"
                                                 data-bs-toggle="collapse"
                                                 class="d-flex justify-content-between align-items-center w-100 click text-primary"
                                                 tabindex="9">
@@ -288,7 +285,7 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Measures" data-bs-target="#user-filters-measures"
+                                            <a data-test="Measures" id="more-filters-menu-measures" data-bs-target="#user-filters-measures"
                                                 data-bs-toggle="collapse"
                                                 class="d-flex justify-content-between align-items-center w-100 click text-primary"
                                                 tabindex="9">
@@ -309,7 +306,7 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class=" px-0 py-0">
-                                            <a data-test="Axis" data-bs-target="#user-filters-axis"
+                                            <a data-test="Axis" id="more-filters-menu-axis" data-bs-target="#user-filters-axis"
                                                 data-bs-toggle="collapse"
                                                 class="d-flex justify-content-between align-items-center w-100 click text-primary"
                                                 tabindex="9">
@@ -360,7 +357,7 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Members" data-bs-target="#user-filters-members"
+                                            <a data-test="Members" id="more-filters-menu-members" data-bs-target="#user-filters-members"
                                                 data-bs-toggle="collapse"
                                                 class="d-flex justify-content-between align-items-center w-100 click text-primary"
                                                 tabindex="9">
@@ -412,7 +409,7 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Scale" data-bs-target="#user-filters-scales"
+                                            <a data-test="Scale" id="more-filters-menu-scale" data-bs-target="#user-filters-scales"
                                                 data-bs-toggle="collapse"
                                                 class="d-flex justify-content-between align-items-center w-100 click text-primary"
                                                 tabindex="9">
@@ -433,7 +430,7 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Balance" data-bs-target="#user-filters-balances"
+                                            <a data-test="Balance" id="more-filters-menu-balance" data-bs-target="#user-filters-balances"
                                                 data-bs-toggle="collapse"
                                                 class="d-flex justify-content-between align-items-center w-100 click text-primary"
                                                 tabindex="9">
@@ -491,8 +488,8 @@
                 </ul>
                 <ul class="navbar-nav bg-inherit">
                     <li class="nav-item my-auto ml-1">
-                        <a id="facts-menu-button" data-bs-toggle="collapse" data-bs-target="#facts-menu" tabindex="13"
-                            class="nav-link click disabled" accesskey="9">
+                        <a id="facts-menu-button" data-bs-toggle="collapse" data-bs-target="#facts-menu" tabindex="13" role="button"
+                            class="nav-link click disabled" accessKey="9">
                             Facts
                             <span class="fact-total-count badge text-bg-light">
                                 <i class="fa fa-regular fa-clock"></i>
@@ -1457,6 +1454,6 @@
             </button>
         </div>
     </div>
-<script defer="defer" src="/ixviewer-plus/ix-viewer.bundle.8d126244c09787a302fa.min.js"></script></body>
+<script defer="defer" src="/ixviewer-plus/ix-viewer.bundle.4e42b5f4dbde12065769.min.js"></script></body>
 
 </html>

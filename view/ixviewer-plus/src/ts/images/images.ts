@@ -17,7 +17,7 @@ export const Images = {
       // HF: support embedded images (ESEF), e.g. img src='data:..'
       if (current['src'].substr(0, 5) !== 'data:') {
         const imageSRC = current['src'].substr(current['src'].lastIndexOf('/') + 1);
-        current.setAttribute('data-src', HelpersUrl.getFormAbsoluteURL + imageSRC);
+        current.setAttribute('data-src', HelpersUrl.getFolderAbsUrl + imageSRC);
         current.removeAttribute('src');
         const img = new Image();
         img.src = current.getAttribute('data-src');

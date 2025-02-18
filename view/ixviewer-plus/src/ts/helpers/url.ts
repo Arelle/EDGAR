@@ -8,15 +8,16 @@
 import { Constants } from "../constants/constants";
 import { ErrorsMajor } from "../errors/major";
 import { UrlParams } from "../interface/url-params";
+import { ixScrollTo } from "../helpers/utils";
+import { Facts } from "../facts/facts";
 
 export const HelpersUrl = {
     init: (internalUrl: string, callback: (arg0: boolean | void) => void): void => {
-        callback(HelpersUrl.setParams(internalUrl));
+        callback(HelpersUrl.updateUrlState(internalUrl));
     },
 
-    initPromise: (internalUrl: string): Promise<boolean> =>
-    {
-        return Promise.resolve(HelpersUrl.setParams(internalUrl));
+    initPromise: (internalUrl: string, onBack = false): Promise<boolean> => {
+        return Promise.resolve(HelpersUrl.updateUrlState(internalUrl, onBack));
     },
 
     makeAbsoluteUrlUnlessSimpleAnchorTag: (element: HTMLElement): void => {
@@ -30,10 +31,10 @@ export const HelpersUrl = {
                 element.setAttribute('tabindex', '18');
                 // already simple anchor tag
             }
-            else if (HelpersUrl.getFormAbsoluteURL && element.getAttribute('href'))
+            else if (HelpersUrl.getFolderAbsUrl && element.getAttribute('href'))
             {
                 element.setAttribute('tabindex', '18');
-                element.setAttribute('href', HelpersUrl.getFormAbsoluteURL + element.getAttribute('href'));
+                element.setAttribute('href', HelpersUrl.getFolderAbsUrl + element.getAttribute('href'));
             }
             else
             {
@@ -179,7 +180,7 @@ export const HelpersUrl = {
         return objToReturn;
     },
 
-    getFormAbsoluteURL: null as string | null,
+    getFolderAbsUrl: null as string | null,
 
     getURL: null as string | null,
 
@@ -198,10 +199,19 @@ export const HelpersUrl = {
      * @param {string | boolean} internalURL: URL slug
      * @returns {boolean} when params are set.
      */
-    setParams: (internalUrl: string | boolean): boolean => {
+    updateUrlState: (internalUrl: string | boolean, onBack = false): boolean => {
+        // don't preserve fact-id hash if changing docs
         if ((internalUrl && typeof internalUrl === 'string') && (internalUrl !== HelpersUrl.getHTMLFileName)) {
+            // remove hash
+            
             HelpersUrl.fullURL = HelpersUrl.fullURL?.replace(HelpersUrl.getHTMLFileName || "", internalUrl) || null;
-            HelpersUrl.updateURLWithoutReload();
+            const hash = HelpersUrl.fullURL?.indexOf('#');
+			if (hash !== -1 && HelpersUrl) {
+				HelpersUrl.fullURL = HelpersUrl?.fullURL.substring(0, hash);
+			}
+            if (!onBack) {
+                HelpersUrl.updateURLWithoutReload();
+            }
             HelpersUrl.getHTMLFileName = null;
         }
 
@@ -245,9 +255,9 @@ export const HelpersUrl = {
             }
 
             if (!HelpersUrl.getExternalMeta && HelpersUrl.getExternalFile) {
-                const tempMetaLink = !!HelpersUrl.getHTMLFileName ? 
-                    HelpersUrl.getExternalFile.replace(HelpersUrl.getHTMLFileName, 'MetaLinks.json') :
-                    HelpersUrl.getExternalFile;
+                const tempMetaLink = !!HelpersUrl.getHTMLFileName 
+                    ? HelpersUrl.getExternalFile.replace(HelpersUrl.getHTMLFileName, 'MetaLinks.json') 
+                    : HelpersUrl.getExternalFile;
 
                 HelpersUrl.getExternalMeta = tempMetaLink;
             }
@@ -259,7 +269,7 @@ export const HelpersUrl = {
         const formUrl = HelpersUrl.getAbsoluteUrl(HelpersUrl.getExternalFile);
         const absoluteURL = formUrl.substr(0, formUrl.lastIndexOf('/') + 1);
 
-        HelpersUrl.getFormAbsoluteURL = absoluteURL;
+        HelpersUrl.getFolderAbsUrl = absoluteURL;
 
         return true;
     },
@@ -285,7 +295,7 @@ export const HelpersUrl = {
     },
 
     updateURLWithoutReload: () => {
-        Constants.appWindow.history.pushState('Next Link', 'Inline XBRL Viewer', HelpersUrl.fullURL);
+        Constants.appWindow.history.pushState(null, "", HelpersUrl.fullURL);
     },
 
     parsedUrl: (url: string) => {
@@ -302,8 +312,7 @@ export const HelpersUrl = {
             const newProtocolAndHost = Constants.appWindow.location.protocol + "//" + Constants.appWindow.location.host;
             if (url.charAt(1) === "/") {
                 parser.href = newProtocolAndHost + url;
-            }
-            else {
+            } else {
                 // the regex gets everything up to the last "/"
                 // /path/takesEverythingUpToAndIncludingTheLastForwardSlash/thisIsIgnored
                 // "/" is inserted before because IE takes it of from pathname (???)
@@ -335,5 +344,32 @@ export const HelpersUrl = {
 
         urlInfo['pathname'] = (parser.pathname.charAt(0) !== "/" ? "/" : "") + parser.pathname;
         return urlInfo;
+    },
+
+    updateAppWindowHash: (hash: string) => {
+        Constants.appWindow.location.hash = hash;
+    },
+
+    addHashChangeListener: () => {
+		Constants.appWindow.addEventListener("hashchange", (event) => {
+            HelpersUrl.handleHash(event);
+		});
+	},
+
+    handleHash: (event = new Event('click')) => {
+        if (Constants.appWindow.location.hash) {
+            if (Constants.appWindow.location.hash.includes('fact-identifier')) {
+                Facts.handleFactHash(event);
+            } else {
+                HelpersUrl.handleInternalLink();
+            }
+        }
+    },
+
+    handleInternalLink: () => {
+        const internalLinkElem = document.getElementById(Constants.appWindow.location.hash.slice(1));
+        if (internalLinkElem instanceof HTMLElement) {
+            ixScrollTo(internalLinkElem);
+        }
     }
 };

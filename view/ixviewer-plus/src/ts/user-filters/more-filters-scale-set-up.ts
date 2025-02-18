@@ -5,6 +5,7 @@
 
 import { FactMap } from "../facts/map";
 import { UserFiltersMoreFiltersScale } from "./more-filters-scale";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export const UserFiltersMoreFiltersScaleSetUp = {
 
@@ -47,7 +48,8 @@ export const UserFiltersMoreFiltersScaleSetUp = {
             input.addEventListener('click', () => {
                 UserFiltersMoreFiltersScale.clickEvent(current);
             });
-            input.addEventListener('keyup', () => {
+            input.addEventListener('keyup', (event: KeyboardEvent) => {
+                if (!defaultKeyUpHandler(event)) return;
                 UserFiltersMoreFiltersScale.clickEvent(current);
             });
 

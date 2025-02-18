@@ -14,6 +14,7 @@ import { SingleFact } from "../interface/fact";
 import { Logger, ILogObj } from "tslog";
 import { ConstantsFunctions } from "../constants/functions";
 import { ixScrollTo } from "../helpers/utils";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export const Facts = {
 	updateFactCount: () => {
@@ -90,29 +91,22 @@ export const Facts = {
 		}
 	},
 
-	addHashChangeListener: () => {
-		Constants.appWindow.addEventListener("hashchange", (event) => {
-			Facts.handleFactHash(event)
-		});
-	},
-
-	setListeners(element: HTMLElement) {
+	setInlineFactListeners(element: HTMLElement) {
 		element.addEventListener("click", (event: MouseEvent) => {
 			event.stopPropagation();
 			event.preventDefault();
 			if (element instanceof HTMLElement) {
 				const id = element.hasAttribute('continued-main-fact-id') ? element.getAttribute('continued-main-fact-id') : element.getAttribute('id');
-				Facts.addURLHash(id as string);
+				Facts.updateURLHash(id as string);
 				Facts.clickEvent(event, element);
 			}
 		});
 
 		element.addEventListener("keyup", (event: KeyboardEvent) => {
-			event.stopPropagation();
-			event.preventDefault();
+			if (!defaultKeyUpHandler(event)) return;
 			if (element instanceof HTMLElement) {
 				const id = element.hasAttribute('continued-main-fact-id') ? element.getAttribute('continued-main-fact-id') : element.getAttribute('id');
-				Facts.addURLHash(id as string);
+				Facts.updateURLHash(id as string);
 				Facts.clickEvent(event, element);
 			}
 		});
@@ -131,6 +125,24 @@ export const Facts = {
 	inViewPort: (unobserveAfter = false) => {
 		const factSelector = '[id^=fact-identifier-], [continued-main-fact-id], [data-link], [xhtml-change]';
 		const allFactIdentifiers = Array.from(document?.getElementById('dynamic-xbrl-form')?.querySelectorAll(factSelector) || []);
+		const blockLevelElems = ['<div', '<p', '<table', '<aside', '<footer', '<main', '<hr', '<h1', '<h2', '<h3', '<h4', '<h5', '<h6',];
+
+		const setDisplayAttribute = (factData: SingleFact, factElem: Element) => {
+			const factDisplayProp = getComputedStyle(factElem).display;
+			if (factDisplayProp.includes('inline')) {
+				if (factData.xbrltype === 'textBlockItemType') {
+					if (blockLevelElems.some(elemType => factElem.innerHTML?.includes(elemType))) {
+						factElem.setAttribute("text-block-fact", 'true'); // rare
+					} else {
+						factElem.setAttribute("inline-block-fact", 'true'); // rare
+					}
+				} else {
+					factElem.setAttribute("inline-fact", 'true') // common, especially numerics
+				}
+			} else {
+				factElem.setAttribute("text-block-fact", 'true');
+			}
+		}
 
 		const observer = new IntersectionObserver(entries => {
 			entries.forEach(({ target, isIntersecting }) => {
@@ -158,36 +170,37 @@ export const Facts = {
 						});
 					} else {
 						if (!target.getAttribute('listeners')) {
-							Facts.setListeners(target as HTMLElement);
+							Facts.setInlineFactListeners(target as HTMLElement);
 						}
 						const fact = FactMap.getByID(target.getAttribute('continued-main-fact-id') || target.getAttribute('id') as string) as unknown as SingleFact;
 
 						target.setAttribute('tabindex', `18`);
 						target.setAttribute('enabled-fact', `${fact.isEnabled}`);
 						target.setAttribute('highlight-fact', `${fact.isHighlight}`);
-						target.setAttribute("text-block-fact", 'false');
+						// target.setAttribute("text-block-fact", 'false');
 
-						if (fact.xbrltype === 'textBlockItemType') {
-							// text block fact is on the screen
-							target.setAttribute("text-block-fact", 'true');
-						}
-
+						setDisplayAttribute(fact, target);
+						
 						if (target.hasAttribute("continued-main-fact")) {
 							const getContinuedIDs = (continuedAtId: string, mainID: string) => {
 								// let's ensure we haven't already added the necessary html attributes to the element
 								if (fact.continuedIDs && !fact.continuedIDs.includes(continuedAtId)) {
-									Facts.setListeners(document.querySelector(`[id="${continuedAtId}"]`) as HTMLElement);
-									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("continued-main-fact-id", mainID);
-									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("continued-fact", "true");
-									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("enabled-fact", `${fact.isEnabled}`);	
-									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("selected-fact", `${fact.isSelected}`);					
-									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("text-block-fact", "true");		
-													
-									document.querySelector(`[id="${continuedAtId}"]`)?.setAttribute("highlight-fact", `${fact.isHighlight}`);						
-									target.setAttribute('highlight-fact', `${fact.isHighlight}`);
-									fact.continuedIDs.push(continuedAtId);
-									if (document.querySelector(`[id="${continuedAtId}"]`)?.hasAttribute("continuedat")) {
-										getContinuedIDs(document.querySelector(`[id="${continuedAtId}"]`)?.getAttribute("continuedat") as string, mainID);
+									const continuedFactElem: HTMLElement | null = document.querySelector(`[id="${continuedAtId}"]`);
+									if (continuedFactElem) {
+										Facts.setInlineFactListeners(continuedFactElem);
+										continuedFactElem.setAttribute("continued-main-fact-id", mainID);
+										continuedFactElem.setAttribute("continued-fact", "true");
+										continuedFactElem.setAttribute("enabled-fact", `${fact.isEnabled}`);	
+										continuedFactElem.setAttribute("selected-fact", `${fact.isSelected}`);	
+										setDisplayAttribute(fact, continuedFactElem);
+										// continuedFactElem)?.setAttribute("text-block-fact", "true");
+														
+										continuedFactElem.setAttribute("highlight-fact", `${fact.isHighlight}`);						
+										target.setAttribute('highlight-fact', `${fact.isHighlight}`);
+										fact.continuedIDs.push(continuedAtId);
+										if (continuedFactElem.hasAttribute("continuedat")) {
+											getContinuedIDs(continuedFactElem.getAttribute("continuedat") as string, mainID);
+										}
 									}
 								}
 							};
@@ -219,7 +232,7 @@ export const Facts = {
 	clickEvent: (event: Event, element: HTMLElement) => {
 		event.stopPropagation();
 		event.preventDefault();
-		if (event instanceof KeyboardEvent && !(event.key === 'Enter' || event.key === 'Space'))
+		if (event instanceof KeyboardEvent && !(event.key === 'Enter' || event.key === 'Space' || event.key === ' '))
 			return;
 
 		document.getElementById("fact-modal")?.classList.add("d-none");
@@ -343,11 +356,14 @@ export const Facts = {
 		});
 	},
 
-	addURLHash: (factId: string) => {
+	updateURLHash: (factId: string) => {
 		if (Constants.appWindow.history.pushState) {
-			Constants.appWindow.history.pushState(null, "", `#${factId}`);
-		}
-		else {
+			if (factId) {
+				Constants.appWindow.history.pushState(null, "", `#${factId}`);
+			} else {
+				Constants.appWindow.history.pushState(null, "", ``);
+			}
+		} else {
 			Constants.appWindow.location.hash = `#${factId}`;
 		}
 	},

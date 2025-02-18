@@ -31,7 +31,7 @@ var HelpersUrl = {
   
   fullURL : null,
   
-  addLinkattributes : function( element ) {
+  addLinkAttributes : function( element ) {
     var attribute = null;
     if ( element ) {
       if ( element.getAttribute('data-link') ) {
@@ -48,7 +48,7 @@ var HelpersUrl = {
       if ( url.search ) {
         var urlParams = HelpersUrl.returnURLParamsAsObject(url.search.substring(1));
         if ( urlParams.hasOwnProperty('doc-file')
-            && Constants.getMetaSourceDocuments.indexOf(urlParams['doc-file']) >= 0 ) {
+            && Constants.appWindow.location.search.includes(urlParams.docPath)) {
           element.setAttribute('data-link', urlParams['doc-file']);
           element.setAttribute('href', urlParams['doc-file']);
           element.setAttribute('onclick', 'Links.clickEventInternal(event, this)');
@@ -101,12 +101,13 @@ var HelpersUrl = {
           if ( current.endsWith('.htm') || current.endsWith('.html') || current.endsWith('.xhtml') ) {
             
             current = decodeURIComponent(current);
-            var docFile = current.split('filename=')[1] ? current.split('filename=')[1] : current.substring(current
-                .lastIndexOf('/') + 1);
+            var docFile = current.split('filename=')[1] 
+              ? current.split('filename=')[1] 
+              : current.substring(current.lastIndexOf('/') + 1);
             // HF: redline in normal or workstation mode
             var redline = urlRedline || current.indexOf('redline=true') >= 0; 
             return {
-              'doc' : current,
+              'docPath' : current,
               'doc-file' : docFile,
               'redline' : redline
             };
@@ -129,7 +130,7 @@ var HelpersUrl = {
     for ( var i = 0; i < obj.length; i++ ) {
       var single = obj[i];
       if ( !single.hasOwnProperty('metalinks') ) {
-        var metalinks = single['doc'].replace(single['doc-file'], 'MetaLinks.json');
+        var metalinks = single['docPath'].replace(single['doc-file'], 'MetaLinks.json');
         single['metalinks'] = metalinks;
         single['metalinks-file'] = 'MetaLinks.json';
       }
@@ -195,7 +196,7 @@ var HelpersUrl = {
         }
         HelpersUrl.getAnchorTag = url['hash'];
       }
-      HelpersUrl.getExternalFile = HelpersUrl.getAllParams['doc'];
+      HelpersUrl.getExternalFile = HelpersUrl.getAllParams['docPath'];
       if ( !HelpersUrl.getHTMLFileName && HelpersUrl.getExternalFile ) {
         var splitFormURL = HelpersUrl.getExternalFile.split('/');
         HelpersUrl.getHTMLFileName = splitFormURL[splitFormURL.length - 1];

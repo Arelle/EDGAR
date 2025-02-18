@@ -13,7 +13,7 @@ describe(`Menu Info Modal`, () => {
     filingsSample.forEach((filing) => {
 		it(`Menu 'information' modal should function. ACC NUM ${filing.accessionNum}`, () => {
             cy.loadFiling(filing)
-            cy.get('a[data-test="menu-dropdown-link"]', { timeout: Number(filing.timeout) }).click()
+            cy.get('button[data-test="menu-dropdown-link"]', { timeout: Number(filing.timeout) }).click()
             cy.get('a[id="menu-dropdown-information"]').click()
             cy.get('div[data-test="form-information-modal"]').should('exist')
             

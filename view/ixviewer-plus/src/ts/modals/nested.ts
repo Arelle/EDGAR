@@ -11,6 +11,7 @@ import { ModalsCommon } from "./common";
 import { FactPages } from "./fact-pages";
 import { Modals } from "./modals";
 import { Facts } from "../facts/facts";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export const ModalsNested = {
 
@@ -100,7 +101,7 @@ export const ModalsNested = {
 
 	createLabelCarousel: () => {
 		const carousel = document.querySelector('#modal-fact-nested-label-carousel');
-		if(carousel == null) return;
+		if (carousel == null) return;
 
 		// reset 
 		carousel.innerHTML = "";
@@ -206,7 +207,7 @@ export const ModalsNested = {
 			if (selectedElement == null) return;
 
 			// selectedElement.scrollIntoView(false);    // keeping as comment to remember alternative function
-			Facts.addURLHash(selectedElement.id);
+			Facts.updateURLHash(selectedElement.id);
 			FactMap.setIsSelected(selectedElement.id);
 			ixScrollTo(selectedElement);
 
@@ -245,6 +246,7 @@ export const ModalsNested = {
 			Pagination.goToFactInSidebar(event);
 		});
 		document.getElementById('nested-fact-modal-jump')?.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
 			Pagination.goToFactInSidebar(event);
 		});
 
@@ -259,6 +261,7 @@ export const ModalsNested = {
 			Modals.expandToggle(event, 'fact-nested-modal', 'fact-nested-modal-expand', 'fact-nested-modal-compress');
 		});
 		document.getElementById('fact-nested-modal-compress')?.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
 			Modals.expandToggle(event, 'fact-nested-modal', 'fact-nested-modal-expand', 'fact-nested-modal-compress');
 		});
 
@@ -266,6 +269,7 @@ export const ModalsNested = {
 			Modals.expandToggle(event, 'fact-nested-modal', 'fact-nested-modal-expand', 'fact-nested-modal-compress');
 		});
 		document.getElementById('fact-nested-modal-expand')?.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
 			Modals.expandToggle(event, 'fact-nested-modal', 'fact-nested-modal-expand', 'fact-nested-modal-compress');
 		});
 
@@ -273,6 +277,7 @@ export const ModalsNested = {
 			Modals.close(event);
 		});
 		document.getElementById('fact-nested-modal-close')?.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
 			Modals.close(event);
 		});
 
@@ -327,7 +332,7 @@ export const ModalsNested = {
 		}
 
 		const factInfo = FactMap.getByID(factID);
-		if(!factInfo) return;
+		if (!factInfo) return;
 
 		FactPages.firstPage(factInfo, 'modal-fact-nested-content-carousel-page-1');
 		FactPages.secondPage(factInfo, 'modal-fact-nested-content-carousel-page-2');

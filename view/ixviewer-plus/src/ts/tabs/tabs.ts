@@ -9,6 +9,8 @@ import { ConstantsFunctions } from "../constants/functions";
 import { FactMap } from "../facts/map";
 import { HelpersUrl } from "../helpers/url";
 import { Sections } from "../sections/sections";
+import { defaultKeyUpHandler } from "../helpers/utils";
+import { stopPropPrevDefault } from "../helpers/utils";
 
 export const Tabs = {
 
@@ -78,21 +80,18 @@ export const Tabs = {
 			inlineDocTabElem.setAttribute('href', currentInlineDoc.slug);
 			inlineDocTabElem.setAttribute('data-link', currentInlineDoc.slug);
 
-			if(currentInlineDoc.current === true)
+			if (currentInlineDoc.current === true)
 			{
 				inlineDocTabElem.classList.add('active');
 			}
 
-			const updateTabs = (e: Event) =>
+			const updateTabs = () =>
 			{
-				e.stopPropagation();
-				e.preventDefault();
-				
 				ConstantsFunctions.switchDoc(currentInlineDoc.slug);
 			}
 
-			inlineDocTabElem.addEventListener('click', updateTabs, true);
-			inlineDocTabElem.addEventListener('keyup', updateTabs, true);
+			inlineDocTabElem.addEventListener('click', (e) => stopPropPrevDefault(e,updateTabs), true);
+			inlineDocTabElem.addEventListener('keyup', (e) => defaultKeyUpHandler(e,updateTabs), true);
 			const text = document.createTextNode(currentInlineDoc.slug);
 			inlineDocTabElem.append(text);
 

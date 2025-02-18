@@ -16,6 +16,7 @@ describe(`Fact Modal`, () => {
         })
 
         cy.get(selectors.factModalDrag)
+            .trigger('mouseover', { force: true })
             .trigger('mousedown', { which: 1, force: true }) // which: 1   means mouse1 or left mouse, might be default
             .trigger('mousemove', { which: 1, pageX: 20, pageY: 20, force: true }) // pagex, y are relative to original location, so moves up and left
             .trigger('mouseup', { force: true })

@@ -6,7 +6,7 @@
 "use strict";
 
 var Constants = {
-  version: "24.4", // release quarter
+  version: "25.1", // release quarter
   featureSet: "legacy",
 
   fileSizeError: [7500000, "7.5MB"],
@@ -22,6 +22,17 @@ var Constants = {
   getPaginationPerPage: 10,
 
   getHtmlOverallTaxonomiesCount: null,
+
+  appWindow: (function() {
+    if (typeof window === 'undefined') { return {}; }
+    // redirect iframe
+    if (!!window.frameElement && window.frameElement.id === "ixvFrame") {
+      return window.parent;
+    } 
+    // Note: workstation iframe has id "dispDocFrame", I don't think we need to handle it though since the iframe
+    // in that cases seems intended to work as "subwindow" and links should open in the iframe (?)
+    return window;
+  })(),
 
   getMetaSourceDocuments: [],
 

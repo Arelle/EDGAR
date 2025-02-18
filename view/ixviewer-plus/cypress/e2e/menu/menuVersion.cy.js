@@ -8,7 +8,7 @@ describe("IX Viewer Menu", () =>
     {
         cy.loadFiling(filing);
         
-        cy.get('a[data-test="menu-dropdown-link"]', { timeout: Number(filing.timeout) }).click();
+        cy.get('button[data-test="menu-dropdown-link"]', { timeout: Number(filing.timeout) }).click();
 
         cy.get("#form-information-version").should('exist');
         cy.get('#form-information-version').invoke('text').should('match', /Version: [2-9][0-9]\.[0-9].*/);

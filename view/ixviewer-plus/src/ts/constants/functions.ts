@@ -19,7 +19,6 @@ import { FactsGeneral } from "../facts/general";
 import { Pagination } from "../pagination/sideBarPagination";
 import { SideBarPaginationPrevNext } from "../pagination/sideBarPaginationPrevNext";
 import { UserFiltersState } from "../user-filters/state";
-import { Facts } from "../facts/facts";
 import { incrementProgress, resetProgress, showLoadingUi } from "../app/loading-progress";
 
 
@@ -150,9 +149,10 @@ export const ConstantsFunctions = {
 		offCanvasElement?.addEventListener('hidden.bs.offcanvas', () => FactsTable.toggle(false));
 	},
 
-	switchDoc: (fileToChangeTo: string): Promise<void> =>
-	{
-		if(Constants.appWindow.location.href.includes(fileToChangeTo)) return Promise.resolve();
+	switchDoc: (fileToChangeTo: string, onBack = false): Promise<void> => {
+		if (Constants.appWindow.location.href.includes(fileToChangeTo) && !onBack) {
+			return Promise.resolve();
+		}
 
 		resetProgress();
 		incrementProgress();
@@ -160,21 +160,14 @@ export const ConstantsFunctions = {
 
 		ConstantsFunctions.hideFactTable();
 
-		const switchTabs = () =>
-		{
+		const switchTabs = () => {
 			//requires setTimeout, otherwise the Loading UI doesn't show
-			return new Promise<void>((resolve) => setTimeout(() =>
-			{
-				//remove the fact from the URL
-				Facts.addURLHash("");
-
-				for(let inlineFile of Constants.getInlineFiles)
-				{
+			return new Promise<void>((resolve) => setTimeout(() => {
+				for (let inlineFile of Constants.getInlineFiles) {
 					inlineFile.current = inlineFile.slug === fileToChangeTo;
 				}
 
-				for(let e of document.querySelectorAll("#tabs-container a.nav-link.active"))
-				{
+				for (let e of document.querySelectorAll("#tabs-container a.nav-link.active")) {
 					//set the tab as inactive
 					e.classList.remove("active");
 
@@ -198,9 +191,10 @@ export const ConstantsFunctions = {
 			}));
 		};
 
-		return HelpersUrl.initPromise(fileToChangeTo)
+		return HelpersUrl.initPromise(fileToChangeTo, onBack)
 			.then(() => switchTabs())
-			.then(() => incrementProgress());
+			.then(() => incrementProgress())
+			.then(() => HelpersUrl.handleHash())
 	},
 
 	runNestedAccordionTest: () => {

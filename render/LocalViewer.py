@@ -22,6 +22,7 @@ extMimeType = {
     ".htm": "text/html",
     ".xml": "application/xml",
     ".js": "text/javascript",
+    ".mjs": "text/javascript",
     ".css": "text/css",
     ".gif": "image/gif",
     ".jpg": "image/jpeg",
@@ -36,7 +37,8 @@ extMimeType = {
     ".txt": "text/plain",
     ".json": "application/json",
     ".woff": "font/woff",
-    ".woff2": "font/woff2"
+    ".woff2": "font/woff2",
+    ".pdf": "application/pdf"
     }
 
 

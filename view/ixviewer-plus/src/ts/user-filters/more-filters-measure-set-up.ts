@@ -6,6 +6,7 @@
 import { FactMap } from "../facts/map";
 //import { FiltersUnitref } from "../filters/unitref";
 import { UserFiltersMoreFiltersMeasure } from "./more-filters-measure";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export const UserFiltersMoreFiltersMeasureSetUp = {
 
@@ -45,8 +46,10 @@ export const UserFiltersMoreFiltersMeasureSetUp = {
             input.addEventListener('click', () => {
                 UserFiltersMoreFiltersMeasure.clickEvent(current);
             });
-            input.addEventListener('keyup', () => {
+            input.addEventListener('keyup', (event: KeyboardEvent) => {
+                if (!defaultKeyUpHandler(event)) return;
                 UserFiltersMoreFiltersMeasure.clickEvent(current);
+
             });
 
             const labelText = document.createTextNode(current);

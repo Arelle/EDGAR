@@ -5,6 +5,7 @@
 
 import { FactMap } from "../facts/map";
 import { UserFiltersMoreFiltersAxes } from "./more-filters-axes";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export const UserFiltersMoreFiltersAxesSetUp = {
 
@@ -30,13 +31,18 @@ export const UserFiltersMoreFiltersAxesSetUp = {
             const indexType = current.type === "explicit" ? 0 : 1;
             current.type === "explicit" ? explicitCount++ : typedCount++;
             if (!isContainerBuild[indexType]) {
-                const div = document.createElement("div");
-                div.setAttribute("data-bs-parent", "#user-filters-axis");
-                div.setAttribute("id", "axes-filters-accordion-" + indexType);
-                div.classList.add("collapse");
+                const div = 
+                    `<div class="collapse" data-bs-parent="#user-filters-axis" id="axes-filters-accordion-${indexType}">
+                    </div>`;
+                
+                const parser = new DOMParser();
+                const labelDoc = parser.parseFromString(div,'text/html');
+        
+                const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
+
                 isContainerBuild[indexType] = true;
 
-                document.getElementById("user-filters-axis")?.children[indexType].append(div);
+                document.getElementById("user-filters-axis")?.children[indexType].append(instanceHeader);
             }
 
             const div = document.createElement("div");
@@ -62,7 +68,8 @@ export const UserFiltersMoreFiltersAxesSetUp = {
             input.addEventListener("click", () => {
                 UserFiltersMoreFiltersAxes.clickEvent(current.value);
             });
-            input.addEventListener("keyup", () => {
+            input.addEventListener("keyup", (event: KeyboardEvent) => {
+                if (!defaultKeyUpHandler(event)) return;   
                 UserFiltersMoreFiltersAxes.clickEvent(current.value);
             });
             label.append(input);
@@ -72,8 +79,7 @@ export const UserFiltersMoreFiltersAxesSetUp = {
             label.append(text);
             div2.append(label);
             div.append(div2);
-            document
-                .getElementById(`axes-filters-accordion-${indexType}`)?.append(div);
+            document.getElementById(`axes-filters-accordion-${indexType}`)?.append(div);
         });
         // update typed / explitic counts
         if (typedCount > 0) {
@@ -91,10 +97,23 @@ export const UserFiltersMoreFiltersAxesSetUp = {
             // just explicit
             UserFiltersMoreFiltersAxes.parentClick(axis.filter(element => element.type === 'explicit'), document.getElementById("axes-all-0") as HTMLInputElement);
         });
-        document
-            .getElementById("axes-all-1")?.addEventListener("click", () => {
+        document.getElementById("axes-all-0")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            // just explicit
+            if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' ')) {
+                document.getElementById("axes-all-0")?.click();
+                UserFiltersMoreFiltersAxes.parentClick(axis.filter(element => element.type === 'explicit'), document.getElementById("axes-all-0") as HTMLInputElement);
+            }
+        });
+        document.getElementById("axes-all-1")?.addEventListener("click", () => {
                 // just implicit
                 UserFiltersMoreFiltersAxes.parentClick(axis.filter(element => element.type === 'implicit'), document.getElementById("axes-all-1") as HTMLInputElement);
             });
+        document.getElementById("axes-all-1")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            // just explicit
+            if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' ')) {
+                document.getElementById("axes-all-1")?.click();
+                UserFiltersMoreFiltersAxes.parentClick(axis.filter(element => element.type === 'implicit'), document.getElementById("axes-all-1") as HTMLInputElement);
+            }
+        });
     }
 };

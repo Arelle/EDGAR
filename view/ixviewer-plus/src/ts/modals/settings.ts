@@ -9,14 +9,14 @@ import { Constants } from "../constants/constants";
 export const ModalsSettings = {
 
 	clickEvent: (event: MouseEvent | KeyboardEvent) => {
-
+/*
 		if (
 			Object.prototype.hasOwnProperty.call(event, 'key') &&
 			!((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space')
 		) {
 			return;
 		}
-
+*/
 		Modals.close(event);
 
 		document.getElementById('settings-modal')?.classList.remove('d-none');

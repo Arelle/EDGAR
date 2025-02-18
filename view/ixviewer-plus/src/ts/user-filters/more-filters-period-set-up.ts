@@ -5,6 +5,7 @@
 
 import { FactMap } from "../facts/map";
 import { UserFiltersMoreFiltersPeriod } from "./more-filters-period";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export const UserFiltersMoreFiltersPeriodSetUp = {
 
@@ -48,7 +49,12 @@ export const UserFiltersMoreFiltersPeriodSetUp = {
                 UserFiltersMoreFiltersPeriod.parentClick(event, index, objectOfInfo[current].values)
             });
             input.addEventListener('keyup', (event: KeyboardEvent) => {
-                UserFiltersMoreFiltersPeriod.parentClick(event, index, objectOfInfo[current].values)
+                //if (!defaultKeyUpHandler(event)) return;
+               // input.checked=true;
+                if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' ')) {
+                    input?.click();
+                    UserFiltersMoreFiltersPeriod.parentClick(event, index, objectOfInfo[current].values)
+                }
             });
             label.appendChild(input);
 
@@ -103,7 +109,8 @@ export const UserFiltersMoreFiltersPeriodSetUp = {
                 input2.addEventListener('click', () => {
                     UserFiltersMoreFiltersPeriod.childClick(nestedCurrent);
                 });
-                input2.addEventListener('keyup', () => {
+                input2.addEventListener('keyup', (event: KeyboardEvent) => {
+                    if (!defaultKeyUpHandler(event)) return;
                     UserFiltersMoreFiltersPeriod.childClick(nestedCurrent);
                 });
 

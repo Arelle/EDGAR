@@ -10,7 +10,7 @@ var AjaxForm = {
   init : function( callback ) {
     var startPerformance = performance.now();
     if ( HelpersUrl.getAllParams ) {
-      var input = HelpersUrl.getAllParams['doc'];
+      var input = HelpersUrl.getAllParams['docPath'];
       document.getElementById('dynamic-xbrl-form').innerHTML = '';
       document.getElementById('xbrl-form-loading').classList.remove('d-none');
       var xhr = new XMLHttpRequest();

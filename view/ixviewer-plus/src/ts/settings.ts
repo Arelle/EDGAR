@@ -14,65 +14,69 @@ export class SetCustomCSS {
 		const searchResults = localStorage.getItem("searchResults") || "FFD700";
 		const selectedFact = localStorage.getItem("selectedFact") || "003768";
 		const tagShading = localStorage.getItem("tagShading") || "rgba(255,0,0,0.1)";
+
+		const taggedBlockBoxShadow = {
+			inner: {
+				left: `-2px 0px white`,
+				right: `2px 0px white`
+			},
+			outer: {
+				left: `-4px 0px #${taggedData}`,
+				right: `4px 0px #${taggedData}`
+			}
+		}
+		const blockBoxShadow = `${taggedBlockBoxShadow.inner.left}, ${taggedBlockBoxShadow.inner.right},
+								${taggedBlockBoxShadow.outer.left}, ${taggedBlockBoxShadow.outer.right}`;
+
 		const cssObject: any = {
-			'#dynamic-xbrl-form [enabled-fact="true"][continued-fact="false"], #settings-modal .enabled-example': {
-				"box-shadow": `0px 2px #${taggedData}, 0px -2px #${taggedData}`,
-				display: "inline",
+
+			/*
+				Theory
+				inline facts should get a box shadow all around
+				xbrltype === 'textBlockItemType' that are INLINE should not be forced to new lines and should get css outline all around
+				xbrltype === 'textBlockItemType' that are BLOCKs should get blockBoxShadow on sides
+			*/
+
+			// Enabled facts
+			// inline
+			'[enabled-fact="true"][inline-fact="true"][selected-fact="false"], #settings-modal .enabled-example': {
+				"border-top": `solid 2px #${taggedData}`,
+				"border-bottom": `solid 2px #${taggedData}`
 			},
-			'#dynamic-xbrl-form [enabled-fact="true"][continued-main-fact="true"]': {
-				"box-shadow": `
-					-2px 0px white, 2px 0px white,
-					-4px 0px #${taggedData}, 4px 0px #${taggedData}`,
-				display: "inline-block",
+			// inline-block
+			'[enabled-fact="true"][inline-block-fact="true"][selected-fact="false"]': {
+				"outline": `solid 2px #${taggedData}`,
 			},
-			'#dynamic-xbrl-form [enabled-fact="true"][continued-main-fact="true"][text-block-fact="true"]': {
-				"box-shadow": `
-					-2px 0px white, 2px 0px white,
-					-4px 0px #${taggedData}, 4px 0px #${taggedData}`, 
-				display: "block",
+			'[inline-block-fact="true"]': {
+				"margin-left": "1px",
+				"margin-right": "1px",
 			},
-			'#dynamic-xbrl-form [enabled-fact="true"][text-block-fact="true"]': {
-				"box-shadow": `
-					-2px 0px white, 2px 0px white,
-					-4px 0px #${taggedData}, 4px 0px #${taggedData}`, 
-				display: "block",
-				"border-top": "none",
-				"border-bottom": "none",
+			// block facts
+			'[text-block-fact="true"]': {
+				display: "block", // should we be setting block or inline at all?
+			},
+			'[enabled-fact="true"][text-block-fact="true"][selected-fact="false"]': {
+				"box-shadow": blockBoxShadow,
 			},
 
-			'#dynamic-xbrl-form [highlight-fact="true"], #settings-modal .highlighted-example': {
+			// Search results
+			'[highlight-fact="true"], #settings-modal .highlighted-example': {
 				"background-color": `#${searchResults} !important`
 			},
-			'#dynamic-xbrl-form [highlight-fact="true"] > *': {
+			'[highlight-fact="true"] > *': {
 				"background-color": `#${searchResults} !important`
 			},
 
+			// Selected Fact
 			'#dynamic-xbrl-form [selected-fact="true"], #settings-modal .selected-fact-example': {
-				border: `2px solid #${selectedFact} !important`,
-				display: "inline"
-			},
-			'#dynamic-xbrl-form [selected-fact="true"][continued-main-fact="true"]': {
-				"box-shadow":
-					`-2px 0px 0px 0px #${searchResults}, 2px 0px 0px 0px #${searchResults}`
-			},
-			'#dynamic-xbrl-form [selected-fact="true"][text-block-fact="true"]': {
-				// "box-shadow":
-				// 	`-2px 0px 0px 0px #${selectedFact}, 2px 0px 0px 0px #${selectedFact}`
-				// possible fix below (fix text-block ticket)
-				border: `2px solid #${selectedFact} !important`,
-			},
-			'#dynamic-xbrl-form [selected-fact="true"][continued-fact="false"]': {
-				border: `2px solid #${selectedFact} !important`,
-				// display: "inline" // probably remove this (fix text-block ticket)
+				outline: `2px solid #${selectedFact} !important`,
 			},
 
-			'#dynamic-xbrl-form [enabled-fact="true"][continued-fact="false"]:hover, #settings-modal span.tag-shading-example': {
-				'background-color': `${tagShading} !important`,
+			// Hover
+			'[enabled-fact="true"]:hover, #settings-modal span.tag-shading-example': {
+				"background-color": `${tagShading} !important`,
 			},
-			// '#settings-modal span.tag-shading-example': {
-			// 	'background-color': `${tagShading} !important`,
-			// },
-			'#dynamic-xbrl-form [hover-fact="true"] *, #dynamic-xbrl-form [hover-fact="true"]': {
+			'[hover-fact="true"]': {
 				"background-color": `${tagShading} !important`,
 			},
 		};

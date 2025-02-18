@@ -35,9 +35,11 @@ export const Modals = {
 
 	close: (event: Event | KeyboardEvent) => {
 
-		if (Object.prototype.hasOwnProperty.call(event, 'key') && !((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space')) {
+		if (Object.prototype.hasOwnProperty.call(event, 'key') && !((event as KeyboardEvent).key === 'Enter' 
+		|| (event as KeyboardEvent).key === 'Space' || (event as KeyboardEvent).key === ' ')) {
 			return;
 		}
+			
 		document.getElementById('fact-copy-paste')?.classList.add('d-none');
 
 		window.removeEventListener('keyup', ModalsFormInformation.keyboardEvents);
@@ -66,7 +68,8 @@ export const Modals = {
 	},
 
 	copyContent: (event: MouseEvent | KeyboardEvent, elementIdToCopy: string, copyPasteElement: string) => {
-		if ("key" in event && !(event.key === "Enter" || event.key === "Space")) {
+		
+		if ("key" in event && !(event.key === "Enter" || event.key === "Space" || event.key === " " )) {
 			return;
 		}
 
@@ -111,7 +114,7 @@ export const Modals = {
 			});
 
 			const textarea = document.querySelector(sectionToPopulate + " textarea");
-			if(textarea != null)
+			if (textarea != null)
 			{
 				textarea.textContent = textToCopy.trim();
 			}
@@ -130,7 +133,8 @@ export const Modals = {
 	) => {
 		if (
 			Object.prototype.hasOwnProperty.call(event, 'key') &&
-			!((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space')
+			!((event as KeyboardEvent).key === 'Enter' ||
+				(event as KeyboardEvent).key === 'Space' || (event as KeyboardEvent).key === ' ')
 		) {
 			return;
 		}
@@ -158,15 +162,15 @@ export const Modals = {
 
 	initDrag: (element: HTMLElement) => {
 
-		let factModal: { 
-				offsetLeft: number;
-				clientWidth: number;
-				offsetTop: number;
-				clientHeight: number;
-				style: { left: string; top: string; };
-				offsetWidth: number;
-				offsetHeight: number; 
-			} | null = null;
+		let factModal: {
+			offsetLeft: number;
+			clientWidth: number;
+			offsetTop: number;
+			clientHeight: number;
+			style: { left: string; top: string; };
+			offsetWidth: number;
+			offsetHeight: number;
+		} | null = null;
 		let mouseXPos = 0;
 		let mouseYPos = 0;
 		let xElement = 0;
@@ -178,25 +182,28 @@ export const Modals = {
 			yElement = (mouseYPos - factModal.offsetTop) + (factModal.clientHeight / 2);
 		}
 
-		// Will be called when user dragging an element
-		const dragElement = (event: MouseEvent) => {
-			mouseXPos = document.all ? window.event?.clientX : event.pageX;
-			mouseYPos = document.all ? window.event?.clientY : event.pageY;
+		// Define a flag to track if the function is enabled
+		let isFunctionEnabled = false;
 
-			if (factModal != null) {
-				// drag freely while keeping drag button in the client window
-				factModal.style.left = (mouseXPos >= 10 && mouseXPos <= window.innerWidth-14) ? ((mouseXPos - xElement) + factModal.offsetWidth / 2) + 'px' : xElement;
-				factModal.style.top = (mouseYPos >= 60 && mouseYPos <= window.innerHeight-14) ? ((mouseYPos - yElement) + factModal.offsetHeight / 2) + 'px' : yElement;
-			}
-		}
+		const iconFactNestedModalDrag = document.getElementById('fact-nested-modal-drag');
+		iconFactNestedModalDrag!.addEventListener("mouseover", () => {
+			isFunctionEnabled = true; // Enable the function
+			handleMouseOver(); // Call the function if needed
+		});
 
-		// Destroy the object when we are done
-		const destroyDrag = () => {
-			factModal = null;
-		}
+		iconFactNestedModalDrag!.addEventListener('mouseout', () => {
+			isFunctionEnabled = false; // Disable the function
+		});
 
-		document.onmousemove = dragElement;
-		document.onmouseup = destroyDrag;
+		const iconFactModalDrag = document.getElementById('fact-modal-drag');
+		iconFactModalDrag!.addEventListener("mouseover", () => {
+			isFunctionEnabled = true; // Enable the function
+			handleMouseOver(); // Call the function if needed
+		});
+
+		iconFactModalDrag!.addEventListener('mouseout', () => {
+			isFunctionEnabled = false; // Disable the function
+		});
 
 		element.onmousedown = function () {
 			// not a fan of having all these .parentNode
@@ -204,6 +211,30 @@ export const Modals = {
 			return false;
 		};
 
-	}
+		function handleMouseOver() {
+			if (isFunctionEnabled) {
+				// Will be called when user dragging an element
+				const dragElement = (event: MouseEvent) => {
+					mouseXPos = event.pageX;
+					mouseYPos = event.pageY;
 
+					if (factModal != null) {
+						// drag freely while keeping drag button in the client window
+						factModal.style.left = (mouseXPos >= 10 && mouseXPos <= window.innerWidth - 14) ? ((mouseXPos - xElement) + factModal.offsetWidth / 2) + 'px' : xElement.toString();
+						factModal.style.top = (mouseYPos >= 60 && mouseYPos <= window.innerHeight - 14) ? ((mouseYPos - yElement) + factModal.offsetHeight / 2) + 'px' : yElement.toString();
+					}
+				}
+
+				// Destroy the object when we are done
+				const destroyDrag = () => {
+					factModal = null;
+					document.onmousemove = null;
+				}
+
+				document.onmousemove = dragElement;
+				document.onmouseup = destroyDrag;
+			}
+		}
+
+	}
 };

@@ -86,32 +86,36 @@ class Cube(object):
 
     def __str__(self):
         return "[Cube R{!s} {} {}]".format(self.fileNumber, self.cubeType, self.shortName)
+    
+    @property
+    def isStandardTaxonomy(self):
+        modelRoleTypes = self.filing.modelXbrl.roleTypes[self.linkroleUri]
+        if modelRoleTypes:
+            targetNamespace = modelRoleTypes[0].modelDocument.targetNamespace
+            if self.filing.nspattern.match(targetNamespace or ''):
+                # the targetNameSpace matches one of the standard taxonomy namespaces
+                return True
+        return False
 
     def getCubeInfo(self):
         if self.isUncategorizedFacts:
             return ('', '', '', False, False, False)
 
-        cubeNumber, hyphen, rightOfHyphen = self.definitionText.partition('-')
-        cubeType, secondHyphen, cubeName = rightOfHyphen.partition('-')
-        cubeNumber = cubeNumber.strip()  # don't need casefold, it's a number
-        cubeType = cubeType.strip().casefold()
-        cubeName = cubeName.strip()
+        definitionTextPattern = re.compile(r"^(\d+(?:\.\d+)*) - (Statement|Disclosure|Schedule|Document) - ([^\n]*\S)$")
+        definitionMatchesPattern = definitionTextPattern.match(self.definitionText)
 
-        try:
-            int(cubeNumber)
-            cubeNumberIsANumber = True
-        except ValueError:
-            cubeNumberIsANumber = False
-
-        if not cubeNumberIsANumber or '' in (hyphen, secondHyphen, cubeNumber, cubeType, cubeName):
-            if not self.filing.validatedForEFM:
+        if not definitionMatchesPattern:
+            if not self.filing.validatedForEFM and not self.isStandardTaxonomy: # This validation is duplicated in EFM Validate. Only applies to custom taxonomies
                 self.filing.modelXbrl.error("EFM.6.07.12",  # use identical EFM message & parameters as Arelle Filing validation
                     _("The definition ''%(definition)s'' of role %(roleType)s does not match the expected format. "
                       "Please check that the definition matches {number} - {type} - {text}."),
                     edgarCode="rq-0712-Role-Definition-Mismatch",
                     modelObject=self.filing.modelXbrl, roleType=self.linkroleUri, definition=self.definitionText)
             return ('', '', '', False, False, False)
-
+        
+        cubeNumber, cubeType, cubeName = definitionMatchesPattern.groups()
+        cubeType = cubeType.casefold()
+        
         indexList = [99999, 99999, 99999]  # in order transposed, unlabeled, elements
 
         def handleIndex(matchObj):

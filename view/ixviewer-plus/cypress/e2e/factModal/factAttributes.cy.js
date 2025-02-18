@@ -71,19 +71,18 @@ describe('Fact Attrs: Format', () => {
 })
 
 describe('Fact Attrs: More/Less Expansion', () => {
-    it('should include an Format attribute', () => {
+    it('should expand fact text', () => {
         cy.loadByAccessionNum('000121390021056659')
         cy.get(selectors.docTab1).click()
         cy.get('#fact-identifier-572').click();
-        cy.get('div[class^="word-break fact-value-modal position-relative collapse"]').invoke('height').should('equal',33);
+        cy.get('[data-cy="Fact-value"]').invoke('height').should('be.lessThan', 50);
         cy.get(selectors.factExpandMoreLess).click();
-        cy.get('div[class^="word-break fact-value-modal position-relative collapse show"]').invoke('height').should('be.greaterThan',33);
-        cy.get(selectors.factModalClose).click()
+        cy.get('[data-cy="Fact-value"]').invoke('height').should('be.greaterThan', 50);
+        cy.get(selectors.factModalClose).click();
     })
 })
 
 describe('Fact Attribute period should show valid date on durational period date', () => {
-
     it('should include valid number of months when they are not on same month', () => {
         cy.loadByAccessionNum('000121390023047204')
         cy.get('#fact-identifier-3').click()

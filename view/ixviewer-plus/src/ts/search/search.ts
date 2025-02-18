@@ -75,8 +75,9 @@ export const Search = {
 
   suggestions: () => {
     let valueToSearchFor = (document.getElementById('global-search') as HTMLInputElement).value;
+    const search = document.getElementById('global-search');
     ConstantsFunctions.emptyHTMLByID('suggestions');
-    if (valueToSearchFor.length > 1) {
+    if (valueToSearchFor.length > 1 && document.activeElement === search) {
       // here we sanitize the users input to account for Regex patterns
       valueToSearchFor = valueToSearchFor.replace(/[\\{}()[\]^$+*?.]/g, '\\$&');
 
