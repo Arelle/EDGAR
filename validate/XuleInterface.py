@@ -4,7 +4,7 @@ XULE processor interface for EDGAR validation
 This validation module runs DQC and EDGAR-related XULE rules. It uses the Xule rule processor
 
 DOCSKIP
-See https://xbrl.us/dqc-license for license information.  
+See https://xbrl.us/dqc-license for license information.
 See https://xbrl.us/dqc-patent for patent infringement notice.
 Copyright (c) 2017 - present XBRL US, Inc.
 
@@ -54,7 +54,7 @@ _xule_resources_dir = os.path.join(os.path.dirname(__file__), "resources", "xule
 _xule_resources_dir_for_json = json.dumps(_xule_resources_dir + os.sep)[1:-1]
 _plugin_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 _rule_set_map_name = os.path.join(_xule_resources_dir, "edgarRulesetMap.json")
-_latest_map_name = 'https://github.com/Arelle/EDGAR/tree/master/validate/resources/xule/edgarRulesetMapOnline.json' 
+_latest_map_name = 'https://github.com/Arelle/EDGAR/tree/master/validate/resources/xule/edgarRulesetMapOnline.json'
 
 """Do not change anything below this line."""
 _xule_plugin_info = None
@@ -71,7 +71,6 @@ def init(cntlr):
             # add EDGAR mapping for resource files to disclosureSystem.mappings
             if cntlr.modelManager.disclosureSystem:
                 cntlr.modelManager.disclosureSystem.mappedPaths.append((f"{os.sep}__xule_resources_dir__", _xule_resources_dir))
-        
 def close(cntlr): # unhook Xule's 'Validate.Finally' from validate/EFM
     global xuleValidateFinally
     '''
@@ -90,11 +89,14 @@ def blockXuleValidateFinally(val):
 
 def xuleValidate(val):
     usgYr = usgaapYear(val.modelXbrl)
-    m = re.match(".*XULE:([0-9]{4})",val.params.get("dqcRuleFilter",""))
+    xuleParam = val.params.get("dqcRuleFilter","") # see description in __init__.py header
+    m = re.match(".*XULE:([0-9]{4})", xuleParam)
     if m:
         usgMinYr = m.group(1)
     else:
         usgMinYr = "2025"
+    m = re.match(".*XULE_time:([0-9.]+)", xuleParam)
+    xuleTime = float(m.group(1)) if m else None
     # print(f"*** trace usgYr {usgYr} usgMinYr {usgMinYr} param \"{val.params.get('dqcRuleFilter','')}\"")
     if xuleValidateFinally is not None:
         if usgYr >= usgMinYr:
@@ -107,11 +109,11 @@ def xuleValidate(val):
                 "block_deregister": True,
                 "xule_rule_set": f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-ruleset.zip",
                 "xule_args_file": f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-constants.json",
-                "xule_time": 1.0,
+                "xule_time": xuleTime,
                 # to trace whether contexts are reloaded properly from build process, uncomment
                 #"xule_output_constants": "ACCRUAL_ITEMS,TAXONOMY_DEFAULTS"
-                #"xule_trace": True, # causes trace of  each rule as it runs
-                "xule_debug": True, # causes trace of  each rule as it runs
+                "xule_trace": "XULE_trace" in xuleParam, # causes trace of each rule as it runs
+                "xule_debug": "XULE_debug" in xuleParam, # causes debug of each rule as it runs
                 "xule_crash": True # causes stacktrace on xule exceptions
                 })
             val.modelXbrl.modelManager.validateDisclosureSystem = validateDisclosureSystem
@@ -123,11 +125,11 @@ def xuleValidate(val):
                 "block_runXule": True
                 })
     return False
-        
+
 
 def cmdOptions(parser):
     """Extend command line options for xule validator
-    
+
     This is called by the Arelle controller.
     """
     if isinstance(parser, optparse.OptionParser):
@@ -150,14 +152,13 @@ def cmdOptions(parser):
     parserGroup.add_option("--{}-display-rule-set-map".format(_short_name).lower(),
                            action="store_true",
                            dest="{}_display_rule_set_map".format(_short_name),
-                           help=_("Display the rule set map currently used."))   
+                           help=_("Display the rule set map currently used."))
 
     # Update validator rule set map
     parserGroup.add_option("--{}-update-rule-set-map".format(_short_name).lower(),
                            action="store",
                            dest="{}_update_rule_set_map".format(_short_name),
                            help=_("Update the rule set map currently used. The supplied file will be merged with the current rule set map."))
-    
     # Replace validator rule set map
     parserGroup.add_option("--{}-replace-rule-set-map".format(_short_name).lower(),
                            action="store",
@@ -180,7 +181,6 @@ def cmdOptions(parser):
 
 def cntrlrCmdLineUtilityRun(cntlr, options, **kwargs):
     """Validator run utility.
-    
     This is invoked by the Arelle controler after Arelle is fully up but before a filing is loaded.
     """
     # Save options in xule
@@ -188,7 +188,6 @@ def cntrlrCmdLineUtilityRun(cntlr, options, **kwargs):
     save_options_method(cntlr, options, **kwargs)
 
     parser = optparse.OptionParser()
-    
     # Check that both update an replace rule set map are not used together.
     replace_update_rule_set_map_options = [x.lower().replace('_','-') for x in ('{}_update_rule_set_map'.format(_short_name),
                                                        '{}_replace_rule_set_map'.format(_short_name),
@@ -203,7 +202,6 @@ def cntrlrCmdLineUtilityRun(cntlr, options, **kwargs):
     #if len([x for x in (getattr(options, "{}_update_rule_set_map".format(_short_name), False),
     #                   getattr(options, "{}_replace_rule_set_map".format(_short_name), False)) if x]) > 1:
     #    parser.error(_("Cannot use --{short_name}-update-rule-set-map and --{short_name}-replace-rule-set-map the same time.".format(short_name=_short_name)))
-    
     # Show validator version
     if getattr(options, '{}_version'.format(_short_name), False):
         version_method = getXuleMethod(cntlr, 'Xule.ValidatorVersion')
@@ -211,17 +209,14 @@ def cntrlrCmdLineUtilityRun(cntlr, options, **kwargs):
 
         #cntlr.addToLog("{} validator version: {}".format(_short_name,  _version_prefix + version_method(__file__)), _short_name)
         #cntlr.close()
-    
     # Update the rule set map
     if getattr(options, "{}_update_rule_set_map".format(_short_name), False):
         update_method = getXuleMethod(cntlr, 'Xule.RulesetMap.Update')
         update_method(cntlr, getattr(options,"{}_update_rule_set_map".format(_short_name)), _rule_set_map_name)
-    
     # Replace the rule set map
     if getattr(options, "{}_replace_rule_set_map".format(_short_name), False):
         update_method = getXuleMethod(cntlr, 'Xule.RulesetMap.Replace')
         update_method(cntlr, getattr(options,"{}_replace_rule_set_map".format(_short_name)), _rule_set_map_name)
-    
     # Display the rule set map
     if getattr(options, "{}_display_rule_set_map".format(_short_name), False):
         update_method = getXuleMethod(cntlr, 'Xule.RulesetMap.Display')
@@ -240,10 +235,10 @@ def cntrlrCmdLineUtilityRun(cntlr, options, **kwargs):
     # Register the xule validator
     registerMethod = getXuleMethod(cntlr, 'Xule.RegisterValidator')
     registerMethod(_short_name, _rule_set_map_name)
-    
+
 def getXulePlugin(cntlr):
     """Find the Xule plugin
-    
+
     This will locate the Xule plugin module.
     """
     global _xule_plugin_info
@@ -258,23 +253,21 @@ def getXulePlugin(cntlr):
                 if path.endswith(os.sep + "xule") and childDirs in ([], ["__pycache__"]) and "__init__.py" in files:
                     _xule_plugin_info = PluginManager.moduleModuleInfo(moduleURL=path)
                     PluginManager.loadModule(_xule_plugin_info)
+                    PluginManager.pluginConfigChanged = False # don't save this change
                     _xule_plugin_info = PluginManager.modulePluginInfos[_xule_plugin_info["name"]]
                     break
     if _xule_plugin_info is None:
         cntlr.addToLog(_("Xule plugin is not loaded. Xule plugin is required to run DQC rules. This plugin should be automatically loaded."))
-    
     return _xule_plugin_info
 
 def getXuleMethod(cntlr, class_name):
     """Get method from Xule
-    
     Get a method/function from the Xule plugin. This is how this validator calls functions in the Xule plugin.
     """
     return getXulePlugin(cntlr).get(class_name)
 
 def menuTools(cntlr, menu):
     """Add validator menu the Tools menu in the Arelle GUI
-    
     This is invoked by the Arelle controller
     """
     menu_method = getXuleMethod(cntlr, 'Xule.AddMenuTools')
@@ -283,13 +276,11 @@ def menuTools(cntlr, menu):
 
 def validateMenuTools(cntlr, validateMenu, *args, **kwargs):
     """Add validator checkbutton to the Arelle Validate menu (under Tools).
-    
     This is invoked by the Arelle controller.
     """
     # set validation true for validateDQCRT so it always validates for Filing.py when that validates
     ''' block this function
         it causes xule to register validator with validate variable which causes it to run on validate.finally
-        
     cntlr.config["validateDQCRT"] = True
     menu_method = getXuleMethod(cntlr, 'Xule.AddValidationMenuTools')
     menu_method(cntlr, validateMenu, _short_name, _rule_set_map_name)
@@ -298,10 +289,10 @@ def validateMenuTools(cntlr, validateMenu, *args, **kwargs):
     registerMethod = getXuleMethod(cntlr, 'Xule.RegisterValidator')
     registerMethod(_short_name, _rule_set_map_name)
     cntlr.config['xule_activated'] = False # block xule initialization from Tools menu path
-    
+
 ''' original plugininfo from DQC.py
-    incorporated as validate/EFM/__init__.py 
-    
+    incorporated as validate/EFM/__init__.py
+
     'name': _name,
     'version': _version,
     'description': _description,

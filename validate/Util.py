@@ -690,8 +690,8 @@ def loadDqcRules(modelXbrl): # returns match expression, standard patterns
         _file = openFileStream(modelXbrl.modelManager.cntlr, resourcesFilePath(modelXbrl.modelManager, "dqc-us-rules.json"), 'rt', encoding='utf-8')
         dqcRules = json.load(_file, object_pairs_hook=OrderedDict) # preserve order of keys
         _file.close()
-        if usGaapYr >= "2020":
-            dqcRules["XULE-constants-file"] = resourcesFilePath(modelXbrl.modelManager, "xule", f"dqcrt-us-{usGaapYr}-constants.json")
+        if usGaapYr >= "2020": # files only exist starting with 2023, e.g. 2020 must use 2023 constants file
+            dqcRules["XULE-constants-file"] = resourcesFilePath(modelXbrl.modelManager, "xule", f"dqcrt-us-{max(usGaapYr,'2023')}-constants.json")
         return dqcRules
     return {}
 
