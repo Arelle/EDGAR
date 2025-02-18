@@ -52,6 +52,11 @@ Input file parameters may be in JSON (without newlines for pretty printing as be
        For XULE implementations XULE:yyyy specifies to run XULE for taxonomies beginning with year yyyy (default 2025).
        E.g. "XULE:2026|DQC.US.00(04|15)" would specify running XULE-implemented validation for 2026 or later US-GAAP else 
        run only the python-implmented rules DQC.US.0004 and DQC.US.0015.  Or to block XULE and match all Python-coded rules "XULE:9999|.*"
+       When running XULE-implemented rules the following additional entries activate XULE features
+           XULE_time:secs - print xule rule run times for rules > 1 sec on stdout
+           XULE_debug - print xule debug on stdout
+           XULE_trace - print xule trace on stdout
+           e.g. XULE:2023|XULE_time:.5|XULE_debug|.* to run XULE after 2023 with timings over 1/2 sec and debug to stdout, else all python-coded rules
    # fee table instance validations (only):
    "attachmentDocumentType": "EX-FILINGS FEES",  # this field is mandatory for fee table instance validations else instance will be validated as a financial report
    # attachmentDocumentType must match an entry in feeTaggingExhibitTypes (Consts.py) for instance to be recognized as a fee table instance
@@ -70,17 +75,17 @@ Input file parameters may be in JSON (without newlines for pretty printing as be
 
 For test case operation, the above fields accepted from testcase variation:
   <data>
-     <conf:parameter name="cikName" datatype="xs:string" value="cik1:name1" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="cikName" datatype="xs:string" value="cik2:name2" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="cikName" datatype="xs:string" value="cik3:name3" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="submissionType" datatype="xs:string" value="8-K" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="periodOfReport" datatype="xs:string" value="12-31-2017" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="voluntaryFilerFlag" datatype="xs:boolean" value="true" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="coregCikFileNumber" datatype="xs:string" value="cik1:fileNbr1" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="coregCikFileNumber" datatype="xs:string" value="cik2:fileNbr2" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="coregCikFileNumber" datatype="xs:string" value="cik3:fileNbr3" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="sroId" datatype="xs:string" value="NASD" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="sroId" datatype="xs:string" value="NYSE" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
+     <parameter name="cikName" datatype="xs:string" value="cik1:name1" />
+     <parameter name="cikName" datatype="xs:string" value="cik2:name2" />
+     <parameter name="cikName" datatype="xs:string" value="cik3:name3" />
+     <parameter name="submissionType" datatype="xs:string" value="8-K" />
+     <parameter name="periodOfReport" datatype="xs:string" value="12-31-2017" />
+     <parameter name="voluntaryFilerFlag" datatype="xs:boolean" value="true" />
+     <parameter name="coregCikFileNumber" datatype="xs:string" value="cik1:fileNbr1" />
+     <parameter name="coregCikFileNumber" datatype="xs:string" value="cik2:fileNbr2" />
+     <parameter name="coregCikFileNumber" datatype="xs:string" value="cik3:fileNbr3" />
+     <parameter name="sroId" datatype="xs:string" value="NASD" />
+     <parameter name="sroId" datatype="xs:string" value="NYSE" />
      ...
      <instance readMeFirst="true">e9999999ng-20081231.xml</instance>
    <data>

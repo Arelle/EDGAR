@@ -130,6 +130,7 @@
                 "axis": "ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
                 "axis-descendants": "None",
 				"xuleConstants-members": ["MBR_SCH_EQT_INV_NM_AXS"],
+				"additional-members": ["EquityMethodInvesteeNameDomain"],
                 "extensions-allowed": "Yes"
             },
             "58": {
