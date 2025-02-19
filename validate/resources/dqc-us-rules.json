@@ -2389,7 +2389,7 @@
 				"not-members": ["LaborForceConcentrationRiskMember", "UnionizedEmployeesConcentrationRiskMember"],
 				"axes": {"ConcentrationRiskByBenchmarkAxis": true,
 						 "ConcentrationRiskByTypeAxis": "not-members"},
-				"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+				"message": "The concept {name} with value {value} should always be used with the ConcentrationRiskByTypeAxis the ConcentrationRiskByBenchmarkAxis and a third axis to identify the risk area.  This element can only have a value of 1 when only the ConcentrationRiskByTypeAxis and ConcentrationRiskByBenchmarkAxis are used.  This fact needs another axis to identify the specific {$fact1.dimension(ConcentrationRiskByTypeAxis)} risk. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
 			},
 			"9570": {
 				"name": "ConcentrationRiskPercentage1",

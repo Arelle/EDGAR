@@ -5095,6 +5095,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     hasNondimValue = True # set in 9565 and then used by 9566
                                     if f.xValue == rule["value"]:
                                         continue
+                                else:
+                                    continue # ignore dimensioned fact for non-dimensioned test 9565
                             else: # axes are called for
                                 if id == "9566" and hasNondimValue:
                                     continue
@@ -5105,6 +5107,10 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                            True
                                            for a,v in axes.items()):
                                     continue
+                                if id == "9569":
+                                    # if there's a third axis it passes
+                                    if sum(a in localDims for a in axes) < len(localDims):
+                                        continue
                                 if rule.get("where") == "value!=1" and f.xValue == 1:
                                     continue
                                 if id == "9570":
@@ -5132,7 +5138,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 for axis in modelXbrl.nameConcepts.get(rule["axis"], ()):
                     for name in conceptsNeedingBusinessAcquisitionAxis:
                         for f in modelXbrl.factsByLocalName.get(name, ()):
-                            if axis not in f.context.qnameDims:
+                            if axis.qname not in f.context.qnameDims:
                                 modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                     modelObject=f,
                                     name=f.qname, value=f.xValue, contextID=f.contextID, unitID=f.unitID or "(none)",
