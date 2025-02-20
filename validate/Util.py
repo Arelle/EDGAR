@@ -751,12 +751,13 @@ def loadXuleConstantsForPythonRules(val, dqcRules):
     return xuleConsts
     
 
-def factBindings(modelXbrl, localNames, nils=False, noAdditionalDims=False, coverPeriod=False, coverDimQnames=EMPTY_SET, coverDimNames=EMPTY_SET, absentDimNames=EMPTY_SET, alignDims=None, coverUnit=False, cube=None, cubeRelSet=None):
+def factBindings(modelXbrl, localNames, nils=False, factFilter=None, noAdditionalDims=False, coverPeriod=False, coverDimQnames=EMPTY_SET, coverDimNames=EMPTY_SET, absentDimNames=EMPTY_SET, alignDims=None, coverUnit=False, cube=None, cubeRelSet=None):
     bindings = defaultdict(dict)
     def addMostAccurateFactToBinding(f):
         cntx = f.context
         if (f.xValid >= VALID
             and (nils or not f.isNil)
+            and (factFilter(f) if factFilter is not None else True)
             and cntx is not None
             and (not noAdditionalDims or not (cntx.qnameDims.keys() - coverDimQnames))
             and (not absentDimNames or not any(k.localName in absentDimNames for k in cntx.qnameDims.keys()))):
