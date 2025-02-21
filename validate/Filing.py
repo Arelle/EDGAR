@@ -3684,10 +3684,21 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
 
     # DQC.US rules
     if dqcRules:
-        if xuleValidate(val): # true if there was a Xule validation
+        try:
+            if xuleValidate(val): # true if there was a Xule validation
+                dqcRules = {} # block built-in rules
+            else:
+                xuleConstants = loadXuleConstantsForPythonRules(val, dqcRules)
+        except Exception as ex:
             dqcRules = {} # block built-in rules
-        else:
-            xuleConstants = loadXuleConstantsForPythonRules(val, dqcRules)
+            modelXbrl.warning(f"xule.ValidationIncomplete",
+                              _("Validation was unable to complete XULE rules due to an internal error.  This is not considered an error in the filing."),
+                              modelObject=modelXbrl)
+            modelXbrl.debug(
+                "xule:validationException",
+                _("An unexpected exception occurred in XULE\n%(traceback)s"),
+                traceback=traceback.format_exception(*sys.exc_info())
+            )
     for dqcRuleName, dqcRule in dqcRules.items(): # note this is an OrderedDict to preserve rule execution order
         if dqcRuleName == "copyright": # first in JSON OrderedDict, initialize common variables for rule
             if ugtRels:
