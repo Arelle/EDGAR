@@ -55,6 +55,7 @@ _xule_resources_dir_for_json = json.dumps(_xule_resources_dir + os.sep)[1:-1]
 _plugin_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 _rule_set_map_name = os.path.join(_xule_resources_dir, "edgarRulesetMap.json")
 _latest_map_name = 'https://github.com/Arelle/EDGAR/tree/master/validate/resources/xule/edgarRulesetMapOnline.json'
+xule_error_code_pattern = re.compile(r"DQC\.|xule\.")
 
 """Do not change anything below this line."""
 _xule_plugin_info = None
