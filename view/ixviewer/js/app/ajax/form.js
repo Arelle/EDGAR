@@ -18,6 +18,22 @@ var AjaxForm = {
         event.preventDefault();
         if ( xhr['readyState'] === 4 ) {
           if ( xhr['status'] === 200 ) {
+
+            // Check the response headers to ensure the document is intended to be loaded inline.
+            var contentType = xhr.getResponseHeader('Content-Type');
+            var permittedContentTypeExpression = /^(application\/xhtml\+xml|text\/html)(\s*;.*)?$/i;
+            if ( !contentType || !permittedContentTypeExpression.test(contentType) ) {
+              ErrorsMajor.unsafeDocumentContentTypeHeader();
+              document.getElementById('xbrl-form-loading').className += ' d-none';
+              return;
+            }
+            var contentDisposition = xhr.getResponseHeader("content-disposition");
+            var permittedContentDispositionExpression = /^inline(\s*;.*)?$/i;
+            if (contentDisposition && !permittedContentDispositionExpression.test(contentDisposition)) {
+              ErrorsMajor.unsafeDocumentContentDispositionHeader();
+              document.getElementById('xbrl-form-loading').className += ' d-none';
+              return;
+            }
             
             if ( (xhr.getResponseHeader('Content-Length') || xhr.getResponseHeader('Content-Encoding')) ) {
               Errors.checkFileSizeForLimits(xhr.response.length);

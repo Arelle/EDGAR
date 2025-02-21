@@ -321,7 +321,7 @@ export const Sections =
 
                 <!-- header -->
                 <div class="accordion-header px-0 py-0">
-                    <h5 class="mb-0">
+                    <h5 class="mb-0 h5-override">
                         <button 
                             id="${sectionItem.instanceSectionHeaderId}"
                             data-cy="${sectionItem.instanceSectionHeaderId}"
@@ -366,7 +366,7 @@ export const Sections =
         const cardHeaderString =
             `<div id="${sectionItem.menuCatClean}" class="menu-cat px-0 py-0">
                 <div class="menu-cat-header ">
-                    <h6 class="mb-0">
+                    <h6 class="mb-0 h6-override">
                         <button 
                             id="section-header-${sectionItem.menuCatMapped}"
                             class="btn d-flex justify-content-between align-items-center"
@@ -404,6 +404,7 @@ export const Sections =
                 inline-fact-selector='${sectionItem.inlineFactSelector}'
                 fact-file="${sectionItem.fact?.file}"
                 fact-name="${sectionItem.fact?.name}"
+                position="${sectionItem.position}"
                 class="click section-link list-group-item list-group-item-action d-flex align-items-center" 
                 selected-fact="false"
                 tabindex="2"

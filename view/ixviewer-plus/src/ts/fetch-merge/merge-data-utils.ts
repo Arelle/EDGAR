@@ -194,21 +194,33 @@ const mapCategoryName = (input: string, isStandard: boolean): string | null => {
     }
 };
 
-export function fetchText(url: string, init?: RequestInit): Promise<string | never>
-{
-    return fetch(url, init).then((response) =>
-    {
-        if (response.status >= 200 && response.status <= 299)
-            return response.text();
-        else
+export function fetchText(url: string, init?: RequestInit): Promise<string | never> {
+    return fetch(url, init).then((response) => {
+        if (!response.ok) {
             throw new Error(response.status.toString());
+        }
+
+        // Check the response headers to ensure the document is intended to be loaded inline.
+        const contentType = response.headers.get("content-type");
+        if (!contentType) {
+            throw new Error(`Missing Content-Type. URL: ${url}`);
+        }
+        const permittedContentTypeExpression = /^(application\/xhtml\+xml|application\/xml|text\/html|text\/xml)(\s*;.*)?$/i;
+        if (!permittedContentTypeExpression.test(contentType)) {
+            throw new Error(`Invalid Content-Type. URL: ${url}, Content-Type: ${contentType}`);
+        }
+        const contentDisposition = response.headers.get("content-disposition");
+        const permittedContentDispositionExpression = /^inline(\s*;.*)?$/i;
+        if (contentDisposition && !permittedContentDispositionExpression.test(contentDisposition)) {
+            throw new Error(`Invalid Content-Disposition. URL: ${url}, Content-Disposition: ${contentDisposition}`);
+        }
+
+        return response.text();
     });
 }
 
-export function fetchJson<T = any>(url: string, init?: RequestInit): Promise<T | never>
-{
-    return fetch(url, init).then((response) =>
-    {
+export function fetchJson<T = any>(url: string, init?: RequestInit): Promise<T | never> {
+    return fetch(url, init).then((response) => {
         if (response.status >= 200 && response.status <= 299)
             return response.json();
         else
@@ -216,10 +228,8 @@ export function fetchJson<T = any>(url: string, init?: RequestInit): Promise<T |
     });
 }
 
-export function setScaleInfo(scale: string | number | undefined): string | null
-{
-    const scaleOptions: Record<string, string> =
-    {
+export function setScaleInfo(scale: string | number | undefined): string | null {
+    const scaleOptions: Record<string, string> = {
         0: "Zero",
         1: "Tens",
         2: "Hundreds",
