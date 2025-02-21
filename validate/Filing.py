@@ -3883,7 +3883,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                       "{http://www.xbrl.org/dtr/type/2022-03-31}textBlockItemType",
                                       "{http://www.xbrl.org/dtr/type/2024-01-31}textBlockItemType"):
                                 for f in modelXbrl.factsByDatatype(True, qname(n)):
-                                    if f.context is not None and f.context.endDatetime is not None and f.context.startDatetime is not None:
+                                    if f.context is not None and f.context.endDatetime is not None and f.context.startDatetime is not None and not f.qname.namespaceURI.startswith("http://xbrl.sec.gov/ecd/"):
                                         yield f
                         for f in r6facts():
                             durationDays = (f.context.endDatetime - f.context.startDatetime).days
@@ -5464,8 +5464,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     coverDimNames = ("IncomeStatementLocationAxis", )
                                 # Get a list of values for this element, but exclude detailed breakdowns of disclosure for financial instruments **/
                                 # But exclude some member items not to check **/
-                                bindings = factBindings(modelXbrl, (fsConceptName,), coverDimNames=coverDimNames, absentDimNames=scheduleAxisNames, coverUnit=True).values()
-                                for bCvr in bindings: # aligned except covered dimension
+                                bindings = factBindings(modelXbrl, (fsConceptName,), coverDimNames=coverDimNames, absentDimNames=scheduleAxisNames, coverUnit=True).items()
+                                for bHash, bCvr in bindings: # aligned except covered dimension
                                     for b in bCvr.values():
                                         for cvrHash, FS_Concept_Item in b.items():
                                             # Determine if any the extensible list element has been used with a value
@@ -5474,10 +5474,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                             dimNames = {qn.localName for qn in FS_Concept_Item.context.qnameDims.keys()}
                                             if not all(n in dimNames for n in coverDimNames):
                                                 continue # covered dim is required
-                                            if any(len(b3) > 0
-                                                   for b2 in factBindings(modelXbrl, (relatedExtEnumQn.localName,), coverDimNames=coverDimNames, absentDimNames=scheduleAxisNames, coverUnit=True).values()
-                                                   for b2cvr in b2.values()
-                                                   for b3 in b2cvr.values()):
+                                            if any(cvrHash in b2
+                                                   for b2 in factBindings(modelXbrl, (relatedExtEnumQn.localName,), coverDimNames=coverDimNames, absentDimNames=scheduleAxisNames, coverUnit=True).get(bHash,EMPTY_DICT).values()):
                                                 continue # ignore this binding
 
                                             modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
