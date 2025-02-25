@@ -4062,10 +4062,14 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 return ew * rel.weight
                     visited.discard(fromConcept)
                     return None
-
+                incLossExtItmPattern = re.compile(r"(?!.*equitymethod|.*equityincomeloss).*incomeloss", re.I)
                 for id, rule in dqcRule["rules"].items():
                     if id in ("6833", "7488"):
                         incomeNames = set(dqcRule["income-names"])
+                        # add INCOME_LOSS_EXTENSION_ITEMS
+                        for c in modelXbrl.qnameConcepts.values():
+                            if c.qname.namespaceURI not in disclosureSystem.standardTaxonomiesDict and c.isMonetary and c.balance == "credit" and incLossExtItmPattern.match(c.name):
+                                incomeNames.add(c.name)
                         if id == "7488":
                             for c in modelXbrl.qnameConcepts.values():
                                 if c.qname.namespaceURI not in disclosureSystem.standardTaxonomiesDict and c.isMonetary and c.balance == "credit" and "netincome" in c.name.lower():
