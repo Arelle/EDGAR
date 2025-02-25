@@ -4681,7 +4681,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 for dimConcept in modelXbrl.nameConcepts.get(rule["axis"], ()):
                     reportedItems = rule["reported-items"]
                     dependentItems = rule["dependent-items"]
-                    for b in factBindings(modelXbrl, flattenToSet( (reportedItems, dependentItems)), alignDims=(dimConcept.qname,), coverUnit=True, nils=True).values():
+                    for b in factBindings(modelXbrl, flattenToSet( (reportedItems, dependentItems)), alignDims=(dimConcept.qname,), coverPeriod=True, coverUnit=True, nils=True).values():
                         for name in reportedItems:
                             if name in b:
                                 f = b[name]
