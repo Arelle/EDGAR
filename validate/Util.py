@@ -764,11 +764,11 @@ def factBindings(modelXbrl, localNames, nils=False, factFilter=None, noAdditiona
             if cubeRelSet:
                 if not all(cubeRelSet.isRelated(cube, "descendant", dim.member, isDRS=True) for dim in cntx.qnameDims.values()):
                     return
-            if coverPeriod:
+            if alignDims:
+                h = hash( (cntx.periodHash if not coverPeriod else None, frozenset(hash(dim) for qn,dim in cntx.qnameDims.items() if qn in alignDims)) )
+            elif coverPeriod:
                 h = cntx.dimsHash
                 hper = cntx.periodHash
-            elif alignDims:
-                h = hash( (cntx.periodHash, frozenset(hash(dim) for qn,dim in cntx.qnameDims.items() if qn in alignDims)) )
             elif coverDimQnames or coverDimNames:
                 h = hash( (cntx.periodHash, frozenset(dim for qn,dim in cntx.qnameDims.items() if qn not in coverDimQnames and qn.localName not in coverDimNames)) )
                 hCvrDims = hash( frozenset(dim for qn,dim in cntx.qnameDims.items() if qn in coverDimQnames) )
@@ -776,7 +776,7 @@ def factBindings(modelXbrl, localNames, nils=False, factFilter=None, noAdditiona
                 h = cntx.contextDimAwareHash
             binding = bindings[h, f.unit.hash if (f.unit is not None and not coverUnit) else None]
             ln = f.qname.localName
-            if coverPeriod:
+            if coverPeriod and not alignDims:
                 if ln not in binding:
                     binding[ln] = defaultdict(dict)
                 if hper not in binding[ln] or inferredDecimals(f) > inferredDecimals(binding[ln][hper]):

@@ -3977,7 +3977,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                              #d.memberQname not in dqc0015.excludedMembers and
                              #(dqc0015.excludedMemberNamesPattern is None or
                              # not dqc0015.excludedMemberNamesPattern.search(d.memberQname.localName)))
-                             not (d.memberQname and exclude_mem_pattern.search(d.memberQname.localName)) and
+                             not (d.memberQname and (exclude_mem_pattern.search(d.memberQname.localName) or
+                                                     d.memberQname in xuleConstants["EXCLUDE_NON_NEG_MEMBERS"])) and
                              d.dimensionQname not in xuleConstants["EXCLUDE_NON_NEG_AXIS"] and
                              not(any(d.dimensionQname == l[0] and d.memberQname in l[1] for l in xuleConstants["EXCLUDE_NON_NEG_AXIS_MEMBERS"])))
                             for d in f.context.qnameDims.values()))):
@@ -4014,7 +4015,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             elif dqcRuleName == "DQC.US.0036" and hasDocPerEndDateFact:
                 for id, rule in dqcRule["rules"].items():
                     for f in modelXbrl.factsByLocalName.get(rule["name"],()):
-                        if f.context is not None and f.xValid >= VALID and abs((f.xValue + ONE_DAY - f.context.endDatetime).days) > 1: # was 3
+                        if f.context is not None and f.xValid >= VALID and abs((f.xValue - f.context.endDatetime).days) > 4: # one day offset to match behavior of xule
                             modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                               modelObject=f, name=f.qname.localName,
                                               endDate=XmlUtil.dateunionValue(f.context.endDatetime, subtractOneDay=True),
@@ -4061,10 +4062,14 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 return ew * rel.weight
                     visited.discard(fromConcept)
                     return None
-
+                incLossExtItmPattern = re.compile(r"(?!.*equitymethod|.*equityincomeloss).*incomeloss", re.I)
                 for id, rule in dqcRule["rules"].items():
                     if id in ("6833", "7488"):
                         incomeNames = set(dqcRule["income-names"])
+                        # add INCOME_LOSS_EXTENSION_ITEMS
+                        for c in modelXbrl.qnameConcepts.values():
+                            if c.qname.namespaceURI not in disclosureSystem.standardTaxonomiesDict and c.isMonetary and c.balance == "credit" and incLossExtItmPattern.match(c.name):
+                                incomeNames.add(c.name)
                         if id == "7488":
                             for c in modelXbrl.qnameConcepts.values():
                                 if c.qname.namespaceURI not in disclosureSystem.standardTaxonomiesDict and c.isMonetary and c.balance == "credit" and "netincome" in c.name.lower():
@@ -4680,7 +4685,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 for dimConcept in modelXbrl.nameConcepts.get(rule["axis"], ()):
                     reportedItems = rule["reported-items"]
                     dependentItems = rule["dependent-items"]
-                    for b in factBindings(modelXbrl, flattenToSet( (reportedItems, dependentItems)), alignDims=(dimConcept.qname,), coverUnit=True, nils=True).values():
+                    for b in factBindings(modelXbrl, flattenToSet( (reportedItems, dependentItems)), alignDims=(dimConcept.qname,), coverPeriod=True, coverUnit=True, nils=True).values():
                         for name in reportedItems:
                             if name in b:
                                 f = b[name]
@@ -5301,15 +5306,16 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 id, rule = next(iter(dqcRule["rules"].items()))
                 for dimName in rule["collective_dimensions"]:
                     for dimConcept in modelXbrl.nameConcepts.get(dimName, ()):
+                        coverDimQNs = {dimConcept.qname}
                         for qn in xuleConstants["NON_NEG_ITEMS"]:
                             c = modelXbrl.qnameConcepts.get(qn)
                             if c is not None and c.isMonetary:
-                                for b in factBindings(modelXbrl, (c.name,), coverDimQnames=(dimConcept.qname,), coverUnit=True).values():
+                                for b in factBindings(modelXbrl, (c.name,), coverDimQnames=coverDimQNs).values():
                                     boundFacts = b[qn.localName].values()
                                     for defF in boundFacts:
                                         if not defF.context.qnameDims:
                                             for f in boundFacts:
-                                                if f.context.qnameDims and f.xValue > defF.xValue and f.decimals == defF.decimals:
+                                                if coverDimQNs == f.context.qnameDims.keys() and f.xValue > defF.xValue and f.decimals == defF.decimals:
                                                     modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                                         modelObject=(defF,f), defaultValue=defF.xValue,
                                                         name=f.qname, value=f.xValue, contextID=f.contextID, unitID=f.unitID or "(none)",
