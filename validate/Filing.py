@@ -5343,7 +5343,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     for name in rule["names"]:
                         for f in modelXbrl.factsByLocalName.get(name, ()):
                             dimMemQname = f.context.dimMemberQname(dimConcept.qname)
-                            if dimMemQname is None or dimMemQname.localName not in rule["allowed-members"]:
+                            if dimMemQname is not None and dimMemQname.localName not in rule["allowed-members"]:
                                 invalidDimensions = [dimQn.localName for dimQn in f.context.qnameDims if dimQn.localName in rule["invalid-axes"]]
                                 financialInstrumentAxisFlag = any(dimQn.localName == "FinancialInstrumentAxis" for dimQn in f.context.qnameDims)
                                 if invalidDimensions:
