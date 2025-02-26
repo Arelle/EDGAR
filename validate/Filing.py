@@ -5092,8 +5092,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         (f.context.endDatetime - f.context.startDatetime).days <= (l.context.endDatetime - l.context.startDatetime).days):
                                         modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                             modelObject=(f,l),
-                                            fact1=f.qname, value=f.xValue, fact1Start=f.context.startDatetime, fact1End=f.context.endDatetime, fact1Days=(f.context.endDatetime - f.context.startDatetime).days,
-                                            large=l.qname, largeValue=l.xValue, largeStart=l.context.startDatetime, largeEnd=l.context.endDatetime, largeDays=(l.context.endDatetime - f.context.startDatetime).days,
+                                            fact1=f.qname, value=f.xValue, fact1Start=XmlUtil.dateunionValue(f.context.startDatetime), fact1End=XmlUtil.dateunionValue(f.context.endDatetime, subtractOneDay=True), fact1Days=(f.context.endDatetime - f.context.startDatetime).days,
+                                            large=l.qname, largeValue=l.xValue, largeStart=XmlUtil.dateunionValue(l.context.startDatetime), largeEnd=XmlUtil.dateunionValue(l.context.endDatetime, subtractOneDay=True), largeDays=(l.context.endDatetime - f.context.startDatetime).days,
                                             fact1Decimals=f.decimals, largeDecimals=l.decimals,
                                             contextID=f.contextID, unitID=f.unitID or "(none)",
                                             edgarCode=edgarCode, ruleElementId=id)
