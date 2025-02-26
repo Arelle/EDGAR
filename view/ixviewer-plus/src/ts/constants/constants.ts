@@ -16,7 +16,7 @@ type MetaDocument = any;
 
 export const Constants =
 {
-	version: "24.4",
+	version: "25.0.1.h4",
 	featureSet: "plus",
 
 	appWindow: typeof window !== 'undefined' 
