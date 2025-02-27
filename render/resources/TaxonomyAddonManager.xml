@@ -31,6 +31,12 @@
       </ReferenceFiles>
     </TaxonomyAddon>
     <TaxonomyAddon>
+      <Taxonomy>cef-2025.xsd</Taxonomy>
+      <ReferenceFiles>
+        <string>cef-2025_ref.xsd</string>
+      </ReferenceFiles>
+    </TaxonomyAddon>
+    <TaxonomyAddon>
       <Taxonomy>country-2009-01-31.xsd</Taxonomy>
       <DefinitionFiles>
         <string>country-doc-2009-01-31.xml</string>
