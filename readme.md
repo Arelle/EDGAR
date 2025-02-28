@@ -19,5 +19,4 @@ The DQC rules which FASB has selected (“DQCRT”) to run in 2025 are:
 0001 0004 0005 0006 0008 0009 0013 0014 0015 0033 0036 0041 0043 0044 0045 0046 0047 0048 0051 0052 0053 0054 0055 0057 0060 0061 0062_2017 0065 0068 0069 0070 0071 0072 0073 0076 0077 0078 0079 0084 0085 0089 0090 0091 0095 0098 0099 0108 0109 0112 0118 0119 0123 0126 0128 0133 0134 0135 0136 0137 0141
 
 ## IFRS without US-GAAP
-If a filing has IFRS without us-gaap, for the moment it uses the old signwarnings and axiswarnings resource files, we’ve asked about using the DQC IFRS rules instead for 2025 (25.2 June release), and hope to hear back on this in the coming weeks.
-
+If a filing has IFRS without us-gaap, for the moment it continues to use the old signwarnings and axiswarnings resource files.
