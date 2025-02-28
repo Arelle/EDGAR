@@ -5051,6 +5051,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                               edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0108" and deiDocumentType not in dqcRule["report-type-exclusions"]:
                 for id, rule in dqcRule["rules"].items():
+                    tolerance = rule["tolerance"]
                     names = []
                     if id == "9564":
                         excludeNamePattern = re.compile("average|maximum|minimum", re.I)
@@ -5082,21 +5083,31 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                                                          d.dimensionQname in excludeNonNegAxes or
                                                                          d.memberQname in excludeNonNegAxisMbrs.get(d.dimensionQname,()))))
                                                  for d in f.context.qnameDims.values())]
+                            elif id == "10095":
+                                facts = [f for f in facts
+                                         if not f.context.qnameDims]
                             for f in facts:
                                 for l in facts:
                                     if (f != l and
                                         f.context.startDatetime >= l.context.startDatetime and
                                         f.context.endDatetime <= l.context.endDatetime and
-                                        abs(f.xValue) > abs(l.xValue) and
                                         f.xValue > 0 and
+                                        f.xValue > l.xValue and
                                         (f.context.endDatetime - f.context.startDatetime).days <= (l.context.endDatetime - l.context.startDatetime).days):
-                                        modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
-                                            modelObject=(f,l),
-                                            fact1=f.qname, value=f.xValue, fact1Start=XmlUtil.dateunionValue(f.context.startDatetime), fact1End=XmlUtil.dateunionValue(f.context.endDatetime, subtractOneDay=True), fact1Days=(f.context.endDatetime - f.context.startDatetime).days,
-                                            large=l.qname, largeValue=l.xValue, largeStart=XmlUtil.dateunionValue(l.context.startDatetime), largeEnd=XmlUtil.dateunionValue(l.context.endDatetime, subtractOneDay=True), largeDays=(l.context.endDatetime - f.context.startDatetime).days,
-                                            fact1Decimals=f.decimals, largeDecimals=l.decimals,
-                                            contextID=f.contextID, unitID=f.unitID or "(none)",
-                                            edgarCode=edgarCode, ruleElementId=id)
+                                        minDec = leastDecimals( (f, l) )
+                                        difference = abs(f.xValue) - abs(l.xValue)
+                                        if isinf(minDec):
+                                            maxDiff = 0
+                                        else:
+                                            maxDiff = pow(10, -minDec) * tolerance
+                                        if difference > maxDiff:
+                                            modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
+                                                modelObject=(f,l),
+                                                fact1=f.qname, value=f.xValue, fact1Start=XmlUtil.dateunionValue(f.context.startDatetime), fact1End=XmlUtil.dateunionValue(f.context.endDatetime, subtractOneDay=True), fact1Days=(f.context.endDatetime - f.context.startDatetime).days,
+                                                large=l.qname, largeValue=l.xValue, largeStart=XmlUtil.dateunionValue(l.context.startDatetime), largeEnd=XmlUtil.dateunionValue(l.context.endDatetime, subtractOneDay=True), largeDays=(l.context.endDatetime - f.context.startDatetime).days,
+                                                fact1Decimals=f.decimals, largeDecimals=l.decimals,
+                                                contextID=f.contextID, unitID=f.unitID or "(none)",
+                                                edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0109":
                 hasNondimValue = False
                 for id, rule in dqcRule["rules"].items():
@@ -5375,7 +5386,6 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 if stmtConcept.isMonetary:
                                     fsMonetaryConcepts.add(stmtConcept)
                 if deiDocumentType in dqcRule["document-types"]:
-                    # 0141 has only one id, rule
                     for id, rule in dqcRule["rules"].items():
                         if id == "9835":
                             fsConceptNames = set()
