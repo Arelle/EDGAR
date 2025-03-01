@@ -2189,6 +2189,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0098/DQC_0098.md"
         ],
+		"tolerance": 2,
 		"year-introduced": 2024,
         "rules": {
         	"9531": {

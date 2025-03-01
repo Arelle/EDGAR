@@ -4947,6 +4947,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         edgarCode=edgarCode, ruleElementId=id)
 
             elif dqcRuleName == "DQC.US.0098":
+                tolerance = dqcRule["tolerance"]
                 for id, rule in dqcRule["rules"].items():
                     for binding in factBindings(modelXbrl,
                                                 flattenSequence( (rule["name"], rule["name2"], rule.get("name3",()), rule.get("exclude-name", ())) ),
@@ -4961,7 +4962,13 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     for fOpeningBal3 in binding.get(rule.get("name3",None),{}).values():
                                         if fOpeningBal3.context.instantDatetime == fValRecognized.context.startDatetime:
                                             openingBalanceOfValueRecognized += fOpeningBal3.xValue
-                                    if fValRecognized.xValue > openingBalanceOfValueRecognized + decimal.Decimal(0.01):
+                                    minDec = leastDecimals( (fValRecognized, fOpeningBal) )
+                                    difference = abs(fValRecognized.xValue) - abs(openingBalanceOfValueRecognized)
+                                    if isinf(minDec):
+                                        maxDiff = 0
+                                    else:
+                                        maxDiff = pow(10, -minDec) * tolerance
+                                    if fValRecognized.xValue > openingBalanceOfValueRecognized and difference > maxDiff:
                                         modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
                                             modelObject=(fValRecognized,fOpeningBal),
                                             name=fValRecognized.qname, value=fValRecognized.xValue, startDate=fValRecognized.context.startDatetime,
