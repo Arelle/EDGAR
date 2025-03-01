@@ -4632,17 +4632,24 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 continue
                             domDescendants = getDescendants((XbrlConst.dimensionDomain, XbrlConst.domainMember),domConcept, linkroleUri)
                             if len(domDescendants) == 1:
-                                for boundFacts in factBindings(modelXbrl, priItemNames, coverDimQnames=(dimConcept.qname,)).values():
-                                    for lnFacts in boundFacts.values():
+                                lnPerBindings = {} # {ln: {hPer: facts}}
+                                for hDim, dimBinding in factBindings(modelXbrl, priItemNames, coverDimQnames=(dimConcept.qname,), coverPeriod=True).items():
+                                    for ln, perBinding in dimBinding.items():
+                                        for hPer, f in perBinding.items():
+                                            if ln not in lnPerBindings: lnPerBindings[ln] = {}
+                                            if hPer not in lnPerBindings[ln]: lnPerBindings[ln][hPer] = []
+                                            lnPerBindings[ln][hPer].append(f)
+                                for perBindings in lnPerBindings.values():
+                                    for perFacts in perBindings.values():
                                         factsWithDim = set()
                                         factsWithoutDim = set()
-                                        for f in lnFacts.values():
+                                        for f in perFacts:
                                             if f.context is not None:
                                                 if dimConcept.qname in f.context.qnameDims and f.context.qnameDims[dimConcept.qname].member in domDescendants:
                                                     factsWithDim.add(f)
                                                 else:
                                                     factsWithoutDim.add(f)
-                                        if len(factsWithDim) == 1 and len(factsWithoutDim) == 0:
+                                        if len(factsWithDim) == 1 and len(factsWithoutDim) in (0, 1):
                                             f = factsWithDim.pop()
                                             modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                                 modelObject=f, name=f.qname,value=f.xValue, role=linkroleUri, table=cubeRoot.qname,
@@ -4836,8 +4843,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                                               incorrectConcept=name, linkrole=linkroleUri,
                                                               modelObject=incorrectConcept,edgarCode=edgarCode, ruleElementId=id)
                     elif rule["network"] == "calc must have parent":
-                        for f in modelXbrl.factsByLocalName.get(rule["name"],()):
-                            if not calcRelSet.toModelObject(f.concept):
+                        for f in modelXbrl.factsByLocalName.get(rule["name"],()): # only non-dimensioned facts
+                            if not f.context.qnameDims and not calcRelSet.toModelObject(f.concept):
                                 modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
                                     modelObject=f, name=f.concept.name, value=f.xValue,
                                     contextID=f.context.id, unitID=f.unit.id if f.unit is not None else "(none)",
@@ -5354,7 +5361,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     for name in rule["names"]:
                         for f in modelXbrl.factsByLocalName.get(name, ()):
                             dimMemQname = f.context.dimMemberQname(dimConcept.qname)
-                            if dimMemQname is not None and dimMemQname.localName not in rule["allowed-members"]:
+                            if dimConcept.qname in f.context.qnameDims and dimMemQname is not None and dimMemQname.localName not in rule["allowed-members"]:
                                 invalidDimensions = [dimQn.localName for dimQn in f.context.qnameDims if dimQn.localName in rule["invalid-axes"]]
                                 financialInstrumentAxisFlag = any(dimQn.localName == "FinancialInstrumentAxis" for dimQn in f.context.qnameDims)
                                 if invalidDimensions:
