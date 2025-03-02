@@ -4639,7 +4639,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         factsWithoutDim = set()
                                         for f in dimBindings.values(): #perFacts:
                                             if f.context is not None:
-                                                if all(axis in cubeAxes for axis in f.context.qnameDims.keys()): # fact is in statement cube
+                                                if not any(axis not in cubeAxes for axis in f.context.qnameDims.keys()): # fact is in statement cube
                                                     if dimConcept.qname in f.context.qnameDims:
                                                         if f.context.qnameDims[dimConcept.qname].member in domDescendants:
                                                             factsWithDim.add(f) # fact is in the statement cube
