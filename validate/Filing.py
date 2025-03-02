@@ -4631,25 +4631,21 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     for priItemConcept in priItemConcepts)):
                                 continue
                             domDescendants = getDescendants((XbrlConst.dimensionDomain, XbrlConst.domainMember),domConcept, linkroleUri)
+                            cubeAxes = set(axis.qname for axis in getDescendants(XbrlConst.hypercubeDimension, cube, linkroleUri))
                             if len(domDescendants) == 1:
-                                lnPerBindings = {} # {ln: {hPer: facts}}
-                                for hDim, dimBinding in factBindings(modelXbrl, priItemNames, coverDimQnames=(dimConcept.qname,), coverPeriod=True).items():
-                                    for ln, perBinding in dimBinding.items():
-                                        for hPer, f in perBinding.items():
-                                            if ln not in lnPerBindings: lnPerBindings[ln] = {}
-                                            if hPer not in lnPerBindings[ln]: lnPerBindings[ln][hPer] = []
-                                            lnPerBindings[ln][hPer].append(f)
-                                for perBindings in lnPerBindings.values():
-                                    for perFacts in perBindings.values():
+                                for bindings in factBindings(modelXbrl, priItemNames, coverDimQnames=(dimConcept.qname,)).values():
+                                    for ln, dimBindings in bindings.items():
                                         factsWithDim = set()
                                         factsWithoutDim = set()
-                                        for f in perFacts:
+                                        for f in dimBindings.values(): #perFacts:
                                             if f.context is not None:
-                                                if dimConcept.qname in f.context.qnameDims and f.context.qnameDims[dimConcept.qname].member in domDescendants:
-                                                    factsWithDim.add(f)
-                                                else:
-                                                    factsWithoutDim.add(f)
-                                        if len(factsWithDim) == 1 and len(factsWithoutDim) in (0, 1):
+                                                if all(axis in cubeAxes for axis in f.context.qnameDims.keys()): # fact is in statement cube
+                                                    if dimConcept.qname in f.context.qnameDims:
+                                                        if f.context.qnameDims[dimConcept.qname].member in domDescendants:
+                                                            factsWithDim.add(f) # fact is in the statement cube
+                                                    else:
+                                                        factsWithoutDim.add(f)
+                                        if len(factsWithDim) == 1 and len(factsWithoutDim) == 0:
                                             f = factsWithDim.pop()
                                             modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                                 modelObject=f, name=f.qname,value=f.xValue, role=linkroleUri, table=cubeRoot.qname,
