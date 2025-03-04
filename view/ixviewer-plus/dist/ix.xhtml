@@ -10,7 +10,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="https://www.sec.gov/favicon.ico" />
     <title>Inline Viewer</title>
-<link href="/ixviewer-plus/styles.16860cc9984e4c4f40bc.min.css" rel="stylesheet"/></head>
+<link href="/ixviewer-plus/styles.d9dbc507553e1acb50ef.min.css" rel="stylesheet"/></head>
 
 <body class="overflow-hidden">
     <noscript>
@@ -85,61 +85,63 @@
                         <form id="global-search-form" data-test="global-search-form"
                             class="input-group disabled" novalidate="true">
                             <div class="input-group">
-                                <button id="global-search-options"
-                                    data-name="global-search-options"
-                                    class="dropdown btn btn-outline-light disabled nav-search-btn" type="button"
-                                    data-bs-toggle="dropdown" tabindex="3">
-                                    <i class="nav-loading fas fa-cog" title="Additional Search Options">
-                                        <span class="sr-only sr-only-focusable">Additional Search Options</span>
-                                    </i>
-                                </button>
-                                <div class="dropdown-menu px-2" style="top: 37px">
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="1" checked="true"
-                                                tabindex="3" />
-                                            <span>Include Fact Name</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="2" checked="true"
-                                                tabindex="3" />
-                                            <span>Include Fact Content</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="3" checked="true"
-                                                tabindex="3" />
-                                            <span>Include Labels</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="4" tabindex="3" />
-                                            <span>Include Definitions</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="5" tabindex="3" />
-                                            <span>Include Dimensions</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="6" tabindex="3" />
-                                            <span>Include References</span>
-                                        </label>
+                                <div class="dropdown">
+                                    <button id="global-search-options"
+                                        data-name="global-search-options"
+                                        class="dropdown-toggle btn btn-outline-light disabled nav-search-btn" type="button"
+                                        aria-expanded="false"
+                                        data-bs-toggle="dropdown" tabindex="3"
+                                    >
+                                        <i class="nav-loading fas fa-cog" title="Additional Search Options">
+                                            <span class="sr-only sr-only-focusable">Additional Search Options</span>
+                                        </i>
+                                    </button>
+                                    <div id="searchOptionsContainer" class="dropdown-menu px-2" style="top: 37px; width: 176px">
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0 dropdown-option">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="1" checked="true" tabindex="3" />
+                                                <span>Include Fact Name</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="2" checked="true" tabindex="3" />
+                                                <span>Include Fact Content</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="3" checked="true" tabindex="3" />
+                                                <span>Include Labels</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="4" tabindex="3" />
+                                                <span>Include Definitions</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="5" tabindex="3" />
+                                                <span>Include Dimensions</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="6" tabindex="3" />
+                                                <span>Include References</span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
+                                
 
                                 <input type="text" class="form-control disabled focus-inner" id="global-search"
                                     data-test="global-search" placeholder="Search Facts" disabled="true"
@@ -264,16 +266,21 @@
                                 <form class="mb-0" data-test="more-filters-form">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Period" id="more-filters-menu-periods" data-bs-target="#user-filters-periods"
+                                            <button
+                                                id="more-filters-menu-periods"
+                                                data-test="Period"
+                                                data-bs-target="#user-filters-periods"
                                                 data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
+                                                tabindex="9"
+                                                type="button"
+                                                class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                            >
                                                 <span>Periods</span>
                                                 <span data-test="Period-count" id="filters-periods-count"
                                                     class="badge text-bg-secondary">
                                                     <i class="fa fa-regular fa-clock"></i>
                                                 </span>
-                                            </a>
+                                            </button>
                                         </div>
                                         <div id="user-filters-periods" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
@@ -285,16 +292,21 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Measures" id="more-filters-menu-measures" data-bs-target="#user-filters-measures"
+                                            <button
+                                                id="more-filters-menu-measures"
+                                                data-test="Measures"
+                                                data-bs-target="#user-filters-measures"
                                                 data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
+                                                tabindex="9"
+                                                type="button"
+                                                class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                            >
                                                 <span>Measures</span>
                                                 <span data-test="Measures-count" id="filters-measures-count"
                                                     class="badge text-bg-secondary">
                                                     <i class="fa fa-regular fa-clock"></i>
                                                 </span>
-                                            </a>
+                                            </button>
                                         </div>
                                         <div id="user-filters-measures" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
@@ -303,53 +315,137 @@
                                         </div>
                                     </div>
                                 </form>
-                                <form class="mb-0">
-                                    <div class="mx-1">
-                                        <div class=" px-0 py-0">
-                                            <a data-test="Axis" id="more-filters-menu-axis" data-bs-target="#user-filters-axis"
-                                                data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
-                                                <span>Axis</span>
-                                                <span data-test="Axis-count" id="filters-axis-count"
-                                                    class="badge text-bg-secondary">
-                                                    <i class="fa fa-regular fa-clock"></i>
-                                                </span>
-                                            </a>
-                                        </div>
-                                        <div id="user-filters-axis" class="collapse overflow-y-auto"
-                                            data-parent="#more-filters-accordion">
-                                            <div class="list-group list-group-flush d-none">
-                                                <div
-                                                    class="d-flex justify-content-between align-items-center w-100 px-1">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label mb-0">
-                                                            <input id="axes-all-0"
-                                                                title="Select/Deselect all options below."
-                                                                class="form-check-input" type="checkbox" tabindex="9" />
-                                                            <a href="#axes-filters-accordion-0"
-                                                                data-bs-toggle="collapse" tabindex="9">Explicit</a>
-                                                        </label>
-                                                    </div>
-                                                    <span class="badge text-bg-secondary"
-                                                        id="axis-explicit-count"></span>
+                                <form class="mb-0 mx-1">
+                                    <div class="px-0 py-0">
+                                        <button
+                                            id="more-filters-menu-axis"
+                                            data-test="Axis"
+                                            data-bs-target="#user-filters-axis"
+                                            data-bs-toggle="collapse"
+                                            tabindex="9"
+                                            type="button"
+                                            class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                        >
+                                            <span>Axis</span>
+                                            <span data-test="Axis-count" id="filters-axis-count" class="badge text-bg-secondary">
+                                                <i class="fa fa-regular fa-clock"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div id="user-filters-axis" class="collapse overflow-y-auto" data-parent="#more-filters-accordion">
+                                        <div class="list-group list-group-flush d-none">
+                                            <div class="d-flex justify-content-between align-items-center w-100 px-1">
+                                                <div class="form-check">
+                                                    <label for="axes-all-0" class="form-check-label mb-0">
+                                                        <input id="axes-all-0" title="Select/Deselect all options below." class="form-check-input" type="checkbox" tabindex="9"/>
+                                                        <button 
+                                                            data-bs-target="#axes-filters-accordion-0"
+                                                            data-bs-toggle="collapse"
+                                                            tabindex="9"
+                                                            type="button"
+                                                            class="click btn btn-link ix-btn-link btn-sm p-0 no-border collapsed"
+                                                        >
+                                                            Explicit
+                                                        </button>
+                                                    </label>
                                                 </div>
+                                                <span class="badge text-bg-secondary" id="axis-explicit-count"></span>
                                             </div>
-                                            <!-- Below is populated dynamically VIA JS -->
-                                            <div class="list-group list-group-flush d-none">
-                                                <div
-                                                    class="d-flex justify-content-between align-items-center w-100 px-1">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label mb-0">
-                                                            <input id="axes-all-1"
-                                                                title="Select/Deselect all options below."
-                                                                class="form-check-input" type="checkbox" tabindex="9" />
-                                                            <a href="#axes-filters-accordion-1"
-                                                                data-bs-toggle="collapse" tabindex="9">Typed</a>
-                                                        </label>
-                                                    </div>
-                                                    <span class="badge text-bg-secondary" id="axis-typed-count"></span>
+                                        </div>
+                                        <!-- Below is populated dynamically VIA JS -->
+                                        <div class="list-group list-group-flush d-none">
+                                            <div class="d-flex justify-content-between align-items-center w-100 px-1">
+                                                <div class="form-check">
+                                                    <label class="form-check-label mb-0">
+                                                        <input id="axes-all-1"
+                                                            title="Select/Deselect all options below."
+                                                            class="form-check-input" type="checkbox" tabindex="9" />
+                                                        <button
+                                                            id="axes-typed"
+                                                            data-test="axes-typed"
+                                                            data-bs-target="#axes-filters-accordion-1"
+                                                            data-bs-toggle="collapse"
+                                                            tabindex="9"
+                                                            type="button"
+                                                            class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                                        >
+                                                            Typed
+                                                        </button>
+                                                    </label>
                                                 </div>
+                                                <span class="badge text-bg-secondary" id="axis-typed-count"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <form class="mb-0 mx-1">
+                                    <div class="px-0 py-0">
+                                        <button
+                                            id="more-filters-menu-members"
+                                            data-test="Members"
+                                            data-bs-target="#user-filters-members"
+                                            data-bs-toggle="collapse"
+                                            tabindex="9"
+                                            type="button"
+                                            class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                        >
+                                            <span>Members</span>
+                                            <span data-test="Members-count" id="filters-members-count"
+                                                class="badge text-bg-secondary">
+                                                <i class="fa fa-regular fa-clock"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div id="user-filters-members" class="collapse overflow-y-auto"
+                                        data-parent="#more-filters-accordion">
+                                        <div class="list-group list-group-flush d-none">
+                                            <div
+                                                class="d-flex justify-content-between align-items-center w-100 px-1">
+                                                <div class="form-check">
+                                                    <label class="form-check-label mb-0">
+                                                        <input id="members-all-0"
+                                                            title="Select/Deselect all options below."
+                                                            class="form-check-input" type="checkbox" tabindex="9"
+                                                        />
+                                                        <button 
+                                                            data-bs-target="#members-filters-accordion-0"
+                                                            data-bs-toggle="collapse"
+                                                            tabindex="9"
+                                                            type="button"
+                                                            class="click btn btn-link ix-btn-link btn-sm p-0 no-border collapsed"
+                                                        >
+                                                            Explicit
+                                                        </button>
+                                                    </label>
+                                                </div>
+                                                <span class="badge text-bg-secondary"
+                                                    id="members-explicit-count"></span>
+                                            </div>
+                                        </div>
+                                        <!-- Below is populated dynamically VIA JS -->
+                                        <div class="list-group list-group-flush d-none">
+                                            <div
+                                                class="d-flex justify-content-between align-items-center w-100 px-1">
+                                                <div class="form-check">
+                                                    <label class="form-check-label mb-0">
+                                                        <input id="members-all-1"
+                                                            title="Select/Deselect all options below."
+                                                            class="form-check-input" type="checkbox" tabindex="9" />
+                                                        <button
+                                                            id="members-typed"
+                                                            data-test="members-typed"
+                                                            data-bs-target="#members-filters-accordion-1"
+                                                            data-bs-toggle="collapse"
+                                                            tabindex="9"
+                                                            type="button"
+                                                            class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                                        >
+                                                            Typed
+                                                        </button>
+                                                    </label>
+                                                </div>
+                                                <span class="badge text-bg-secondary"
+                                                    id="members-typed-count"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -357,68 +453,21 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Members" id="more-filters-menu-members" data-bs-target="#user-filters-members"
+                                            <button
+                                                id="more-filters-menu-scale"
+                                                data-test="Scale"
+                                                data-bs-target="#user-filters-scales"
                                                 data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
-                                                <span>Members</span>
-                                                <span data-test="Members-count" id="filters-members-count"
-                                                    class="badge text-bg-secondary">
-                                                    <i class="fa fa-regular fa-clock"></i>
-                                                </span>
-                                            </a>
-                                        </div>
-                                        <div id="user-filters-members" class="collapse overflow-y-auto"
-                                            data-parent="#more-filters-accordion">
-                                            <div class="list-group list-group-flush d-none">
-                                                <div
-                                                    class="d-flex justify-content-between align-items-center w-100 px-1">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label mb-0">
-                                                            <input id="members-all-0"
-                                                                title="Select/Deselect all options below."
-                                                                class="form-check-input" type="checkbox" tabindex="9" />
-                                                            <a href="#members-filters-accordion-0"
-                                                                data-bs-toggle="collapse" tabindex="9">Explicit</a>
-                                                        </label>
-                                                    </div>
-                                                    <span class="badge text-bg-secondary"
-                                                        id="members-explicit-count"></span>
-                                                </div>
-                                            </div>
-                                            <!-- Below is populated dynamically VIA JS -->
-                                            <div class="list-group list-group-flush d-none">
-                                                <div
-                                                    class="d-flex justify-content-between align-items-center w-100 px-1">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label mb-0">
-                                                            <input id="members-all-1"
-                                                                title="Select/Deselect all options below."
-                                                                class="form-check-input" type="checkbox" tabindex="9" />
-                                                            <a href="#members-filters-accordion-1"
-                                                                data-bs-toggle="collapse" tabindex="9">Typed</a>
-                                                        </label>
-                                                    </div>
-                                                    <span class="badge text-bg-secondary"
-                                                        id="members-typed-count"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                                <form class="mb-0">
-                                    <div class="mx-1">
-                                        <div class="px-0 py-0">
-                                            <a data-test="Scale" id="more-filters-menu-scale" data-bs-target="#user-filters-scales"
-                                                data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
+                                                tabindex="9"
+                                                type="button"
+                                                class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                            >
                                                 <span>Scale</span>
                                                 <span data-test="Scale-count" id="filters-scales-count"
                                                     class="badge text-bg-secondary">
                                                     <i class="fa fa-regular fa-clock"></i>
                                                 </span>
-                                            </a>
+                                            </button>
                                         </div>
                                         <div id="user-filters-scales" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
@@ -430,14 +479,18 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Balance" id="more-filters-menu-balance" data-bs-target="#user-filters-balances"
+                                            <button
+                                                id="more-filters-menu-balance"
+                                                data-test="Balance"
+                                                data-bs-target="#user-filters-balances"
                                                 data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
+                                                tabindex="9"
+                                                type="button"
+                                                class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                            >
                                                 <span>Balance</span>
-                                                <span data-test="Balance-count" id="filters-balances-count"
-                                                    class="badge text-bg-secondary">2</span>
-                                            </a>
+                                                <span data-test="Balance-count" id="filters-balances-count" class="badge text-bg-secondary">2</span>
+                                            </button>
                                         </div>
                                         <div id="user-filters-balances" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
@@ -1452,6 +1505,6 @@
             </button>
         </div>
     </div>
-<script defer="defer" src="/ixviewer-plus/ix-viewer.bundle.28ff9e0ef1151d605a9a.min.js"></script></body>
+<script defer="defer" src="/ixviewer-plus/ix-viewer.bundle.4fcfcd90c8aa343fb6ae.min.js"></script></body>
 
 </html>

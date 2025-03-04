@@ -8,9 +8,9 @@ import { Errors } from "./errors";
 export const ErrorsMinor = {
 	unknownError: () => {
 		const content = 
-						`<div class="alert-height alert alert-warning show mb-0">
-							An Error has occured within the Inline XBRL Viewer.
-						</div>`;
+			`<div class="alert-height alert alert-warning show mb-0">
+				An Error has occured within the Inline XBRL Viewer.
+			</div>`;
 		
 		const parser = new DOMParser();
 		const labelDoc = parser.parseFromString(content,'text/html');
@@ -27,9 +27,9 @@ export const ErrorsMinor = {
 		console.log('factNotFound')
 
 		const content = 
-		`<div class="alert-height alert alert-warning show mb-0">
-			Inline XBRL cannot locate the requested fact.
-		</div>`;
+			`<div class="alert-height alert alert-warning show mb-0">
+				Inline XBRL cannot locate the requested fact.
+			</div>`;
 
 		const parser = new DOMParser();
 		const labelDoc = parser.parseFromString(content,'text/html');
@@ -46,9 +46,9 @@ export const ErrorsMinor = {
 	factNotInSearch: () => {
 		console.log('factNotInSearch')
 		const content = 
-		`<div class="alert-height alert alert-warning show mb-0">
-			Fact not found in current search and filter results.
-		</div>`;
+			`<div class="alert-height alert alert-warning show mb-0">
+				Fact not found in current search and filter results.
+			</div>`;
 
 		const parser = new DOMParser();
 		const labelDoc = parser.parseFromString(content,'text/html');
@@ -64,9 +64,9 @@ export const ErrorsMinor = {
 
 	message: (input: string) => {
 		const content = 
-		`<div class="alert-height alert alert-warning show mb-0">
-			${input}
-		</div>`;
+			`<div class="alert-height alert alert-warning show mb-0">
+				${input}
+			</div>`;
 
 		const parser = new DOMParser();
 		const labelDoc = parser.parseFromString(content,'text/html');

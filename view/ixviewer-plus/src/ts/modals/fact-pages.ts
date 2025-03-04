@@ -90,104 +90,104 @@ export const FactPages = {
 	 * @returns {any} html table containing all fact "attributes"
 	 */
 	firstPage: (factInfo: SingleFact, idToFill: string) => {
-		const possibleLabels = [
+		const possibleAspects = [
 			{
-				label: "Tag",
+				name: "Tag",
 				value: factInfo.name
 			},
 			{
-				label: "Fact",
+				name: "Fact",
 				value: factInfo.value,
 				html: factInfo.isHTML,
 				isAmountsOnly: factInfo.isAmountsOnly
 			},
 			{
 				// TODO
-				label: "Fact Language",
+				name: "Fact Language",
 				value: factInfo['xml:lang']
 			},
 			{
-				label: "Period",
+				name: "Period",
 				value: factInfo.period
 			},
 			{
-				label: "Axis",
+				name: "Axis",
 				value: getSegmentAttr(factInfo.segment || [], 'axis'),
 				html: true
 			},
 			{
-				label: "Member",
+				name: "Member",
 				value: getSegmentAttr(factInfo.segment || [], "dimension"),
 				html: true
 			},
 			{
-				label: "Typed Member",
+				name: "Typed Member",
 				value: getMembersByType(factInfo.segment || [], 'implicit'),
 				html: true 
 			},
 			{
-				label: "Explicit Member",
+				name: "Explicit Member",
 				value: getMembersByType(factInfo.segment || [], 'explicit'),
 				html: true
 			},
 			{
-				label: "Measure",
+				name: "Measure",
 				value: factInfo.measure
 			},
 			{
-				label: "Scale",
+				name: "Scale",
 				value: factInfo.scale
 			},
 			{
-				label: "Decimals",
+				name: "Decimals",
 				value: factInfo.decimals
 			},
 			{
-				label: "Balance",
+				name: "Balance",
 				value: factInfo.balance
 			},
 			{
-				label: "Sign",
+				name: "Sign",
 				value: factInfo.isAmountsOnly ? (factInfo.isNegativeOnly ? "Negative" : "Positive") : null
 			},
 			{
-				label: "Type",
+				name: "Type",
 				value: factInfo.xbrltype
 			},
 			{
-				label: "Format",
+				name: "Format",
 				value: factInfo.format
 			},
 			{
-				label: "Footnote",
+				name: "Footnote",
 				value: factInfo.footnote
 			}
 		];
 
 		const elementsToReturn = document.createElement("tbody");
 
-		possibleLabels.forEach((label) => {
+		possibleAspects.forEach((aspect) => {
 			const debugXmlParsing = false;
 
-			if (label["value"]) {
+			if (aspect["value"]) {
 				const trElement = document.createElement("tr");
 				const thElement = document.createElement("th");
-				thElement.setAttribute("class", `${label["label"] === 'Fact' ? 'fact-collapse' : ''}`);
+				thElement.setAttribute("class", `${aspect["name"] === 'Fact' ? 'fact-collapse' : ''}`);
 
-				const thContent = document.createTextNode(label["label"]);
+				const thContent = document.createTextNode(aspect["name"]);
 				thElement.appendChild(thContent);
 
 				const tdElement = document.createElement("td");
 				const tdContentsDiv = document.createElement("div");
-				tdContentsDiv.classList.add(label["label"] === 'Tag' ? "break-all" : "break-word");
-				tdContentsDiv.setAttribute('data-cy', `${label["label"]}-value`);
+				tdContentsDiv.classList.add(aspect["name"] === 'Tag' ? "break-all" : "break-word");
+				tdContentsDiv.setAttribute('data-cy', `${aspect["name"]}-value`);
 
 				const useExperimentalFootnoteRenderer = false; 
 
 				// footnotes
-				if (useExperimentalFootnoteRenderer && label["label"] == "Footnote") {
+				if (useExperimentalFootnoteRenderer && aspect["name"] == "Footnote") {
 					const parser = new DOMParser();
-					const xmlDoc = parser.parseFromString(label.value, 'application/xml');
+					const xmlDoc = parser.parseFromString(aspect.value, 'application/xml');
 
 					// Error: Namespace prefix xlink for label on footnote is not defined
 					if (xmlDoc.nodeType === 9) { // document type
@@ -206,39 +206,33 @@ export const FactPages = {
 					}
 					// divElement.append(xmlDom.querySelector('body') as HTMLElement);
 					tdElement.appendChild(tdContentsDiv);
-				}
 
-				else if (label["html"]) {
+				} else if (aspect["html"]) {
 					tdContentsDiv.classList.add('fact-value-modal');
-					//divElement.setAttribute('id', 'fact-value-modal');
-					//divElement.classList.add("h-100");
 					tdContentsDiv.classList.add("position-relative");
-					//divElement.classList.add("overflow-auto");
 					const parser = new DOMParser();
 
 					// Fact values may contain unsafe HTML, so we'll sanitize it before adding to the DOM
-					// const htmlDoc = parser.parseFromString(current.value, 'text/html');
-					const sanitizedHtml = ConstantsFunctions.sanitizeHtml(label.value);
+					const sanitizedHtml = ConstantsFunctions.sanitizeHtml(aspect.value);
 					const htmlDoc = parser.parseFromString(sanitizedHtml, 'text/html');
 					htmlDoc.body.classList.add('bg-inherit');
 					tdContentsDiv.append(htmlDoc.body as HTMLElement);
 					tdElement.appendChild(tdContentsDiv);
-				} else {
 
+				} else {
 					//convert fact string to number to add in formatting
-					if (label["label"] === "Fact") {
-						const factStringToNumber = Number(label["value"]);
-						if (
-							label["isAmountsOnly"] // maybe make isAmountsOnly better than a simple regex for number
-							&& factInfo.name != 'dei:EntityAddressPostalZipCode'
-							&& !Number.isNaN(factStringToNumber)
-							// && factInfo.format == 'ixt:num-dot-decimal' // could maybe add this is former 3 aren't enough
-						) {
-							label["value"] = factStringToNumber.toLocaleString("en-US", { "maximumFractionDigits": 10 });
+					if (aspect["name"] === "Fact") {
+						const factStringToNumber = Number(aspect["value"]);
+						if (aspect["isAmountsOnly"] && !Number.isNaN(factStringToNumber)) {
+							if (factInfo.decimalsVal && factInfo.decimalsVal >= 0) {
+								aspect["value"] = factStringToNumber.toLocaleString("en-US", { "maximumFractionDigits": 10, "minimumFractionDigits": factInfo.decimalsVal });
+							} else {
+								aspect["value"] = factStringToNumber.toLocaleString("en-US", { "maximumFractionDigits": 10 });
+							}
 						}
 					}
 
-					tdContentsDiv.textContent = label["value"].toString();
+					tdContentsDiv.textContent = aspect["value"].toString();
 					tdElement.appendChild(tdContentsDiv);
 				}
 
@@ -401,7 +395,6 @@ export const FactPages = {
 	fillCarousel: (idToFill: string, generatedHTML: HTMLElement) => {
 		ConstantsFunctions.emptyHTMLByID(idToFill);
 
-		document
-			.getElementById(idToFill)?.appendChild(generatedHTML);
+		document.getElementById(idToFill)?.appendChild(generatedHTML);
 	}
 };

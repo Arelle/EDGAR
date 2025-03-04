@@ -146,6 +146,7 @@ export function defaultKeyUpHandler(event: KeyboardEvent, callback?: () => any):
     if (callback) callback();
     return true;
 }
+
 export function stopPropPrevDefault(event: Event, callback?: () => any): void {
     event.stopPropagation();
     event.preventDefault();

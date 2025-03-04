@@ -11,8 +11,10 @@ export const UserFiltersMoreFiltersScale = {
     clickEvent: (input: string) => {
         const tempSet = new Set(UserFiltersState.getScale);
         if (tempSet.has(input)) {
+            (document.querySelector(`#user-filters-scales [name='${input}']`) as HTMLInputElement).checked = false;
             tempSet.delete(input)
         } else {
+            (document.querySelector(`#user-filters-scales [name='${input}']`) as HTMLInputElement).checked = true;
             tempSet.add(input);
         }
         UserFiltersState.getScale = [...tempSet];

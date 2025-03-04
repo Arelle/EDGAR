@@ -157,6 +157,9 @@ h5.sections-header-label {
 .menu-cat-header * {
   border: none !important;
 }
+.no-border {
+  border: none !important;
+}
 .menu-cat {
   position: relative;
 }
@@ -506,6 +509,14 @@ kbd {
 
 .navbar-dark .navbar-nav .nav-link.disabled {
   color: #ff8300;
+}
+
+.ix-btn-link {
+  font-size: .9rem;
+  color: rgb(13, 110, 253) !important;
+}
+.ix-btn-link:focus, .ix-btn-link:focus-visible {
+  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
 }
 
 #dynamic-xbrl-form [hover-fact="true"],

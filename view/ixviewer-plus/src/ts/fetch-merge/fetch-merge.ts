@@ -486,6 +486,7 @@ export class FetchAndMerge
                 measure: this.setMeasureInfo(attributes.unitRef || "", unit),
                 scale: setScaleInfo(attributes.scale),
                 decimals: this.setDecimalsInfo(attributes.decimals || ""),
+                decimalsVal: attributes.decimals,
                 sign: null, // sign exists as attr in inlineDoc, not instance
                 footnote: this.setFootnoteInfo(ix, footnote),
                 isEnabled: true,

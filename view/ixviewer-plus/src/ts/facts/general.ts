@@ -107,7 +107,18 @@ export const FactsGeneral = {
 		factValElem.setAttribute('class', 'mb-0');
 		factValElem.setAttribute('data-cy', 'factVal');
 
-		const factValue = (factInfo?.value && factInfo.isAmountsOnly) ? Number(factInfo.value).toLocaleString("en-US", { "maximumFractionDigits": 10 }) : factInfo?.value  || "nil";
+		let factValue = factInfo?.value;
+		if (factInfo?.value && factInfo.isAmountsOnly) {
+			let factNumVal = Number(factValue);
+			if (factInfo?.decimalsVal && factInfo.decimalsVal >= 0) {
+				factValue = factNumVal.toLocaleString("en-US", { "maximumFractionDigits": 10, "minimumFractionDigits": factInfo.decimalsVal })
+			} else {
+				factValue = factNumVal.toLocaleString("en-US", { "maximumFractionDigits": 10 })
+			}
+		} else {
+			factValue = factInfo?.value  || "nil";
+		}
+
 		const p3Text = factInfo?.isHTML || factInfo?.isContinued ? 'Click to see Fact.' : factValue;
 		const pElement3Content = document.createTextNode(p3Text);
 		factValElem.appendChild(pElement3Content);

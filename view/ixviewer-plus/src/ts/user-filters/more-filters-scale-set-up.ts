@@ -5,7 +5,7 @@
 
 import { FactMap } from "../facts/map";
 import { UserFiltersMoreFiltersScale } from "./more-filters-scale";
-import { defaultKeyUpHandler } from "../helpers/utils";
+import { stopPropPrevDefault } from "../helpers/utils";
 
 export const UserFiltersMoreFiltersScaleSetUp = {
 
@@ -15,16 +15,12 @@ export const UserFiltersMoreFiltersScaleSetUp = {
 
     setScales: () => {
         const scales = FactMap.getAllScales();
-
-        document.getElementById('filters-scales-count')!.innerText = scales.length;
-
-        UserFiltersMoreFiltersScaleSetUp.populate(scales);
-
+        document.getElementById('filters-scales-count')!.innerText = scales.length.toString();
+        UserFiltersMoreFiltersScaleSetUp.populateCollapse(scales);
     },
 
-    populate: (scales: Array<string>) => {
-
-        scales.forEach((current) => {
+    populateCollapse: (scales: Array<string>) => {
+        scales.forEach((scale) => {
             const div1 = document.createElement('div');
             div1.classList.add('d-flex');
             div1.classList.add('justify-content-between');
@@ -44,16 +40,18 @@ export const UserFiltersMoreFiltersScaleSetUp = {
             input.type = 'checkbox';
             input.tabIndex = 9;
             input.title = 'Select/Deselect this option.';
-            input.setAttribute('name', current.toString());
+            input.setAttribute('name', scale.toString());
             input.addEventListener('click', () => {
-                UserFiltersMoreFiltersScale.clickEvent(current);
+                UserFiltersMoreFiltersScale.clickEvent(scale);
             });
             input.addEventListener('keyup', (event: KeyboardEvent) => {
-                if (!defaultKeyUpHandler(event)) return;
-                UserFiltersMoreFiltersScale.clickEvent(current);
+                if (event instanceof KeyboardEvent && (event.key === 'Space' || event.key === ' ')) {
+                    stopPropPrevDefault(event);
+                    UserFiltersMoreFiltersScale.clickEvent(scale);
+                }
             });
 
-            const labelText = document.createTextNode(current);
+            const labelText = document.createTextNode(scale);
             label.appendChild(input);
             label.appendChild(labelText);
             div2.appendChild(label);
@@ -61,6 +59,5 @@ export const UserFiltersMoreFiltersScaleSetUp = {
 
             document.getElementById('user-filters-scales')?.appendChild(div1);
         });
-
     }
 };

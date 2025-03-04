@@ -17,7 +17,7 @@ import { UserFiltersDropdown } from "./user-filters/dropdown";
 import { UserFiltersGeneral } from "./user-filters/general";
 import { UserFiltersMoreFiltersBalances } from "./user-filters/more-filters-balance";
 import { UserFiltersTagsRadios } from "./user-filters/tags-radios";
-import { defaultKeyUpHandler } from "./helpers/utils";
+import { defaultKeyUpHandler, stopPropPrevDefault } from "./helpers/utils";
 import { Constants } from "./constants/constants";
 import { ConstantsFunctions } from "./constants/functions";
 
@@ -64,29 +64,31 @@ export class Listeners {
             UserFiltersGeneral.moreFiltersClickEvent();
         });
 
-        document.getElementById("user-filters-balances-credit")?.addEventListener("click", (event: MouseEvent) => {
-            UserFiltersMoreFiltersBalances.clickEvent(event, 1);
-        });
-        document.getElementById("user-filters-balances-credit")?.addEventListener("keyup", (event: KeyboardEvent) => {
-            if (!defaultKeyUpHandler(event)) return;
-            UserFiltersMoreFiltersBalances.clickEvent(event, 1);
-        });
         document.getElementById("user-filters-balances-debit")?.addEventListener("click", (event: MouseEvent) => {
-            UserFiltersMoreFiltersBalances.clickEvent(event, 0);
+            UserFiltersMoreFiltersBalances.clickEvent(event, 'debit');
         });
         document.getElementById("user-filters-balances-debit")?.addEventListener("keyup", (event: KeyboardEvent) => {
-            if (!defaultKeyUpHandler(event)) return;
-            UserFiltersMoreFiltersBalances.clickEvent(event, 0);
+            if (event instanceof KeyboardEvent && (event.key === 'Space' || event.key === ' ')) {
+                stopPropPrevDefault(event);
+                UserFiltersMoreFiltersBalances.clickEvent(event, 'debit');
+            }
         });
+        document.getElementById("user-filters-balances-credit")?.addEventListener("click", (event: MouseEvent) => {
+            UserFiltersMoreFiltersBalances.clickEvent(event, 'credit');
+        });
+        document.getElementById("user-filters-balances-credit")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            if (event instanceof KeyboardEvent && (event.key === 'Space' || event.key === ' ')) {
+                stopPropPrevDefault(event);
+                UserFiltersMoreFiltersBalances.clickEvent(event, 'credit');
+            }
+        });
+        
 
-        //Array includes: form-information-instance, form-information-zip, form-information-zip, form-information-help, form-information-html
-        //more-filters-menu-balance,more-filters-menu-periods,more-filters-menu-measures,more-filters-menu-axis,more-filters-menu-members,more-filters-scale
-        const links = [...document.querySelectorAll(`a[id*="form-information-"]`), ...document.querySelectorAll(`[id*="more-filters-menu-"]`),];
-
+        // Array includes: form-information-instance, form-information-zip, form-information-zip, form-information-help, form-information-html
+        const links = [...document.querySelectorAll(`a[id*="form-information-"]`)];
         links.forEach(link => {
             link.addEventListener('keyup', (event) => {
-                if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' '))
-                {
+                if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' ')) {
                     const id= link.getAttribute('id');
                     document.getElementById(id as string)?.click();
                 }
@@ -168,8 +170,7 @@ export class Listeners {
             }
         });
         
-        const searchOptions = document.querySelectorAll('input[name="search-options"]');
-
+        const searchOptions = document.querySelectorAll('input[name="search-options"], #searchOptionsContainer label');
         searchOptions.forEach(opt => {
             opt.addEventListener('keyup', (event) => {
                 const keyEvent = <KeyboardEvent> event;
@@ -180,12 +181,40 @@ export class Listeners {
                         Search.submit();
                     }
                 }
+                // prevent drop down from closing on action
+                event.stopPropagation();
+                (opt as HTMLElement).focus()
             });
-            opt.addEventListener('click', () => {
+            opt.addEventListener('click', (event) => {
                 const search = document.getElementById('global-search') as HTMLInputElement;
                 const searchText = search?.value;
                 if (searchText?.length) {
                     Search.submit();
+                }
+                // prevent drop down from closing on action
+                event.stopPropagation();
+                (opt as HTMLElement).focus()
+            });
+        })
+
+        // Custom handler to allow up down arrow keys to navigate search options
+        const searchCheckboxes = document.querySelectorAll('#global-search-options, input[name="search-options"]');
+        searchCheckboxes.forEach((checkbox, index) => {
+            checkbox.addEventListener('keyup', (event) => {
+                const keyEvent = <KeyboardEvent> event;
+                if (keyEvent.key == 'ArrowUp') {
+                    if (index === 0) {
+                        (searchCheckboxes[searchCheckboxes.length - 1] as HTMLElement)?.focus();
+                    } else {
+                        (searchCheckboxes[index - 1] as HTMLElement).focus();
+                    }
+                }
+                if (keyEvent.key == 'ArrowDown') {
+                    if (index === searchCheckboxes.length - 1) {
+                        (searchCheckboxes[0] as HTMLElement).focus();
+                    } else {
+                        (searchCheckboxes[index + 1] as HTMLElement).focus();
+                    }
                 }
             });
         })
