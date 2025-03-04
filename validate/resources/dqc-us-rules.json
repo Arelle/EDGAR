@@ -2189,6 +2189,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0098/DQC_0098.md"
         ],
+		"tolerance": 2,
 		"year-introduced": 2024,
         "rules": {
         	"9531": {
@@ -2301,7 +2302,8 @@
 					"EquitySecuritiesFvNiUnrealizedLoss",
 					"EquitySecuritiesFvNiUnrealizedGain",
 					"LeaseCost"
-					]
+					],
+				"tolerance": 2
 			},
 			"10095": {
 				"names": [
@@ -2341,7 +2343,8 @@
 					"CostOfGoodsAndServicesSold",
 					"CostOfRevenue",
 					"CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization"
-					]
+					],
+				"tolerance": 2
 			}
 	    }
 	},
@@ -2695,7 +2698,7 @@
 		"LEASE_ITEMS": ["FinanceLeaseLiability", "FinanceLeaseLiabilityCurrent", "FinanceLeaseLiabilityNoncurrent", "FinanceLeaseRightOfUseAsset", "OperatingLeaseRightOfUseAsset", "OperatingLeaseLiability", "OperatingLeaseLiabilityCurrent", "OperatingLeaseLiabilityNoncurrent"],
 		"NON_REQUIRED_CAPTION_DISCLOSURE": ["DefinedBenefitPlanOtherCosts", "RestrictedCash", "RestrictedCashAndCashEquivalents", "RestrictedCashAndCashEquivalentsAtCarryingValue", "RestrictedCashAndCashEquivalentsNoncurrent", "RestrictedCashCurrent", "RestrictedCashEquivalents", "RestrictedCashEquivalentsCurrent", "RestrictedCashEquivalentsNoncurrent", "RestrictedCashNoncurrent"],
 		"FS_Concepts_With_OCI": ["FairValueAssetLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueAssetRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueNetDerivativeAssetLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueRecurringBasisUnobservableInputReconciliationAssetLiabilityGainLossOci"],
-		"scheduleAxisNames": ["FairValueByAssetClassAxis", "FairValueByLiabilityClassAxis", "FinancialInstrumentAxis", "RetirementPlanNameAxis", "RetirementPlanTypeAxis", "RetirementPlanSponsorLocationAxis", "DerivativeInstrumentRiskAxis", "DerivativeInstrumentsGainLossByHedgingRelationshipAxis", "EnvironmentalRemediationSiteAxis"],
+		"scheduleAxisNames": ["FairValueByAssetClassAxis", "FairValueByLiabilityClassAxis", "FinancialInstrumentAxis", "RetirementPlanNameAxis", "RetirementPlanTypeAxis", "RetirementPlanSponsorLocationAxis", "DerivativeInstrumentRiskAxis", "DerivativeInstrumentsGainLossByHedgingRelationshipAxis", "EnvironmentalRemediationSiteAxis", "HedgingDesignationAxis"],
 		"FairValueBreakdownItemsNotChecked": ["FairValueInputsLevel2Member", "FairValueInputsLevel1Member", "FairValueMeasuredAtNetAssetValuePerShareMember", "FairValueInputsLevel12And3Member"]
 
 	},
@@ -2743,7 +2746,7 @@
 	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0141/DQC_0141.md"
 	    ],
 		"year-introduced": 2025,
-		"message": "The filing reports values that use the including accrued interest items and the excluding accrued interest items. Review the accounting policy elections to determine if you should be using the excluding accrued interest items or the including accrued interest items. \n\nReview the following {setType} are appropriate given the majority of disclosure items are {$setTypeContra}: \n\n{incorrectElements}. \n\nThe  {setTypeContra} are as follows: {correctElements}. \n\n{IncludingInterestSourceCalcs}: \n\nContext: {contextID} \nUnit: {unitID}",
+		"message": "The filing reports values that use the including accrued interest items and the excluding accrued interest items. Review the accounting policy elections to determine if you should be using the excluding accrued interest items or the including accrued interest items. \n\nReview the following {setType} are appropriate given the majority of disclosure items are {setTypeContra}: \n\n{incorrectElements}. \n\nThe  {setTypeContra} are as follows: {correctElements}. \n\n{IncludingInterestSourceCalcs} \n\nContext: {contextID} \nUnit: {unitID}",
 	    "rules": {
 			"9863": {
 				"accrued-interest-classes": [
