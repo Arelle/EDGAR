@@ -316,11 +316,12 @@ function splitBodyContents(body: HTMLElement): void {
             span.setAttribute("style", "content-visibility: auto;");
             return span;
         });
-
+        
+    const bodyArray = Array.from(body.children);
     for (let i=0; i < groupCount; i++) {
         const start = i * ELEMENTS_PER_GROUP;
         const end = (i + 1) * ELEMENTS_PER_GROUP;
-        fastRenderGroups[i].append(...Array.from(body.children).slice(start, end));
+        fastRenderGroups[i].append(...bodyArray.slice(start, end));
     }
 
     body.innerHTML = "";

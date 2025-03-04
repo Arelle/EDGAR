@@ -60,29 +60,29 @@ export const selectors = {
     customTagsRadio: 'form[data-name="tags-dropdown"] div input[aria-label*="Custom"]',
 
     moreFiltersHeader: 'button[id="nav-filter-more"]',
-    periodFilterTagsDrawer: 'form[data-test="more-filters-form"] a[data-test="Period"]',
+    periodFilterTagsDrawer: 'form[data-test="more-filters-form"] button[data-test="Period"]',
     period1Filter: '#user-filters-periods > div > div:nth-child(1) input',
     period2Filter: '#user-filters-periods > div > div:nth-child(3) input',
     period3Filter: '#user-filters-periods > div > div:nth-child(5) input',
     period4Filter: '#user-filters-periods > div > div:nth-child(7) input',
     
-    measuresFilterTagsDrawer: 'form a[data-test="Measures"]',
+    measuresFilterTagsDrawer: 'form button[data-test="Measures"]',
     measure1Filter: '#user-filters-measures > div:nth-child(2) input',
     measure2Filter: '#user-filters-measures > div:nth-child(3) input',
     measure3Filter: '#user-filters-measures > div:nth-child(4) input',
 
-    axisFilterTagDrawer: 'form a[data-test="Axis"]',
-    axis1Filter: '#user-filters-axis > div:nth-child(1) a',
+    axisFilterTagDrawer: 'form button[data-test="Axis"]',
+    axis1Filter: '#user-filters-axis > div:nth-child(1) button',
 
-    membersFilterTagDrawer: 'form a[data-test="Members"]',
+    membersFilterTagDrawer: 'form button[data-test="Members"]',
     membersFilter1: 'form input[id="members-all-0"]',
 
-    scaleFilterTagDrawer: 'form a[data-test="Scale"]',
+    scaleFilterTagDrawer: 'form button[data-test="Scale"]',
     scaleFilter1: '#user-filters-scales > div:nth-child(2) input',
     scaleFilter2: '#user-filters-scales > div:nth-child(3) input',
     scaleFilter3: '#user-filters-scales > div:nth-child(4) input',
     
-    balanceFilterTagDrawer: 'form a[data-test="Balance"]',
+    balanceFilterTagDrawer: 'form button[data-test="Balance"]',
     balanceFilter1: '#user-filters-balances > div:nth-child(1) input',
     balanceFilter2: '#user-filters-balances > div:nth-child(2) input',
 

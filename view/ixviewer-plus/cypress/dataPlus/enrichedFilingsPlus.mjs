@@ -3516,5 +3516,32 @@ export const filings = [
         "Instances": "",
         "docName": "austin-20250115.htm",
         "expectedSectionCountCorrection": "0"
+	},
+	{
+		"submissionType": "8-K",
+        "accessionNum": "000175392625000093",
+        "docPath": "/Archives/edgar/data/840715/000175392625000093/clro-20250115.htm",
+        "notes": "",
+        "factCount": "22",
+        "timeout": "15000",
+        "multiInstance": "",
+        "multiDoc": "",
+		"filingFees": false,
+        "Instances": "",
+        "docName": "clro-20250115.htm",
+	},
+	{
+		"submissionType": "EX-99.C.SBSEF",
+        "accessionNum": "sbsef03",
+        "docPath": "/Archives/edgar/data/wh-sections/out/sbsef03exs-20231231.htm",
+        "notes": "",
+        "factCount": "",
+        "timeout": "15000",
+        "multiInstance": true,
+        "multiDoc": "",
+		"filingFees": false,
+        "Instances": "",
+        "docName": "sbsef03exc-20231231.htm",
+        "expectedSectionCountCorrection": "0"
 	}
 ]
