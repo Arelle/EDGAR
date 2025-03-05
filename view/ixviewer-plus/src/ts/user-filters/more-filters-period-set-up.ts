@@ -5,7 +5,7 @@
 
 import { FactMap } from "../facts/map";
 import { UserFiltersMoreFiltersPeriod } from "./more-filters-period";
-import { defaultKeyUpHandler } from "../helpers/utils";
+import { stopPropPrevDefault } from "../helpers/utils";
 
 export const UserFiltersMoreFiltersPeriodSetUp = {
 
@@ -13,79 +13,53 @@ export const UserFiltersMoreFiltersPeriodSetUp = {
 
     setPeriods: () => {
         const periods = FactMap.getAllPeriods();
-
         const totalPeriods = Object.keys(periods).reduce((acc, current) => { return acc += periods[current].values.length }, 0);
-
         document.getElementById('filters-periods-count')!.innerText = `${totalPeriods}`;
-
-        //TODO: fix this usage of `any`
         UserFiltersMoreFiltersPeriodSetUp.populateCollapse('user-filters-periods', periods as any);
     },
 
-    populateCollapse: (parentId: string, objectOfInfo: Record<string, { values: string[] }>) => {
-        const parentDiv = document.querySelector('#' + parentId + ' .list-group');
-        Object.keys(objectOfInfo).reverse().forEach((current, index) => {
-            const div1 = document.createElement('div');
-            div1.classList.add('d-flex');
-            div1.classList.add('justify-content-between');
-            div1.classList.add('align-items-center');
-            div1.classList.add('w-100');
-            div1.classList.add('px-1');
+    populateCollapse: (parentId: string, periodsDataByYear: Record<string, { values: string[] }>) => {
+        const parentDiv = document.querySelector(`#${parentId} .list-group`);
+        Object.keys(periodsDataByYear).reverse().forEach((year, index) => {
+            const yearCollapseHeaderHtml = 
+                `<div class="foo d-flex justify-content-between align-items-center w-100 px-1">
+                    <div class="form-check">
+                        <label class="form-check-label mb-0">
+                            <input class="form-check-input" type="checkbox" tabindex="9" title="Select/Deselect all options below." name="${year.toString()}" />
+                            <button 
+                                data-bs-target="#period-filters-accordion-${index}"
+                                data-bs-toggle="collapse"
+                                class="click btn btn-link ix-btn-link btn-sm p-0 no-border"
+                                type="button"
+                                tabindex="9"
+                            >
+                                ${year.toString()}
+                            </button>
+                        </label>
+                    </div>
+                    <span class="badge float-end text-bg-secondary">${periodsDataByYear[year].values.length.toString()}</span>
+                </div>`
+            const parser = new DOMParser();
+            const yearCollapseHeaderDoc = parser.parseFromString(yearCollapseHeaderHtml,'text/html');
+            const yearCollapseHeader = yearCollapseHeaderDoc.querySelector('body > div') as HTMLElement;
+            const yearCollapseInput = yearCollapseHeaderDoc.querySelector('input') as HTMLElement;
 
-            const div2 = document.createElement('div');
-            div2.classList.add('form-check');
-
-            const label = document.createElement('div');
-            label.classList.add('form-check-label');
-            label.classList.add('mb-0');
-
-            const input = document.createElement('input');
-            input.classList.add('form-check-input');
-            input.type = 'checkbox';
-            input.tabIndex = 9;
-            input.title = 'Select/Deselect all options below.';
-            input.setAttribute('name', current.toString());
-            input.addEventListener('click', (event: MouseEvent) => {
-                UserFiltersMoreFiltersPeriod.parentClick(event, index, objectOfInfo[current].values)
+            yearCollapseInput.addEventListener('click', (event: MouseEvent) => {
+                UserFiltersMoreFiltersPeriod.parentClick(event, index, periodsDataByYear[year].values)
             });
-            input.addEventListener('keyup', (event: KeyboardEvent) => {
-                //if (!defaultKeyUpHandler(event)) return;
-               // input.checked=true;
-                if (event instanceof KeyboardEvent && (event.key === 'Enter' || event.key === 'Space' || event.key === ' ')) {
-                    input?.click();
-                    UserFiltersMoreFiltersPeriod.parentClick(event, index, objectOfInfo[current].values)
+            yearCollapseInput.addEventListener('keyup', (event: KeyboardEvent) => {
+                if (event instanceof KeyboardEvent && (event.key === 'Space' || event.key === ' ')) {
+                    yearCollapseInput?.click();
+                    UserFiltersMoreFiltersPeriod.parentClick(event, index, periodsDataByYear[year].values)
                 }
             });
-            label.appendChild(input);
-
-            const a = document.createElement('a');
-            a.setAttribute('data-bs-target', `#period-filters-accordion-${index}`);
-            a.setAttribute('data-bs-toggle', 'collapse');
-            a.classList.add('click');
-            a.tabIndex = 9;
-            const aText = document.createTextNode(current.toString());
-
-            a.appendChild(aText);
-            label.appendChild(a);
-            div2.appendChild(label);
-
-            const span = document.createElement('span');
-            span.classList.add('badge');
-            span.classList.add('float-end');
-            span.classList.add('text-bg-secondary');
-
-            const spanText = document.createTextNode(objectOfInfo[current].values.length.toString());
-
-            span.appendChild(spanText);
-            div1.appendChild(div2);
-            div1.appendChild(span);
 
             const div3 = document.createElement('div');
             div3.classList.add('collapse');
             div3.setAttribute('data-bs-parent', '#user-filters-periods');
             div3.setAttribute('id', `period-filters-accordion-${index}`);
 
-            objectOfInfo[current].values.forEach((nestedCurrent) => {
+            periodsDataByYear[year].values.forEach((specificPeriod) => {
                 const div4 = document.createElement('div');
                 div4.classList.add('d-flex');
                 div4.classList.add('justify-content-between');
@@ -105,22 +79,21 @@ export const UserFiltersMoreFiltersPeriodSetUp = {
                 input2.type = 'checkbox';
                 input2.tabIndex = 9;
                 input2.title = 'Select/Deselect this option.';
-                input2.setAttribute('name', nestedCurrent);
+                input2.setAttribute('name', specificPeriod);
+
                 input2.addEventListener('click', () => {
-                    UserFiltersMoreFiltersPeriod.childClick(nestedCurrent);
+                    UserFiltersMoreFiltersPeriod.childClick(specificPeriod);
                 });
                 input2.addEventListener('keyup', (event: KeyboardEvent) => {
-                    if (!defaultKeyUpHandler(event)) return;
-                    UserFiltersMoreFiltersPeriod.childClick(nestedCurrent);
+                    if (event instanceof KeyboardEvent && (event.key === 'Space' || event.key === ' ')) {
+                        stopPropPrevDefault(event);
+                        UserFiltersMoreFiltersPeriod.childClick(specificPeriod);
+                    }
                 });
 
                 label2.appendChild(input2);
 
-                // const label2 = document.createElement('label');
-                // label2.classList.add('form-check-label');
-                // label2.classList.add('mb-0');
-
-                const labelText = document.createTextNode(nestedCurrent);
+                const labelText = document.createTextNode(specificPeriod);
 
                 label2.appendChild(labelText);
 
@@ -128,9 +101,8 @@ export const UserFiltersMoreFiltersPeriodSetUp = {
                 div4.appendChild(div5);
 
                 div3.appendChild(div4);
-
             });
-            parentDiv?.appendChild(div1);
+            parentDiv?.appendChild(yearCollapseHeader);
             parentDiv?.appendChild(div3);
         })
     },

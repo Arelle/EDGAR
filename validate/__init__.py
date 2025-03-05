@@ -148,7 +148,7 @@ from .MessageNumericId import messageNumericId
 from .XuleInterface import (menuTools as xuleMenuTools, validateMenuTools as xuleValidateMenuTools,
                             cntrlrCmdLineUtilityRun as xuleCntrlrCmdLineUtilityRun,
                             cmdOptions as xuleCmdOptions, init as xuleInit, close as xuleClose,
-                            blockXuleValidateFinally)
+                            blockXuleValidateFinally, xule_error_code_pattern)
 import regex as re
 from collections import defaultdict
 
@@ -337,6 +337,10 @@ def severityReleveler(modelXbrl, level, messageCode, args, **kwargs):
                 if (isinstance(modelObject, ModelFact) and
                     str(modelObject.qname) not in feeTagEltsNotRelevelable):
                         level = "WARNING"
+        if messageCode and xule_error_code_pattern.match(messageCode) and level == "ERROR":
+            level = "WARNING"
+            if args.get("severity") == "error":
+                args["severity"] = "warning"
         # add message number
         messageCode, msgNum = messageNumericId(modelXbrl, level, messageCode, args)
         if msgNum:

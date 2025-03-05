@@ -408,21 +408,12 @@
         "dei/cover": "dei"
     },
     {
-        "sub-types": ["@11-K"],
+        "sub-types": ["@11-K", "@11-KT"],
         "xbrl-names": "DocumentPeriodEndDate",
         "elo-name": "periodOfReport",
         "efm": "6.5.20",
-        "validation": "r",
-        "source": "inline",
-        "dei/cover": "dei"
-    },
-    {
-        "sub-types": ["@11-KT"],
-        "xbrl-names": "DocumentPeriodEndDate",
-        "elo-name": "periodOfReport",
-        "efm": "6.5.20",
-        "validation": "r",
-        "source": "inline",
+        "validation": "o",
+        "source": "both",
         "dei/cover": "dei"
     },
     {
@@ -483,7 +474,7 @@
         "dei/cover": "dei"
     },
     {
-        "sub-types": ["@10-12", "@8-K", "@20+40FR", "@6-K", "@S-n", "@POS", "@F-n", "@N", "@SDR"],
+        "sub-types": ["@10-12", "@8-K", "@20+40FR", "@6-K", "@S-n", "@POS", "@F-n", "@N", "@SDR", "@11-K", "@11-KT"],
         "xbrl-names": [
             "DocumentFiscalYearFocus",
             "DocumentFiscalPeriodFocus"

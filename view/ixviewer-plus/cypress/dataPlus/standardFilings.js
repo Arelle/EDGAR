@@ -214,5 +214,16 @@ export const filings = [
         "multiInstance": "",
         "multiDoc": "TRUE",
         "Instances": ""
+    },
+    {
+        "submissionType": "10-Q",
+        "accessionNum": "000141057824002008",
+        "docPath": "/Archives/edgar/data/1963088/000141057824002008/tmb-20240930x10q.htm",
+        "notes": "",
+        "factCount": 952,
+        "timeout": 16000,
+        "multiInstance": "",
+        "multiDoc": "",
+        "Instances": ""
     }
 ]

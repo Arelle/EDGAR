@@ -139,12 +139,6 @@
                 "additional-members": ["RepurchaseAgreementCounterpartyNameDomain", "AffiliatedEntityMember", "InvestorMember", "VariableInterestEntityNotPrimaryBeneficiaryMember", "ChiefFinancialOfficerMember", "IndividualMember", "GovernmentMember", "GuarantorSubsidiariesMember", "SubsidiaryIssuerMember", "DirectorMember", "ChiefExecutiveOfficerMember",  "ChiefOperatingOfficerMember", "GeneralPartnerMember", "CorporateJointVentureMember", "SubsidiaryOfCommonParentMember", "IndividuallyImmaterialCounterpartiesMember"],
                 "extensions-allowed": "Yes"
             },
-            "59": {
-                "axis": "PlanNameAxis",
-				"axis-descendants": "None",
-				"xuleConstants-members": ["MBR_PLN_NM_AXS"],
-                "extensions-allowed": "Yes"
-            },
 			"60": {
 			    "axis": "DefinedContributionPlanNameAxis",
 				"axis-descendants": "None",
@@ -281,7 +275,7 @@
 			"83": {
 			    "axis": "RetirementPlanSponsorLocationAxis",
 				"axis-descendants": "None",
-				"xuleConstants-members": ["MEMBR_STM_GEO_AXSM_DEF_CNT_PLN_NM_AXS"],
+				"xuleConstants-members": ["MBR_STM_GEO_AXS"],
 				"additional-members": ["RetirementPlanSponsorLocationDomain", "DomesticPlanMember", "ForeignPlanMember"],
 			    "extensions-allowed": "Yes"
 			},
@@ -2195,6 +2189,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0098/DQC_0098.md"
         ],
+		"tolerance": 2,
 		"year-introduced": 2024,
         "rules": {
         	"9531": {
@@ -2307,7 +2302,8 @@
 					"EquitySecuritiesFvNiUnrealizedLoss",
 					"EquitySecuritiesFvNiUnrealizedGain",
 					"LeaseCost"
-					]
+					],
+				"tolerance": 2
 			},
 			"10095": {
 				"names": [
@@ -2347,7 +2343,8 @@
 					"CostOfGoodsAndServicesSold",
 					"CostOfRevenue",
 					"CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization"
-					]
+					],
+				"tolerance": 2
 			}
 	    }
 	},
@@ -2389,7 +2386,7 @@
 				"not-members": ["LaborForceConcentrationRiskMember", "UnionizedEmployeesConcentrationRiskMember"],
 				"axes": {"ConcentrationRiskByBenchmarkAxis": true,
 						 "ConcentrationRiskByTypeAxis": "not-members"},
-				"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+				"message": "The concept {name} with value {value} should always be used with the ConcentrationRiskByTypeAxis the ConcentrationRiskByBenchmarkAxis and a third axis to identify the risk area.  This element can only have a value of 1 when only the ConcentrationRiskByTypeAxis and ConcentrationRiskByBenchmarkAxis are used.  This fact needs another axis to identify the specific {$fact1.dimension(ConcentrationRiskByTypeAxis)} risk. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
 			},
 			"9570": {
 				"name": "ConcentrationRiskPercentage1",
@@ -2701,7 +2698,7 @@
 		"LEASE_ITEMS": ["FinanceLeaseLiability", "FinanceLeaseLiabilityCurrent", "FinanceLeaseLiabilityNoncurrent", "FinanceLeaseRightOfUseAsset", "OperatingLeaseRightOfUseAsset", "OperatingLeaseLiability", "OperatingLeaseLiabilityCurrent", "OperatingLeaseLiabilityNoncurrent"],
 		"NON_REQUIRED_CAPTION_DISCLOSURE": ["DefinedBenefitPlanOtherCosts", "RestrictedCash", "RestrictedCashAndCashEquivalents", "RestrictedCashAndCashEquivalentsAtCarryingValue", "RestrictedCashAndCashEquivalentsNoncurrent", "RestrictedCashCurrent", "RestrictedCashEquivalents", "RestrictedCashEquivalentsCurrent", "RestrictedCashEquivalentsNoncurrent", "RestrictedCashNoncurrent"],
 		"FS_Concepts_With_OCI": ["FairValueAssetLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueAssetRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueNetDerivativeAssetLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueRecurringBasisUnobservableInputReconciliationAssetLiabilityGainLossOci"],
-		"scheduleAxisNames": ["FairValueByAssetClassAxis", "FairValueByLiabilityClassAxis", "FinancialInstrumentAxis", "RetirementPlanNameAxis", "RetirementPlanTypeAxis", "RetirementPlanSponsorLocationAxis", "DerivativeInstrumentRiskAxis", "DerivativeInstrumentsGainLossByHedgingRelationshipAxis", "EnvironmentalRemediationSiteAxis"],
+		"scheduleAxisNames": ["FairValueByAssetClassAxis", "FairValueByLiabilityClassAxis", "FinancialInstrumentAxis", "RetirementPlanNameAxis", "RetirementPlanTypeAxis", "RetirementPlanSponsorLocationAxis", "DerivativeInstrumentRiskAxis", "DerivativeInstrumentsGainLossByHedgingRelationshipAxis", "EnvironmentalRemediationSiteAxis", "HedgingDesignationAxis"],
 		"FairValueBreakdownItemsNotChecked": ["FairValueInputsLevel2Member", "FairValueInputsLevel1Member", "FairValueMeasuredAtNetAssetValuePerShareMember", "FairValueInputsLevel12And3Member"]
 
 	},
@@ -2749,7 +2746,7 @@
 	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0141/DQC_0141.md"
 	    ],
 		"year-introduced": 2025,
-		"message": "The filing reports values that use the including accrued interest items and the excluding accrued interest items. Review the accounting policy elections to determine if you should be using the excluding accrued interest items or the including accrued interest items. \n\nReview the following {setType} are appropriate given the majority of disclosure items are {$setTypeContra}: \n\n{incorrectElements}. \n\nThe  {setTypeContra} are as follows: {correctElements}. \n\n{IncludingInterestSourceCalcs}: \n\nContext: {contextID} \nUnit: {unitID}",
+		"message": "The filing reports values that use the including accrued interest items and the excluding accrued interest items. Review the accounting policy elections to determine if you should be using the excluding accrued interest items or the including accrued interest items. \n\nReview the following {setType} are appropriate given the majority of disclosure items are {setTypeContra}: \n\n{incorrectElements}. \n\nThe  {setTypeContra} are as follows: {correctElements}. \n\n{IncludingInterestSourceCalcs} \n\nContext: {contextID} \nUnit: {unitID}",
 	    "rules": {
 			"9863": {
 				"accrued-interest-classes": [

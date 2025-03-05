@@ -4,19 +4,19 @@
  */
 
 import { FlexSearch } from "../flex-search/flex-search";
-import { Balance } from "../interface/fact";
 import { UserFiltersState } from "./state";
 
-export const UserFiltersMoreFiltersBalances =
-{
-    clickEvent: (_event: MouseEvent | KeyboardEvent, index: number): void =>
-    {
-        const balance = (index === 0) ? Balance.Debit : Balance.Credit;
+export const UserFiltersMoreFiltersBalances = {
+    clickEvent: (_event: MouseEvent | KeyboardEvent, balanceType: string): void => {
+        // debit = 0
+        // credit = 1
         const tempSet = new Set(UserFiltersState.getBalance);
-        if (tempSet.has(balance)) {
-            tempSet.delete(balance);
+        if (tempSet.has(balanceType)) {
+            (document.querySelector(`#user-filters-balances [id='user-filters-balances-${balanceType}']`) as HTMLInputElement).checked = false;
+            tempSet.delete(balanceType);
         } else {
-            tempSet.add(balance);
+            (document.querySelector(`#user-filters-balances [id='user-filters-balances-${balanceType}']`) as HTMLInputElement).checked = true;
+            tempSet.add(balanceType);
         }
         UserFiltersState.getBalance = [...tempSet];
         FlexSearch.filterFacts();

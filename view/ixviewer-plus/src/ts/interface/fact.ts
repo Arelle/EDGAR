@@ -17,6 +17,7 @@ export interface SingleFact {
     periodDates?: string[];
     scale: string | null;
     decimals?: Decimals | null;
+    decimalsVal?: number | null;
     sign: string | null;
     footnote: null | string;
     isEnabled: boolean;
