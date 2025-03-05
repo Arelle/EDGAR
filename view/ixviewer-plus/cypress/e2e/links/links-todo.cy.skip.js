@@ -1,1 +1,0 @@
-All links test need to be tested with redirect script (/ix url)
