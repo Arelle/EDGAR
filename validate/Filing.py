@@ -3946,9 +3946,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         for (ctxHash,_unitHash), b in factBindings(modelXbrl, pre).items():
                             if pre[0] in b:
                                 incomeBeforeTax = sum(f.xValue for f in b.values())
-                                if incomeBeforeTax > 0 and ctxHash not in posIncomeBeforeTax:
+                                if ctxHash not in posIncomeBeforeTax:
                                     posIncomeBeforeTax[ctxHash] = incomeBeforeTax
-                    if not posIncomeBeforeTax: # no positive values for any context
+                    if not any(v > 0 for v in posIncomeBeforeTax.values()): # no positive values for any context
                         continue # precondition fails, skip rule
                     concepts = set()
                     conceptRuleIDs = {}
@@ -3966,7 +3966,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 warnedFactsByQn = defaultdict(list)
                 for f in modelXbrl.facts:
                     if (f.qname in concepts and f.isNumeric and not f.isNil and f.xValid >= VALID and f.xValue < 0 and f.context is not None and (
-                        not isDQC0013 or f.context.contextDimAwareHash in posIncomeBeforeTax) and
+                        not isDQC0013 or (posIncomeBeforeTax.get(f.context.contextDimAwareHash, 0) > 0)) and
                         all(#(d.isTyped and # typed member exclusion
                             # d.dimensionQname.localName not in excludedConceptTypedDimensions.get(f.qname.localName, EMPTY_SET)
                             #) or
@@ -4085,23 +4085,24 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                                       modelObject=(top, bottom), topName=top.name, bottomName=bottom.name, linkrole=ELR,
                                                       edgarCode=f"{edgarCode}-{bottom.balance}", ruleElementId=id)
                     elif id == "9873":
-                            for sign, operating, excl in rule["operating"]:
-                                skip = False
-                                for top in modelXbrl.nameConcepts.get(operating, ()):
-                                    if sign == "neg":
-                                        for c in modelXbrl.nameConcepts.get(excl, ()):
-                                            if modelXbrl.relationshipSet(XbrlConst.summationItems).isRelated(top, "descendant", c):
+                        incomeNames = set(dqcRule["income-names"])
+                        for incomeItem in (incomeNames - set(rule["income-exclusions"])):                            
+                            for incomeConcept in modelXbrl.nameConcepts.get(incomeItem, ()):
+                                for sign, operating, excl in rule["operating"]:
+                                    skip = False
+                                    for top in modelXbrl.nameConcepts.get(operating, ()):
+                                        if sign == "neg":
+                                            for c in modelXbrl.nameConcepts.get(excl, ()):
+                                                if modelXbrl.relationshipSet(XbrlConst.summationItems).isRelated(top, "descendant", c):
+                                                    skip = True
+                                        elif sign == "pos":
+                                            if incomeItem not in excl:
                                                 skip = True
-                                        if skip: continue
-                                    for incomeItem in (incomeNames - set(rule["income-exclusions"])):
-                                        if sign == "pos" and incomeItem not in excl:
-                                            continue
-                                        for incomeConcept in modelXbrl.nameConcepts.get(incomeItem, ()):
-                                            efctvWgt = effectiveWeight(top, incomeConcept)
-                                            if efctvWgt and ((sign == "pos") == (efctvWgt > 0)):
-                                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"][sign])),
-                                                                  modelObject=(top, incomeConcept), name=incomeItem,
-                                                                  edgarCode=f"{edgarCode}", ruleElementId=id)
+                                        efctvWgt = effectiveWeight(top, incomeConcept)
+                                        if not skip and efctvWgt and ((sign == "pos" and efctvWgt > 0) or (sign == "neg" and efctvWgt < 0)):
+                                            modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"][sign])),
+                                                              modelObject=(top, incomeConcept), name=incomeItem,
+                                                              edgarCode=f"{edgarCode}", ruleElementId=id)
 
                     elif id == "9875":
                         names = rule["discOps"]
@@ -4413,13 +4414,27 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     for eltLn, depLns in rule["element-dependencies"].items():
                         bindings = factBindings(modelXbrl, flattenToSet( (eltLn, depLns )), nils=False, noAdditionalDims=True)
                         for b in bindings.values():
-                            if eltLn in b and not any(depLn in b for depLn in depLns):
+                            if eltLn in b:
                                 f = b[eltLn]
-                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
-                                    modelObject=b.values(), name=eltLn, value=f.xValue,
-                                    dependentElements=", ".join(depLns),
-                                    contextID=f.contextID, unitID=f.unitID or "(none)",
-                                    edgarCode=edgarCode, ruleElementId=id)
+                                if id == "7497": # check materiality
+                                    continOpsValue = f.xValue
+                                    maxValueOfDiscOps = 0
+                                    discOpsValues = [f2.xValue for ln, f2 in b.items() if ln != eltLn]
+                                    if len(discOpsValues):
+                                        maxValueOfDiscOps = max(discOpsValues)
+                                    else:
+                                        maxValueOfDiscOps = b[eltLn].xValue
+                                    if not (abs(maxValueOfDiscOps)  >  abs(continOpsValue) *  Decimal(0.05)):
+                                        continue # binding is not material
+                                    if deiDocumentType in {'10-K','10-KT','10-K/A','20-F'} and (f.context.endDatetime - f.context.startDatetime).days < 290:
+                                        continue # exclude quarterly data
+                                if not any(depLn in b for depLn in depLns):
+                                    f = b[eltLn]
+                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
+                                        modelObject=b.values(), name=eltLn, value=f.xValue,
+                                        dependentElements=", ".join(depLns),
+                                        contextID=f.contextID, unitID=f.unitID or "(none)",
+                                        edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0061":
                 def ancestors(fromConcept, elr, visited=None, result=None):
                     if visited is None: visited = set(); result=set()
@@ -4483,11 +4498,12 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     for supParName in rule["sup-cash-flow"]:
                         for supConcept in modelXbrl.nameConcepts.get(supParName, ()):
                             getDescendants(supConcept, None, set(), supElts)
-                    if (all(e in supElts for e in rule["contains"]) and all(e not in supElts for e in rule["not-contains"]) and
-                        any(not f.isNil and f.xValue != 0 for f in modelXbrl.factsByLocalName.get(rule["has-fact"],()))):
-                        modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)), value=f.xValue,
-                                          name=f.qname, contextID=f.contextID, unitID=f.unitID or "(none)",
-                                          modelObject=f, edgarCode=edgarCode, ruleElementId=id)
+                    if all(e in supElts for e in rule["contains"]) and all(e not in supElts for e in rule["not-contains"]):
+                        for f in modelXbrl.factsByLocalName.get(rule["has-fact"],()):
+                            if not f.isNil and not f.context.qnameDims and f.xValue != 0:
+                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)), value=f.xValue,
+                                                  name=f.qname, contextID=f.contextID, unitID=f.unitID or "(none)",
+                                                  modelObject=f, edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0068":
                 # 0068 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))
@@ -5567,11 +5583,11 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             elif dqcRuleName == "DQC.US.0141":
                 # 0141 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))
-                ruleBindings = {} # cache bindings across classes
-                def factsOf(bndHash, names):
+                ruleBindings = {}
+                def factsOf(bndHash, names, nonZero=False):
                     frozenNameSet = frozenset(names)
                     if frozenNameSet not in ruleBindings:
-                        ruleBindings[frozenNameSet] = factBindings(modelXbrl, frozenNameSet)
+                        ruleBindings[frozenNameSet] = factBindings(modelXbrl, frozenNameSet, factFilter=(lambda f: f.xValue != 0) if nonZero else None)
                     return ruleBindings[frozenNameSet].get(bndHash, EMPTY_DICT).values()
                 def sumItemChildren(fromNames, toNames):
                     calcRelSet = modelXbrl.relationshipSet(XbrlConst.summationItems)
@@ -5595,12 +5611,12 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     excluding_accrued_interest = rule["EXCLUDING_ACCRUED_INTEREST_DICT"][accrIntClass]
                             else:
                                 excluding_accrued_interest = rule["EXCLUDING_ACCRUED_INTEREST_DICT"][accrIntClass]
-                            valuesReportedExcludingInterest =  factsOf(bndHash, excluding_accrued_interest)
+                            valuesReportedExcludingInterest =  factsOf(bndHash, excluding_accrued_interest, nonZero=True)
 
                             if len(valuesReportedExcludingInterest) > 0:
                             # LOOK Up all the calculation relationships and see if that calc relationship exists in the filing. This is used to determine if there is a reconciliation. //
                                 IncludingInterestSourceCalcs = sumItemChildren(valuesReportedWithInterest.keys(), rule["EXCLUDING_ACCRUED_INTEREST_DICT"][accrIntClass])
-                                IncludingInterestSourceToExcludingIntCalc = sumItemChildren(rule["INCLUDING_ACCRUED_INTEREST_DICT"][accrIntClass], (f.qname.localName for f in valuesReportedExcludingInterest))
+                                IncludingInterestSourceToExcludingIntCalc = sumItemChildren(rule["INCLUDING_ACCRUED_INTEREST_DICT"][accrIntClass], set(f.qname.localName for f in valuesReportedExcludingInterest))
                                 warn = False
 
                                 # THIS SECTION IS FOR THE MESSAGE.  IT WORKS OUT THE BIGGEST LIST OF ITEMS IN THE FILING AND TEH SMALLEST AND RETURNS THE SMALLEST AS THEY ARE ASSUMED TO BE THE ERROR **/
@@ -5611,7 +5627,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     setTypeContra = "elements including interest"
                                     warn = len(IncludingInterestSourceCalcs & correctElements) == 0 and len(IncludingInterestSourceToExcludingIntCalc) == 0
                                 else:
-                                    incorrectElements = set(valuesReportedWithInterest.keys(),)
+                                    incorrectElements = set(valuesReportedWithInterest.keys())
                                     correctElements = set(f.qname.localName for f in valuesReportedExcludingInterest)
                                     setType = "elements including interest"
                                     setTypeContra = "elements excluding interest"
@@ -5620,9 +5636,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     f = next(iter(valuesReportedExcludingInterest))
                                     modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
                                         modelObject=f, setType=setType, setTypeContra=setTypeContra,
-                                        incorrectElements=", ".join(incorrectElements),
-                                        correctElements=", ".join(correctElements),
-                                        IncludingInterestSourceCalcs=", ".join(IncludingInterestSourceCalcs),
+                                        incorrectElements=", ".join(sorted(incorrectElements)),
+                                        correctElements=", ".join(sorted(correctElements)),
+                                        IncludingInterestSourceCalcs=", ".join(sorted(IncludingInterestSourceCalcs)),
                                         contextID=f.contextID, unitID=f.unitID or "(none)",
                                         edgarCode=edgarCode, ruleElementId=id)
                 del ruleBindings # deref bindings across classes
