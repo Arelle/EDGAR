@@ -17,6 +17,7 @@ export interface Section {
     menuCat: string,
     menuCatClean: string,
     order: number,
+    position: number | undefined,
     inlineFactSelector: string,
     firstAnchor: {
         contextRef: string,
@@ -69,7 +70,7 @@ export interface ActualInstance {
     memberStandard: number;
     nsprefix: string;
     nsuri: string;
-    report: { [key: string]: Report };
+    report: { [key: string]: MetalinksReport };
     segmentCount: number;
     tag: { [key: string]: Tag };
     unitCount: number;
@@ -93,7 +94,7 @@ export interface Schema {
     remote: string[];
 }
 
-export interface Report {
+export interface MetalinksReport {
     menuCat: string;
     order: number;
     firstAnchor: Anchor | null;

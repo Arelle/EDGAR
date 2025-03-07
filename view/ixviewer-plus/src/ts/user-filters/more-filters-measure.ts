@@ -11,8 +11,10 @@ export const UserFiltersMoreFiltersMeasure = {
     clickEvent: (input: string) => {
         const tempSet = new Set(UserFiltersState.getMeasure);
         if (tempSet.has(input)) {
+            (document.querySelector(`#user-filters-measures [name='${input}']`) as HTMLInputElement).checked = false;
             tempSet.delete(input)
         } else {
+            (document.querySelector(`#user-filters-measures [name='${input}']`) as HTMLInputElement).checked = true;
             tempSet.add(input);
         }
         UserFiltersState.getMeasure = [...tempSet];

@@ -1,4 +1,5 @@
 import { Constants } from "../constants/constants";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 const toPrev = () => {
     const currentInstance = Constants.getInstanceFiles.find(element => element.current);
@@ -7,7 +8,7 @@ const toPrev = () => {
     // e.g section[filing-url="ea185980-6k_inspiratech.htm"]
     const currentDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);
     const currentScrollPosition = document.getElementById('dynamic-xbrl-form')?.scrollTop as number;
-    const pageBreakNodes = Array.from(currentDocElem?.querySelectorAll(`[style*="break-after"],[style*="break-before"]`) || [])
+    const pageBreakNodes = Array.from(currentDocElem?.querySelectorAll(`[style*="break-after" i],[style*="break-before" i]`) || [])
 
     const prevBreak = pageBreakNodes
         .reverse()
@@ -32,7 +33,7 @@ const toNext = () => {
     const currentDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);
     const viewHieght = (document.getElementById('dynamic-xbrl-form') as HTMLElement).offsetHeight;
     const currentScrollPosition = document.getElementById('dynamic-xbrl-form')?.scrollTop as number;
-    const pageBreakNodes = currentDocElem?.querySelectorAll(`[style*="break-after"],[style*="break-before"]`) || [];
+    const pageBreakNodes = currentDocElem?.querySelectorAll(`[style*="break-after" i],[style*="break-before" i]`) || [];
 
     const nextBreak = Array.from(pageBreakNodes)
         .map((breakElem) => {
@@ -106,28 +107,37 @@ export const addPaginationListeners = () => {
     document.getElementById('to-top-btn')?.addEventListener("click", () => {
         toTop();
     });
-    document.getElementById('to-top-btn')?.addEventListener("keyup", () => {
+    document.getElementById('to-top-btn')?.addEventListener("keyup", (event: KeyboardEvent) => {
+       if (!defaultKeyUpHandler(event)) return;
         toTop();
     });
 
     document.getElementById('to-prev-btn')?.addEventListener("click", () => {
         toPrev();
     });
-    document.getElementById('to-prev-btn')?.addEventListener("keyup", () => {
+    document.getElementById('to-prev-btn')?.addEventListener("keyup", (event: KeyboardEvent) => {
+       if (!defaultKeyUpHandler(event)) return;
         toPrev();
     });
+    document.getElementById('to-prev-btn')?.addEventListener('keydown', (event: KeyboardEvent) =>{
+        if(event.key=== ' ') {
+          event.preventDefault();
+        }
+      });
 
     document.getElementById('to-next-btn')?.addEventListener("click", () => {
         toNext();
     });
-    document.getElementById('to-next-btn')?.addEventListener("keyup", () => {
+    document.getElementById('to-next-btn')?.addEventListener("keyup", (event: KeyboardEvent)  => {
+       if (!defaultKeyUpHandler(event)) return;
         toNext();
     });
 
     document.getElementById('to-bottom-btn')?.addEventListener("click", () => {
         toBottomOfInlineDoc();
     });
-    document.getElementById('to-bottom-btn')?.addEventListener("keyup", () => {
+    document.getElementById('to-bottom-btn')?.addEventListener("keyup", (event: KeyboardEvent) => {
+       if (!defaultKeyUpHandler(event)) return;
         toBottomOfInlineDoc();
     });
 }

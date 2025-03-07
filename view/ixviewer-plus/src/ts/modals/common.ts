@@ -11,6 +11,7 @@ import { Pagination } from "../pagination/sideBarPagination";
 import { FactMap } from "../facts/map";
 import { ConstantsFunctions } from "../constants/functions";
 import { ErrorsMinor } from "../errors/minor";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export const ModalsCommon = {
 	currentSlide: 0,
@@ -34,14 +35,14 @@ export const ModalsCommon = {
 	getAttributes: null,
 
 	clickEvent: (event: Event, element: HTMLElement) => {
-		if (event instanceof KeyboardEvent && !(event.key === 'Enter' || event.key === 'Space'))
+		if (event instanceof KeyboardEvent && !(event.key === 'Enter' || event.key === 'Space' || event.key === ' '))
 			return;
 
 		event.preventDefault();
 		event.stopPropagation();
 
 		const id = element.getAttribute('continued-main-fact-id') || element.getAttribute('id');
-		if(!id)
+		if (!id)
 		{
 			ErrorsMinor.factNotFound();
 			return;
@@ -49,7 +50,7 @@ export const ModalsCommon = {
 
 		document.getElementById("fact-nested-modal")?.classList.add("d-none");
 		document.getElementById("fact-modal")?.classList.remove("d-none");
-		document.getElementById("fact-modal-drag")?.focus();
+		// document.getElementById("fact-modal-drag")?.focus();
 
 		ModalsCommon.carouselData(element);
 		ModalsCommon.createTitles(id, ModalsCommon.currentSlide);
@@ -71,6 +72,7 @@ export const ModalsCommon = {
 			Pagination.goToFactInSidebar(event);
 		});
 		document.getElementById('fact-modal-jump')?.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
 			Pagination.goToFactInSidebar(event);
 		});
 
@@ -78,6 +80,7 @@ export const ModalsCommon = {
 			Modals.copyContent(event, 'fact-modal-carousel', 'fact-copy-content');
 		});
 		document.getElementById('fact-modal-copy-content')?.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
 			Modals.copyContent(event, 'fact-modal-carousel', 'fact-copy-content');
 		});
 
@@ -85,6 +88,7 @@ export const ModalsCommon = {
 			Modals.expandToggle(event, 'fact-modal', 'fact-modal-expand', 'fact-modal-compress');
 		});
 		document.getElementById('fact-modal-compress')?.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
 			Modals.expandToggle(event, 'fact-modal', 'fact-modal-expand', 'fact-modal-compress');
 		});
 
@@ -92,6 +96,7 @@ export const ModalsCommon = {
 			Modals.expandToggle(event, 'fact-modal', 'fact-modal-expand', 'fact-modal-compress');
 		});
 		document.getElementById('fact-modal-expand')?.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
 			Modals.expandToggle(event, 'fact-modal', 'fact-modal-expand', 'fact-modal-compress');
 		});
 
@@ -99,6 +104,7 @@ export const ModalsCommon = {
 			Modals.close(event);
 		});
 		document.getElementById('fact-modal-close')?.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
 			Modals.close(event);
 		});
 
@@ -120,8 +126,6 @@ export const ModalsCommon = {
 		span1.appendChild(dialogSubTitle);
 		document.getElementById('fact-modal-subtitle')?.firstElementChild?.replaceWith(span1);
 	},
-
-	
 
 	createCarousel: () => {
 		new bootstrap.Carousel(document.getElementById('fact-modal-carousel') as HTMLElement, {});

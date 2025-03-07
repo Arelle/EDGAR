@@ -6,16 +6,15 @@
 import { Constants } from "../constants/constants";
 import { ErrorsMinor } from "../errors/minor";
 import { Facts } from "../facts/facts";
-import { Balance } from "../interface/fact";
 import { SearchFunctions } from "../search/functions";
 
 export const UserFiltersState = {
     getAxes: [],
-    getMembers: [] as Array<{ parentID: unknown[] }>,
-    getBalance: [] as Balance[],
-    getMeasure: [],
-    getPeriod: [] as Array<{ contextref: string }>,
-    getScale: [],
+    getMembers: [] as string[],
+    getBalance: [] as string[],
+    getMeasure: [] as string[],
+    getPeriod: [] as string[],
+    getScale: [] as string[],
     getType: [] as string[],
     getDataRadios: 0,
 
@@ -117,8 +116,7 @@ export const UserFiltersState = {
         if (UserFiltersState.getAxes.length && enabledFact) {
 
             for (let i = 0; i < UserFiltersState.getAxes.length; i++) {
-                if (document.querySelector('#dynamic-xbrl-form [id="' + current.getAttribute('contextref') + '"] [dimension="'
-                    + UserFiltersState.getAxes[i]['name'] + '"]')) {
+                if (document.querySelector(`#dynamic-xbrl-form [id="${current.getAttribute('contextref')}"] [dimension="${UserFiltersState.getAxes[i]['name']}"]`)) {
                     return true;
                 }
             }

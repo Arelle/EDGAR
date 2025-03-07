@@ -7,33 +7,37 @@ import { Errors } from "./errors";
 
 export const ErrorsMinor = {
 	unknownError: () => {
+		const content = 
+			`<div class="alert-height alert alert-warning show mb-0">
+				An Error has occured within the Inline XBRL Viewer.
+			</div>`;
+		
+		const parser = new DOMParser();
+		const labelDoc = parser.parseFromString(content,'text/html');
 
-		const content = document.createTextNode('An Error has occured within the Inline XBRL Viewer.');
-
-		const element = document.createElement('div');
-		element.setAttribute('class', 'alert-height alert alert-warning show mb-0');
-		element.appendChild(content);
-
+		const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
 		const closeBtn = Errors.createBsCloseBtn();
-		element.appendChild(closeBtn);
-
-		document.getElementById('error-container')?.appendChild(element);
+		instanceHeader.appendChild(closeBtn);
+		document.getElementById('error-container')?.appendChild(instanceHeader);
 
 		Errors.updateMainContainerHeight();
 	},
 
 	factNotFound: () => {
 		console.log('factNotFound')
-		const content = document.createTextNode('Inline XBRL cannot locate the requested fact.');
 
-		const element = document.createElement('div');
-		element.setAttribute('class', 'alert-height alert alert-warning show mb-0');
-		element.appendChild(content);
-		
+		const content = 
+			`<div class="alert-height alert alert-warning show mb-0">
+				Inline XBRL cannot locate the requested fact.
+			</div>`;
+
+		const parser = new DOMParser();
+		const labelDoc = parser.parseFromString(content,'text/html');
+
+		const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
 		const closeBtn = Errors.createBsCloseBtn();
-		element.appendChild(closeBtn);
-
-		document.getElementById('error-container')?.appendChild(element);
+		instanceHeader.appendChild(closeBtn);
+		document.getElementById('error-container')?.appendChild(instanceHeader);
 
 		Errors.updateMainContainerHeight();
 	},
@@ -41,32 +45,37 @@ export const ErrorsMinor = {
 
 	factNotInSearch: () => {
 		console.log('factNotInSearch')
-		const content = document.createTextNode('Fact not found in current search and filter results.');
+		const content = 
+			`<div class="alert-height alert alert-warning show mb-0">
+				Fact not found in current search and filter results.
+			</div>`;
 
-		const element = document.createElement('div');
-		element.setAttribute('class', 'alert-height alert alert-warning show mb-0');
-		element.appendChild(content);
-		
+		const parser = new DOMParser();
+		const labelDoc = parser.parseFromString(content,'text/html');
+
+		const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
 		const closeBtn = Errors.createBsCloseBtn();
-		element.appendChild(closeBtn);
+		instanceHeader.appendChild(closeBtn);
+		document.getElementById('error-container')?.appendChild(instanceHeader);
 
-		document.getElementById('error-container')?.appendChild(element);
 
 		Errors.updateMainContainerHeight();
 	},
 
 	message: (input: string) => {
-		const content = document.createTextNode(input);
+		const content = 
+			`<div class="alert-height alert alert-warning show mb-0">
+				${input}
+			</div>`;
 
-		const errorDiv = document.createElement('div');
-		errorDiv.setAttribute('class', 'alert alert-height alert-warning show mb-0');
-		errorDiv.appendChild(content);
-		
+		const parser = new DOMParser();
+		const labelDoc = parser.parseFromString(content,'text/html');
+
+		const instanceHeader = labelDoc.querySelector('body > div') as HTMLElement;
 		const closeBtn = Errors.createBsCloseBtn();
-		errorDiv.appendChild(closeBtn);
-
-		document.getElementById('error-container')?.appendChild(errorDiv);
-
+		instanceHeader.appendChild(closeBtn);
+		document.getElementById('error-container')?.appendChild(instanceHeader);
+		
 		Errors.updateMainContainerHeight();
 	},
 };

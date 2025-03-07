@@ -11,7 +11,7 @@ export const cleanSubstring = (orig: string, from: string, to: string) => {
     return orig.substring(orig.search(from), orig.search(to) + to.length);
 }
 
-export const convertToSelector = (input: string, sanitize=true) => {
+export const convertToSelector = (input: string, sanitize = true) => {
     const normalizedSelector = input.replaceAll('/', '-')
         .replaceAll(' ', '-')
         .replaceAll('#', '-')
@@ -25,7 +25,7 @@ export const convertToSelector = (input: string, sanitize=true) => {
 
 // WIP
 export const xmlToDom = (xmlNode: Node): Node | null => {
-    
+
     if (!PRODUCTION) {
         console.log('node.nodeType', xmlNode.nodeType)
         console.log('node', xmlNode)
@@ -34,17 +34,14 @@ export const xmlToDom = (xmlNode: Node): Node | null => {
         const element = document.createElement(xmlNode.nodeName)
 
         // add attributes
-        if (xmlNode instanceof Element)
-        {
-            for(const attr of xmlNode.attributes)
-            {
+        if (xmlNode instanceof Element) {
+            for (const attr of xmlNode.attributes) {
                 element.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.nodeValue || "");
             }
         }
-        
+
         // recursively process child nodes
-        for(const child of xmlNode.childNodes)
-        {
+        for (const child of xmlNode.childNodes) {
             const childNode = xmlToDom(child);
             if (childNode) {
                 element.appendChild(childNode);
@@ -62,10 +59,10 @@ export const xmlToDom = (xmlNode: Node): Node | null => {
 export const findAllTagTypeInMarkupString = (markup: string, openTag: string, closeTag: string) => {
     const allTags: string[] = [];
 
-    const startTagRegex = RegExp(openTag, 'gi') 
+    const startTagRegex = RegExp(openTag, 'gi')
     let startTagResults = startTagRegex.exec(markup);
     const footnoteStartIndices: number[] = [];
-    while(startTagResults) {
+    while (startTagResults) {
         footnoteStartIndices.push(startTagResults.index);
         startTagResults = startTagRegex.exec(markup);
     }
@@ -73,7 +70,7 @@ export const findAllTagTypeInMarkupString = (markup: string, openTag: string, cl
     const endTagRegex = RegExp(closeTag, 'gi');
     let endTagResults = endTagRegex.exec(markup);
     const footnoteEndIndices: number[] = [];
-    while(endTagResults) {
+    while (endTagResults) {
         footnoteEndIndices.push(endTagResults.index + closeTag.length);
         endTagResults = endTagRegex.exec(markup);
     }
@@ -86,15 +83,10 @@ export const findAllTagTypeInMarkupString = (markup: string, openTag: string, cl
     return allTags;
 }
 
-
-export function ixScrollTo(sectionElem: HTMLElement): void
-{
-    if (elemNearBottom(sectionElem))
-    {
+export function ixScrollTo(sectionElem: HTMLElement): void {
+    if (elemNearBottom(sectionElem)) {
         toBottomOfInlineDoc();
-    }
-    else
-    {
+    } else {
         sectionElem?.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
     }
 }
@@ -140,7 +132,24 @@ function elemNearBottom(target: HTMLElement, parentElem?: HTMLElement, scrollabl
     return distTopOfTargetToTopOfScrollableParent > parentHt - viewHeight;
 }
 
-export function isTruthy<T>(t: T): t is NonNullable<T>
-{
+export function isTruthy<T>(t: T): t is NonNullable<T> {
     return Boolean(t);
+}
+
+export function defaultKeyUpHandler(event: KeyboardEvent, callback?: () => any): boolean {
+    const defaultActionKeys = ['Enter', 'Space', ' ']
+    if (event instanceof KeyboardEvent && !defaultActionKeys.includes(event.key))
+        return false;
+
+    stopPropPrevDefault(event);
+
+    if (callback) callback();
+    return true;
+}
+
+export function stopPropPrevDefault(event: Event, callback?: () => any): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (callback) callback();
 }
