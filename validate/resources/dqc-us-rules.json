@@ -1363,11 +1363,15 @@
         	"7497": {
         		"element-dependencies": {
 	        		"NetCashProvidedByUsedInOperatingActivitiesContinuingOperations": [
-	        			"IncomeLossFromDiscontinuedOperationsNetOfTax",
-	        			"IncomeLossFromDiscontinuedOperationsNetOfTaxAttributableToNoncontrollingInterest",
-	        			"IncomeLossFromDiscontinuedOperationsNetOfTaxAttributableToReportingEntity"
+	        			"NetCashProvidedByUsedInOperatingActivities",
+	        			"CashProvidedByUsedInOperatingActivitiesDiscontinuedOperations"
 	        		]
-        		}
+        		},
+				"DISCONTINUED_INCOME_ITEMS": [
+					"IncomeLossFromDiscontinuedOperationsNetOfTax",
+					"IncomeLossFromDiscontinuedOperationsNetOfTaxAttributableToNoncontrollingInterest",
+					"IncomeLossFromDiscontinuedOperationsNetOfTaxAttributableToReportingEntity"					
+				]
         	}
         }
 	},

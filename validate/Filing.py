@@ -4063,30 +4063,30 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     visited.discard(fromConcept)
                     return None
                 incLossExtItmPattern = re.compile(r"(?!.*equitymethod|.*equityincomeloss).*incomeloss", re.I)
+                incomeNames = set(dqcRule["income-names"])
+                # add INCOME_LOSS_EXTENSION_ITEMS
+                for c in modelXbrl.qnameConcepts.values():
+                    if c.qname.namespaceURI not in disclosureSystem.standardTaxonomiesDict and c.isMonetary and c.balance == "credit" and incLossExtItmPattern.match(c.name):
+                        incomeNames.add(c.name)
                 for id, rule in dqcRule["rules"].items():
                     if id in ("6833", "7488"):
-                        incomeNames = set(dqcRule["income-names"])
-                        # add INCOME_LOSS_EXTENSION_ITEMS
-                        for c in modelXbrl.qnameConcepts.values():
-                            if c.qname.namespaceURI not in disclosureSystem.standardTaxonomiesDict and c.isMonetary and c.balance == "credit" and incLossExtItmPattern.match(c.name):
-                                incomeNames.add(c.name)
+                        extNetIncItems = set()
                         if id == "7488":
                             for c in modelXbrl.qnameConcepts.values():
                                 if c.qname.namespaceURI not in disclosureSystem.standardTaxonomiesDict and c.isMonetary and c.balance == "credit" and "netincome" in c.name.lower():
-                                    incomeNames.add(c.name)
+                                    extNetIncItems.add(c.name)
                         topName = rule["parent-name"]
                         if (modelXbrl.factsByLocalName.get(topName,())
                             and ("excluded-name" not in rule or not modelXbrl.factsByLocalName.get(rule["excluded-name"],()))):
                             top = modelXbrl.nameConcepts[topName][0]
-                            for bottom, ELR, efctvWgt in descendantWeights(top, incomeNames): # don't include stopping income concept
+                            for bottom, ELR, efctvWgt in descendantWeights(top, incomeNames | extNetIncItems): # don't include stopping income concept
                                 if ((bottom.balance == "credit" and efctvWgt > 0)
                                     or (bottom.balance == "debit" and efctvWgt < 0)):
                                     modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg[bottom.balance or ""])),
                                                       modelObject=(top, bottom), topName=top.name, bottomName=bottom.name, linkrole=ELR,
                                                       edgarCode=f"{edgarCode}-{bottom.balance}", ruleElementId=id)
                     elif id == "9873":
-                        incomeNames = set(dqcRule["income-names"])
-                        for incomeItem in (incomeNames - set(rule["income-exclusions"])):                            
+                        for incomeItem in (incomeNames - set(rule["income-exclusions"])):
                             for incomeConcept in modelXbrl.nameConcepts.get(incomeItem, ()):
                                 for sign, operating, excl in rule["operating"]:
                                     skip = False
@@ -4412,14 +4412,15 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             elif dqcRuleName == "DQC.US.0060":
                 for id, rule in dqcRule["rules"].items():
                     for eltLn, depLns in rule["element-dependencies"].items():
-                        bindings = factBindings(modelXbrl, flattenToSet( (eltLn, depLns )), nils=False, noAdditionalDims=True)
+                        discOpsLns = rule.get("DISCONTINUED_INCOME_ITEMS", ())
+                        bindings = factBindings(modelXbrl, flattenToSet( (eltLn, depLns, discOpsLns )), nils=False, noAdditionalDims=True)
                         for b in bindings.values():
                             if eltLn in b:
                                 f = b[eltLn]
                                 if id == "7497": # check materiality
                                     continOpsValue = f.xValue
                                     maxValueOfDiscOps = 0
-                                    discOpsValues = [f2.xValue for ln, f2 in b.items() if ln != eltLn]
+                                    discOpsValues = [f2.xValue for ln, f2 in b.items() if ln in discOpsLns]
                                     if len(discOpsValues):
                                         maxValueOfDiscOps = max(discOpsValues)
                                     else:
