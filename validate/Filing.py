@@ -5318,8 +5318,13 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             componentsOfIncome = getDescendants(XbrlConst.summationItems, c, None)
                             for name in rule["not-names"]:
                                 if name in componentsOfIncome:
+                                    # find relationship to report in error message
+                                    rel = modelXbrl # fallback if not found
+                                    for c2 in modelXbrl.nameConcepts[name]:
+                                        for rel in modelXbrl.relationshipSet(XbrlConst.summationItems).toModelObject(c2):
+                                            break
                                     modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
-                                        modelObject=name,
+                                        modelObject=rel, name=name,
                                         edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0123":
                 # 0112 has only one id, rule
