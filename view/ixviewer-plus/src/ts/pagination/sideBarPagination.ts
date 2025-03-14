@@ -9,6 +9,7 @@ import { ErrorsMinor } from "../errors/minor";
 import { FactsGeneral } from "../facts/general";
 import { SingleFact } from "../interface/fact";
 import { ConstantsFunctions } from "../constants/functions";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export const Pagination = {
 
@@ -61,8 +62,9 @@ export const Pagination = {
 		ConstantsFunctions.emptyHTML(Pagination.getPaginationControlsSelector);
 
 		const divElement = document.createElement('div');
-		divElement.setAttribute('class', 'w-100 d-flex justify-content-between py-2 px-3 center-align-items');
+		divElement.setAttribute('class', 'w-100 d-flex justify-content-between py-dot-7 px-3 center-align-items');
 		const subDivElement = document.createElement('div');
+		subDivElement.setAttribute('id', 'sidebar-page-select');
 		subDivElement.appendChild(Pagination.setPageSelect());
 		subDivElement.appendChild(Pagination.getPaginationInfo());
 		subDivElement.setAttribute("class", "center-align-items");
@@ -88,21 +90,33 @@ export const Pagination = {
 	firstPage: () => {
 		Constants.sideBarPaginationState.pageNumber = 1;
 		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
+		document.getElementById('firstFactPage')?.focus();
+	},
+
+	previousPage: (calledFromPrevFact = false) => {
+		Constants.sideBarPaginationState.pageNumber = Constants.sideBarPaginationState.pageNumber - 1;
+		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
+		if (calledFromPrevFact) {
+			document.getElementById('prevFact')?.focus();
+		} else {
+			document.getElementById('prevFactPage')?.focus();
+		}
+	},
+
+	nextPage: (calledFromNextFact = false) => {
+		Constants.sideBarPaginationState.pageNumber = Constants.sideBarPaginationState.pageNumber + 1;
+		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
+		if (calledFromNextFact) {
+			document.getElementById('nextFact')?.focus();
+		} else {
+			document.getElementById('nextFactPage')?.focus();
+		}
 	},
 
 	lastPage: () => {
 		Constants.sideBarPaginationState.pageNumber = Constants.sideBarPaginationState.totalPages;
 		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
-	},
-
-	previousPage: () => {
-		Constants.sideBarPaginationState.pageNumber = Constants.sideBarPaginationState.pageNumber - 1;
-		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
-	},
-
-	nextPage: () => {
-		Constants.sideBarPaginationState.pageNumber = Constants.sideBarPaginationState.pageNumber + 1;
-		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
+		document.getElementById('lastFactPage')?.focus();
 	},
 
 	getPaginationInfo: () => {
@@ -120,10 +134,10 @@ export const Pagination = {
 	},
 
 	getPageControls: () => {
-		const firstPage = (Constants.sideBarPaginationState.pageNumber === 1) ? 'disabled' : '';
-		const previousPage = (Constants.sideBarPaginationState.pageNumber - 1 <= 0) ? 'disabled' : '';
-		const nextPage = (Constants.sideBarPaginationState.pageNumber + 1 > Constants.sideBarPaginationState.totalPages) ? 'disabled' : '';
-		const lastPage = (Constants.sideBarPaginationState.pageNumber === Constants.sideBarPaginationState.totalPages) ? 'disabled' : '';
+		const firstPageDisabled = (Constants.sideBarPaginationState.pageNumber === 1) ? 'disabled' : '';
+		const previousPageDisabled = (Constants.sideBarPaginationState.pageNumber - 1 <= 0) ? 'disabled' : '';
+		const nextPageDisabled = (Constants.sideBarPaginationState.pageNumber + 1 > Constants.sideBarPaginationState.totalPages) ? 'disabled' : '';
+		const lastPageDisabled = (Constants.sideBarPaginationState.pageNumber === Constants.sideBarPaginationState.totalPages) ? 'disabled' : '';
 
 		const elementToReturn = document.createDocumentFragment();
 
@@ -132,13 +146,46 @@ export const Pagination = {
 		const ulElement = document.createElement('ul');
 		ulElement.setAttribute('class', 'pagination pagination-sm mb-0');
 
+		// todo later... use this template (needs edits)
+		// const paginationMarkupTemplateString = 
+		// 	`<nav xmlns="http://www.w3.org/1999/xhtml">
+		// 		<ul class="pagination pagination-sm mb-0">
+		// 			<li class="page-item ">
+		// 				<a class="page-link text-body" tabindex="13">
+		// 					<i class="fas fa-lg fa-angle-double-left"></i>
+		// 				</a>
+		// 			</li>
+		// 			<li class="page-item ">
+		// 				<a class="page-link text-body" tabindex="13">
+		// 					<i class="fas fa-lg fa-angle-left"></i>
+		// 				</a>
+		// 			</li>
+		// 			<li class="page-item ">
+		// 				<a class="page-link text-body" tabindex="13">
+		// 					<i class="fas fa-lg fa-angle-right"></i>
+		// 				</a>
+		// 			</li>
+		// 			<li class="page-item ">
+		// 				<a class="page-link text-body" tabindex="13">
+		// 					<i class="fas fa-lg fa-angle-double-right"></i>
+		// 				</a>
+		// 			</li>
+		// 		</ul>
+		// 	</nav>`
+		
+		// first page
 		const firstPageLiElement = document.createElement('li');
-		firstPageLiElement.setAttribute('class', `page-item ${firstPage}`);
+		firstPageLiElement.setAttribute('class', `page-item ${firstPageDisabled}`);
 
 		const firstPageAElement = document.createElement('a');
 		firstPageAElement.setAttribute('class', 'page-link text-body');
 		firstPageAElement.setAttribute('tabindex', '13');
+		firstPageAElement.setAttribute('id', 'firstFactPage');
 		firstPageAElement.addEventListener('click', () => { Pagination.firstPage(); });
+		firstPageAElement.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
+			Pagination.firstPage();
+		});
 
 		const firstPageContent = document.createElement('i');
 		firstPageContent.setAttribute('class', 'fas fa-lg fa-angle-double-left');
@@ -147,13 +194,19 @@ export const Pagination = {
 		firstPageLiElement.appendChild(firstPageAElement);
 		ulElement.appendChild(firstPageLiElement);
 
+		// prev page
 		const previousPageLiElement = document.createElement('li');
-		previousPageLiElement.setAttribute('class', `page-item ${previousPage}`);
+		previousPageLiElement.setAttribute('class', `page-item ${previousPageDisabled}`);
 
 		const previousPageAElement = document.createElement('a');
 		previousPageAElement.setAttribute('class', 'page-link text-body');
 		previousPageAElement.setAttribute('tabindex', '13');
+		previousPageAElement.setAttribute('id', 'prevFactPage');
 		previousPageAElement.addEventListener('click', () => { Pagination.previousPage(); });
+		previousPageAElement.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
+			Pagination.previousPage();
+		});
 
 		const previousPageContent = document.createElement('i');
 		previousPageContent.setAttribute('class', 'fas fa-lg fa-angle-left');
@@ -162,13 +215,19 @@ export const Pagination = {
 		previousPageLiElement.appendChild(previousPageAElement);
 		ulElement.appendChild(previousPageLiElement);
 
+		// next page
 		const nextPageLiElement = document.createElement('li');
-		nextPageLiElement.setAttribute('class', `page-item ${nextPage}`);
+		nextPageLiElement.setAttribute('class', `page-item ${nextPageDisabled}`);
 
 		const nextPageAElement = document.createElement('a');
 		nextPageAElement.setAttribute('class', 'page-link text-body');
 		nextPageAElement.setAttribute('tabindex', '13');
+		nextPageAElement.setAttribute('id', 'nextFactPage');
 		nextPageAElement.addEventListener('click', () => { Pagination.nextPage(); });
+		nextPageAElement.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
+			Pagination.nextPage();
+		});
 
 		const nextPageContent = document.createElement('i');
 		nextPageContent.setAttribute('class', 'fas fa-lg fa-angle-right');
@@ -177,13 +236,19 @@ export const Pagination = {
 		nextPageLiElement.appendChild(nextPageAElement);
 		ulElement.appendChild(nextPageLiElement);
 
+		// last page
 		const lastPageLiElement = document.createElement('li');
-		lastPageLiElement.setAttribute('class', `page-item ${lastPage}`);
+		lastPageLiElement.setAttribute('class', `page-item ${lastPageDisabled}`);
 
 		const lastPageAElement = document.createElement('a');
 		lastPageAElement.setAttribute('class', 'page-link text-body');
 		lastPageAElement.setAttribute('tabindex', '13');
+		lastPageAElement.setAttribute('id', 'lastFactPage');
 		lastPageAElement.addEventListener('click', () => { Pagination.lastPage(); });
+		lastPageAElement.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
+			Pagination.lastPage();
+		});
 
 		const lastPageContent = document.createElement('i');
 		lastPageContent.setAttribute('class', 'fas fa-lg fa-angle-double-right');
@@ -194,90 +259,6 @@ export const Pagination = {
 
 		navElement.appendChild(ulElement);
 		elementToReturn.appendChild(navElement);
-		return elementToReturn;
-	},
-
-	getControlsTemplate: () => {
-		const firstPage = (Constants.sideBarPaginationState.pageNumber === 1) ? 'disabled' : '';
-		const previousPage = (Constants.sideBarPaginationState.pageNumber - 1 <= 0) ? 'disabled' : '';
-		const nextPage = (Constants.sideBarPaginationState.pageNumber + 1 > Constants.sideBarPaginationState.totalPages) ? 'disabled' : '';
-		const lastPage = (Constants.sideBarPaginationState.pageNumber === Constants.sideBarPaginationState.totalPages) ? 'disabled' : '';
-
-		const elementToReturn = document.createDocumentFragment();
-
-		const divElement = document.createElement('div');
-		divElement.setAttribute('class', 'w-100 d-flex justify-content-between py-2 px-1');
-
-		const divNestedElement = document.createElement('div');
-
-		const ulElement = document.createElement('ul');
-		ulElement.setAttribute('class', ' pagination pagination-sm mb-0');
-
-		const firstPageLiElement = document.createElement('li');
-		firstPageLiElement.setAttribute('class', `page-item ${firstPage}`);
-
-		const firstPageAElement = document.createElement('a');
-		firstPageAElement.setAttribute('class', ' page-link text-body');
-		firstPageAElement.setAttribute('tabindex', '13');
-		firstPageAElement.addEventListener('click', () => { Pagination.firstPage(); });
-
-		const firstPageContent = document.createElement('i');
-		firstPageContent.setAttribute('class', 'fas fa-lg fa-angle-double-left');
-
-		firstPageAElement.appendChild(firstPageContent);
-		firstPageLiElement.appendChild(firstPageAElement);
-		ulElement.appendChild(firstPageLiElement);
-
-		const previousPageLiElement = document.createElement('li');
-		previousPageLiElement.setAttribute('class', `page-item ${previousPage}`);
-
-		const previousPageAElement = document.createElement('a');
-		previousPageAElement.setAttribute('class', 'page-link text-body');
-		previousPageAElement.setAttribute('tabindex', '13');
-		previousPageAElement.addEventListener('click', () => { Pagination.previousPage(); });
-
-		const previousPageContent = document.createElement('i');
-		previousPageContent.setAttribute('class', 'fas fa-lg fa-angle-left');
-
-		previousPageAElement.appendChild(previousPageContent);
-		previousPageLiElement.appendChild(previousPageAElement);
-		ulElement.appendChild(previousPageLiElement);
-
-		const nextPageLiElement = document.createElement('li');
-		nextPageLiElement.setAttribute('class', `page-item ${nextPage}`);
-
-		const nextPageAElement = document.createElement('a');
-		nextPageAElement.setAttribute('class', 'page-link text-body');
-		nextPageAElement.setAttribute('tabindex', '13');
-		nextPageAElement.addEventListener('click', () => { Pagination.nextPage(); });
-
-		const nextPageContent = document.createElement('i');
-		nextPageContent.setAttribute('class', 'fas fa-lg fa-angle-right');
-
-		nextPageAElement.appendChild(nextPageContent);
-		nextPageLiElement.appendChild(nextPageAElement);
-		ulElement.appendChild(nextPageLiElement);
-
-		const lastPageLiElement = document.createElement('li');
-		lastPageLiElement.setAttribute('class', `page-item ${lastPage}`);
-
-		const lastPageAElement = document.createElement('a');
-		lastPageAElement.setAttribute('class', ' page-link text-body');
-		lastPageAElement.setAttribute('tabindex', '13');
-		lastPageAElement.addEventListener('click', () => { Pagination.lastPage(); });
-
-		const lastPageContent = document.createElement('i');
-		lastPageContent.setAttribute('class', 'fas fa-lg fa-angle-double-right');
-
-		lastPageAElement.appendChild(lastPageContent);
-		lastPageLiElement.appendChild(lastPageAElement);
-		ulElement.appendChild(lastPageLiElement);
-
-		divNestedElement.appendChild(ulElement);
-		divElement.appendChild(divNestedElement);
-
-		elementToReturn.appendChild(divElement);
-
 		return elementToReturn;
 	},
 
@@ -318,7 +299,7 @@ export const Pagination = {
 	goToFactInSidebar: (event: MouseEvent | KeyboardEvent) => {
 		if (
 			Object.prototype.hasOwnProperty.call(event, 'key') &&
-			!((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space')
+			!((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space' || (event as KeyboardEvent).key === ' ')
 		) {
 			return;
 		}

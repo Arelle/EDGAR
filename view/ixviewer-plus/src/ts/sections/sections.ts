@@ -12,7 +12,8 @@ import { HelpersUrl } from "../helpers/url";
 import { FactInput } from "../interface/fact-input";
 import { Section } from "../interface/meta";
 import { convertToSelector, ixScrollTo } from "../helpers/utils";
-
+import { defaultKeyUpHandler } from "../helpers/utils";
+import { Logger, ILogObj } from "tslog";
 
 export const Sections =
 {
@@ -25,8 +26,8 @@ export const Sections =
                 // metalinks version 2.1 doesn't have order prop
                 // TODO: group section menucats together at least
                 // read first, splice others that match it behind it.
-                a.order = a.order || fakeOrder++;
-                b.order = b.order || fakeOrder++;
+                a.order = a.order || a.position || fakeOrder++;
+                b.order = b.order || b.position || fakeOrder++;
                 return Number(a.order) - Number(b.order);
             }
         });
@@ -72,6 +73,8 @@ export const Sections =
 
     handleSectionLinkClick: (event: MouseEvent | KeyboardEvent) => {
         const eventTarget = event.target instanceof Element ? event.target : null;
+        const startPerformance = performance.now();
+
         if (!eventTarget)
         {
             console.error(`Not a valid Section Link: ${event.target}`);
@@ -79,7 +82,8 @@ export const Sections =
         }
 
         const keyButNotSpaceOrEnter = Object.prototype.hasOwnProperty.call(event, 'key')
-            && !((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space');
+            && !((event as KeyboardEvent).key === 'Enter' || 
+            (event as KeyboardEvent).key === 'Space' || (event as KeyboardEvent).key === ' ');
         if (keyButNotSpaceOrEnter) return;
 
         const sections = Constants.getSectionsFromSessionStorage();
@@ -94,7 +98,6 @@ export const Sections =
                 break;
             }
         }
-
         
         const scrollToSection = (section: Section) =>
         {
@@ -119,16 +122,19 @@ export const Sections =
 
         const section = sectionInCurrentInstance ? { id } : { name, contextRef };
         const action = targetSectionData ? () => scrollToSection(targetSectionData) : () => scrollToFact(section);
-        if (sectionInCurrentInstance)
-        {
+        if (sectionInCurrentInstance) {
             action();
-        }
-        else
-        {
+        } else {
             const instanceIndex = Number(eventTarget?.getAttribute('fact-instance-index'));
             const targetInstanceFile = eventTarget?.getAttribute('fact-file') || null;
 
             ConstantsFunctions.changeInstance(instanceIndex, targetInstanceFile, action);
+        }
+        const endPerformance = performance.now();
+        if (LOGPERFORMANCE) {
+            const log: Logger<ILogObj> = new Logger();
+            // takes a lot longer if doc change, which makes sense
+            log.debug(`Section Link Handler completed in: ${(endPerformance - startPerformance).toFixed(2)}ms`);
         }
     },
 
@@ -315,7 +321,7 @@ export const Sections =
 
                 <!-- header -->
                 <div class="accordion-header px-0 py-0">
-                    <h5 class="mb-0">
+                    <h5 class="mb-0 h5-override">
                         <button 
                             id="${sectionItem.instanceSectionHeaderId}"
                             data-cy="${sectionItem.instanceSectionHeaderId}"
@@ -360,7 +366,7 @@ export const Sections =
         const cardHeaderString =
             `<div id="${sectionItem.menuCatClean}" class="menu-cat px-0 py-0">
                 <div class="menu-cat-header ">
-                    <h6 class="mb-0">
+                    <h6 class="mb-0 h6-override">
                         <button 
                             id="section-header-${sectionItem.menuCatMapped}"
                             class="btn d-flex justify-content-between align-items-center"
@@ -387,7 +393,7 @@ export const Sections =
         const menuCatDoc = domParser.parseFromString(cardHeaderString, 'text/html');
         const menuCatElem = menuCatDoc.querySelector('body > div') as HTMLElement;
 
-        document.querySelector(`#${sectionItem.instanceSectionBodyId} div.accordion-body`)?.appendChild(menuCatElem);
+        document.querySelector(`#${CSS.escape(sectionItem.instanceSectionBodyId)} div.accordion-body`)?.appendChild(menuCatElem);
     },
 
     createSectionItemLink: (sectionItem: Section) => {
@@ -398,6 +404,7 @@ export const Sections =
                 inline-fact-selector='${sectionItem.inlineFactSelector}'
                 fact-file="${sectionItem.fact?.file}"
                 fact-name="${sectionItem.fact?.name}"
+                position="${sectionItem.position}"
                 class="click section-link list-group-item list-group-item-action d-flex align-items-center" 
                 selected-fact="false"
                 tabindex="2"
@@ -412,8 +419,11 @@ export const Sections =
 
         for(const eType of ["click", "keyup"] as const)
         {
-            sectionFactLink.addEventListener(eType, (eventElem) =>
-                Sections.handleSectionLinkClick(eventElem))
+            sectionFactLink.addEventListener(eType, (eventElem) =>{
+                if (eventElem instanceof KeyboardEvent && !defaultKeyUpHandler(eventElem))
+                    return;
+                Sections.handleSectionLinkClick(eventElem)
+        });
         }
 
         document.getElementById(sectionItem.menuCatBodyId)?.appendChild(sectionFactLink);

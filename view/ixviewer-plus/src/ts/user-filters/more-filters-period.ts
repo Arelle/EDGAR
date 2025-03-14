@@ -8,11 +8,11 @@ import { UserFiltersState } from "./state";
 
 export const UserFiltersMoreFiltersPeriod = {
 
-    parentClick: (event: MouseEvent | KeyboardEvent, parentIndex: number | string, input: Array<string>) => {
+    parentClick: (event: MouseEvent | KeyboardEvent, parentIndex: number | string, inputs: Array<string>) => {
         const addIfTrue = UserFiltersMoreFiltersPeriod.checkToggleAll(event, parentIndex);
         const tempSet = new Set(UserFiltersState.getPeriod);
-        input.forEach((current) => {
-            addIfTrue ? tempSet.add(current) : tempSet.delete(current);
+        inputs.forEach((periodInput) => {
+            addIfTrue ? tempSet.add(periodInput) : tempSet.delete(periodInput);
         });
         UserFiltersState.getPeriod = [...tempSet];
         FlexSearch.filterFacts();
@@ -21,8 +21,10 @@ export const UserFiltersMoreFiltersPeriod = {
     childClick: (input: string) => {
         const tempSet = new Set(UserFiltersState.getPeriod);
         if (tempSet.has(input)) {
+            (document.querySelector(`#user-filters-periods [name='${input}']`) as HTMLInputElement).checked = false;
             tempSet.delete(input)
         } else {
+            (document.querySelector(`#user-filters-periods [name='${input}']`) as HTMLInputElement).checked = true;
             tempSet.add(input);
         }
         UserFiltersState.getPeriod = [...tempSet];
@@ -30,7 +32,7 @@ export const UserFiltersMoreFiltersPeriod = {
     },
 
     checkToggleAll: (event: MouseEvent | KeyboardEvent, parentIndex: number | string) => {
-        const foundInputs = document.querySelectorAll('#period-filters-accordion-' + parentIndex + ' input[type=checkbox]');
+        const foundInputs = document.querySelectorAll(`#period-filters-accordion-${parentIndex} input[type=checkbox]`);
         const foundInputsArray = Array.prototype.slice.call(foundInputs);
         if ((event.target as HTMLInputElement).checked) {
             // check all of the children
@@ -38,8 +40,7 @@ export const UserFiltersMoreFiltersPeriod = {
                 current.checked = true;
             });
             return true;
-        }
-        else {
+        } else {
             // uncheck all of the children
             foundInputsArray.forEach((current) => {
                 current.checked = false;
@@ -47,9 +48,4 @@ export const UserFiltersMoreFiltersPeriod = {
             return false;
         }
     },
-
-    checkToggle: (event: MouseEvent | KeyboardEvent, parentIndex: number | string, childIndex: number | string) => {
-        UserFiltersMoreFiltersPeriod.setStateFromChild(parentIndex, childIndex, (event.target as HTMLInputElement).checked);
-    },
-
 };

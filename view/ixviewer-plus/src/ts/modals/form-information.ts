@@ -8,6 +8,7 @@ import { Modals } from "./modals";
 import { Constants } from "../constants/constants";
 import { FactMap } from "../facts/map";
 import { ConstantsFunctions } from "../constants/functions";
+import { defaultKeyUpHandler } from "../helpers/utils";
 
 export const ModalsFormInformation = {
 
@@ -24,12 +25,14 @@ export const ModalsFormInformation = {
 	}],
 
 	clickEvent: (event: Event | KeyboardEvent) => {
+		
 		if (
 			Object.prototype.hasOwnProperty.call(event, 'key') &&
-			!((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space')
+			!((event as KeyboardEvent).key === 'Enter' || (event as KeyboardEvent).key === 'Space' || (event as KeyboardEvent).key === ' ')
 		) {
 			return;
 		}
+			
 		Modals.close(event);
 
 		document.getElementById('form-information-modal')?.classList.remove('d-none');
@@ -88,6 +91,7 @@ export const ModalsFormInformation = {
 			Modals.close(event);
 		});
 		document.getElementById('dialog-box-close')?.addEventListener('keyup', (event: KeyboardEvent) => {
+			if (!defaultKeyUpHandler(event)) return;
 			Modals.close(event);
 		});
 
@@ -190,7 +194,7 @@ export const ModalsFormInformation = {
 				tr.appendChild(th);
 				tr.appendChild(td);
 				document.getElementById('form-information-modal-carousel-page-1')?.append(tr);
-				if((current['label']=='Fiscal Year/Period Focus' || current['label']=='Current Fiscal Year End') && td.textContent=='Not Available.') {
+				if ((current['label']=='Fiscal Year/Period Focus' || current['label']=='Current Fiscal Year End') && td.textContent=='Not Available.') {
 					tr.parentNode?.removeChild(tr);
 				}
 			}

@@ -48,7 +48,15 @@ Input file parameters may be in JSON (without newlines for pretty printing as be
    datetimeForTesting: xml-syntax datetime to override clock time for test/debug purposes
    dqcRuleFilter: null or absent for all DQC rules, else regular expression to filter which rules run
        (e.g. "DQC.US.00(04|15)" ), but not including the id suffix (which is not filterable)
-       If parameter is absent and config.xml for disclosureSystem options specifies a dqc-rule-filter, it will be in effect
+       If parameter is absent and config.xml for disclosureSystem options specifies a dqc-rule-filter, it will be in effect.
+       For XULE implementations XULE:yyyy specifies to run XULE for taxonomies beginning with year yyyy (default 2025).
+       E.g. "XULE:2026|DQC.US.00(04|15)" would specify running XULE-implemented validation for 2026 or later US-GAAP else 
+       run only the python-implmented rules DQC.US.0004 and DQC.US.0015.  Or to block XULE and match all Python-coded rules "XULE:9999|.*"
+       When running XULE-implemented rules the following additional entries activate XULE features
+           XULE_time:secs - print xule rule run times for rules > 1 sec on stdout
+           XULE_debug - print xule debug on stdout
+           XULE_trace - print xule trace on stdout
+           e.g. XULE:2023|XULE_time:.5|XULE_debug|.* to run XULE after 2023 with timings over 1/2 sec and debug to stdout, else all python-coded rules
    # fee table instance validations (only):
    "attachmentDocumentType": "EX-FILINGS FEES",  # this field is mandatory for fee table instance validations else instance will be validated as a financial report
    # attachmentDocumentType must match an entry in feeTaggingExhibitTypes (Consts.py) for instance to be recognized as a fee table instance
@@ -67,17 +75,17 @@ Input file parameters may be in JSON (without newlines for pretty printing as be
 
 For test case operation, the above fields accepted from testcase variation:
   <data>
-     <conf:parameter name="cikName" datatype="xs:string" value="cik1:name1" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="cikName" datatype="xs:string" value="cik2:name2" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="cikName" datatype="xs:string" value="cik3:name3" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="submissionType" datatype="xs:string" value="8-K" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="periodOfReport" datatype="xs:string" value="12-31-2017" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="voluntaryFilerFlag" datatype="xs:boolean" value="true" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="coregCikFileNumber" datatype="xs:string" value="cik1:fileNbr1" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="coregCikFileNumber" datatype="xs:string" value="cik2:fileNbr2" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="coregCikFileNumber" datatype="xs:string" value="cik3:fileNbr3" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="sroId" datatype="xs:string" value="NASD" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
-     <conf:parameter name="sroId" datatype="xs:string" value="NYSE" xmlns="" xmlns:conf="http://edgar/2009/conformance" />
+     <parameter name="cikName" datatype="xs:string" value="cik1:name1" />
+     <parameter name="cikName" datatype="xs:string" value="cik2:name2" />
+     <parameter name="cikName" datatype="xs:string" value="cik3:name3" />
+     <parameter name="submissionType" datatype="xs:string" value="8-K" />
+     <parameter name="periodOfReport" datatype="xs:string" value="12-31-2017" />
+     <parameter name="voluntaryFilerFlag" datatype="xs:boolean" value="true" />
+     <parameter name="coregCikFileNumber" datatype="xs:string" value="cik1:fileNbr1" />
+     <parameter name="coregCikFileNumber" datatype="xs:string" value="cik2:fileNbr2" />
+     <parameter name="coregCikFileNumber" datatype="xs:string" value="cik3:fileNbr3" />
+     <parameter name="sroId" datatype="xs:string" value="NASD" />
+     <parameter name="sroId" datatype="xs:string" value="NYSE" />
      ...
      <instance readMeFirst="true">e9999999ng-20081231.xml</instance>
    <data>
@@ -137,6 +145,10 @@ from .Consts import (feeTagEltsNotRelevelable, feeTagMessageCodesRelevelable, fe
                      exhibitTypesPrivateNotDisseminated, primaryAttachmentDocumentTypesPattern)
 from .Filing import validateFiling
 from .MessageNumericId import messageNumericId
+from .XuleInterface import (menuTools as xuleMenuTools, validateMenuTools as xuleValidateMenuTools,
+                            cntrlrCmdLineUtilityRun as xuleCntrlrCmdLineUtilityRun,
+                            cmdOptions as xuleCmdOptions, init as xuleInit, close as xuleClose,
+                            blockXuleValidateFinally, xule_error_code_pattern)
 import regex as re
 from collections import defaultdict
 
@@ -154,7 +166,7 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
         return
 
     val.params = {}
-    parameterNames = ("CIK", "cik", "cikList", "cikNameList", "submissionType", "exhibitType", "attachmentDocumentType", # CIK or cik both allowed
+    parameterNames = {"CIK", "cik", "cikList", "cikNameList", "submissionType", "exhibitType", "attachmentDocumentType", # CIK or cik both allowed
                       "itemsList", "accessionNumber", "entity.repFileNum",
                       "periodOfReport", "entityRegistration.fyEnd", "submissionHeader.fyEnd", "voluntaryFilerFlag",
                       "wellKnownSeasonedIssuerFlag", "shellCompanyFlag", "acceleratedFilerStatus", "smallBusinessFlag",
@@ -163,7 +175,7 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
                       "rptIncludeAllClassesFlag", "rptSeriesClassInfo.classIds", "newClass2.classIds",
                       "eligibleFundFlag", "pursuantGeneralInstructionFlag", "filerNewRegistrantFlag",
                       "datetimeForTesting", "dqcRuleFilter", "saveCoverFacts",
-                      "feeRate", "feeValuesFromFacts", "saveFeeFacts", "fiscalYearEnd", "intrstRate", "issrNm", "fileNumber", "closedEndedCompanyFlag")
+                      "feeRate", "feeValuesFromFacts", "saveFeeFacts", "fiscalYearEnd", "intrstRate", "issrNm", "fileNumber", "closedEndedCompanyFlag"}
     boolParameterNames = {"voluntaryFilerFlag", "wellKnownSeasonedIssuerFlag", "shellCompanyFlag", "acceleratedFilerStatus",
                           "smallBusinessFlag", "emergingGrowthCompanyFlag", "exTransitionPeriodFlag", "rptIncludeAllSeriesFlag",
                           "filerNewRegistrantFlag", "pursuantGeneralInstructionFlag", "eligibleFundFlag", "closedEndedCompanyFlag"}
@@ -200,9 +212,9 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
                 else:
                     parameters[paramQName] = ("", "".join(eisElt.itertext()).strip())
     if parameters: # parameter-provided CIKs and registrant names
-        for paramName in parameterNames:
-            p = parameters.get(ModelValue.qname(paramName,noPrefixIsNoNamespace=True))
-            if p and len(p) == 2 and p[1] not in ("null", "None", None):
+        for paramQName, p in parameters.items():
+            paramName = paramQName.localName # allow parameters to be in any namespace (no xmlns="" required)
+            if paramName in parameterNames and p and len(p) == 2 and p[1] not in ("null", "None", None):
                 v = p[1] # formula dialog and cmd line formula parameters may need type conversion
                 if isinstance(v, str):
                     if paramName in boolParameterNames:
@@ -313,6 +325,8 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
         efmFiling.submissionType = val.params.get("submissionType")
         efmFiling.attachmentDocumentType = val.params.get("attachmentDocumentType")
 
+    blockXuleValidateFinally(val) # block XULE Validate.Finally for RSS feed and testcases
+
 def severityReleveler(modelXbrl, level, messageCode, args, **kwargs):
     if getattr(modelXbrl.modelManager.disclosureSystem, "EFMplugin", False):
         if messageCode and feeTagMessageCodesRelevelable.match(messageCode) and level == "ERROR":
@@ -323,6 +337,10 @@ def severityReleveler(modelXbrl, level, messageCode, args, **kwargs):
                 if (isinstance(modelObject, ModelFact) and
                     str(modelObject.qname) not in feeTagEltsNotRelevelable):
                         level = "WARNING"
+        if messageCode and xule_error_code_pattern.match(messageCode) and level == "ERROR":
+            level = "WARNING"
+            if args.get("severity") == "error":
+                args["severity"] = "warning"
         # add message number
         messageCode, msgNum = messageNumericId(modelXbrl, level, messageCode, args)
         if msgNum:
@@ -429,17 +447,20 @@ def guiTestcasesStart(cntlr, modelXbrl, *args, **kwargs):
     modelManager = cntlr.modelManager
     if cntlr.hasGui: # enable EdgarRenderer to initiate ixviewer irregardless of whether an EFM disclosure system is active
         for pluginXbrlMethod in pluginClassMethods("EdgarRenderer.Gui.Run"):
+            xuleInit(cntlr)
             pluginXbrlMethod(cntlr, modelXbrl, *args,
                              # pass plugin items to GUI mode of EdgarRenderer
                              exhibitTypesStrippingOnErrorPattern=exhibitTypesStrippingOnErrorPattern,
                              exhibitTypesPrivateNotDisseminated=exhibitTypesPrivateNotDisseminated,
                              setReportAttrs=setReportAttrs, **kwargs)
+            xuleClose(cntlr)
 
 def testcasesStart(cntlr, options, modelXbrl, *args, **kwargs):
     # a test or RSS cases run is starting, in which case testcaseVariation... events have unique efmFilings
     modelManager = cntlr.modelManager
     if (hasattr(modelManager, "efmFiling") and
-        modelXbrl.modelDocument and modelXbrl.modelDocument.type in Type.TESTCASETYPES):
+        modelXbrl.modelDocument and
+        (modelXbrl.modelDocument.type in Type.TESTCASETYPES or modelXbrl.modelDocument.type == Type.RSSFEED)):
         efmFiling = modelManager.efmFiling
         efmFiling.close() # not needed, dereference
         del modelManager.efmFiling
@@ -478,6 +499,7 @@ def xbrlLoaded(cntlr, options, modelXbrl, entryPoint, *args, **kwargs):
                 if hasattr(supplementalXbrl, "ixdsDocUrls"):
                     entryPoint = {"ixds":[{"file":f} for f in supplementalXbrl.ixdsDocUrls]}
                 xbrlLoaded(cntlr, options, supplementalXbrl, entryPoint)
+            xuleInit(cntlr)
         elif modelXbrl.modelDocument.type == Type.RSSFEED:
             testcasesStart(cntlr, options, modelXbrl)
 
@@ -607,8 +629,9 @@ def filingEnd(cntlr, options, filesource, entrypointFiles, sourceZipStream=None,
 
 def rssItemXbrlLoaded(modelXbrl, rssWatchOptions, rssItem, *args, **kwargs):
     # Validate of RSS feed item (simulates filing & cmd line load events
-    if hasattr(rssItem.modelXbrl, "efmOptions"):
-        testcaseVariationXbrlLoaded(rssItem.modelXbrl, modelXbrl)
+    if not hasattr(rssItem.modelXbrl, "efmOptions"): # may have already been set by EdgarRenderer in gui startup
+        rssItem.modelXbrl.efmOptions = rssWatchOptions  # save options in rss's modelXbrl
+    testcaseVariationXbrlLoaded(rssItem.modelXbrl, modelXbrl, None)
 
 def rssItemValidated(val, modelXbrl, rssItem, *args, **kwargs):
     # After validate of RSS feed item (simulates report and end of filing events)
@@ -629,6 +652,7 @@ def testcaseVariationXbrlLoaded(testcaseModelXbrl, instanceModelXbrl, modelTestc
             # this event is called for filings (of instances) as well as test cases, for test case it just keeps options accessible
             for pluginXbrlMethod in pluginClassMethods("EdgarRenderer.Filing.Start"):
                 pluginXbrlMethod(cntlr, options, entrypointFiles, modelManager.efmFiling)
+        xuleInit(cntlr)
         modelManager.efmFiling.addReport(instanceModelXbrl)
         _report = modelManager.efmFiling.reports[-1]
         _report.entryPoint = entrypointFiles[0]
@@ -665,6 +689,7 @@ def testcaseVariationValidated(testcaseModelXbrl, instanceModelXbrl, errors=None
         filingEnd(modelManager.cntlr, efmFiling.options, modelManager.filesource, [])
         # flush logfile (assumed to be buffered, empty the buffer for next filing)
         testcaseModelXbrl.modelManager.cntlr.logHandler.flush()
+        xuleClose(modelManager.cntlr)
 
 def fileSourceFile(cntlr, filepath, binary, stripDeclaration):
     modelManager = cntlr.modelManager
@@ -695,6 +720,8 @@ def commandLineOptionExtender(parser, *args, **kwargs):
                       action="store_true",
                       dest="buildFTValidationsFile",
                       help=_("Build EFM Validation deprecated concepts file (pre-cache before use)"))
+    # xule cmd options
+    xuleCmdOptions(parser, *args, **kwargs)
 
 def utilityRun(self, options, *args, **kwargs):
     if options.buildDeprecatedConceptsFile:
@@ -703,6 +730,8 @@ def utilityRun(self, options, *args, **kwargs):
     if options.buildFTValidationsFile:
         from .Util import buildFTValidationsFile
         buildFTValidationsFile(self)
+    # call Xule's cntrlrCmdLineUtilityRun
+    xuleCntrlrCmdLineUtilityRun(self, options, *args, **kwargs)
 
 class Filing:
     def __init__(self, cntlr, options=None, filesource=None, entrypointfiles=None, sourceZipStream=None, responseZipStream=None, errorCaptureLevel=None):
@@ -895,7 +924,7 @@ class Report:
 __pluginInfo__ = {
     # Do not use _( ) in pluginInfo itself (it is applied later, after loading
     'name': 'Validate EFM',
-    'version': '1.25.0.1', # SEC EDGAR release 25.0.1
+    'version': '1.25.1', # SEC EDGAR release 25.1
     'description': '''EFM Validation.''',
     'license': 'Apache-2',
     'import': ('EDGAR/transform',), # SEC inline can use SEC transformations
@@ -927,5 +956,8 @@ __pluginInfo__ = {
     'FileSource.File': fileSourceFile,
     'FileSource.Exists': fileSourceExists,
     'Logging.Severity.Releveler': severityReleveler,
-    'InlineDocumentSet.IsolateSeparateIXDSes': isolateSeparateIXDSes
+    'InlineDocumentSet.IsolateSeparateIXDSes': isolateSeparateIXDSes,
+    # Xule interfaces
+    'CntlrWinMain.Menu.Tools': xuleMenuTools,
+    'CntlrWinMain.Menu.Validation': xuleValidateMenuTools
 }

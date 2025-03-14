@@ -36,6 +36,28 @@ var ErrorsMajor = {
     window.location.assign(HelpersUrl.getFormAbsoluteURL + HelpersUrl.getHTMLFileName);
     Errors.updateMainContainerHeight();
   },
+
+  unsafeDocumentContentDispositionHeader : function( ) {
+      var content = document.createTextNode('The inline XBRL doc param must refer to an inline XBRL document that is ' +
+        'served with a Content-Disposition header that is unset or set to a value of "inline".');
+      var element = document.createElement('div');
+      element.setAttribute('class', 'alert-height alert alert-danger show mb-0');
+      element.appendChild(content);
+      document.getElementById('error-container').appendChild(element);
+      
+      Errors.updateMainContainerHeight();
+  },
+
+  unsafeDocumentContentTypeHeader : function( ) {
+    var content = document.createTextNode('The inline XBRL doc param must refer to an inline XBRL document that is ' +
+      'served with an HTML Content-Type header.');
+    var element = document.createElement('div');
+    element.setAttribute('class', 'alert-height alert alert-danger show mb-0');
+    element.appendChild(content);
+    document.getElementById('error-container').appendChild(element);
+    
+    Errors.updateMainContainerHeight();
+  },
   
   urlParams : function( ) {
     var content = document

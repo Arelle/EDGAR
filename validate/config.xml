@@ -6,7 +6,7 @@
 
   <DisclosureSystem
      names="US SEC (Edgar Filing Manual, Strict)|efm|efm-strict"
-     description="US SEC Edgar Filing Manual v72 Release 25.0.1\n
+     description="US SEC Edgar Filing Manual v73 Release 25.1\n
      Default language en-US (en allowed in some cases per EFM)\n
      CIK identifier patterns\n
      Disallowed references are blocked and not loaded (same as SEC production system)\n
@@ -16,7 +16,7 @@
      blockDisallowedReferences="true"
      defaultXmlLang="en-US"
      defaultLanguage="English"
-     standardTaxonomiesUrl="resources/edgartaxonomies/edgartaxonomies-25-0-1.xml"
+     standardTaxonomiesUrl="resources/edgartaxonomies/edgartaxonomies-25-1.xml"
      utrUrl="http://www.xbrl.org/utr/2024-10-22/utr.xml"
      validateFileText="true"
      validateEntryText="true"
@@ -44,7 +44,7 @@
      />
   <DisclosureSystem
      names="US SEC (Edgar Filing Manual, Pragmatic)|efm-blocking|efm-pragmatic"
-     description="US SEC Edgar Filing Manual v72 Release 25.0.1\n
+     description="US SEC Edgar Filing Manual v73 Release 25.1\n
      Default language en-US (en allowed in some cases per EFM)\n
      CIK identifier patterns\n
      Allowed references http://www.sec.gov/info/edgar/edgartaxonomies.shtml\n
@@ -55,7 +55,7 @@
      blockDisallowedReferences="true"
      defaultXmlLang="en-US"
      defaultLanguage="English"
-     standardTaxonomiesUrl="resources/edgartaxonomies/edgartaxonomies-25-0-1.xml"
+     standardTaxonomiesUrl="resources/edgartaxonomies/edgartaxonomies-25-1.xml"
      utrUrl="http://www.xbrl.org/utr/2024-10-22/utr.xml"
      validateFileText="true"
      validateEntryText="true"
@@ -85,9 +85,52 @@
      standardTaxonomyDatabase="efmStandardTaxonomies.db"
      standardTaxonomyUrlPattern="http://www.fasb.org|http://xbrl.sec.gov|http://www.xbrl.org|http://taxonomies.xbrl.us|http://xbrl.us/us-gaap|http://xbrl.ici.org/rr|http://xbrl.ifrs.org/taxonomy"
      />
+  <DisclosureSystem
+     names="US SEC (Edgar Filing Manual, Pragmatic, NonBlocking for testing)|efm-pragmatic-nonblocking"
+     description="US SEC Edgar Filing Manual v72 Release 24.4\n
+     Default language en-US (en allowed in some cases per EFM)\n
+     CIK identifier patterns\n
+     Allowed references http://www.sec.gov/info/edgar/edgartaxonomies.shtml\n
+     Disallowed references are blocked and not loaded (same as SEC production system)\n
+     No content (semantic) tests are reported"
+     validationType="EFM"
+     exclusiveTypesPattern="EFM|GFM|HMRC|SBR.NL|FERC"
+     blockDisallowedReferences="true"
+     defaultXmlLang="en-US"
+     defaultLanguage="English"
+     standardTaxonomiesUrl="resources/edgartaxonomies/edgartaxonomies-25-1.xml"
+     utrUrl="http://www.xbrl.org/utr/2022-02-16/utr.xml"
+     validateFileText="true"
+     validateEntryText="true"
+     allowedExternalHrefPattern="https?:"
+	 allowedImageTypes = '{
+	    "data-scheme": false,
+	    "img-file-extensions": ["gif", "jpg"],
+	    "disallow-animated": true,
+	    "mime-types": []
+	    }'
+     identifierSchemePattern="^http://www\.sec\.gov/CIK$"
+     identifierValuePattern="^[0-9]{10}$"
+     identifierValueName="CIK"
+     contextElement="segment"
+     roleDefinitionPattern="^[0-9]+ - (Statement|Disclosure|Schedule|Document) - [^\n]*\S$"
+     labelCheckPattern="[ \n\r\t]{2,}|&lt;|&amp;lt;|&amp;#60;|&amp;#x3C"
+     labelTrimPattern="[ \n\r\t]"
+     deiNamespacePattern="^http://xbrl\.us/dei/|^http://xbrl\.sec\.gov/dei"
+     deiAmendmentFlagElement="AmendmentFlag"
+     deiCurrentFiscalYearEndDateElement="CurrentFiscalYearEndDate"
+     deiDocumentFiscalYearFocusElement="DocumentFiscalYearFocus"
+     deiDocumentPeriodEndDateElement="DocumentPeriodEndDate"
+     deiFilerIdentifierElement="EntityCentralIndexKey"
+     deiFilerNameElement="EntityRegistrantName"
+     logLevelFilter="(?!.*-semantic$)"
+     logCodeFilter="(?!EFM.6.05.28.linkrole|EFM.6.07.06|EFM.6.10.01.missingLabelLinkbase)"
+     standardTaxonomyDatabase="efmStandardTaxonomies.db"
+     standardTaxonomyUrlPattern="http://www.fasb.org|http://xbrl.sec.gov|http://www.xbrl.org|http://taxonomies.xbrl.us|http://xbrl.us/us-gaap|http://xbrl.ici.org/rr|http://xbrl.ifrs.org/taxonomy"
+     />
    <DisclosureSystem
       names="US SEC (Edgar Filing Manual, Liberal)|efm-nonblocking|efm-liberal"
-      description="US SEC Edgar Filing Manual v72 Release 25.0.1\n
+      description="US SEC Edgar Filing Manual v73 Release 25.1\n
       Default language en-US (en allowed in some cases per EFM)\n
       CIK identifier patterns\n
       Allowed references http://www.sec.gov/info/edgar/edgartaxonomies.shtml\n
@@ -224,7 +267,7 @@
      defaultXmlLang="en-US"
      defaultLanguage="English"
      standardTaxonomiesUrl="resources/edgartaxonomies/edgartaxonomies-all-years.xml"
-     validTaxonomiesUrl="resources/edgartaxonomies/edgartaxonomies-25-0-1.xml"
+     validTaxonomiesUrl="resources/edgartaxonomies/edgartaxonomies-25-1.xml"
      utrUrl="http://www.xbrl.org/utr/2024-10-22/utr.xml"
      validateFileText="true"
      validateEntryText="true"

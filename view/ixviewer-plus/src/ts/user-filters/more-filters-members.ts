@@ -17,21 +17,22 @@ export const UserFiltersMoreFiltersMembers = {
             (document.getElementById('user-filters-members')?.querySelector(`[name='${input}']`) as HTMLInputElement).checked = true;
             tempSet.add(input);
         }
+
         UserFiltersState.getMembers = [...tempSet];
 
         FlexSearch.filterFacts();
     },
 
-    parentClick: (input: Array<{ type: string, value: string }>, element: HTMLInputElement) => {
+    parentClick: (memberInputs: Array<{ type: string, value: string }>, element: HTMLInputElement) => {
         const addIfTrue = element.checked;
         const tempSet = new Set(UserFiltersState.getMembers);
-        input.forEach((current) => {
+        memberInputs.forEach((input) => {
             if (addIfTrue) {
-                tempSet.add(current.value);
-                (document.getElementById('user-filters-members')?.querySelector(`[name='${current.value}']`) as HTMLInputElement).checked = true;
+                tempSet.add(input.value);
+                (document.getElementById('user-filters-members')?.querySelector(`[name='${input.value}']`) as HTMLInputElement).checked = true;
             } else {
-                tempSet.delete(current.value);
-                (document.getElementById('user-filters-members')?.querySelector(`[name='${current.value}']`) as HTMLInputElement).checked = false;
+                tempSet.delete(input.value);
+                (document.getElementById('user-filters-members')?.querySelector(`[name='${input.value}']`) as HTMLInputElement).checked = false;
             }
         });
 

@@ -5,6 +5,7 @@
 
 import { FactMap } from "../facts/map";
 import { UserFiltersMoreFiltersMembers } from "./more-filters-members";
+import { stopPropPrevDefault } from "../helpers/utils";
 
 export const UserFiltersMoreFiltersMembersSetUp = {
 
@@ -14,7 +15,7 @@ export const UserFiltersMoreFiltersMembersSetUp = {
 
     setMembers: () => {
         const members = FactMap.getAllMembers();
-        document.getElementById("filters-members-count").innerText = members.length;
+        document.getElementById("filters-members-count")!.innerText = members.length.toString();
         UserFiltersMoreFiltersMembersSetUp.populate(members);
     },
 
@@ -22,11 +23,9 @@ export const UserFiltersMoreFiltersMembersSetUp = {
         let typedCount = 0;
         let explicitCount = 0;
         const isContainerBuild = [false, false];
-        members.forEach((
-            current
-        ) => {
-            const indexType = current.type === "explicit" ? 0 : 1;
-            current.type === "explicit" ? explicitCount++ : typedCount++;
+        members.forEach((member) => {
+            const indexType = member.type === "explicit" ? 0 : 1;
+            member.type === "explicit" ? explicitCount++ : typedCount++;
             if (!isContainerBuild[indexType]) {
                 const div = document.createElement("div");
                 div.setAttribute("data-bs-parent", "#user-filters-members");
@@ -56,21 +55,23 @@ export const UserFiltersMoreFiltersMembersSetUp = {
             input.setAttribute("type", "checkbox");
             input.setAttribute("tabindex", "9");
             input.classList.add("form-check-input");
-            input.setAttribute('name', current.value.toString());
+            input.setAttribute('name', member.value.toString());
             input.addEventListener("click", () => {
-                UserFiltersMoreFiltersMembers.clickEvent(current.value);
+                UserFiltersMoreFiltersMembers.clickEvent(member.value);
             });
-            input.addEventListener("keyup", () => {
-                UserFiltersMoreFiltersMembers.clickEvent(current.value);
+            input.addEventListener("keyup", (event: KeyboardEvent)  => {
+                if (event instanceof KeyboardEvent && (event.key === 'Space' || event.key === ' ')) {
+                    stopPropPrevDefault(event);
+                    UserFiltersMoreFiltersMembers.clickEvent(member.value);
+                }
             });
 
-            const text = document.createTextNode(current.value);
+            const text = document.createTextNode(member.value);
             label.append(input);
             label.append(text);
             div2.append(label);
             div.append(div2);
-            document
-                .getElementById(`members-filters-accordion-${indexType}`)?.append(div);
+            document.getElementById(`members-filters-accordion-${indexType}`)?.append(div);
         });
         // update typed / explitic counts
         if (typedCount > 0) {
@@ -88,14 +89,35 @@ export const UserFiltersMoreFiltersMembersSetUp = {
             // just explicit
             UserFiltersMoreFiltersMembers.parentClick(
                 members.filter(element => element.type === 'explicit'),
-                document.getElementById("members-all-0") as HTMLInputElement);
+                document.getElementById("members-all-0") as HTMLInputElement
+            );
+        });
+        document.getElementById("members-all-0")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            // just explicit
+            if (event instanceof KeyboardEvent && (event.key === 'Space' || event.key === ' ')) {
+                document.getElementById("members-all-0")?.click();
+                UserFiltersMoreFiltersMembers.parentClick(
+                    members.filter(element => element.type === 'explicit'),
+                    document.getElementById("members-all-0") as HTMLInputElement
+                );
+            }
         });
         document.getElementById("members-all-1")?.addEventListener("click", () => {
-                // just implicit
+            // just implicit
+            UserFiltersMoreFiltersMembers.parentClick(
+                members.filter(element => element.type === 'implicit'),
+                document.getElementById("members-all-1") as HTMLInputElement
+            );
+        });
+        document.getElementById("members-all-1")?.addEventListener("keyup", (event: KeyboardEvent) => {
+            // just explicit
+            if (event instanceof KeyboardEvent && (event.key === 'Space' || event.key === ' ')) {
+                document.getElementById("members-all-1")?.click();
                 UserFiltersMoreFiltersMembers.parentClick(
-                    members.filter(element => element.type === 'implicit'),
+                    members.filter(element => element.type === 'explicit'),
                     document.getElementById("members-all-1") as HTMLInputElement
                 );
-            });
+            }
+        });
     }
 };

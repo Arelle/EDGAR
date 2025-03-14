@@ -30,7 +30,7 @@ var Links = {
     var foundLinksArray = Array.prototype.slice.call(foundLinks);
     
     foundLinksArray.forEach(function( current ) {
-      HelpersUrl.addLinkattributes(current);
+      HelpersUrl.addLinkAttributes(current);
     });
     
   },

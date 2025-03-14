@@ -144,11 +144,9 @@ export class FetchAndMerge
                 metalinks = meta;
                 this.instances = metalinks.instances;
 
-                if (!Array.isArray(summ.InputFiles?.File)) 
-                    summ.InputFiles.File = [summ.InputFiles?.File]
+                if (!Array.isArray(summ.InputFiles?.File)) summ.InputFiles.File = [summ.InputFiles?.File];
                 
-                isNcsr = summ.InputFiles?.File?.reduce((acc, { _attributes }) =>
-                {
+                isNcsr = summ.InputFiles?.File?.reduce((acc, { _attributes }) => {
                     return acc || _attributes?.isNcsr == "true";
                 }, isNcsr);
             }
@@ -488,6 +486,7 @@ export class FetchAndMerge
                 measure: this.setMeasureInfo(attributes.unitRef || "", unit),
                 scale: setScaleInfo(attributes.scale),
                 decimals: this.setDecimalsInfo(attributes.decimals || ""),
+                decimalsVal: attributes.decimals,
                 sign: null, // sign exists as attr in inlineDoc, not instance
                 footnote: this.setFootnoteInfo(ix, footnote),
                 isEnabled: true,
@@ -787,11 +786,11 @@ export class FetchAndMerge
                     const dayDiff = endDate.getUTCDate() - startDate.getUTCDate();
 
                     //If the difference in days is more than half a month, round up/down as appropriate
-                    if(dayDiff > 15)
+                    if (dayDiff > 15)
                     {
                         monthDiff++;
                     }
-                    else if(dayDiff < -15)
+                    else if (dayDiff < -15)
                     {
                         monthDiff--;
                     }
