@@ -15,49 +15,60 @@ export class Development {
 
     createTabs() {
         const container = document.getElementById(`dynamic-xbrl-form`);
-        const ul = document.createElement('ul');
-        ul.classList.add('nav');
-        ul.classList.add('nav-tabs');
-        ul.setAttribute('id', 'tabs');
-        ul.setAttribute('role', 'tablist');
+        const ul = 
+            `<ul class="nav nav-tabs" id="tabs" role="tablist"">
+            </ul>`;
+        
+        const parser = new DOMParser();
+        const labelDocUl = parser.parseFromString(ul,'text/html');
+
+        const ulElement = labelDocUl.querySelector('body > ul') as HTMLElement;  
+
+        let div = '';
+        let divElement = '' as unknown as HTMLElement;
 
         const tabs = ['Test Filings', 'Flow Chart(s)'];
 
         tabs.forEach((current, index) => {
-            const li = document.createElement('li');
-            li.classList.add('nav-item');
-            li.setAttribute('role', 'presentation');
+            const activeVar = index === 0 ? 'active' : '';
+            const li = 
+            `<li class="nav-item" role="presentation">
+                <button class="nav-link ${activeVar}" id="tab-${index}" 
+                    data-bs-toggle="tab" data-bs-target="#tab-${index}-pane" type="button">${current}</button>
+            </li>`;
+            
+            const labelDocLi = parser.parseFromString(li,'text/html');
+            const liElement = labelDocLi.querySelector('body > li') as HTMLElement;   
+            
+            ulElement.append(liElement);
 
-            const button = document.createElement('button');
-            button.classList.add('nav-link');
-            index === 0 ? button.classList.add('active') : null;
-            button.setAttribute('id', `tab-${index}`);
-            button.classList.add('nav-link');
-            button.setAttribute('data-bs-toggle', 'tab');
-            button.setAttribute('data-bs-target', `#tab-${index}-pane`);
-            button.setAttribute('type', 'button');
-
-            const buttonText = document.createTextNode(current);
-
-            button.append(buttonText);
-            li.append(button);
-            ul.append(li);
         });
-        const div = document.createElement('div');
-        div.classList.add('tab-content');
-        div.classList.add('nav-tabs');
-        div.setAttribute('id', 'tab-content');
+
+        div = 
+        `<div class="tab-content nav-tabs" id="tab-content">
+
+        </div>`;
+
+        const labelDocDiv = parser.parseFromString(div,'text/html');
+        divElement = labelDocDiv.querySelector('body > div') as HTMLElement;  
+
         tabs.forEach((_current, index) => {
-            const div2 = document.createElement('div');
-            div2.classList.add('tab-pane');
-            div2.classList.add('fade');
-            index === 0 ? div2.classList.add('show') : null;
-            index === 0 ? div2.classList.add('active') : null;
-            div2.setAttribute('id', `tab-${index}-pane`);
-            div.append(div2);
-        });
-        container?.append(ul);
-        container?.append(div);
+            const showVar = index === 0 ? 'show' : '';
+            const activeVar = index === 0 ? 'active' : '';
+
+            div = 
+            `<div class="tab-pane fade ${showVar} ${activeVar}" id="tab-${index}-pane"">
+            </div>`;
+
+            const labelDocDiv = parser.parseFromString(div,'text/html');
+            const divElement2 = labelDocDiv.querySelector('body > div') as HTMLElement;  
+
+            divElement.append(divElement2);
+        });    
+ 
+     
+        container?.append(ulElement);
+        container?.append(divElement);
         this.createTable('tab-0-pane');
         this.createFlowCharts('tab-1-pane');
 
@@ -293,28 +304,19 @@ export class Development {
             },
         ];
         text.forEach((current) => {
-            const li = document.createElement('li');
-            li.classList.add('list-group-item');
-            li.classList.add('d-flex');
-            li.classList.add('justify-content-between');
-            li.classList.add('align-items-start');
+            const li = 
+            `<li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto ">${current.content}
+                    <div class="fw-bold">${current.title}</div>
+                </div>
+            </li>`;
 
-            const div = document.createElement('div');
-            div.classList.add('ms-2');
-            div.classList.add('me-auto');
+            const parser = new DOMParser();
+            const labelDocLi = parser.parseFromString(li,'text/html');
+    
+            const liElement = labelDocLi.querySelector('body > li') as HTMLElement;  
 
-            const div2 = document.createElement('div');
-            div2.classList.add('fw-bold');
-
-            const div2Text = document.createTextNode(current.title);
-            div2.append(div2Text);
-            div.append(div2);
-
-            const divText = document.createTextNode(current.content);
-            div.append(divText);
-
-            li.append(div);
-            ol.append(li);
+            ol.append(liElement);
         });
         rightContainer.append(ol);
         container?.append(rightContainer);

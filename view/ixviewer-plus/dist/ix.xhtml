@@ -10,7 +10,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="https://www.sec.gov/favicon.ico" />
     <title>Inline Viewer</title>
-<link href="/ixviewer-plus/styles.b36593dafd6791ea7644.min.css" rel="stylesheet"/></head>
+<link href="/ixviewer-plus/styles.d9dbc507553e1acb50ef.min.css" rel="stylesheet"/></head>
 
 <body class="overflow-hidden">
     <noscript>
@@ -47,13 +47,12 @@
             <div class="navbar-height main-navbar collapse navbar-collapse bg-sec w-100" data-test="main-navbar" id="main-navbar">
                 <ul class="navbar-nav mr-auto bg-inherit">
                     <li class="nav-item dropdown my-auto ml-1">
-                        <a id="menu-dropdown-link" data-test="menu-dropdown-link"
-                            class="nav-link dropdown-toggle click disabled" role="button" data-bs-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false" tabindex="1" accesskey="1">
+                        <button id="menu-dropdown-link" data-test="menu-dropdown-link" class="nav-link dropdown-toggle click disabled"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="1" accesskey="1">
                             <i class="nav-loading fas fa-bars" title="Menu"></i>
                             <span class="d-md-none d-lg-inline">Menu</span>
                             <span class="sr-only sr-only-focusable">Menu</span>
-                        </a>
+                        </button>
                         <div class="dropdown-menu">
                             <a id="menu-dropdown-information" data-test="menu-dropdown-information"
                                 class="dropdown-item click text-body" tabindex="1">Information</a>
@@ -75,72 +74,74 @@
                         </div>
                     </li>
                     <li class="nav-item my-auto ml-1">
-                        <a id="sections-dropdown-link" data-bs-toggle="collapse" data-bs-target="#sections-menu"
+                        <button id="sections-dropdown-link" data-bs-toggle="collapse" data-bs-target="#sections-menu"
                             class="nav-link click disabled meta-required" tabindex="2" accesskey="2">
                             <i class="fas fa-layer-group" title="Sections"></i>
                             <span class="d-md-none d-lg-inline">Sections</span>
                             <span class="sr-only sr-only-focusable">Sections</span>
-                        </a>
+                        </button>
                     </li>
                     <li class="nav-item my-auto mx-1">
                         <form id="global-search-form" data-test="global-search-form"
                             class="input-group disabled" novalidate="true">
                             <div class="input-group">
-                                <button id="global-search-options"
-                                    data-name="global-search-options"
-                                    class="dropdown btn btn-outline-light disabled nav-search-btn" type="button"
-                                    data-bs-toggle="dropdown" tabindex="3">
-                                    <i class="nav-loading fas fa-cog" title="Additional Search Options">
-                                        <span class="sr-only sr-only-focusable">Additional Search Options</span>
-                                    </i>
-                                </button>
-                                <div class="dropdown-menu px-2" style="top: 37px">
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="1" checked="true"
-                                                tabindex="3" />
-                                            <span>Include Fact Name</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="2" checked="true"
-                                                tabindex="3" />
-                                            <span>Include Fact Content</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="3" checked="true"
-                                                tabindex="3" />
-                                            <span>Include Labels</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="4" tabindex="3" />
-                                            <span>Include Definitions</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="5" tabindex="3" />
-                                            <span>Include Dimensions</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label mb-0">
-                                            <input disabled="true" class="form-check-input meta-required"
-                                                type="checkbox" name="search-options" value="6" tabindex="3" />
-                                            <span>Include References</span>
-                                        </label>
+                                <div class="dropdown">
+                                    <button id="global-search-options"
+                                        data-name="global-search-options"
+                                        class="dropdown-toggle btn btn-outline-light disabled nav-search-btn" type="button"
+                                        aria-expanded="false"
+                                        data-bs-toggle="dropdown" tabindex="3"
+                                    >
+                                        <i class="nav-loading fas fa-cog" title="Additional Search Options">
+                                            <span class="sr-only sr-only-focusable">Additional Search Options</span>
+                                        </i>
+                                    </button>
+                                    <div id="searchOptionsContainer" class="dropdown-menu px-2" style="top: 37px; width: 176px">
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0 dropdown-option">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="1" checked="true" tabindex="3" />
+                                                <span>Include Fact Name</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="2" checked="true" tabindex="3" />
+                                                <span>Include Fact Content</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="3" checked="true" tabindex="3" />
+                                                <span>Include Labels</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="4" tabindex="3" />
+                                                <span>Include Definitions</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="5" tabindex="3" />
+                                                <span>Include Dimensions</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label mb-0">
+                                                <input disabled="true" class="form-check-input meta-required"
+                                                    type="checkbox" name="search-options" value="6" tabindex="3" />
+                                                <span>Include References</span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
+                                
 
                                 <input type="text" class="form-control disabled focus-inner" id="global-search"
                                     data-test="global-search" placeholder="Search Facts" disabled="true"
@@ -162,13 +163,13 @@
                         </form>
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
-                        <a id="nav-filter-data" data-test="nav-filter-data"
-                            class="nav-link dropdown-toggle disabled click" role="button" data-bs-toggle="dropdown"
+                        <button id="nav-filter-data" data-test="nav-filter-data"
+                            class="nav-link dropdown-toggle disabled click" data-bs-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false" tabindex="7" accesskey="3">
                             <i class="nav-loading fas fa-list-alt" title="Data"></i>
                             <span class="d-md-none d-lg-inline">Data</span>
                             <span class="sr-only sr-only-focusable">Data</span>
-                        </a>
+                        </button>
                         <div class="dropdown-menu">
                             <form id="nav-filter-dropdown" data-name="data-dropdown" class="px-2">
                                 <div class="form-check">
@@ -217,13 +218,12 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
-                        <a id="nav-filter-tags" data-test="nav-filter-tags"
-                            class="nav-link dropdown-toggle disabled click" role="button" data-bs-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false" tabindex="8" accesskey="4">
+                        <button id="nav-filter-tags" data-test="nav-filter-tags" class="nav-link dropdown-toggle disabled click"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="8" accesskey="4">
                             <i class="nav-loading fas fa-tags" title="Tags"></i>
                             <span class="d-md-none d-lg-inline">Tags</span>
                             <span class="sr-only sr-only-focusable">Tags</span>
-                        </a>
+                        </button>
                         <div class="dropdown-menu">
                             <form id="nav-filter-tags-dropdown" data-name="tags-dropdown" class="px-2">
                                 <div class="form-check">
@@ -254,29 +254,33 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
-                        <a id="nav-filter-more" class="nav-link dropdown-toggle disabled click" role="button"
-                            data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
-                            aria-expanded="false" tabindex="9" accesskey="5">
+                        <button id="nav-filter-more" class="nav-link dropdown-toggle disabled click" data-bs-toggle="dropdown"
+                            data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false" tabindex="9" accesskey="5">
                             <i id="loading-more-filters" class="nav-loading fas fa-filter" title="More Filters"></i>
                             <span class="d-md-none d-lg-inline">More Filters</span>
                             <span class="sr-only sr-only-focusable">More Filters</span>
                             <span title="Total active filters." class="badge text-bg-secondary"></span>
-                        </a>
+                        </button>
                         <div class="dropdown-menu more-filters-dropdown-menu-width" style="max-height: 90vh; overflow: auto">
                             <div class="accordion" id="more-filters-accordion">
                                 <form class="mb-0" data-test="more-filters-form">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Period" data-bs-target="#user-filters-periods"
+                                            <button
+                                                id="more-filters-menu-periods"
+                                                data-test="Period"
+                                                data-bs-target="#user-filters-periods"
                                                 data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
+                                                tabindex="9"
+                                                type="button"
+                                                class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                            >
                                                 <span>Periods</span>
                                                 <span data-test="Period-count" id="filters-periods-count"
                                                     class="badge text-bg-secondary">
                                                     <i class="fa fa-regular fa-clock"></i>
                                                 </span>
-                                            </a>
+                                            </button>
                                         </div>
                                         <div id="user-filters-periods" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
@@ -288,16 +292,21 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Measures" data-bs-target="#user-filters-measures"
+                                            <button
+                                                id="more-filters-menu-measures"
+                                                data-test="Measures"
+                                                data-bs-target="#user-filters-measures"
                                                 data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
+                                                tabindex="9"
+                                                type="button"
+                                                class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                            >
                                                 <span>Measures</span>
                                                 <span data-test="Measures-count" id="filters-measures-count"
                                                     class="badge text-bg-secondary">
                                                     <i class="fa fa-regular fa-clock"></i>
                                                 </span>
-                                            </a>
+                                            </button>
                                         </div>
                                         <div id="user-filters-measures" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
@@ -306,53 +315,137 @@
                                         </div>
                                     </div>
                                 </form>
-                                <form class="mb-0">
-                                    <div class="mx-1">
-                                        <div class=" px-0 py-0">
-                                            <a data-test="Axis" data-bs-target="#user-filters-axis"
-                                                data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
-                                                <span>Axis</span>
-                                                <span data-test="Axis-count" id="filters-axis-count"
-                                                    class="badge text-bg-secondary">
-                                                    <i class="fa fa-regular fa-clock"></i>
-                                                </span>
-                                            </a>
-                                        </div>
-                                        <div id="user-filters-axis" class="collapse overflow-y-auto"
-                                            data-parent="#more-filters-accordion">
-                                            <div class="list-group list-group-flush d-none">
-                                                <div
-                                                    class="d-flex justify-content-between align-items-center w-100 px-1">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label mb-0">
-                                                            <input id="axes-all-0"
-                                                                title="Select/Deselect all options below."
-                                                                class="form-check-input" type="checkbox" tabindex="9" />
-                                                            <a href="#axes-filters-accordion-0"
-                                                                data-bs-toggle="collapse" tabindex="9">Explicit</a>
-                                                        </label>
-                                                    </div>
-                                                    <span class="badge text-bg-secondary"
-                                                        id="axis-explicit-count"></span>
+                                <form class="mb-0 mx-1">
+                                    <div class="px-0 py-0">
+                                        <button
+                                            id="more-filters-menu-axis"
+                                            data-test="Axis"
+                                            data-bs-target="#user-filters-axis"
+                                            data-bs-toggle="collapse"
+                                            tabindex="9"
+                                            type="button"
+                                            class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                        >
+                                            <span>Axis</span>
+                                            <span data-test="Axis-count" id="filters-axis-count" class="badge text-bg-secondary">
+                                                <i class="fa fa-regular fa-clock"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div id="user-filters-axis" class="collapse overflow-y-auto" data-parent="#more-filters-accordion">
+                                        <div class="list-group list-group-flush d-none">
+                                            <div class="d-flex justify-content-between align-items-center w-100 px-1">
+                                                <div class="form-check">
+                                                    <label for="axes-all-0" class="form-check-label mb-0">
+                                                        <input id="axes-all-0" title="Select/Deselect all options below." class="form-check-input" type="checkbox" tabindex="9"/>
+                                                        <button 
+                                                            data-bs-target="#axes-filters-accordion-0"
+                                                            data-bs-toggle="collapse"
+                                                            tabindex="9"
+                                                            type="button"
+                                                            class="click btn btn-link ix-btn-link btn-sm p-0 no-border collapsed"
+                                                        >
+                                                            Explicit
+                                                        </button>
+                                                    </label>
                                                 </div>
+                                                <span class="badge text-bg-secondary" id="axis-explicit-count"></span>
                                             </div>
-                                            <!-- Below is populated dynamically VIA JS -->
-                                            <div class="list-group list-group-flush d-none">
-                                                <div
-                                                    class="d-flex justify-content-between align-items-center w-100 px-1">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label mb-0">
-                                                            <input id="axes-all-1"
-                                                                title="Select/Deselect all options below."
-                                                                class="form-check-input" type="checkbox" tabindex="9" />
-                                                            <a href="#axes-filters-accordion-1"
-                                                                data-bs-toggle="collapse" tabindex="9">Typed</a>
-                                                        </label>
-                                                    </div>
-                                                    <span class="badge text-bg-secondary" id="axis-typed-count"></span>
+                                        </div>
+                                        <!-- Below is populated dynamically VIA JS -->
+                                        <div class="list-group list-group-flush d-none">
+                                            <div class="d-flex justify-content-between align-items-center w-100 px-1">
+                                                <div class="form-check">
+                                                    <label class="form-check-label mb-0">
+                                                        <input id="axes-all-1"
+                                                            title="Select/Deselect all options below."
+                                                            class="form-check-input" type="checkbox" tabindex="9" />
+                                                        <button
+                                                            id="axes-typed"
+                                                            data-test="axes-typed"
+                                                            data-bs-target="#axes-filters-accordion-1"
+                                                            data-bs-toggle="collapse"
+                                                            tabindex="9"
+                                                            type="button"
+                                                            class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                                        >
+                                                            Typed
+                                                        </button>
+                                                    </label>
                                                 </div>
+                                                <span class="badge text-bg-secondary" id="axis-typed-count"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <form class="mb-0 mx-1">
+                                    <div class="px-0 py-0">
+                                        <button
+                                            id="more-filters-menu-members"
+                                            data-test="Members"
+                                            data-bs-target="#user-filters-members"
+                                            data-bs-toggle="collapse"
+                                            tabindex="9"
+                                            type="button"
+                                            class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                        >
+                                            <span>Members</span>
+                                            <span data-test="Members-count" id="filters-members-count"
+                                                class="badge text-bg-secondary">
+                                                <i class="fa fa-regular fa-clock"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div id="user-filters-members" class="collapse overflow-y-auto"
+                                        data-parent="#more-filters-accordion">
+                                        <div class="list-group list-group-flush d-none">
+                                            <div
+                                                class="d-flex justify-content-between align-items-center w-100 px-1">
+                                                <div class="form-check">
+                                                    <label class="form-check-label mb-0">
+                                                        <input id="members-all-0"
+                                                            title="Select/Deselect all options below."
+                                                            class="form-check-input" type="checkbox" tabindex="9"
+                                                        />
+                                                        <button 
+                                                            data-bs-target="#members-filters-accordion-0"
+                                                            data-bs-toggle="collapse"
+                                                            tabindex="9"
+                                                            type="button"
+                                                            class="click btn btn-link ix-btn-link btn-sm p-0 no-border collapsed"
+                                                        >
+                                                            Explicit
+                                                        </button>
+                                                    </label>
+                                                </div>
+                                                <span class="badge text-bg-secondary"
+                                                    id="members-explicit-count"></span>
+                                            </div>
+                                        </div>
+                                        <!-- Below is populated dynamically VIA JS -->
+                                        <div class="list-group list-group-flush d-none">
+                                            <div
+                                                class="d-flex justify-content-between align-items-center w-100 px-1">
+                                                <div class="form-check">
+                                                    <label class="form-check-label mb-0">
+                                                        <input id="members-all-1"
+                                                            title="Select/Deselect all options below."
+                                                            class="form-check-input" type="checkbox" tabindex="9" />
+                                                        <button
+                                                            id="members-typed"
+                                                            data-test="members-typed"
+                                                            data-bs-target="#members-filters-accordion-1"
+                                                            data-bs-toggle="collapse"
+                                                            tabindex="9"
+                                                            type="button"
+                                                            class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                                        >
+                                                            Typed
+                                                        </button>
+                                                    </label>
+                                                </div>
+                                                <span class="badge text-bg-secondary"
+                                                    id="members-typed-count"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -360,68 +453,21 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Members" data-bs-target="#user-filters-members"
+                                            <button
+                                                id="more-filters-menu-scale"
+                                                data-test="Scale"
+                                                data-bs-target="#user-filters-scales"
                                                 data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
-                                                <span>Members</span>
-                                                <span data-test="Members-count" id="filters-members-count"
-                                                    class="badge text-bg-secondary">
-                                                    <i class="fa fa-regular fa-clock"></i>
-                                                </span>
-                                            </a>
-                                        </div>
-                                        <div id="user-filters-members" class="collapse overflow-y-auto"
-                                            data-parent="#more-filters-accordion">
-                                            <div class="list-group list-group-flush d-none">
-                                                <div
-                                                    class="d-flex justify-content-between align-items-center w-100 px-1">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label mb-0">
-                                                            <input id="members-all-0"
-                                                                title="Select/Deselect all options below."
-                                                                class="form-check-input" type="checkbox" tabindex="9" />
-                                                            <a href="#members-filters-accordion-0"
-                                                                data-bs-toggle="collapse" tabindex="9">Explicit</a>
-                                                        </label>
-                                                    </div>
-                                                    <span class="badge text-bg-secondary"
-                                                        id="members-explicit-count"></span>
-                                                </div>
-                                            </div>
-                                            <!-- Below is populated dynamically VIA JS -->
-                                            <div class="list-group list-group-flush d-none">
-                                                <div
-                                                    class="d-flex justify-content-between align-items-center w-100 px-1">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label mb-0">
-                                                            <input id="members-all-1"
-                                                                title="Select/Deselect all options below."
-                                                                class="form-check-input" type="checkbox" tabindex="9" />
-                                                            <a href="#members-filters-accordion-1"
-                                                                data-bs-toggle="collapse" tabindex="9">Typed</a>
-                                                        </label>
-                                                    </div>
-                                                    <span class="badge text-bg-secondary"
-                                                        id="members-typed-count"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                                <form class="mb-0">
-                                    <div class="mx-1">
-                                        <div class="px-0 py-0">
-                                            <a data-test="Scale" data-bs-target="#user-filters-scales"
-                                                data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
+                                                tabindex="9"
+                                                type="button"
+                                                class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                            >
                                                 <span>Scale</span>
                                                 <span data-test="Scale-count" id="filters-scales-count"
                                                     class="badge text-bg-secondary">
                                                     <i class="fa fa-regular fa-clock"></i>
                                                 </span>
-                                            </a>
+                                            </button>
                                         </div>
                                         <div id="user-filters-scales" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
@@ -433,14 +479,18 @@
                                 <form class="mb-0">
                                     <div class="mx-1">
                                         <div class="px-0 py-0">
-                                            <a data-test="Balance" data-bs-target="#user-filters-balances"
+                                            <button
+                                                id="more-filters-menu-balance"
+                                                data-test="Balance"
+                                                data-bs-target="#user-filters-balances"
                                                 data-bs-toggle="collapse"
-                                                class="d-flex justify-content-between align-items-center w-100 click text-primary"
-                                                tabindex="9">
+                                                tabindex="9"
+                                                type="button"
+                                                class="d-flex justify-content-between align-items-center w-100 click btn ix-btn-link btn-link btn-sm p-0 no-border collapsed"
+                                            >
                                                 <span>Balance</span>
-                                                <span data-test="Balance-count" id="filters-balances-count"
-                                                    class="badge text-bg-secondary">2</span>
-                                            </a>
+                                                <span data-test="Balance-count" id="filters-balances-count" class="badge text-bg-secondary">2</span>
+                                            </button>
                                         </div>
                                         <div id="user-filters-balances" class="collapse overflow-y-auto"
                                             data-parent="#more-filters-accordion">
@@ -491,8 +541,8 @@
                 </ul>
                 <ul class="navbar-nav bg-inherit">
                     <li class="nav-item my-auto ml-1">
-                        <a id="facts-menu-button" data-bs-toggle="collapse" data-bs-target="#facts-menu" tabindex="13"
-                            class="nav-link click disabled" accesskey="9">
+                        <a id="facts-menu-button" data-bs-toggle="collapse" data-bs-target="#facts-menu" tabindex="13" role="button"
+                            class="nav-link click disabled" accessKey="9">
                             Facts
                             <span class="fact-total-count badge text-bg-light">
                                 <i class="fa fa-regular fa-clock"></i>
@@ -515,7 +565,7 @@
                 <div id="sections-menu" class="sidebar sidebar-scrollable show collapse collapse-horizontal" data-bs-scroll="true">
                     <div class="offcanvas-header sections-header space-between">
                         <div class="d-flex align-items-center">
-                            <h5 class="sections-header-label">Tagged Sections</h5>
+                            <h5 class="sections-header-label ix-medium-heading h5-override">Tagged Sections</h5>
                             <span id="sections-search-additional" class="input-group-prepend">
                                 <button id="sections-settings-btn" class="dropdown btn sections-settings-btn" type="button" data-bs-toggle="dropdown" tabindex="2" data-cy="sections-filter-btn">
                                     <i class="nav-loading fas fa-filter"></i>
@@ -572,14 +622,14 @@
             <div class="col-auto px-0 sidebar-container sidebar-container-left help-sidebar hide">
                 <div id="help-menu" class="sidebar sidebar-scrollable left-sidebar collapse collapse-horizontal">
                     <div class="offcanvas-header space-between">
-                        <h5>Help</h5>
+                        <h5 class="h5-override">Help</h5>
                         <button type="button" class="btn-close" data-bs-target="#help-menu" data-bs-toggle="collapse" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
                         <div class="accordion" id="help-sections">
                             <div class="card">
                                 <div class="card-header px-0 py-0">
-                                    <h5 class="mb-0">
+                                    <h5 class="mb-0 h5-override">
                                         <button class="btn btn-link d-flex justify-content-between align-items-center w-100"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#help-getting-started">
                                             <span class="font-size-1">Getting Started</span>
@@ -601,7 +651,7 @@
                             </div>
                             <div class="card">
                                 <div class="card-header px-0 py-0">
-                                    <h5 class="mb-0">
+                                    <h5 class="mb-0 h5-override">
                                         <button class="btn btn-link d-flex justify-content-between align-items-center w-100"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#help-fact-review-window">
                                             <span class="font-size-1">Fact Review Window</span>
@@ -630,7 +680,7 @@
                             </div>
                             <div class="card">
                                 <div class="card-header px-0 py-0">
-                                    <h5 class="mb-0">
+                                    <h5 class="mb-0 h5-override">
                                         <button class="btn btn-link d-flex justify-content-between align-items-center w-100"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#help-search">
                                             <span class="font-size-1">Searching</span>
@@ -668,7 +718,7 @@
                             </div>
                             <div class="card">
                                 <div class="card-header px-0 py-0">
-                                    <h5 class="mb-0">
+                                    <h5 class="mb-0 h5-override">
                                         <button class="btn btn-link d-flex justify-content-between align-items-center w-100"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#help-filter">
                                             <span class="font-size-1">Filters</span>
@@ -737,7 +787,7 @@
                             </div>
                             <div class="card">
                                 <div class="card-header px-0 py-0">
-                                    <h5 class="mb-0">
+                                    <h5 class="mb-0 h5-override">
                                         <button class="btn btn-link d-flex justify-content-between align-items-center w-100"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#help-facts-results-list">
                                             <span class="font-size-1">Facts List (Results)</span>
@@ -768,7 +818,7 @@
                             </div>
                             <div class="card">
                                 <div class="card-header px-0 py-0">
-                                    <h5 class="mb-0">
+                                    <h5 class="mb-0 h5-override">
                                         <button class="btn btn-link d-flex justify-content-between align-items-center w-100"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#help-tagged-sections">
                                             <span class="font-size-1">Sections</span>
@@ -793,7 +843,7 @@
                             </div>
                             <div class="card">
                                 <div class="card-header px-0 py-0">
-                                    <h5 class="mb-0">
+                                    <h5 class="mb-0 h5-override">
                                         <button class="btn btn-link d-flex justify-content-between align-items-center w-100"
                                             type="button" data-bs-toggle="collapse" data-bs-target="#help-tagged-menu">
                                             <span class="font-size-1">Menu</span>
@@ -919,7 +969,7 @@
 
                 <div id="fact-table-container" class="offcanvas offcanvas-bottom" data-bs-scroll="true" data-bs-backdrop="false">
                     <div class="offcanvas-header d-flex justify-content-between">
-                        <h5 class="offcanvas-title">Fact Table</h5>
+                        <h5 class="offcanvas-title h5-override">Fact Table</h5>
                         <span>
                             <nav aria-label="Facts Table Navigation">
                                 <ul class="pagination pagination-sm">
@@ -967,7 +1017,7 @@
         
                 <div id="facts-breakdown-container" class="offcanvas offcanvas-bottom" data-bs-scroll="true" data-bs-backdrop="false">
                     <div class="offcanvas-header d-flex justify-content-between">
-                        <h5 class="offcanvas-title">Facts Chart</h5>
+                        <h5 class="offcanvas-title h5-override">Facts Chart</h5>
                     </div>
                     <div class="offcanvas-body">
                         <div id="facts-breakdown" class="h-100">
@@ -991,7 +1041,7 @@
                 <div id="facts-menu" class="sidebar collapse collapse-horizontal show">
                     <div class="offcanvas-header space-between">
                         <span class="center-align-items">
-                            <h5 class="mb-0 me-2 ms-1">Facts</h5>
+                            <h5 class="mb-0 me-2 ms-1 h5-override">Facts</h5>
                             <span class="fact-total-count badge bg-sec"><i class="fa fa-regular fa-clock"></i></span>
                             <div class="paginationprevnext d-sm-inline-block ms-3"></div>
                         </span>
@@ -1248,12 +1298,10 @@
                     class="fas fa-directions m-1 click" tabindex="16"></i>
                 <i id="fact-modal-copy-content" class="fas fa-copy m-1 click" tabindex="16" 
                     title="Show Copy-able Fact Text"></i>
-
                 <i id="fact-modal-compress" class="fas fa-compress m-1 click d-none" tabindex="16"
                     title="Contract Size"></i>
                 <i id="fact-modal-expand" class="fas fa-expand m-1 click" tabindex="16"
                     title="Expand Size"></i>
-
                 <i id="fact-modal-close" class="fas fa-times m-1 click" tabindex="16"></i>
             </div>
         </div>
@@ -1457,6 +1505,6 @@
             </button>
         </div>
     </div>
-<script defer="defer" src="/ixviewer-plus/ix-viewer.bundle.9179b1ae11b380692eb9.min.js"></script></body>
+<script defer="defer" src="/ixviewer-plus/ix-viewer.bundle.4fcfcd90c8aa343fb6ae.min.js"></script></body>
 
 </html>

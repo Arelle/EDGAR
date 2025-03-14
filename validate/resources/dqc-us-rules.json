@@ -13,45 +13,59 @@
         "DQC.US rule 0008 is implemented by us-gaap calc linkbase, compiled into file resources/us-gaap-calc-YYYY.json",
         "DQC.US rule 0009 is implemented below",
         "DQC.US rule 0013 is implemented below (2023)",
-        "DQC.US rule 0014 is implemented below (new for 2024)",
+        "DQC.US rule 0014 is implemented below (2024)",
         "DQC.US rule 0015 is implemented below",
         "DQC.US rule 0033 is implemented below (2022)",
         "DQC.US rule 0036 is implemented below (2022)",
         "DQC.US rule 0041 is implemented below (2022)",
         "DQC.US rule 0043 is implemented below (2022)",
         "DQC.US rule 0044 is implemented below (2022)",
-        "DQC.US rule 0045 is implemented below (new for 2024)",
-        "DQC.US rule 0046 is implemented below (new for 2024)",
+        "DQC.US rule 0045 is implemented below (2024)",
+        "DQC.US rule 0046 is implemented below (2024)",
         "DQC.US rule 0047 is implemented below (2023)",
         "DQC.US rule 0048 is implemented below",
-        "DQC.US rule 0051 is implemented below (new for 2024)",
-        "DQC.US rule 0052 is implemented below (new for 2024)",
+        "DQC.US rule 0051 is implemented below (2024)",
+        "DQC.US rule 0052 is implemented below (2024)",
         "DQC.US rule 0053 is implemented below (2023)",
-        "DQC.US rule 0054 is implemented below (new for 2024)",
-        "DQC.US rule 0055 is implemented below (new for 2024)",
+        "DQC.US rule 0054 is implemented below (2024)",
+        "DQC.US rule 0055 is implemented below (2024)",
         "DQC.US rule 0057 is implemented below (2023)",
         "DQC.US rule 0060 is implemented below (2022)",
-        "DQC.US rule 0061 is implemented below (new for 2024)",
-        "DQC.US rule 0062 is implemented below (new for 2024)",
-        "DQC.US rule 0065 is implemented below (new for 2024)",
-        "DQC.US rule 0068 is implemented below (new for 2024)",
-        "DQC.US rule 0069 is implemented below (new for 2024)",
-        "DQC.US rule 0070 is implemented below (new for 2024)",
+        "DQC.US rule 0061 is implemented below (2024)",
+        "DQC.US rule 0062 is implemented below (2024)",
+        "DQC.US rule 0065 is implemented below (2024)",
+        "DQC.US rule 0068 is implemented below (2024)",
+        "DQC.US rule 0069 is implemented below (2024)",
+        "DQC.US rule 0070 is implemented below (2024)",
         "DQC.US rule 0071 is implemented below (2023)",
-        "DQC.US rule 0072 is implemented below (new for 2024)",
+        "DQC.US rule 0072 is implemented below (2024)",
         "DQC.US rule 0073 is implemented below (2023)",
-        "DQC.US rule 0076 is implemented below (new for 2024)",
-        "DQC.US rule 0077 is implemented below (new for 2024)",
-        "DQC.US rule 0078 is implemented below (new for 2024)",
+        "DQC.US rule 0076 is implemented below (2024)",
+        "DQC.US rule 0077 is implemented below (2024)",
+        "DQC.US rule 0078 is implemented below (2024)",
         "DQC.US rule 0079 is implemented below (2022)",
         "DQC.US rule 0084 is implemented below (2023)",
-        "DQC.US rule 0085 is implemented below (new for 2024)",
-        "DQC.US rule 0089 is implemented below (new for 2024)",
-        "DQC.US rule 0090 is implemented below (new for 2024)",
-        "DQC.US rule 0091 is implemented below (new for 2024)",
-        "DQC.US rule 0095 is implemented below (new for 2024)",
-        "DQC.US rule 0098 is implemented below (new for 2024)",
-        "DQC.US rule 0099 is implemented below (new for 2024)",
+        "DQC.US rule 0085 is implemented below (2024)",
+        "DQC.US rule 0089 is implemented below (2024)",
+        "DQC.US rule 0090 is implemented below (2024)",
+        "DQC.US rule 0091 is implemented below (2024)",
+        "DQC.US rule 0095 is implemented below (2024)",
+        "DQC.US rule 0098 is implemented below (2024)",
+        "DQC.US rule 0099 is implemented below (2024)",
+        "DQC.US rule 0108 is implemented below (new for 2025)",
+        "DQC.US rule 0109 is implemented below (new for 2025)",
+        "DQC.US rule 0112 is implemented below (new for 2025)",
+        "DQC.US rule 0118 is implemented below (new for 2025)",
+        "DQC.US rule 0119 is implemented below (new for 2025)",
+        "DQC.US rule 0123 is implemented below (new for 2025)",
+        "DQC.US rule 0126 is implemented below (new for 2025)",
+        "DQC.US rule 0128 is implemented below (new for 2025)",
+        "DQC.US rule 0133 is implemented below (new for 2025)",
+        "DQC.US rule 0134 is implemented below (new for 2025)",
+        "DQC.US rule 0135 is implemented below (new for 2025)",
+        "DQC.US rule 0136 is implemented below (new for 2025)",
+        "DQC.US rule 0137 is implemented below (new for 2025)",
+        "DQC.US rule 0141 is implemented below (new for 2025)",
         "",
         "Each below rule contains a description of syntax used herein, message and rules. ",
         "",
@@ -76,6 +90,7 @@
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0001/DQC_0001_ListOfAxes.xlsx",
             "also see: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0001/DQC_0001.md"
         ],
+		"year-introduced": 2020,
         "message": "The fact {name} with a value of {value} is dimensionally qualified with the {axis} and the unallowable member {member}. {issue} \nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
         "message-unreported": "Member defined for the axis {axis} was not reported with any fact: {member}",
         "message-disallowed-default": "Default defined for the axis {axis}, {default}, should be {allowedDefault}",
@@ -100,8 +115,9 @@
             "54": {
                 "axis": "LegalEntityAxis",
                 "axis-descendants": "Yes",
+				"xuleConstants-members": ["MEM_LEG_ENT_AXS", "MEM_FHLB_AXS"],
                 "additional-axes": ["FederalHomeLoanBankAdvancesBranchOfFHLBBankAxis"],
-                "additional-members": ["PredecessorMember", "CoVenturerMember", "SpinOffMember", "PartnershipMember", "LimitedLiabilityCompanyMember", "TrustForBenefitOfEmployeesMember", "EntityDomain"],
+                "additional-members": ["CoVenturerMember", "SpinOffMember", "PartnershipMember", "LimitedLiabilityCompanyMember", "TrustForBenefitOfEmployeesMember", "EntityDomain"],
                 "extensions-allowed": "Yes"
             },
             "56": {
@@ -113,7 +129,8 @@
             "57": {
                 "axis": "ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
                 "axis-descendants": "None",
-                "additional-members": ["EquityMethodInvesteeNameDomain", "OtherInvesteesMember"],
+				"xuleConstants-members": ["MBR_SCH_EQT_INV_NM_AXS"],
+				"additional-members": ["EquityMethodInvesteeNameDomain"],
                 "extensions-allowed": "Yes"
             },
             "58": {
@@ -122,11 +139,12 @@
                 "additional-members": ["RepurchaseAgreementCounterpartyNameDomain", "AffiliatedEntityMember", "InvestorMember", "VariableInterestEntityNotPrimaryBeneficiaryMember", "ChiefFinancialOfficerMember", "IndividualMember", "GovernmentMember", "GuarantorSubsidiariesMember", "SubsidiaryIssuerMember", "DirectorMember", "ChiefExecutiveOfficerMember",  "ChiefOperatingOfficerMember", "GeneralPartnerMember", "CorporateJointVentureMember", "SubsidiaryOfCommonParentMember", "IndividuallyImmaterialCounterpartiesMember"],
                 "extensions-allowed": "Yes"
             },
-            "59": {
-                "axis": "PlanNameAxis",
-                "axis-descendants": "Yes",
-                "extensions-allowed": "Yes"
-            },
+			"60": {
+			    "axis": "DefinedContributionPlanNameAxis",
+				"axis-descendants": "None",
+				"xuleConstants-members": ["MEM_DEF_CNT_PLN_NM_AXS"],
+			    "extensions-allowed": "Yes"
+			},
             "61": {
                 "axis": "RangeAxis",
                 "axis-descendants": "Yes",
@@ -192,7 +210,7 @@
                 "axis-descendants": "Yes",
                 "extensions-allowed": "Limited",
                 "child-extension-members": ["MaterialReconcilingItemsMember", "ConsolidationEliminationsMember"],
-                "extension-members": ["CorporateReconcilingItemsAndEliminationsMember", "CorporateAndReconcilingItemsMember", "CorporateAndEliminationsMember", "EliminationsAndReconcilingItemsMember", "OperatingSegmentsAndCorporateNonSegmentMember", "OperatingSegmentsExcludingIntersegmentEliminationMember", "OtherOperatingSegmentsAndIntersegmentEliminationsMember"]
+                "extension-members": ["CorporateReconcilingItemsAndEliminationsMember", "CorporateAndReconcilingItemsMember", "CorporateAndEliminationsMember", "EliminationsAndReconcilingItemsMember", "OperatingSegmentsAndCorporateNonSegmentMember", "OperatingSegmentsExcludingIntersegmentEliminationMember", "OtherOperatingSegmentsAndIntersegmentEliminationsMember", "OperatingSegmentsAfterReconcilingItemsAndEliminationsMember"]
             },
             "71": {
                 "axis": "DefinedBenefitPlanByPlanAssetCategoriesAxis",
@@ -254,6 +272,13 @@
                 "axis-descendants": "Yes",
                 "extensions-allowed": "Yes"
             },
+			"83": {
+			    "axis": "RetirementPlanSponsorLocationAxis",
+				"axis-descendants": "None",
+				"xuleConstants-members": ["MBR_STM_GEO_AXS"],
+				"additional-members": ["RetirementPlanSponsorLocationDomain", "DomesticPlanMember", "ForeignPlanMember"],
+			    "extensions-allowed": "Yes"
+			},
             "9366": {
                 "axis": "BusinessAcquisitionAxis",
                 "axis-descendants": "Yes",
@@ -279,6 +304,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0004/DQC_0004.md"
         ],
+		"year-introduced": 2020,
         "message": "{sumName} with a value of {sumValue} is not equal to the total of {itemNames} with a value of {itemValues}. These values should be equal. \nThe properties of this {sumName} fact are: \nContext: {contextID} \nUnit: {unitID}",
         "rules": {
         	"16": {
@@ -379,6 +405,7 @@
             "",
             "DQC searches for latest document period end date but EDGAR uses required context and header value instead"
         ],
+		"year-introduced": 2022,
         "excluded-document-types": ["S-1", "S-3", "S-4", "S-6", "S-8", "S-11", "S-20", "S-1/A", "S-3/A", "S-4/A", "S-6/A", "S-8/A", "S-11/A", "S-20/A", "F-1","F-3"],
         "rules": {
         	"17": {
@@ -408,6 +435,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0005/DQC_0006.md"
         ],
+		"year-introduced": 2022,
         "excluded-document-types":  ["S-1", "S-3", "S-4", "S-6", "S-8", "S-11", "S-20", "S-1/A", "S-3/A", "S-4/A", "S-6/A", "S-8/A", "S-11/A", "S-20/A", "F-1","F-3"],
         "message": "The number of days, {durationDays}, in the date range reported for {name}, {startDate} to {endDate} is not consistent with the DocumentFiscalPeriodFocus value of {documentFiscalPeriodFocus}. \nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
         "rules": {
@@ -436,6 +464,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_00098DQC_0008.md"
         ],
+		"year-introduced": 2020,
         "message": "The calculation in the extension taxonomy from {conceptFrom} to {conceptTo} in {linkroleDefinition} is the opposite of a calculation defined in the base US GAAP taxonomy. Check that the calculation is correct or that you have used the correct tag for the two elements identified in the calculation. It is possible that the calculation is correct in the case of a reconciliation calculation.",
         "rules": {
             "6819": {
@@ -454,6 +483,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0009/DQC_0009.md"
         ],
+		"year-introduced": 2020,
         "message": "The value of {lesserName}, {lesserValue}, should be less than or equal to {greaterName}, {greaterValue}. \nThe properties of this {lesserName} fact are: \nContext: {contextID} \nUnit: {unitID}",
         "message-pension": "The value of {lesserName}, {lesserValue}, should be less than or equal to {greaterName}, {greaterValue}. {lesserName} is a subset of {greaterName}. \nThe properties of this {lesserName} fact are: \nContext: {contextID} \nUnit: {unitID}",
         "message-future-contributions": "The value of {lesserName}, {lesserValue}, should be less than or equal to {greaterName}, {greaterValue}. The value of the remaining contribution for the year should be less than or equal to the expected contributions for the entire year. \nThe properties of this {lesserName} fact are:\nContext: {contextID} \nUnit: {unitID}",
@@ -529,6 +559,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0013/DQC_0013.md"
         ],
+		"year-introduced": 2023,
         "message": "It is expected that {name} with a value of {value} will be reported with a value equal to or greater than zero if net income before tax is positive. In this case net income before tax is {incomeBeforeTax}. The value reported for the tax rate reconciliation item is less than zero. The preparer should consider if the value is input correctly for this assertion and, after considering the appropriateness of the input, if incorrect, input the amount as a positive (i.e., absolute) value and provide a negated label, if desired, for rendering purposes.  \nThe properties of this {name} fact are:\nContext: {contextID} \nUnit: {unitID}",
         "precondition": [
         	["IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest"],
@@ -558,7 +589,9 @@
 			"3002": "EffectiveIncomeTaxRateReconciliationNondeductibleExpenseMealsAndEntertainment",
 			"3439": "EffectiveIncomeTaxRateReconciliationDeductionsExtraterritorialIncomeExclusion",
 			"3440": "EffectiveIncomeTaxRateReconciliationNondeductibleExpenseCharitableContributions",
-			"3441": "EffectiveIncomeTaxRateReconciliationRepatriationForeignEarningsJobsCreationActOf2004"
+			"3441": "EffectiveIncomeTaxRateReconciliationRepatriationForeignEarningsJobsCreationActOf2004",
+			"9789": "EffectiveIncomeTaxRateReconciliationBeatPercent",
+			"9791": "EffectiveIncomeTaxRateReconciliationFdiiPercent"
 		},
 		"additional-excluded-names": [
 		]
@@ -575,12 +608,13 @@
             "",
             "taken from v22 documentation xslx"
         ],
+		"year-introduced": 2024,
         "message": "{name} has a value of {value} which is less than zero. This element should not have a negative value. The preparer should consider if the value is input correctly for this assertion and, after considering the appropriateness of the input, if incorrect, input the amount as a positive (i.e., absolute) value and provide a negated label.  \nThe properties of this {name} fact are:\nContext: {contextID} \nUnit: {unitID}",
         "concepts": {
-			"2786": "DerivativeFairValueOfDerivativeLiability",
 			"2787": "DerivativeLiabilities",
 			"2788": "FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetValue",
 			"2789": "FairValueMeasurementWithUnobservableInputsReconciliationsRecurringBasisLiabilityValue",
+			"2786": "DerivativeFairValueOfDerivativeLiability",
 			"2790": "LiabilitiesFairValueDisclosure",
 			"2791": "AmortizationOfIntangibleAssets",
 			"2792": "DerivativeFairValueOfDerivativeLiabilityAmountNotOffsetAgainstCollateral",
@@ -612,7 +646,8 @@
 			"7651": "RevenueFromContractWithCustomerIncludingAssessedTax",
 			"7652": "RevenueFromContractWithCustomerExcludingAssessedTax",
 			"2695": "CostOfGoodsAndServicesSold",
-			"2697": "CostOfRevenue"
+			"2697": "CostOfRevenue",
+			"9093": "CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization"
 			},
 		"additional-excluded-names": [
 		]
@@ -626,6 +661,7 @@
             "",
             "excluded-concept-typed-dimensions is a dict by concept localname of type dim localnames which when present exclude from nonneg test"
         ],
+		"year-introduced": 2020,
         "message": "Fact {name} has a value of {value} which is less than zero. This element should not have a negative value. The preparer should consider if the value is input correctly for this assertion and, after considering the appropriateness of the input, if incorrect, input the amount as a positive (i.e., absolute) value and provide a negated label.  \nThe properties of this {name} fact are:\nContext: {contextID} \nUnit: {unitID}",
         "additional-excluded-names": [
         	"SupplementalInformationForPropertyCasualtyInsuranceUnderwritersNetInvestmentIncome",
@@ -649,6 +685,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0033/DQC_0033.md"
         ],
+		"year-introduced": 2022,
         "message": "The ending date of {endDate} used for {name} must be the same as the Document Period End Date, {documentPeriodEndDate}.  \nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
         "precondition": [
         	["IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest"],
@@ -804,6 +841,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0036/DQC_0036.md"
         ],
+		"year-introduced": 2022,
         "message": "The ending date of {endDate} used for {name} must be the same as the Document Period End Date, {documentPeriodEndDate}.  \nThe properties of this {name} fact are: \nContext: {contextID}",
         "rules": {
         	"1": {
@@ -821,6 +859,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0041/DQC_0041.md"
         ],
+		"year-introduced": 2022,
         "message": "The dimension default defined for the axis in the base taxonomy should not be changed in a company extension taxonomy. The default for the {axisName} in the base taxonomy is {axisDefaultName}, but the default has been replaced with {extensionDefaultName}",
         "rules": {
         	"73": {
@@ -838,6 +877,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0043/DQC_0043.md"
         ],
+		"year-introduced": 2022,
 		"message": {
 			"credit": "The concept {bottomName} is included in the calculation of {topName} in role {linkrole}.  {bottomName} is a credit balance type concept representing a natural cash outflow in the reconciliation of net income (loss) to {topName}. \n\nA credit balance type concept should always be assigned a negative one (-1) calculation weight as it is a deduction from net income (loss) to reconcile to {topName}.{bottomName} has been incorrectly provided a positive one (+1) calculation weight in the extension taxonomy. \n\nCorrect the calculation weight to negative one (-1) and input the value as a positive amount if it is a deduction of a non-cash income or gain, an increase in an asset, or a decrease in a liability. If the value is an add-back of a non-cash expense or loss, decrease in an asset, or an increase in a liability and {bottomName} is the correct concept, input a negative value.",
 			"debit": "The concept {bottomName} is included in the calculation of {topName} in role {linkrole}.  {bottomName} is a debit balance type concept representing a natural cash inflow in the reconciliation of net income (loss) to {topName}. \n\nA debit balance type concept should always be assigned a positive one (+1) calculation weight as it is an addition to net income (loss) to reconcile to {topName}.{bottomName} has been incorrectly provided a negative one (-1) calculation weight in the extension taxonomy. \n\nCorrect the calculation weight to positive one (+1) and input the value as a positive amount if it is an addition of a non-cash expense or loss, a decrease in an asset, or an increase in a liability. If the value is an increase in an asset or a decrease in a liability and {bottomName} is the correct concept, input a negative value.",
@@ -925,6 +965,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0044/DQC_0044.md"
         ],
+		"year-introduced": 2022,
         "message": "The concept {name} with a value of {value} is an accrual-based item in the US GAAP taxonomy that is included in the sum of cash provided by (used in) {activity} activities in the cash flows of the extension taxonomy.  \n\nAccrual-based concepts do not belong and should not be included in the {activity} section of the cash flows statement of the extension taxonomy.  \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
         "rules": {
         	"6834": {
@@ -973,6 +1014,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0045/DQC_0045.md"
         ],
+		"year-introduced": 2024,
         "rules": {
         	"6835": {
         		"us-gaap": "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations",
@@ -1022,31 +1064,32 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0046/DQC_0046.md"
         ],
+		"year-introduced": 2024,
         "rules": {
         	"6839": {
         		"item": "EffectOfExchangeRateOnCashAndCashEquivalents",
         		"sum": "NetCashProvidedByUsedInContinuingOperations",
-        		"message": "The element NetCashProvidedByUsedInContinuingOperations (Net Cash Provided by (Used in) Continuing Operations) does not include EffectOfExchangeRateOnCashAndCashEquivalents (Effect of Exchange Rate on Cash and Cash Equivalents) as defined in the US GAAP Taxonomy.\n\nHowever, in the companies extension taxonomy NetCashProvidedByUsedInContinuingOperations includes EffectOfExchangeRateOnCashAndCashEquivalents as a summation-child. Consider using either CashAndCashEquivalentsPeriodIncreaseDecrease or CashPeriodIncreaseDecrease, instead of NetCashProvidedByUsedInContinuingOperations."
+        		"message": "The element NetCashProvidedByUsedInContinuingOperations (Net Cash Provided by (Used in) Continuing Operations) does not include EffectOfExchangeRateOnCashAndCashEquivalents (Effect of Exchange Rate on Cash and Cash Equivalents) as defined in the US GAAP Taxonomy.\n\nHowever, in the companies extension taxonomy NetCashProvidedByUsedInContinuingOperations includes EffectOfExchangeRateOnCashAndCashEquivalents as a summation-child. Consider using CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect instead of NetCashProvidedByUsedInContinuingOperations."
         	},
         	"6840": {
         		"item": "EffectOfExchangeRateOnCashAndCashEquivalentsContinuingOperations",
         		"sum": "NetCashProvidedByUsedInContinuingOperations",
-        		"message": "The element NetCashProvidedByUsedInContinuingOperations (Net Cash Provided by (Used in) Continuing Operations) does not include EffectOfExchangeRateOnCashAndCashEquivalentsContinuingOperations (Effect of Exchange Rate on Cash and Cash Equivalents, Continuing Operations) as defined in the US GAAP Taxonomy.\n\nHowever, in the companies extension taxonomy NetCashProvidedByUsedInContinuingOperations includes EffectOfExchangeRateOnCashAndCashEquivalentsContinuingOperations as a summation-child. Consider using either CashAndCashEquivalentsPeriodIncreaseDecrease or CashPeriodIncreaseDecrease,  instead of NetCashProvidedByUsedInContinuingOperations."
+        		"message": "The element NetCashProvidedByUsedInContinuingOperations (Net Cash Provided by (Used in) Continuing Operations) does not include EffectOfExchangeRateOnCashAndCashEquivalentsContinuingOperations (Effect of Exchange Rate on Cash and Cash Equivalents, Continuing Operations) as defined in the US GAAP Taxonomy.\n\nHowever, in the companies extension taxonomy NetCashProvidedByUsedInContinuingOperations includes EffectOfExchangeRateOnCashAndCashEquivalentsContinuingOperations as a summation-child. Consider using CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect instead of NetCashProvidedByUsedInContinuingOperations."
         	},
         	"6841": {
         		"item": "EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
         		"sum": "NetCashProvidedByUsedInContinuingOperations",
-        		"message": "The element NetCashProvidedByUsedInContinuingOperations (Net Cash Provided by (Used in) Continuing Operations) does not include EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents (Effect of Exchange Rate on Cash and Cash Equivalents, Restricted Cash and Restricted Cash Equivalents) as defined in the US GAAP Taxonomy.\n\nHowever, in the companies extension taxonomy NetCashProvidedByUsedInContinuingOperations includes EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents as a summation-child. Consider using either CashAndCashEquivalentsPeriodIncreaseDecrease or CashPeriodIncreaseDecrease,  instead of NetCashProvidedByUsedInContinuingOperations."
+        		"message": "The element NetCashProvidedByUsedInContinuingOperations (Net Cash Provided by (Used in) Continuing Operations) does not include EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents (Effect of Exchange Rate on Cash and Cash Equivalents, Restricted Cash and Restricted Cash Equivalents) as defined in the US GAAP Taxonomy.\n\nHowever, in the companies extension taxonomy NetCashProvidedByUsedInContinuingOperations includes EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents as a summation-child. Consider using CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect instead of NetCashProvidedByUsedInContinuingOperations."
         	},
         	"6842": {
         		"item": "EffectOfExchangeRateOnCashAndCashEquivalents",
         		"sum": "CashAndCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect",
-        		"message": "The element CashAndCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect (Cash and Cash Equivalents, Period Increase (Decrease), Excluding Exchange Rate Effect) does not include EffectOfExchangeRateOnCashAndCashEquivalents (Effect of Exchange Rate on Cash and Cash Equivalents) as defined in the US GAAP Taxonomy.\n\nHowever, in the companies extension taxonomy CashAndCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect includes EffectOfExchangeRateOnCashAndCashEquivalents as a summation-child. Consider using either CashAndCashEquivalentsPeriodIncreaseDecrease or CashPeriodIncreaseDecrease,  instead of CashAndCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect."
+        		"message": "The element CashAndCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect (Cash and Cash Equivalents, Period Increase (Decrease), Excluding Exchange Rate Effect) does not include EffectOfExchangeRateOnCashAndCashEquivalents (Effect of Exchange Rate on Cash and Cash Equivalents) as defined in the US GAAP Taxonomy.\n\nHowever, in the companies extension taxonomy CashAndCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect includes EffectOfExchangeRateOnCashAndCashEquivalents as a summation-child. Consider using either CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect instead of CashAndCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect."
         	},
            	"7480": {
-        		"item": "EffectOfExchangeRateOnCashAndCashEquivalentsDiscontinuedOperations",
+        		"item": "EffectOfExchangeRateOnCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsDisposalGroupIncludingDiscontinuedOperations",
         		"sum": "NetCashProvidedByUsedInDiscontinuedOperations",
-        		"message": "The element NetCashProvidedByUsedInDiscontinuedOperations (Net Cash Provided by (Used in) Discontinued Operations) does not include EffectOfExchangeRateOnCashAndCashEquivalentsDiscontinuedOperations (Effect of Exchange Rate on Cash and Cash Equivalents, Discontinued Operations) as defined in the US GAAP Taxonomy.\n\nHowever, in the companies extension taxonomy NetCashProvidedByUsedInDiscontinuedOperations includes EffectOfExchangeRateOnCashAndCashEquivalentsDiscontinuedOperations as a summation-child. Consider using either CashAndCashEquivalentsPeriodIncreaseDecrease or CashPeriodIncreaseDecrease,  instead of NetCashProvidedByUsedInDiscontinuedOperations."
+        		"message": "The element NetCashProvidedByUsedInDiscontinuedOperations (Net Cash Provided by (Used in) Discontinued Operations) does not include EffectOfExchangeRateOnCashAndCashEquivalentsDiscontinuedOperations (Effect of Exchange Rate on Cash and Cash Equivalents, Discontinued Operations) as defined in the US GAAP Taxonomy.\n\nHowever, in the companies extension taxonomy NetCashProvidedByUsedInDiscontinuedOperations includes EffectOfExchangeRateOnCashAndCashEquivalentsDiscontinuedOperations as a summation-child. Consider using CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect instead of NetCashProvidedByUsedInDiscontinuedOperations."
         	},
            	"9279": {
         		"item": "NetIncomeLoss",
@@ -1066,6 +1109,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0047/DQC_0047.md"
         ],
+		"year-introduced": 2023,
 		"message": "In the company's extension taxonomy the concept {parentName} includes {childName} as a summation-child. The concept {childName}  should not appear as a child of {parentName} because it does not have a balance type. Increase (Decrease) items without balance attributes are used in a roll forward and should not be used in the cash flow statement as they represent the impact on the balance sheet item which is the opposite of the impact on cash.",
         "rules": {
             "7481": {
@@ -1093,6 +1137,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0048/DQC_0048.md"
         ],
+		"year-introduced": 2020,
         "excluded-document-types": ["S-1", "S-3", "S-4", "S-6", "S-8", "S-11", "S-20", "S-1/A", "S-3/A", "S-4/A", "S-6/A", "S-8/A", "S-11/A", "S-20/A", "F-1","F-3"],
         "blocking-facts": {"EntityEmergingGrowthCompany": true},
         "message": "The filing should include in the cash flow statement calculation linkbase(s) {linkRole} - {linkroleDefinition} one of the following elements as the root(first element) of the calculation tree to represent the aggregate change in cash for the period:\n\n\nCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect,\nCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect, \nNetCashProvidedByUsedInContinuingOperations (As long as the element NetCashProvidedByUsedInDiscontinuedOperations is also included the reconciliation between opening and closing cash). \nThe calculation linkbase in the filing has the following root elements defined: {rootNames}",
@@ -1120,6 +1165,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0051/DQC_0051.md"
     	],
+		"year-introduced": 2024,
 		"message": "{taxConcept} should not be included in the calculation of {concept} in the group {linkRole}. {concept} is before the deduction of tax. Excluding the tax expense from the amount is inconsistent with the meaning of the element  because this element represents a before tax item and should not be used to represent an after tax item. If {concept} represents the amount after tax then use NetIncomeLoss instead.",
         "concepts": {
         	"7484": "IncomeLossIncludingPortionAttributableToNoncontrollingInterest",
@@ -1152,6 +1198,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0052/DQC_0052.md"
     	],
+		"year-introduced": 2024,
 		"message": "The element {name} with a value of {value} has been used with the axis RetirementPlanSponsorLocationAxis and the member DomesticPlanMember. The DomesticPlanMember element is not intended to be used in the instance document, instead the specific country from the SEC's Country Taxonomy is intended to tag the information. ",
         "rules": {
             "7487": {
@@ -1170,6 +1217,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0053/DQC_0053.md"
         ],
+		"year-introduced": 2023,
 		"message": "The member, {member} is used on the {axis} with element {factName} with a value of ${value}. The  {member} member should not be used with the {axis} in linkrole {linkRole}.",
 		"message-no-facts": "The member, {member} is used on the {axis}.  There are no facts associated with this member and axis. {member} members should not be used with the {axis} in linkrole {linkRole}.",
         "rules": {
@@ -1194,6 +1242,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0054/DQC_0054.md"
         ],
+		"year-introduced": 2024,
         "rules": {
         	"7490": {
         		"table": "ScheduleOfDefinedBenefitPlansDisclosuresTable",
@@ -1225,6 +1274,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0055/DQC_0055.md"
         ],
+		"year-introduced": 2024,
         "axis": "RetirementPlanSponsorLocationAxis",
         "rules": {
         	"7493": {
@@ -1257,6 +1307,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0057/DQC_0057.md"
         ],
+		"year-introduced": 2023,
         "rules": {
             "7494": {
                 "must-be-present-elements" : [
@@ -1290,6 +1341,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0060/DQC_0060.md"
         ],
+		"year-introduced": 2022,
         "message": "The fact {name} has been reported with a value of {value}. However no value has been reported for dependent element(s): {dependentElements}.   \nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
         "rules": {
         	"7495": {
@@ -1328,6 +1380,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0061/DQC_0061.md"
         ],
+		"year-introduced": 2024,
         "message": "The taxonomy extension includes {netCash} and {discontinCash} in the calculation of {commonAncestor}. But {discontinCash} is not a direct child of {netCash}. {netCash} is intended to represent the total of cash provided by or used in continuing and discontinued operations. Cash flows from both Discontinued operations and Investing activities cannot add into the total of {commonAncestor} as this implies that discontinued operations is being double counted, once in investing activities and once as discontinued operations.",
         "rules": {
         	"7498": {
@@ -1354,6 +1407,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0062/DQC_0062.md"
         ],
+		"year-introduced": 2024,
         "message": "The filing includes a cash flow statement in the role {linkroles}, but does not report a value for the change in cash using any of the following elements:\n\nCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect (After adoption of ASU-2016-18)\nCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect (After adoption of ASU-2016-18)\nCashPeriodIncreaseDecrease (Prior to adoption of ASU-2016-18)\nCashPeriodIncreaseDecreaseExcludingExchangeRateEffect (Prior to adoption of ASU-2016-18)\nCashAndCashEquivalentsPeriodIncreaseDecrease  (Prior to adoption of ASU-2016-18)\nCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffectContinuingOperations\nCashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffectDisposalGroupIncludingDiscontinuedOperations\nCashAndCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect (Prior to adoption of ASU-2016-18) or \nNetCashProvidedByUsedInContinuingOperations (As long as the element NetCashProvidedByUsedInDiscontinuedOperations is also included the reconciliation between opening and closing cash)\n\nIf you have disclosed a change in cash for the period, one of the above elements should be used.  Please update your filing if one of the following has occurred:\n\n1. The change in cash has not been represented with a value, in this case the element should be tagged with a value of zero.\n2. The change in cash flow is dimensionally qualified with an inappropriate dimension. The instance should have a value reported with no dimensions. The rule will identify where the successor member has been used or an extension member. The value for change in cash should not have a dimension.\n3. The change in cash has been represented with an extension element. There is no reason the change in cash needs to be identified using an extension element.",
         "rules": {
         	"7501": {
@@ -1381,6 +1435,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0065/DQC_0065.md"
         ],
+		"year-introduced": 2024,
         "message": "The Supplemental cash flow section has reported a value of {value} for the element {name} but the element InterestPaidNet is not included in the supplemental cash flow section. Interest Paid Net of the capitalized component must be reported in this section.\n\nThe element {name} includes capitalized interest. If this element has no capitalized interest component then use the element InterestPaidNet instead. \nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
         "rules": {
         	"7502": {
@@ -1412,6 +1467,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0068/DQC_0068.md"
         ],
+		"year-introduced": 2024,
         "axis": "StatementGeographicalAxis",
         "linkrole": "http://fasb.org/us-gaap/role/disclosure/CompensationRelatedCostsRetirementBenefits",
         "message": "The filing has used the StatementGeographicalAxis in conjunction with the line item {name} with a value of {value} in the Compensation Related Costs  and Retirement Benefits section of the taxonomy. These line items should not use the StatementGeographicalAxis to report a fact. To identify the physical location of the securities a member should be created that indicates both the type of security and its issuance location, i.e. EquityUSMmember. \nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
@@ -1430,6 +1486,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0069/DQC_0069.md"
         ],
+		"year-introduced": 2024,
         "axis": "DefinedBenefitPlanByPlanAssetCategoriesAxis",
         "message": "It is expected that the concept {name} with a value of {value}  and having a member of {member} should not use a member that is a direct child of the axis domain {axis}.  The element {name} is supposed to be used as a component of DefinedBenefitPlanFairValueOfPlanAssets with a more specific member.  The member {member} should appear on the {axis} as a child of the member used to report the value for DefinedBenefitPlanFairValueOfPlanAssets. \nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
         "message-without-dim": "The element {name} with a value of {value} must be used with the dimension {axis}. \nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
@@ -1450,8 +1507,9 @@
             "A JSON object with key that is the rule id and value object as follows:",
             "   axis-qname, array of primary-items-names",
             "",
-            "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0071/DQC_0071.md"
+            "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0070/DQC_0070.md"
         ],
+		"year-introduced": 2024,
         "message": "The concept {name} with a defaulted value of {value} is not equal to the aggregated value of the dimensionally qualified components on the axis DefinedBenefitPlanByPlanAssetCategoriesAxis which has an aggregate value of {mbrSum} based on the data in the filing. \nThe aggregated value is calculated by adding the members in the network {linkroleUri}. The values of the calculation components are as follows:\n{mbrStr}.  \n\nThe value of a concept broken down by its components along the DefinedBenefitPlanByPlanAssetCategoriesAxis axis should  be equal to its component pieces. An error could occur for one of the following reasons:  \n\n1. The values of the plan assets by category have been further disaggregated by additional dimensions such as geography. Plan Asset categories should not be dimensionally disaggregated and members should be defined for each security class reported. i.e. Equity Securities in the US should be represented as a single member.  \n\n2. The  default value of {name} is incorrectly totaled for DefinedBenefitPlanFairValueOfPlanAssets  \n\n 3. Not all dimension members or additional dimensions have been defined on the category axis DefinedBenefitPlanByPlanAssetCategoriesAxis.  \n\n4. The filer has reported a sub component of plan assets that does not represent a complete breakdown of the total. In these cases the element DefinedBenefitPlanPlanAssetsInvestmentWithinPlanAssetCategoryAmount should be used instead of the element DefinedBenefitPlanFairValueOfPlanAssets.  \n\nThis rule aggregates the value of member components located on the axis at the highest level of aggregation to avoid double counting in the event that the company uses a hierarchy of members.  \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
         "rules": {
         	"7645": {
@@ -1475,6 +1533,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0071/DQC_0071.md"
         ],
+		"year-introduced": 2023,
         "message": "The filing has reported a value for the element {name} with a value of {value} using the ProductOrServiceAxis in the role {role} on the table {table}. However, the only member used to disaggregate the total for {name} was the member {member}. If only one member is used on this axis then the filer should either: \n\n1. Retag the filing using the element TypeOfRevenueExtensibleList/TypeOfCostGoodOrServiceExtensibleList with a value of {member} and the member {member} should be removed from the value as it represents the aggregate value of {name}; or \n\n2. Tag the aggregate value of {name} with a value of {value} without the product of service axis. This rule will not generate an error if the aggregate value of {name} is reported.  \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
         "rules": {
         	"7646": {
@@ -1499,6 +1558,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0072/DQC_0072.md"
         ],
+		"year-introduced": 2024,
         "rules": {
         	"7647": {
         		"name": "DefinedBenefitPlanPlanAssetsInvestmentWithinPlanAssetCategoryPercentage",
@@ -1518,6 +1578,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0073/DQC_0073.md"
         ],
+		"year-introduced": 2023,
         "message": "The concept {name} with a value of {value} is used with the DefinedBenefitPlanByPlanAssetCategoriesAxis. This element cannot be used with this axis.   \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.  \n\nThe allowable list of elements that can be used are as follows: {allowableNames}.",
         "rules": {
         	"7648": {
@@ -1568,6 +1629,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0076/DQC_0076.md"
         ],
+		"year-introduced": 2024,
         "message": "The filer has reported a value for {name} with a value of {value} using the dimension member {member} The filer has not reported a duration value for the corresponding elements of RevenueRemainingPerformanceObligationExpectedTimingOfSatisfactionPeriod1. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
         "rules": {
         	"7653": {
@@ -1592,6 +1654,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0077/DQC_0077.md"
         ],
+		"year-introduced": 2024,
         "message": "The filer has reported a value for the element {name} with a value of {value} without using the axis RevenueRemainingPerformanceObligationExpectedTimingOfSatisfactionStartDateAxis. This axis must be used when reporting a value for {name}. Please refer to the FASB implementation guide on Revenue from Contracts with Customers on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
         "rules": {
         	"7654": {
@@ -1611,6 +1674,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0078/DQC_0078.md"
         ],
+		"year-introduced": 2024,
         "message": "The filer has reported a value for the element {name} with a value of {value} without using the axis OwnershipAxis. This axis must be used when reporting a value for {name}. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
         "rules": {
         	"7655": {
@@ -1635,6 +1699,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0079/DQC_0079.md"
         ],
+		"year-introduced": 2022,
         "message": "{member} is an extension member on the axis {axis} that was reported in the extension taxonomy, but duplicates a concept, {replacement}, that exists in the SEC Non-GAAP taxonomies.",
         "rules": {
         	"7657": {
@@ -1948,6 +2013,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0084/DQC_0084.md"
         ],
+		"year-introduced": 2023,
         "message": "Sum of the cumulative periods of {sumPeriods} for {name} does not match the reported total of {value}, a difference of {difference}.  \n\nPeriod values are:\n{periods}\n\nThis rule takes into account possible rounding of values across periods and the decimals associated with each fact. This rule used a tolerance of {tolerance} which is calculated by taking the lowest decimal value used in the calculation of {minDecimals}. If there is a difference between the sum of the periods and the aggregate value reported the difference may be due to incorrect decimals associated with the individual fact values. The filer should check that the fact values do not have a decimal value that implies a higher level of accuracy than intended.\n\nIn those rare cases where there are small immaterial differences that are less than 1% of the total and decimals are zero the rule can be overidden. This is performed by creating an extension element called ImmaterialDifferenceFlag.  If this element has any value in any context in the instance then the immaterial difference will not result in an error.  \n\nThe rule excludes elements in the base taxonomy that cannot be aggregated such as an average, maximum or minimum value.   \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
         "rules": {
         	"9298": {
@@ -1967,6 +2033,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0085/DQC_0085.md"
         ],
+		"year-introduced": 2024,
         "rules": {
         	"9361": {
         		"network": "should not be on pre financial statement",
@@ -2019,6 +2086,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0084/DQC_0084.md"
         ],
+		"year-introduced": 2024,
         "message": "The element {name} with a value of {value} has been reported in the filing using the range axis. This element cannot be used with the range axis. To record the range of remaining lease terms use the US GAAP element called LesseeOperatingLeaseRemainingLeaseTerm for operating leases and the US GAAP element called LesseeFinanceLeaseRemainingLeaseTerm for finance leases. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
         "rules": {
         	"9373": {
@@ -2041,9 +2109,11 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0090/DQC_0090.md"
         ],
+		"year-introduced": 2024,
 		"document-types": ["10-K", "10-KT", "20-F"],
         "rules": {
         	"9374": {
+				"opt-in": "LesseeOperatingLeaseLiabilityUndiscountedExcessAmountNotDisclosed",
         		"sum": "LesseeOperatingLeaseLiabilityPaymentsDue",
         		"addends": [
         			"OperatingLeaseLiability",
@@ -2054,6 +2124,7 @@
 		        "message": "The element {name} with a value of {sumValue} should be equal to the sum of OperatingLeaseLiability plus LesseeOperatingLeaseLiabilityUndiscountedExcessAmount. The value of these adds to {addendValue}.  A difference of {differenceValue}. In an annual filing this reconciliation is required and all elements should have a value in the current reporting period.  \n\nIf the difference is due to an extension reconciliation item, then the filer should add a calculation relationship. The calculation tree should show the parent element as LesseeOperatingLeaseLiabilityPaymentsDue with children of LesseeOperatingLeaseLiabilityUndiscountedExcessAmount + OperatingLeaseLiability + any extension items. There should already be a calculation tree defined for the components of LesseeOperatingLeaseLiabilityPaymentsDue comprised of LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths +  LesseeOperatingLeaseLiabilityPaymentsDueYearTwo etc.  These two beakdowns of LesseeOperatingLeaseLiabilityPaymentsDue should be in seperate calculation groups. If an extension item appears as a child calculation of LesseeOperatingLeaseLiabilityPaymentsDue then no error is produced. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
         	},
         	"9375": {
+				"opt-in": "FinanceLeaseLiabilityUndiscountedExcessAmountNotDisclosed",
         		"sum": "FinanceLeaseLiabilityPaymentsDue",
         		"addends": [
         			"FinanceLeaseLiability",
@@ -2076,6 +2147,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0091/DQC_0091.md"
         ],
+		"year-introduced": 2024,
         "message": "The element {name} with a value of {value} has a value greater than a 1,000 percent.  Percentage items should have a value that are generally between 0 and 1. In XBRL a value of 1 is equal to 100%. Please review the value of the element to ensure that it is scaled correctly.  For example 200 basis points should be reported as 0.02. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
         "rules": {
         	"9376": {
@@ -2092,6 +2164,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0095/DQC_0095.md"
         ],
+		"year-introduced": 2024,
         "message": "The element {name} with a value of {value} is different than the value reported for the concept {name2} with a value of {value2} by a factor of greater than 100 times. If the difference is the result of a stock split then tag either the element StockIssuedDuringPeriodSharesStockSplits, StockIssuedDuringPeriodSharesReverseStockSplits or the element StockholdersEquityNoteStockSplitConversionRatio1. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
         "rules": {
         	"9528": {
@@ -2116,6 +2189,8 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0098/DQC_0098.md"
         ],
+		"tolerance": 2,
+		"year-introduced": 2024,
         "rules": {
         	"9531": {
         		"name": "ContractWithCustomerLiabilityRevenueRecognized",
@@ -2140,6 +2215,7 @@
             "",
             "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0099/DQC_0099.md"
         ],
+		"year-introduced": 2024,
         "message": "The following elements are in the presentation linkbase of {linkrole} but are not included in any calculation relationship in the filing.  \n\n{presConceptsNoCalc} \n\nAll elements appearing in the face of the financial statements should be included in a calculation relationship somewhere in the filing. Items not included in the financial statement calculations but included in the presentation are referred to as parenthetical items. These usually appear as a referenced item, or as a value in parenthesis describing that the value reported includes another specific amount.  These values should be reported in a seperate link role for parenthetical items.  \n\nThis rule will produce an error irrespective of a fact value being entered for the item(s) listed above.  \n\n{cashFlowMessage}",
         "CF-message-coda": "If the item is an additional disclosure in the cash flow statement then make sure that is included as a child of one of the following abstract items: {nonCFabstracts}",
         "nonCF-message-coda": "If the item is an additional disclosure in the income statement statement then make sure that is included as a child of one of the following abstract items: ShareBasedCompensationAllocationAndClassificationInFinancialStatementsAbstract, SupplementalIncomeStatementElementsAbstract",
@@ -2205,5 +2281,639 @@
 	       		]
         	}
         }
-    }
+	},
+	"DQC.US.0108": {
+		"name": "Fact Value Consistency Over Time",
+	    "description" : [
+	        "DQC.US 0108 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0108/DQC_0108.md"
+	    ],
+		"year-introduced": 2025,
+		"report-type-exclusions": ["S-1", "S-3", "S-4", "S-6", "S-8", "S-11", "S-20", "S-1/A", "S-3/A", "S-4/A", "S-6/A", "S-8/A", "S-11/A", "S-20/A", "F-1","F-3","10-12G", "10-12G/A"],
+		"message": "The concept {fact1} with a period duration starting on {fact1Start} and ending on {fact1End} or {fact1Days} days with a reported value of {value} has a value greater than the value of the same element with a longer or equivalent period duration that starts on {largeStart} and ends on {largeEnd} with a value of {largeValue}. \n\nThe value  {value} for the period of {fact1Days} days should be less or the same as the value {largeValue} with a duration of {largeDays} days assuming that the concept {fact1} cannot have a negative value. If the difference between the two numbers is insignificant, check that the decimals of the two values are appropriate. The decimal value of {fact1} is {fact1Decimals}, and the decimals of {large} is {largeDecimals}. \n\nThe properties of this {fact1} fact are: \nContext: {contextID} \nUnit: {unitID}.",
+	    "rules": {
+			"9564": {
+				"exclude-names": [
+					"CapitalExpendituresIncurredButNotYetPaid",
+					"ConstructionInProgressExpendituresIncurredButNotYetPaid",
+					"EquitySecuritiesFvNiUnrealizedLoss",
+					"EquitySecuritiesFvNiUnrealizedGain",
+					"LeaseCost"
+					],
+				"tolerance": 2
+			},
+			"10095": {
+				"names": [
+					"DerivativeFairValueOfDerivativeLiability",
+					"DerivativeLiabilities",
+					"FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetValue",
+					"FairValueMeasurementWithUnobservableInputsReconciliationsRecurringBasisLiabilityValue",
+					"LiabilitiesFairValueDisclosure",
+					"AmortizationOfIntangibleAssets",
+					"DerivativeFairValueOfDerivativeLiabilityAmountNotOffsetAgainstCollateral",
+					"DerivativeAssets",
+					"FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetTransfersOutOfLevel3",
+					"DerivativeFairValueOfDerivativeAssetAmountOffsetAgainstCollateral",
+					"DerivativeFairValueOfDerivativeLiabilityAmountOffsetAgainstCollateral",
+					"DerivativeFairValueOfDerivativeAssetAmountNotOffsetAgainstCollateral",
+					"DerivativeLiabilityFairValueGrossAsset",
+					"FinancialInstrumentsOwnedAtFairValue",
+					"DerivativeAssetFairValueGrossLiability",
+					"CashDividendsPaidToParentCompany",
+					"DerivativeFairValueOfDerivativeAsset",
+					"DerivativeLiabilitiesCurrent",
+					"InvestmentsFairValueDisclosure",
+					"CashDividendsPaidToParentCompanyByConsolidatedSubsidiaries",
+					"DerivativeCollateralObligationToReturnCash",
+					"Goodwill",
+					"LoansAndLeasesReceivableAllowance",
+					"FairValueMeasurementWithUnobservableInputsReconciliationRecurringBasisAssetTransfersIntoLevel3",
+					"PriceRiskDerivativeLiabilitiesAtFairValue",
+					"DerivativeAssetsNoncurrent",
+					"ConversionOfStockSharesConverted1",
+					"ConversionOfStockAmountConverted1",
+					"OtherLiabilitiesNoncurrent",
+					"ConversionOfStockSharesIssued1",
+					"FairValueMeasurementWithUnobservableInputsReconciliationLiabilityTransfersOutOfLevel3",
+					"RevenueFromContractWithCustomerIncludingAssessedTax",
+					"RevenueFromContractWithCustomerExcludingAssessedTax",
+					"CostOfGoodsAndServicesSold",
+					"CostOfRevenue",
+					"CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization"
+					],
+				"tolerance": 2
+			}
+	    }
+	},
+	"DQC.US.0109": {
+		"name": "Concentration Risk",
+	    "description" : [
+	        "DQC.US 0109 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0109/DQC_0109.md"
+	    ],
+		"year-introduced": 2025,
+	    "rules": {
+			"9565": {
+				"name": "ConcentrationRiskPercentage1",
+				"axes": false,
+				"value": 1,
+				"message": "The concept {name} with value {value} should always be used with the ConcentrationRiskByTypeAxis and ConcentrationRiskByBenchmarkAxis.  This element has no meaning without these axis at a minimum.  Any data provided needs to be used in combination with an additional axis to define the actual risk as the numerator. The member used on the ConcentrationRiskByBenchmarkAxis represents the benchmark denominator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9566": {
+				"name": "ConcentrationRiskPercentage1",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": false, "ConcentrationRiskByTypeAxis": false},
+				"message": "The concept {name} with value {value} should always be used with the ConcentrationRiskByTypeAxis and ConcentrationRiskByBenchmarkAxis.  This element has no meaning without these axis at a minimum.  Any data provided needs to be used in combination with an additional axis to define the actual risk as the numerator. The member used on the ConcentrationRiskByBenchmarkAxis represents the benchmark denominator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9567": {
+				"name": "ConcentrationRiskPercentage1",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": false, "ConcentrationRiskByTypeAxis": true},
+				"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the numerator of ConcentrationRiskByTypeAxis, and not the member used on the ConcentrationRiskByBenchmarkAxis which represents the benchmark denominator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9568": {
+				"name": "ConcentrationRiskPercentage1",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": true, "ConcentrationRiskByTypeAxis": false},
+				"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9569": {
+				"name": "ConcentrationRiskPercentage1",
+				"where": "value!=1",
+				"not-members": ["LaborForceConcentrationRiskMember", "UnionizedEmployeesConcentrationRiskMember"],
+				"axes": {"ConcentrationRiskByBenchmarkAxis": true,
+						 "ConcentrationRiskByTypeAxis": "not-members"},
+				"message": "The concept {name} with value {value} should always be used with the ConcentrationRiskByTypeAxis the ConcentrationRiskByBenchmarkAxis and a third axis to identify the risk area.  This element can only have a value of 1 when only the ConcentrationRiskByTypeAxis and ConcentrationRiskByBenchmarkAxis are used.  This fact needs another axis to identify the specific {$fact1.dimension(ConcentrationRiskByTypeAxis)} risk. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9570": {
+				"name": "ConcentrationRiskPercentage1",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": true, "ConcentrationRiskByTypeAxis": true},
+				"message": "The concept {name} with value {value} should always be used with both the ConcentrationRiskByTypeAxis and the ConcentrationRiskByBenchmarkAxis.  This element has no meaning without both these axis at a minimum.  This fact only contains the denominator of ConcentrationRiskByBenchmarkAxis, and not the member used on the ConcentrationRiskByTypeAxis which represents the benchmark numerator. If this value represents the Concentration Risk, Threshold Percentage then use the extension element ConcentrationRiskThresholdPercentage. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}.",
+				"BENCHMARK_WITH_RISK_TYPE": {
+					"SalesRevenueNetMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember",
+												"ProductConcentrationRiskMember",
+												"RevenueFromRightsConcentrationRiskMember",
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"SalesRevenueProductLineMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember",
+												"ProductConcentrationRiskMember",
+												"RevenueFromRightsConcentrationRiskMember",
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"SalesRevenueSegmentMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember",
+												"ProductConcentrationRiskMember",
+												"RevenueFromRightsConcentrationRiskMember",
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"RevenueFromContractWithCustomerMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember",
+												"ProductConcentrationRiskMember",
+												"RevenueFromRightsConcentrationRiskMember",
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"RevenueFromContractWithCustomerProductAndServiceBenchmarkMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember",
+												"ProductConcentrationRiskMember",
+												"RevenueFromRightsConcentrationRiskMember",
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"RevenueFromContractWithCustomerSegmentBenchmarkMember": ["GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember",
+												"ProductConcentrationRiskMember",
+												"RevenueFromRightsConcentrationRiskMember",
+												"GovernmentContractsConcentrationRiskMember",
+												"SupplierConcentrationRiskMember"],
+					"AccountsReceivableMember": ["CreditConcentrationRiskMember",
+												"GeographicConcentrationRiskMember",
+												"CustomerConcentrationRiskMember"],
+					"CostOfGoodsTotalMember": ["GeographicConcentrationRiskMember",
+												"SupplierConcentrationRiskMember",
+												"ProductConcentrationRiskMember",
+												"LaborForceConcentrationRiskMember",
+												"UnionizedEmployeesConcentrationRiskMember"],
+					"ReinsuranceRecoverableMember": ["ReinsurerConcentrationRiskMember"]
+				}
+			},
+			"9571": {
+				"name": "ConcentrationRiskPercentage1",
+				"xule-const-members": "SET_CONCENTRATION_RISK_ITEMS",
+				"axes": {"ConcentrationRiskByBenchmarkAxis": "xule-const-members"},
+				"message": "The concept {name} with value {value} is used with the ConcentrationRiskByBenchmarkAxis with a benchmark of {dimValue}.  This is an invalid benchmark as it is an actual type of risk and not a benchmark. The benchmark should reflect the accounting concept that the risk applies to such as revenues, receivables, loans etc. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			},
+			"9572": {
+				"name": "ConcentrationRiskPercentage1",
+				"xule-const-members": "SET_BENCHMARK_ITEMS",
+				"axes": {"ConcentrationRiskByTypeAxis": "xule-const-members"},
+				"message": "The concept {name} with value {value} is used with the ConcentrationRiskByTypeAxis with a risk of {dimValue}.  This is an invalid risk as it is an actual benchmark and not a type of risk. The type of risk should reflect the risk associated with a benchmark. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}."
+			}
+		}
+	},
+	"DQC.US.0112": {
+		"name": "Line Items Requiring the Business Acquisition Axis",
+	    "description" : [
+	        "DQC.US 0112 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0112/DQC_0112.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The company has reported a value of {value} for the concept {name}. It is expected that this fact also uses the BusinessAcquisitionAxis with a member indicating the business acquisition that the fact was related to.  This fact must include the business acquisition axis (BusinessAcquisitionAxis). \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
+	    "rules": {
+			"9561": {
+				"axis": "BusinessAcquisitionAxis",
+				"conceptsNeedingBusinessAcquisitionAxis": [
+					"BusinessAcquisitionNameOfAcquiredEntity",
+					"BusinessAcquisitionPercentageOfVotingInterestsAcquired",
+					"BusinessAcquisitionDescriptionOfAcquiredEntity",
+					"BusinessAcquisitionSharePrice",
+					"BusinessCombinationReasonForBusinessCombination",
+					"BusinessAcquisitionRevenueReportedByAcquiredEntityForLastAnnualPeriod",
+					"BusinessAcquisitionDateOfAcquisitionAgreement1",
+					"BusinessAcquisitionEffectiveDateOfAcquisition1",
+					"BusinessAcquisitionPeriodResultsIncludedInCombinedEntity1",
+					"BusinessCombinationIndemnificationAssetsDescription",
+					"BusinessCombinationIndemnificationAssetsBasisForAmount",
+					"BusinessCombinationIndemnificationAssetsRangeOfOutcomesValueHigh",
+					"BusinessCombinationIndemnificationAssetsRangeOfOutcomesValueLow",
+					"BusinessCombinationIndemnificationAssetsRangeOfOutcomesInestimable",
+					"BusinessCombinationIndemnificationAssetsRangeOfOutcomesMaximumUnlimited",
+					"BusinessCombinationIndemnificationAssetsAmountAsOfAcquisitionDate",
+					"BusinessCombinationBargainPurchaseGainRecognizedDescription",
+					"BusinessCombinationStepAcquisitionEquityInterestInAcquireeDescription",
+					"BusinessCombinationStepAcquisitionEquityInterestInAcquireeFairValue1",
+					"BusinessCombinationStepAcquisitionEquityInterestInAcquireeIncludingSubsequentAcquisitionPercentage",
+					"BusinessCombinationStepAcquisitionEquityInterestInAcquireePercentage",
+					"BusinessAcquisitionEquityInterestIssuedOrIssuableDescription",
+					"BusinessAcquisitionEquityInterestIssuedOrIssuableBasisForDeterminingValue",
+					"BusinessAcquisitionEquityInterestsIssuedOrIssuableNumberOfSharesIssued",
+					"BusinessAcquisitionEquityInterestIssuedOrIssuableValueAssigned",
+					"BusinessCombinationContingentConsiderationArrangementsDescription",
+					"BusinessCombinationContingentConsiderationArrangementsBasisForAmount",
+					"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesValueHigh",
+					"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesValueLow",
+					"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesInestimable",
+					"BusinessCombinationContingentConsiderationArrangementsRangeOfOutcomesMaximumUnlimited"						
+				]
+			}
+	    }
+	},
+	"DQC.US.0118": {
+		"name": "Financial Statement Tables Calculation Check of Required Context",
+	    "description" : [
+	        "DQC.US 0118 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0118/DQC_0118.md",
+			"",
+			"This rule is impractical to translate into Python"
+	    ],
+		"year-introduced": 2025,
+	    "rules": {
+			"9575": {
+				"statement-cubes-definition-pattern": "(?!.*(schedule iii|schedule iv)).*- Statement -",
+				"statement-ELR-exclusion-pattern": ".*(parenthetical|equity|equity|stockholders|capital|investment|changes|shareholder|convertible|preferred|temporaryequity|redeemable|netproceedsfromallsources|membersinterest)",
+				"excluded-concepts": ["ScheduleOfInvestmentsTable", "SummaryOfInvestmentHoldingsTable", "InvestmentsSoldNotYetPurchasedTable", "OpenOptionContractsWrittenTable", "OpenFuturesContractTable", "OpenForwardForeignCurrencyContractTable", "OpenSwapContractTable"]
+				
+			}
+	    }
+	},
+	"DQC.US.0119": {
+		"name": "Income Before Tax Equity Method",
+	    "description" : [
+	        "DQC.US 0119 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0119/DQC_0119.md"
+	    ],
+		"year-introduced": 2025,
+	    "rules": {
+			"9576": {
+				"name": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
+				"reqd-names": ["IncomeLossFromEquityMethodInvestments", "IncomeLossFromEquityMethodInvestmentsNetOfDividendsOrDistributions", "IncomeLossFromAffordableHousingProjectsEquityMethodInvestments"],
+				"message": "The company has reported a value for the concept representing Income before income tax, Non Controlling Interest and Equity Method Investments with a value of {value}. However the company has not reported a value for equity method investments. If the company has no equity method investments then the filer should use the element IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"
+			},
+			"9577": {
+				"name": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
+				"not-names": ["IncomeLossFromEquityMethodInvestments", "IncomeLossFromEquityMethodInvestmentsNetOfDividendsOrDistributions", "IncomeLossFromAffordableHousingProjectsEquityMethodInvestments"],
+				"message": "The company has included {name} as a component of the concept \"Income Loss From Continuing Operations Before Income Taxes Minority Interest And Income Loss From Equity Method Investments\". The element {name} cannot be included as a component of \"Income Loss From Continuing Operations Before Income Taxes Minority Interest And Income Loss From Equity Method Investments\" as this element excludes equity method investments.  The filer should use the concept IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest instead. \n\nElement: {name}"					
+			}
+	    }
+	},
+	"DQC.US.0123": {
+		"name": "Missing Components of Equity Axis",
+	    "description" : [
+	        "DQC.US 0123 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0123/DQC_0123.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The company has reported a value for {name} with the axis StatementClassOfStockAxis with a value of {value} to represent the monetary value of the class of stock in equity. This fact however when used in the Statement of Shareholders Equity must include the Component of Equity and associated member indicating if it is preferred stock, common stock or treasury stock. This error could occur because the filer has either 1) used the incorrect element or 2) has NOT included the Statement Equity Components Axis with the Common Stock or Preferred Stock member on the fact. \n\nThe filer should either add the Statement Equity Components Axis and respective stock member in addition to the class of stock axis to the fact, or change the element name from {name} to the appropriate element if the value is not included in Stockholders Equity. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
+	    "rules": {
+			"9583": {
+				"names": ["StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest", "StockholdersEquity"],
+				"name2": "NetAssetValuePerShare",
+				"axis": "StatementClassOfStockAxis"
+			}
+	    }
+	},
+	"DQC.US.0126": {
+		"name": "FS Calculation Check with Non Dimensional Data",
+	    "description" : [
+	        "DQC.US 0126 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0126/DQC_0126.md",
+		    "",
+			"This rule is impractical to translate into Python"
+	    ],
+		"year-introduced": 2025,
+	    "rules": {
+	    }
+	},
+	"DQC.US.0128": {
+		"name": "Dimensional Values Larger than the Default",
+	    "description" : [
+	        "DQC.US 0128 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0128/DQC_0128.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The concept {name} with a value of {value} and dimensions of {dimensions} is greater than the default value for this concept of {defaultValue}. Dimension values should aggregate to a value no greater than the default value of {defaultValue}. Either update the default value or the dimension value. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
+	    "rules": {
+			"9594": {
+				"collective_dimensions": [
+					"PropertyPlantAndEquipmentByTypeAxis",
+					"StatementClassOfStockAxis",
+					"LongtermDebtTypeAxis",
+					"ProductOrServiceAxis",
+					"FiniteLivedIntangibleAssetsByMajorClassAxis",
+					"DebtInstrumentAxis"]
+			}
+	    }
+	},
+	"DQC.US.0133": {
+		"name": "Equity Method Investment Reporting",
+	    "description" : [
+	        "DQC.US 0133 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0133/DQC_0133.md"
+	    ],
+		"year-introduced": 2025,
+	    "rules": {
+			"9831": {
+				"names": ["EquityMethodInvestmentOwnershipPercentage", "EquityMethodInvestmentDescriptionOfPrincipalActivities"],
+				"axis": "ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
+				"axis-expected": true,
+				"message": "The filer has reported a value for the element {name} with a value of {value} without using the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. This axis must be used when reporting a value for {name}. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
+			},
+			"9832": {
+				"axis": "ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis",
+				"axis-expected": false,
+				"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. This axis must be not be used when reporting a value for {name}. The filer should use the axis EquityMethodInvestmentNonconsolidatedInvesteeAxis without the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
+				
+			},
+			"9833": {
+				"axis": "EquityMethodInvestmentNonconsolidatedInvesteeAxis",
+				"axis-expected": false,
+				"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis EquityMethodInvestmentNonconsolidatedInvesteeAxis. This axis must not be used when reporting a value for {name}. The filer should use the axis ScheduleOfEquityMethodInvestmentEquityMethodInvesteeNameAxis. Please refer to the FASB implementation guide on Dimensional Modeling for Disclosures of Consolidated and Nonconsolidated Entities on the FASB website. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}"					
+			}
+	    }
+	},
+	"DQC.US.0134": {
+		"name": "Investment Schedule - Financial Instrument Axis",
+	    "description" : [
+	        "DQC.US 0134 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0134/DQC_0134.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The filer has reported a value for the element {name} with a value of {value}  using the axis {invalidDimensions}. The axis listed must not be used when reporting a value for {name}. The filer should use the axis FinancialInstrumentAxis instead of this axis. {FIAxisMessage}\n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",
+		"FI-axis-message": "The fact only requires the axis FinancialInstrumentAxis and should not contain the additional axis {invalidDimensions}. If there is a subtotal the members on the FinancialInstrumentAxis should be organized in a hierarchy to reflect the breakdown of financial instruments.  ",
+	    "rules": {
+			"9834": {
+				"names": [
+					"AvailableForSaleDebtSecuritiesAmortizedCostBasis",
+					"DebtSecuritiesAvailableForSaleAmortizedCostCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostNoncurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLoss",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossNoncurrent",
+					"AvailableForSaleSecuritiesDebtSecurities",
+					"AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+					"AvailableForSaleSecuritiesDebtSecuritiesNoncurrent",
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterest",
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterestCurrent",
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterestNoncurrent"						
+				],
+				"allowed-axis": "InvestmentTypeAxis",
+				"allowed-members": ["FixedMaturitiesMember", "ShortTermInvestmentsMember"],
+				"invalid-axes": ["CashAndCashEquivalentsAxis", "RestrictedCashAndCashEquivalentsCashAndCashEquivalentsAxis", "InvestmentTypeAxis"]
+			}
+	    }
+	},
+	"DQC.US.0135": {
+		"name": "Extensible Enumerations for Financial Statement Captions",
+	    "description" : [
+	        "DQC.US 0135 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0135/DQC_0135.md"
+	    ],
+		"year-introduced": 2025,
+		"document-types": ["10-K","10-KT","10-K/A","20-F"],
+	    "rules": {
+			"9835": {
+				"decimal_tolerance_factor": 20,
+				"message": "The element {name} has been used in the filing but does not appear in the financial statements of the filing. This disclosure should appear in the face financials unless it is included in another account caption. If this is the case the following element(s) {related_ext_enum_list} should be used to identify the account where the financial statement element {name} is included. \n\n{pension_message} \n\nIf the filing does not disclose the financial statement captions where the amounts appear, an extension element {NotDisclosedAsImmaterial} can be used. If this element is used, the rule will not produce an error. \n\nThe following is an example of a fact that does not have an extensible list: \nConcept: {name} \nContext: {contextID} \nUnit: {unitID}"
+			},
+			"9836": {
+				"message": "The element {name} with a value of {value} has been used in the filing but does not appear in the financial statements of the filing. This disclosure should appear in the face financials unless it is included in another account caption. If this is the case the element {related_ext_enum} should be used to identify the account where the element {name} is included.  Because this value uses a statement location axis the enumerated value should also include the appropriate statement location axis. If there is only one statement location axis value the location axis does not have to be used. \n\nIf the filing does not disclose the financial statement captions where the amounts appear, an extension element {NotDisclosedAsImmaterial} can be used. If this element is used, the rule will not produce an error. \nConcept: {name} \nContext: {contextID} \nUnit: {unitID}"
+			}
+	    },
+		"LEASE_ITEMS": ["FinanceLeaseLiability", "FinanceLeaseLiabilityCurrent", "FinanceLeaseLiabilityNoncurrent", "FinanceLeaseRightOfUseAsset", "OperatingLeaseRightOfUseAsset", "OperatingLeaseLiability", "OperatingLeaseLiabilityCurrent", "OperatingLeaseLiabilityNoncurrent"],
+		"NON_REQUIRED_CAPTION_DISCLOSURE": ["DefinedBenefitPlanOtherCosts", "RestrictedCash", "RestrictedCashAndCashEquivalents", "RestrictedCashAndCashEquivalentsAtCarryingValue", "RestrictedCashAndCashEquivalentsNoncurrent", "RestrictedCashCurrent", "RestrictedCashEquivalents", "RestrictedCashEquivalentsCurrent", "RestrictedCashEquivalentsNoncurrent", "RestrictedCashNoncurrent"],
+		"FS_Concepts_With_OCI": ["FairValueAssetLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueAssetRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueNetDerivativeAssetLiabilityRecurringBasisStillHeldUnrealizedGainLossOci", "FairValueRecurringBasisUnobservableInputReconciliationAssetLiabilityGainLossOci"],
+		"scheduleAxisNames": ["FairValueByAssetClassAxis", "FairValueByLiabilityClassAxis", "FinancialInstrumentAxis", "RetirementPlanNameAxis", "RetirementPlanTypeAxis", "RetirementPlanSponsorLocationAxis", "DerivativeInstrumentRiskAxis", "DerivativeInstrumentsGainLossByHedgingRelationshipAxis", "EnvironmentalRemediationSiteAxis", "HedgingDesignationAxis"],
+		"FairValueBreakdownItemsNotChecked": ["FairValueInputsLevel2Member", "FairValueInputsLevel1Member", "FairValueMeasuredAtNetAssetValuePerShareMember", "FairValueInputsLevel12And3Member"]
+
+	},
+	"DQC.US.0136": {
+		"name": "Caption Value Matches Financial Statements",
+	    "description" : [
+	        "DQC.US 0136 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0136/DQC_0136.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The extensible list item {related_ext_enum} has a value of {x}. This item refers to the location of this item in the financial statements.  However, the concept {x} does not appear in the face financial statements. Either update the value of the extensible list item {x} with the correct element or add the line item {x} to the presentation and calculation linkbase in the appropriate statement role.",
+	    "rules": {
+			"9837": {
+				"LEASE_ITEMS": ["FinanceLeaseLiability", "FinanceLeaseLiabilityCurrent", "FinanceLeaseLiabilityNoncurrent", "FinanceLeaseRightOfUseAsset", "OperatingLeaseRightOfUseAsset", "OperatingLeaseLiability", "OperatingLeaseLiabilityCurrent", "OperatingLeaseLiabilityNoncurrent"]
+			}
+	    }
+	},
+	"DQC.US.0137": {
+		"name": "Location Axis with a Single Member",
+	    "description" : [
+	        "DQC.US 0137 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0137/DQC_0137.md"
+	    ],
+		"year-introduced": 2025,
+		"document-types": ["10-K","10-KT","10-K/A","20-F", "10-Q", "10-Q/A", "20-F/A","40-F","40-F/A"],
+		"message": "The element {name} with a value of {value} has been used in the filing with the axis {axis}.  This is the only fact reported with this element.  Rather than using the {axis} the filer should use the extensible enumeration element to indicate the location of the item in the financial statements. In this case the element {extEnum} should be used to identify the account where the element {name} is included. \n\nThe properties of this {name} fact are: \nContext: {contextID} \nUnit: {unitID}",				
+	    "rules": {
+			"9838": {
+			}
+	    }
+	},
+	"DQC.US.0141": {
+		"name": "Inconsistent Accrued Interest Elements",
+	    "description" : [
+	        "DQC.US 0141 rule entries are formatted is as follows:",
+	        "",
+	        "A JSON object with key that is the rule id and value object as follows:",
+	        "",
+	        "based on: https://github.com/DataQualityCommittee/dqc_us_rules/blob/master/docs/DQC_US_0141/DQC_0141.md"
+	    ],
+		"year-introduced": 2025,
+		"message": "The filing reports values that use the including accrued interest items and the excluding accrued interest items. Review the accounting policy elections to determine if you should be using the excluding accrued interest items or the including accrued interest items. \n\nReview the following {setType} are appropriate given the majority of disclosure items are {setTypeContra}: \n\n{incorrectElements}. \n\nThe  {setTypeContra} are as follows: {correctElements}. \n\n{IncludingInterestSourceCalcs} \n\nContext: {contextID} \nUnit: {unitID}",
+	    "rules": {
+			"9863": {
+				"accrued-interest-classes": [
+					"AccountsRec","DebtSecuritiesHeldToMaturity","AvailableForSaleSecuritiesDebtSecurities","DirectFinancingLeaseNet","FinancingReceivable","NetInvestmentInLease","SalesTypeLeaseNet"						
+				],
+				"INCLUDING_ACCRUED_INTEREST_DICT": {
+					"AccountsRec": [
+					"AccountsReceivableNetNoncurrent",
+					"AccountsReceivableGrossNoncurrent",
+					"AllowanceForDoubtfulAccountsReceivableNoncurrent"],
+					"DebtSecuritiesHeldToMaturity": [
+					"DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLossCurrent",
+					"HeldToMaturitySecuritiesCurrent",
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLossCurrent",
+					"DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLoss",
+					"HeldToMaturitySecurities",
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLoss",
+					"DebtSecuritiesHeldToMaturityAmortizedCostAfterAllowanceForCreditLossNoncurrent",
+					"HeldToMaturitySecuritiesNoncurrent",
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesHeldToMaturityOriginatedInCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityOriginatedInFiscalYearBeforeLatestFiscalYear",
+					"DebtSecuritiesHeldToMaturityOriginatedTwoYearsBeforeLatestFiscalYear",
+					"DebtSecuritiesHeldToMaturityOriginatedThreeYearsBeforeLatestFiscalYear",
+					"DebtSecuritiesHeldToMaturityOriginatedFourYearsBeforeLatestFiscalYear",
+					"DebtSecuritiesHeldToMaturityOriginatedFiveOrMoreYearsBeforeLatestFiscalYear"],
+					"AvailableForSaleSecuritiesDebtSecurities": [
+					"AvailableForSaleSecuritiesDebtSecuritiesNoncurrent",
+					"AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLoss",
+					"AvailableForSaleDebtSecuritiesAmortizedCostBasis",
+					"DebtSecuritiesAvailableForSaleAllowanceForCreditLoss",
+					"AvailableForSaleSecuritiesDebtSecurities",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostCurrent",
+					"DebtSecuritiesAvailableForSaleAllowanceForCreditLossCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAfterAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostNoncurrent",
+					"DebtSecuritiesAvailableForSaleAllowanceForCreditLossNoncurrent"],
+					"DirectFinancingLeaseNet": [
+					"DirectFinancingLeaseNetInvestmentInLeaseAfterAllowanceForCreditLoss",
+					"DirectFinancingLeaseNetInvestmentInLease",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLoss",
+					"DirectFinancingLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossCurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossCurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossCurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossNoncurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossNoncurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossNoncurrent"],
+					"NotesReceivable": [
+					"NotesReceivableNet",
+					"NotesReceivableGross",
+					"NotesAndLoansReceivableNetCurrent",
+					"NotesAndLoansReceivableGrossCurrent",
+					"AllowanceForNotesAndLoansReceivableCurrent",
+					"NotesAndLoansReceivableNetNoncurrent",
+					"NotesAndLoansReceivableGrossNoncurrent",
+					"AllowanceForNotesAndLoansReceivableNoncurrent"],
+					"FinancingReceivable": [
+					"NotesReceivableNet",
+					"FinancingReceivableAllowanceForCreditLosses",
+					"FinancingReceivableRevolvingConvertedToTermLoan",
+					"FinancingReceivableRevolving",
+					"FinancingReceivableOriginatedInCurrentFiscalYear",
+					"FinancingReceivableOriginatedInFiscalYearBeforeLatestFiscalYear",
+					"FinancingReceivableOriginatedTwoYearsBeforeLatestFiscalYear",
+					"FinancingReceivableOriginatedThreeYearsBeforeLatestFiscalYear",
+					"FinancingReceivableOriginatedFourYearsBeforeLatestFiscalYear",
+					"FinancingReceivableOriginatedFiveOrMoreYearsBeforeLatestFiscalYear"],
+					"NetInvestmentInLease": [
+					"NetInvestmentInLeaseAfterAllowanceForCreditLoss",
+					"NetInvestmentInLease",
+					"NetInvestmentInLeaseAllowanceForCreditLoss",
+					"NetInvestmentInLeaseAfterAllowanceForCreditLossCurrent",
+					"NetInvestmentInLeaseCurrent",
+					"NetInvestmentInLeaseAllowanceForCreditLossCurrent",
+					"NetInvestmentInLeaseAfterAllowanceForCreditLossNoncurrent",
+					"NetInvestmentInLeaseNoncurrent",
+					"NetInvestmentInLeaseAllowanceForCreditLossNoncurrent"],
+					"SalesTypeLeaseNet": [
+					"SalesTypeLeaseNetInvestmentInLeaseAfterAllowanceForCreditLoss",
+					"SalesTypeLeaseNetInvestmentInLease",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLoss",
+					"SalesTypeLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseAfterAllowanceForCreditLossNoncurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseBeforeAllowanceForCreditLossNoncurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossNoncurrent"] },
+				"EXCLUDING_ACCRUED_INTEREST_DICT":  {
+					"AccountsRec": [
+					"AccountsReceivableExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"AccountsReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"AccountsReceivableAllowanceForCreditLossExcludingAccruedInterestNoncurrent"],
+					"DebtSecuritiesHeldToMaturity": [
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLossExcludingAccruedInterestCurrent",
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLossExcludingAccruedInterest",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
+					"DebtSecuritiesHeldToMaturityAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestOriginatedMoreThanFiveYearsBeforeCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearFiveOriginatedFourYearsBeforeCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearFourOriginatedThreeYearsBeforeCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearOneOriginatedCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearThreeOriginatedTwoYearsBeforeCurrentFiscalYear",
+					"DebtSecuritiesHeldToMaturityExcludingAccruedInterestYearTwoOriginatedFiscalYearBeforeCurrentFiscalYear"],
+					"AvailableForSaleSecuritiesDebtSecurities": [
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterest",
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterestCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"DebtSecuritiesAvailableForSaleExcludingAccruedInterestNoncurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLoss", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossCurrent", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAllowanceForCreditLossExcludingAccruedInterest",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAllowanceForCreditLossExcludingAccruedInterestCurrent",
+					"DebtSecuritiesAvailableForSaleAmortizedCostAllowanceForCreditLossExcludingAccruedInterestNoncurrent", "DebtSecuritiesAvailableForSaleAmortizedCostExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent"],
+					"DirectFinancingLeaseNet": [
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestCurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterest",
+					"DirectFinancingLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"DirectFinancingLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossCurrent"],
+					"FinancingReceivable": [
+					"FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"FinancingReceivableExcludingAccruedInterestOriginatedMoreThanFiveYearsBeforeCurrentFiscalYear",
+					"FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest",
+					"FinancingReceivableAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
+					"FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
+					"FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"FinancingReceivableExcludingAccruedInterestRevolvingConvertedToTermLoan",
+					"FinancingReceivableExcludingAccruedInterestYearFiveOriginatedFourYearsBeforeCurrentFiscalYear",
+					"FinancingReceivableExcludingAccruedInterestYearTwoOriginatedFiscalYearBeforeCurrentFiscalYear",
+					"FinancingReceivableExcludingAccruedInterestRevolving",
+					"FinancingReceivableExcludingAccruedInterestYearFourOriginatedThreeYearsBeforeCurrentFiscalYear",
+					"FinancingReceivableExcludingAccruedInterestYearOneOriginatedCurrentFiscalYear",
+					"FinancingReceivableAllowanceForCreditLossExcludingAccruedInterestCurrent",
+					"FinancingReceivableExcludingAccruedInterestYearThreeOriginatedTwoYearsBeforeCurrentFiscalYear",
+					"FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent"],
+					"NetInvestmentInLease": [
+					"NetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterest",
+					"NetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"NetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestNoncurrent",
+					"NetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"NetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"NetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"NetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"NetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
+					"NetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestCurrent"],
+					"SalesTypeLeaseNet": [
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLoss",
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestBeforeAllowanceForCreditLossNoncurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLossNoncurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterest",
+					"SalesTypeLeaseNetInvestmentInLeaseExcludingAccruedInterestAfterAllowanceForCreditLoss",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestCurrent",
+					"SalesTypeLeaseNetInvestmentInLeaseAllowanceForCreditLossExcludingAccruedInterestNoncurrent"]}				}
+	    }
+	}
 }

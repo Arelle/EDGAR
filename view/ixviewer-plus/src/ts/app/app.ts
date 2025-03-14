@@ -46,7 +46,7 @@ export const App = {
             if (HelpersUrl.getAllParams && 
                 HelpersUrl.getAllParams!["metalinks"] &&
                 HelpersUrl.getAllParams!["doc"] &&
-                HelpersUrl.getFormAbsoluteURL)
+                HelpersUrl.getFolderAbsUrl)
             {
                 //reset the progress bar and then increment it
                 resetProgress();
@@ -54,20 +54,16 @@ export const App = {
 
                 const fetchAndMergeArgs: FetchMergeArgs = {
                     params: HelpersUrl.getAllParams,
-                    absolute: HelpersUrl.getFormAbsoluteURL,
+                    absolute: HelpersUrl.getFolderAbsUrl,
                     instance: changeInstance ? Constants.getInstanceFiles : null,
                     std_ref: Constants.getStdRef,
                 };
 
-                if (typeof window !== 'undefined' && window.Worker)
-                {
-                    const worker = new Worker(
-                        new URL('../workers/workers.ts', import.meta.url), { name: 'fetch-merge' });
+                if (typeof window !== 'undefined' && window.Worker){
+                    const worker = new Worker(new URL('../workers/workers.ts', import.meta.url), { name: 'fetch-merge' });
                     worker.postMessage(fetchAndMergeArgs);
-                    worker.onmessage = (event: MessageEvent<FMResponse>) =>
-                    {
-                        if ("all" in event.data)
-                        {
+                    worker.onmessage = (event: MessageEvent<FMResponse>) => {
+                        if ("all" in event.data) {
                             incrementProgress();
                             worker.terminate();
                             const instance = event.data.all.instance.find(i => i.current);
@@ -77,21 +73,19 @@ export const App = {
 
                             handleFetchAndMerge(instance || null);
                             callback(true);
-                            Facts.addHashChangeListener();
-                            Facts.handleFactHash();
+                            HelpersUrl.addHashChangeListener();
+                            HelpersUrl.handleHash()
                             incrementProgress();
-                        }
-                        else if ("xhtml" in event.data)
-                        {
+
+                        } else if ("xhtml" in event.data) {
                             //Leave sidebars alone if this is not the initial load
                             if (!changeInstance) closeSidebars();
                             Constants.isNcsr = event.data.isNcsr
                             progressiveLoadDoc(event.data.xhtml);
                             
                             incrementProgress();
-                        }
-                        else if ("facts" in event.data)
-                        {
+
+                        } else if ("facts" in event.data) {
                             const now = performance.now();
                             
                             // purpose: make facts get attributes like highlights during load
@@ -99,15 +93,15 @@ export const App = {
                             addAttributesToInlineFacts(event.data.facts);
                             
                             incrementProgress();
-                            if (LOGPERFORMANCE)
-                            {
+
+                            if (LOGPERFORMANCE) {
                                 const log: Logger<ILogObj> = new Logger();
                                 log.debug(`attributeFacts took ${Date.now() - now}ms`);
                             }
                         }
                     };
-                    worker.onerror = (errorEvent) =>
-                    {
+
+                    worker.onerror = (errorEvent) => {
                         const errLoc = `${errorEvent.filename} ${errorEvent.lineno}:${errorEvent.colno}`;
                         console.error(errLoc, errorEvent.message);
 
@@ -116,9 +110,8 @@ export const App = {
                         callback(false);
                         worker.terminate();
                     };
-                }
-                else
-                {
+
+                } else {
                     //Browser does not support WebWorkers
                     console.error(`WebWorkers NOT available.  Stopping.`);
 
@@ -131,9 +124,7 @@ export const App = {
                     hideLoadingUi();
                     callback(false);
                 }
-            }
-            else
-            {
+            } else {
                 Facts.updateFactCount();
                 ErrorsMajor.urlParams();
                 hideLoadingUi();
@@ -146,8 +137,7 @@ export const App = {
     },
 
     /** perform all the steps run post-load, using data that's been loaded already */
-    loadFromMemory(activeInstance: InstanceFile)
-    {
+    loadFromMemory(activeInstance: InstanceFile) {
         const xhtml = activeInstance.docs.filter(doc => doc.current)[0].xhtml;
 
         progressiveLoadDoc(xhtml);
@@ -157,8 +147,7 @@ export const App = {
         App.additionalSetup();
     },
 
-    initialSetup: () =>
-    {
+    initialSetup: () => {
         // runs once on startup
         Tabs.init();
         Sections.init();
@@ -167,8 +156,7 @@ export const App = {
         Facts.updateFactCount();
     },
 
-    enableNavsEtc: () =>
-    {
+    enableNavsEtc: () => {
         const disabledNavsArray = Array.from(document.querySelectorAll(".navbar .disabled, [disabled]"));
         disabledNavsArray.forEach((current) =>
         {
@@ -182,24 +170,21 @@ export const App = {
      * runs every time a new instance is loaded
      * @returns {void}
      */
-    additionalSetup: (): void =>
-    {
+    additionalSetup: (): void => {
         Tabs.updateTabs();
         Facts.addEventAttributes();
         Facts.updateFactCount();
         (document.getElementById('global-search-form') as HTMLFormElement)?.reset();
     },
 
-    emptySidebars: () =>
-    {
+    emptySidebars: () => {
         document.querySelector("#facts-menu-list-pagination *")!.innerHTML = "";
     },
 };
 
 
 /** called when ALL data has been loaded and processed, and when swapping to a new instance that's already loaded */
-function handleFetchAndMerge(activeInstance: InstanceFile | null): true | never
-{
+function handleFetchAndMerge(activeInstance: InstanceFile | null): true | never {
     if (activeInstance == null) throw new Error("Error: no active instance was found!");
 
     const startPerformance = performance.now();
@@ -212,8 +197,7 @@ function handleFetchAndMerge(activeInstance: InstanceFile | null): true | never
 
     activeInstance.docs
         .filter(({ xhtml, current }) => !current && !!xhtml)
-        .forEach(({ xhtml, current, slug }, i) =>
-        {
+        .forEach(({ xhtml, current, slug }, i) => {
             loadDoc(xhtml, current, i);
             document.querySelector(`#xbrl-section-${i}`)?.setAttribute('filing-url', slug);
         });
@@ -222,8 +206,7 @@ function handleFetchAndMerge(activeInstance: InstanceFile | null): true | never
     addPagination();
 
     const endPerformance = performance.now();
-    if (LOGPERFORMANCE)
-    {
+    if (LOGPERFORMANCE) {
         const log: Logger<ILogObj> = new Logger();
         log.debug(`Final fetch-merge handling completed in: ${(endPerformance - startPerformance).toFixed(2)}ms`);
     }
@@ -231,40 +214,38 @@ function handleFetchAndMerge(activeInstance: InstanceFile | null): true | never
     return true;
 }
 
-function storeData(activeInstance: InstanceFile | null, sections: Section[] = [], allInstances?: InstanceFile[], stdRef?: Record<string, Reference>): void
-{
+function storeData(
+    activeInstance: InstanceFile | null,
+    sections: Section[] = [],
+    allInstances?: InstanceFile[],
+    stdRef?: Record<string, Reference>
+) : void {
     //TODO: set sections in WebWorker cb instead
-    if (sections.length > 0)
-    {
+    if (sections.length > 0) {
         Constants.setSections(sections);
     }
     
-    if (activeInstance)
-    {
+    if (activeInstance) {
         ConstantsFunctions.setInlineFiles(activeInstance.docs);
         ConstantsFunctions.setFormInformation(activeInstance.formInformation);
     }
 
-    if (allInstances?.length)
-    {
+    if (allInstances?.length) {
         ConstantsFunctions.setInstanceFiles(allInstances);
     }
 
-    if (stdRef)
-    {
+    if (stdRef) {
         ConstantsFunctions.setStdRef(stdRef);
     }
 }
 
-function closeSidebars(): void
-{
+function closeSidebars(): void {
     //The sidebars are open (but empty); close them so the XBRL doc content becomes visible
     document.getElementById('sections-menu')?.classList.remove('show');
     document.getElementById('facts-menu')?.classList.remove('show');
 }
 
-function progressiveLoadDoc(xhtml: string): void
-{
+function progressiveLoadDoc(xhtml: string): void {
     if (!xhtml) return;
     const startPerformance = performance.now();
 
@@ -276,31 +257,25 @@ function progressiveLoadDoc(xhtml: string): void
     // Errors.updateMainContainerHeight(false);
     
     const endPerformance = performance.now();
-    if (LOGPERFORMANCE)
-    {
+    if (LOGPERFORMANCE) {
         const log: Logger<ILogObj> = new Logger();
         log.debug(`Adding XHTML completed in: ${(endPerformance - startPerformance).toFixed(2)}ms`);
     }
 }
 
-function loadDoc(xhtml: string, current: boolean, i?: number): void
-{
+function loadDoc(xhtml: string, current: boolean, i?: number): void {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(xhtml, "text/html");
 
     //Each .htm file (doc) gets its own section element which will be a child of the xbrl-form
     const docSection = document.createElement('section');
 
-    if (current)
-    {
+    if (current) {
         docSection.setAttribute("id", "xbrl-section-current");
-        for(const { name, value } of htmlDoc.querySelector('html')!.attributes)
-        {
+        for (const { name, value } of htmlDoc.querySelector('html')!.attributes) {
             document.querySelector('html')?.setAttribute(name, value);
         }
-    }
-    else
-    {
+    } else {
         docSection.classList.add('d-none');
         docSection.setAttribute("id", `xbrl-section-${i}`);
     }
@@ -316,8 +291,9 @@ function loadDoc(xhtml: string, current: boolean, i?: number): void
     if (!body) throw new Error("Error: XBRL document is missing `body` tag");
 
     //split if doc is larger than 50MB
-    if(xhtml.length > 50 * 1024 * 1024)
+    if (xhtml.length > 50 * 1024 * 1024) {
         splitBodyContents(body);
+    }
 
     docSection.append(body);
     document.getElementById("dynamic-xbrl-form")?.append(docSection);
@@ -328,15 +304,14 @@ function loadDoc(xhtml: string, current: boolean, i?: number): void
  * 1. limit the number of direct children of `body`
  * 2. utilize `content-visibility: auto` to load elements only when necessary
  */
-function splitBodyContents(body: HTMLElement): void
-{
+function splitBodyContents(body: HTMLElement): void {
     ErrorsMinor.message("IX Viewer has detected a very large file.  Performance may be degraded, and some features may not work as expected.");
 
     const ELEMENTS_PER_GROUP = Math.floor(Math.sqrt(body.childElementCount));
     const groupCount = Math.ceil(body.childElementCount / ELEMENTS_PER_GROUP);
-    const fastRenderGroups = new Array(groupCount).fill(null)
-        .map(() =>
-        {
+    const fastRenderGroups = new Array(groupCount)
+        .fill(null)
+        .map(() => {
             const span = document.createElement("span");
             span.setAttribute("style", "content-visibility: auto;");
             return span;
@@ -353,24 +328,19 @@ function splitBodyContents(body: HTMLElement): void
     body.append(...fastRenderGroups);
 }
 
-
-
 let idAllocator = null as any as FactIdAllocator;
 
 /** Give facts attributes like highlights during load */
-function addAttributesToInlineFacts(facts: Map<string, SingleFact>, current = true)
-{
+function addAttributesToInlineFacts(facts: Map<string, SingleFact>, current = true) {
     const startPerformance = performance.now();
 
     //For the facts in the HTML that have no IDs...
     idAllocator = idAllocator || new FactIdAllocator(facts);
-    const getByNameAndContextRef = (contextRef: string | null, name: string | null): string | null =>
-    {
+    const getByNameAndContextRef = (contextRef: string | null, name: string | null): string | null => {
         let id = idAllocator.getId(contextRef, name);
 
         //Get a new ID if this one has already been assigned to an element
-        while(document.getElementById(id || "DEFAULT_FAKE_ID") != null)
-        {
+        while (document.getElementById(id || "DEFAULT_FAKE_ID") != null) {
             id = idAllocator.getId(contextRef, name);
         }
 
@@ -380,16 +350,14 @@ function addAttributesToInlineFacts(facts: Map<string, SingleFact>, current = tr
     const prefix = current ? "" : "> :not(#xbrl-section-current)";
     const foundElements = Array.from(document.querySelectorAll(`#dynamic-xbrl-form ${prefix} [contextref]`));
 
-    for(const element of foundElements)
-    {
+    for (const element of foundElements) {
         element.setAttribute("enabled-fact", "true");
         element.setAttribute("selected-fact", "false");
         element.setAttribute("hover-fact", "false");
         element.setAttribute("continued-fact", "false");
         element.setAttribute("inside-table", `${!!element.closest("table")}`);
 
-        if (!element.getAttribute("tagName")?.toLowerCase().endsWith("continuation") && element.getAttribute("continuedat"))
-        {
+        if (!element.getAttribute("tagName")?.toLowerCase().endsWith("continuation") && element.getAttribute("continuedat")) {
             element.setAttribute("continued-main-fact", "true");
         }
 
@@ -399,34 +367,29 @@ function addAttributesToInlineFacts(facts: Map<string, SingleFact>, current = tr
         const ix = element.getAttribute("id") || getByNameAndContextRef(contextref, name) || "";
         const id = facts.get(ix)?.id;
 
-        if (ix && id)
-        {
+        if (ix && id) {
             element.setAttribute("ix", ix);
             element.setAttribute("id", id);
-        }
-        else
-        {
+        } else {
             console.warn(`Fact [name: ${name}] & [contextRef: ${contextref}] could not be located in the Map.`);
         }
     }
 
-    for(let e of document.querySelectorAll(`#dynamic-xbrl-form ${prefix} ix\\:hidden [contextref]`))
-    {
-        if(e.id && document.querySelectorAll(`#${e.id}`).length != 1)
+    for (let e of document.querySelectorAll(`#dynamic-xbrl-form ${prefix} ix\\:hidden [contextref]`)) {
+        if (e.id && document.querySelectorAll(`#${e.id}`).length != 1) {
             e.id += "-hidden";
+        }
     }
 
     const endPerformance = performance.now();
-    if (LOGPERFORMANCE)
-    {
+    if (LOGPERFORMANCE) {
         const items = foundElements.length;
         const log: Logger<ILogObj> = new Logger();
         log.debug(`app.attributeFacts() completed in: ${(endPerformance - startPerformance).toFixed(2)}ms - ${items} items`);
     }
 }
 
-function addPagination(): void
-{
+function addPagination(): void {
     // maybe remove
     document.getElementById('html-pagination')?.classList.toggle('d-none');
 
@@ -434,8 +397,7 @@ function addPagination(): void
     const currentXHTML = currentInstance?.docs.find(element => element.current);
 
     const currentDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);
-    const numPageBreaks = currentDocElem?.querySelectorAll(`[style*="break-after"], [style*="break-before"]`)?.length || 0;
-    
+    const numPageBreaks = currentDocElem?.querySelectorAll(`[style*="break-after" i], [style*="break-before" i]`)?.length || 0;
     if (numPageBreaks > 0) {
         const inlineDocPaginationUI = buildInlineDocPagination();
         document.getElementById('dynamic-xbrl-form')?.append(inlineDocPaginationUI);
@@ -445,17 +407,12 @@ function addPagination(): void
     }
 }
 
-function handleFetchError(loadingError: ErrorResponse): false
-{
+function handleFetchError(loadingError: ErrorResponse): false {
     Constants.getInlineFiles = [];
 
-    if (loadingError.error && loadingError.messages)
-    {
-        loadingError.messages
-            .forEach((current: string) => ErrorsMajor.message(current));
-    }
-    else
-    {
+    if (loadingError.error && loadingError.messages) {
+        loadingError.messages.forEach((current: string) => ErrorsMajor.message(current));
+    } else {
         ErrorsMajor.message(DEFAULT_ERROR_MSG);
         console.error(loadingError);
     }
