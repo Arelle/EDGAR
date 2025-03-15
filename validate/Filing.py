@@ -5154,16 +5154,16 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             else: # axes are called for
                                 if id == "9566" and hasNondimValue:
                                     continue
-                                if not all(a not in localDims if not v else
-                                           a in localDims if v == True else
-                                           a in localDims and localDims[a].memberQname.localName not in notMems if v == "not-members" else
-                                           a in localDims and localDims[a].memberQname in memQns if v == "xule-const-members" else
+                                if not all((a not in localDims) if not v else
+                                           (a in localDims) if v == True else
+                                           (a in localDims and localDims[a].memberQname.localName not in notMems) if v == "not-members" else
+                                           (a in localDims and localDims[a].memberQname in memQns) if v == "xule-const-members" else
                                            True
                                            for a,v in axes.items()):
                                     continue
                                 if id == "9569":
                                     # if there's a third axis it passes
-                                    if sum(a in localDims for a in axes) < len(localDims):
+                                    if any(a not in localDims for a in axes):
                                         continue
                                 if rule.get("where") == "value!=1" and f.xValue == 1:
                                     continue

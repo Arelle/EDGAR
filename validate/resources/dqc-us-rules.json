@@ -138,13 +138,13 @@
                 "axis-descendants": "Yes",
                 "additional-members": ["RepurchaseAgreementCounterpartyNameDomain", "AffiliatedEntityMember", "InvestorMember", "VariableInterestEntityNotPrimaryBeneficiaryMember", "ChiefFinancialOfficerMember", "IndividualMember", "GovernmentMember", "GuarantorSubsidiariesMember", "SubsidiaryIssuerMember", "DirectorMember", "ChiefExecutiveOfficerMember",  "ChiefOperatingOfficerMember", "GeneralPartnerMember", "CorporateJointVentureMember", "SubsidiaryOfCommonParentMember", "IndividuallyImmaterialCounterpartiesMember"],
                 "extensions-allowed": "Yes"
-            },
-			"60": {
-			    "axis": "DefinedContributionPlanNameAxis",
+				},
+			"59": {
+			    "axis": "PlanNameAxis",
 				"axis-descendants": "None",
-				"xuleConstants-members": ["MEM_DEF_CNT_PLN_NM_AXS"],
+				"xuleConstants-members": ["MBR_PLN_NM_AXS"],
 			    "extensions-allowed": "Yes"
-			},
+            },
             "61": {
                 "axis": "RangeAxis",
                 "axis-descendants": "Yes",
