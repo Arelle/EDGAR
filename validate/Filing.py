@@ -3695,7 +3695,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                               _("Validation was unable to complete XULE rules due to an internal error.  This is not considered an error in the filing."),
                               modelObject=modelXbrl)
             modelXbrl.debug(
-                "xule:validationException",
+                "xule:ValidationException",
                 _("An unexpected exception occurred in XULE\n%(traceback)s"),
                 traceback=traceback.format_exception(*sys.exc_info())
             )
