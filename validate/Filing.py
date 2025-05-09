@@ -3522,6 +3522,14 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     modelObject=(rel, relFrom, relTo), arc=rel.qname, conceptFrom=relFrom.qname, linkrole=rel.linkrole, conceptTo=rel.toModelObject.qname)
 
     # 6.9.10 checks on custom arcs
+    def isTxDefaultMember(taxonomyPrefix, qname):
+        for defaultDimension, defaultDescendant in modelXbrl.dimensionDefaultConcepts.items():
+            if defaultDimension.qname.prefix == taxonomyPrefix \
+                and defaultDimension.isExplicitDimension \
+                and defaultDescendant.qname == qname:
+                return True
+        return False
+        
     if isEFM:
         # find OEF, CEF,  VIP or ECD
         tgtMemRoles = defaultdict(set)
@@ -3591,7 +3599,10 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         modelObject=(rel,relFrom,relTo), arc=rel.qname, arcrole=rel.arcrole,
                                         linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
                                         conceptFrom=relFrom.qname, conceptTo=relTo.qname)
-                                elif any(r.match(rel.linkrole) and not q.match(relFromQNstr) for r, q in lbVal.elrDefRoleSrc):
+                                elif any(r.match(rel.linkrole) and \
+                                         not ( ( q.pattern == "@defaults" and isTxDefaultMember(abbrNs, relFrom.qname) ) \
+                                                    or ( q.pattern != "@defaults" and q.match(relFromQNstr) ) ) \
+                                                for r, q in lbVal.elrDefRoleSrc):
                                     modelXbrl.error(f"EXG.{lbVal.exgDef}.roleSourceNotPermitted",
                                         _("The %(arcrole)s relationship source, %(conceptFrom)s, to %(conceptTo)s, link role %(linkroleDefinition)s, is not permitted."),
                                         edgarCode=f"du-{lbVal.exgDef[3:5]}{lbVal.exgDef[6:]}-Role-Source-Not-Permitted",
