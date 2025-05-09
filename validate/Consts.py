@@ -343,7 +343,7 @@ linkbaseValidations = {
     # elrPreDocTypes - list of doc types which are checked for this validation
     # elrDefInNs - regex of linkroles permitting extension relationships between base taxonomy concepts
     # elrDefExNs - regex of linkroles permitting extension relationships between base and non-base concepts
-    # elrDefRowSrc - patterns of role and allowed source concept qname
+    # elrDefRoleSrc - patterns of role and allowed source concept qname. Can use @defaults for concept to match descendants of the default member of a {TAXONOMY} concept explicit dimension.
     # elrDefNoTgtRole - true to block extension arcs with target role
     # preSources - local names of allowed source elements
     # preCustELFs - true to allow custom linkroles in extension
@@ -443,8 +443,10 @@ linkbaseValidations = {
         elrDefInNs = re.compile("."),
         elrDefExNs = re.compile(".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
         elrDefRoleSrc = (
+            # Custom domain-member arcs with SPAC concepts as source may only appear in roles with a URI matching .*sec.gov/spac/([^/]*/)*role/[^/]*Only
             (re.compile(r".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
-                re.compile(r".")), # match any member QName
+                # only as descendants of the default member of a SPAC concept explicit dimension.
+                re.compile(r"@defaults")),
         ),
         elrDefNoTgtRole = False,
         preSources = (),
