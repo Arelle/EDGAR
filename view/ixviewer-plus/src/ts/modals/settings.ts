@@ -39,7 +39,9 @@ export const ModalsSettings = {
 			Modals.close(event);
 		});
 		document.getElementById('settings-modal-close')?.addEventListener('keyup', (event: KeyboardEvent) => {
-			Modals.close(event);
+			if (event.key == " " || event.key == "Space" || event.key == "Enter") {
+				Modals.close(event);
+			}
 		});
 
 	},

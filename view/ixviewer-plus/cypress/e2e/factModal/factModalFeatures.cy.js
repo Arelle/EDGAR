@@ -180,4 +180,14 @@ describe(`Fact Modal`, () => {
             .should('have.attr', 'selected-fact', 'true')
         cy.get(selectors.factModalClose).click()
     })
+    it("Image facts should be displayed in fact modal", () => {
+        cy.loadByAccessionNum('000110465925018350');
+        cy.get('[id="fact-identifier-1856"]').click()
+        cy.get(selectors.factExpandMoreLess).click().then(() => {
+            cy.get('[data-cy="Fact-value"] img')
+                .should('be.visible')
+                .and('have.prop', 'naturalWidth')
+                .should('be.greaterThan', 0)
+        })
+     })
 })

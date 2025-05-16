@@ -42,8 +42,7 @@ export const ModalsCommon = {
 		event.stopPropagation();
 
 		const id = element.getAttribute('continued-main-fact-id') || element.getAttribute('id');
-		if (!id)
-		{
+		if (!id) {
 			ErrorsMinor.factNotFound();
 			return;
 		}
