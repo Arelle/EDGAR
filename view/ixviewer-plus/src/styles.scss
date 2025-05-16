@@ -132,6 +132,14 @@ hr {
   padding-top: .7rem;
   padding-bottom: .7rem;
 }
+#dynamic-xbrl-form hr {
+  margin-top: revert-layer;
+  margin-bottom: revert-layer;
+}
+
+#menuContents a:active {
+  background-color: #bbe6ff;
+}
 
 #sections-menu * {
   font-size: .9rem;
@@ -265,7 +273,6 @@ a#facts-menu-button
   border-radius: 3px;
 }
 
-
 #menu-dropdown-link:hover,
 #sections-dropdown-link:hover,
 #nav-filter-data:hover,
@@ -276,58 +283,79 @@ a#facts-menu-button:hover
 {
   color: white !important;
   background-color: $blue-lighter-1 !important;
-  // border-color: var(--bs-btn-active-border-color);
 }
 
-#menu-dropdown-link:focus,
 #menu-dropdown-link:active,
-#sections-dropdown-link:focus,
 #sections-dropdown-link:active,
-#nav-filter-data:focus,
 #nav-filter-data:active,
-#nav-filter-tags:focus,
 #nav-filter-tags:active,
-#nav-filter-more:focus,
 #nav-filter-more:active,
-button.nav-search-btn:focus,
 button.nav-search-btn:active,
-a#facts-menu-button:focus,
 a#facts-menu-button:active
 {
   color: white !important;
   background-color: $blue-lighter-2 !important;
-  // border-color: var(--bs-btn-active-border-color);
+}
+
+#menu-dropdown-link:focus-visible,
+#sections-dropdown-link:focus-visible,
+button.nav-search-btn:focus-visible,
+#nav-filter-data:focus-visible,
+#nav-filter-tags:focus-visible,
+#nav-filter-more:focus-visible,
+#current-filters-reset-all:focus-visible,
+a#facts-menu-button:focus-visible
+{
+  box-shadow: inset 0 0 0 2px rgb(89 156 255 / 50%);
+  outline: none;
 }
 
 #global-search-options.show {
   color: white !important;
   background-color: $blue-lighter-3 !important;
 }
-
-#menu-dropdown-link:focus-visible,
-#sections-dropdown-link:focus-visible,
-#nav-filter-data:focus-visible,
-#nav-filter-tags:focus-visible,
-#nav-filter-more:focus-visible,
-#facts-menu-button:focus-visible
-{
-  box-shadow: none;
-  // box-shadow: inset 0 0 0 2px rgba(113, 170, 255, 0.87) !important;
+#global-search-options {
+  border-radius: 4px 0 0 4px;
+}
+#global-search-options:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  outline: none;
 }
 
 button.nav-search-btn:focus-visible
 {
-  box-shadow: 0 0 2px 2px rgb(151 203 255 / 50%)
+  box-shadow: 0 0 2px 2px rgb(151 203 255 / 50%);
+  color: rgb(248, 249, 250);
+  background-color: rgb(0, 55, 104);
 }
 
-#global-search-options {
-  border-radius: 4px 0 0 4px;
-}
+
 #submit-search {
   border-radius: 0 4px 4px 0;
 }
-.focus-inner:focus {
-  box-shadow: inset 0 0 0 2px rgba(13, 110, 253, 0.25);
+.focus-inner:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(13, 110, 253, 0.35);
+}
+.ix-focus:focus-visible {
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.35);
+  outline: none;
+}
+.ix-focus-inset:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(13, 110, 253, 0.35);
+  outline: none;
+}
+
+.modal-title-btn {
+  padding: 3px;
+  border-radius: 3px;
+  margin-top: 3px;
+  margin-right: 0;
+  margin-bottom: 4px;
+  margin-left: 2px;
+}
+.modal-title-btn:focus-visible {
+  box-shadow: 0 0 0 2px rgb(13 110 253 / 60%);
+  outline: none;
 }
 
 .dropdown-menu, 
@@ -352,6 +380,11 @@ body {
 .main-container {
   height: calc(100vh - 85px);
   overflow: hidden; // needed to prevent scrollIntoView from pushing nav out of viewport
+}
+
+textarea.form-control {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
 }
 
 #dynamic-xbrl-form {
@@ -437,7 +470,7 @@ body {
     all: initial;
     padding: 0 5px;
     table {
-      all: revert;
+      all: revert-layer;
       width: revert-layer;
     };
     p {
@@ -503,19 +536,19 @@ kbd {
   color: #fff;
 }
 
+// nav font color during load
 .btn-outline-light.disabled {
-  color: #ff8300;
+  color: #487fab;
 }
-
 .navbar-dark .navbar-nav .nav-link.disabled {
-  color: #ff8300;
+  color: #487fab;
 }
 
 .ix-btn-link {
   font-size: .9rem;
   color: rgb(13, 110, 253) !important;
 }
-.ix-btn-link:focus, .ix-btn-link:focus-visible {
+.ix-btn-link:focus-visible {
   box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
 }
 

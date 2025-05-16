@@ -1,56 +1,51 @@
-/*!
- * Bootstrap v5.0.2 (https://getbootstrap.com/)
- * Copyright 2011-2021 The Bootstrap Authors
- * Copyright 2011-2021 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
- */
-
 // scss-docs-start import-stack
 // Configuration
-@import "node_modules/bootstrap/scss/functions";
-@import "node_modules/bootstrap/scss/variables";
-@import "node_modules/bootstrap/scss/mixins";
-@import "node_modules/bootstrap/scss/utilities";
+// WebContent/ixviewer/gulp/../../gulp/node_modules
+// WebContent/ixviewer/js/scss/custom-bootstrap.scss
+@import "../../gulp/node_modules/bootstrap/scss/functions";
+@import "../../gulp/node_modules/bootstrap/scss/variables";
+// @import "../../gulp/node_modules/bootstrap/scss/maps";
+@import "../../gulp/node_modules/bootstrap/scss/mixins";
+@import "../../gulp/node_modules/bootstrap/scss/utilities";
 
 
 // Layout & components
-@import "node_modules/bootstrap/scss/_reboot";
-@import "node_modules/bootstrap/scss/reboot";
-// @import "reboot";
-@import "node_modules/bootstrap/scss/root";
-@import "node_modules/bootstrap/scss/type";
-@import "node_modules/bootstrap/scss/images";
-@import "node_modules/bootstrap/scss/containers";
-@import "node_modules/bootstrap/scss/grid";
-@import "node_modules/bootstrap/scss/tables";
-@import "node_modules/bootstrap/scss/forms";
-@import "node_modules/bootstrap/scss/buttons";
-@import "node_modules/bootstrap/scss/transitions";
-@import "node_modules/bootstrap/scss/dropdown";
-@import "node_modules/bootstrap/scss/button-group";
-@import "node_modules/bootstrap/scss/nav";
-@import "node_modules/bootstrap/scss/navbar";
-@import "node_modules/bootstrap/scss/card";
-@import "node_modules/bootstrap/scss/accordion";
-@import "node_modules/bootstrap/scss/breadcrumb";
-@import "node_modules/bootstrap/scss/pagination";
-@import "node_modules/bootstrap/scss/badge";
-@import "node_modules/bootstrap/scss/alert";
-@import "node_modules/bootstrap/scss/progress";
-@import "node_modules/bootstrap/scss/list-group";
-@import "node_modules/bootstrap/scss/close";
-@import "node_modules/bootstrap/scss/toasts";
-@import "node_modules/bootstrap/scss/modal";
-@import "node_modules/bootstrap/scss/tooltip";
-@import "node_modules/bootstrap/scss/popover";
-@import "node_modules/bootstrap/scss/carousel";
-@import "node_modules/bootstrap/scss/spinners";
-@import "node_modules/bootstrap/scss/offcanvas";
+// @import "../../gulp/node_modules/bootstrap/scss/reboot";
+@import "./custom-reboot";
+@import "../../gulp/node_modules/bootstrap/scss/root";
+@import "../../gulp/node_modules/bootstrap/scss/type";
+@import "../../gulp/node_modules/bootstrap/scss/images";
+@import "../../gulp/node_modules/bootstrap/scss/containers";
+@import "../../gulp/node_modules/bootstrap/scss/grid";
+@import "../../gulp/node_modules/bootstrap/scss/tables";
+@import "../../gulp/node_modules/bootstrap/scss/forms";
+@import "../../gulp/node_modules/bootstrap/scss/buttons";
+@import "../../gulp/node_modules/bootstrap/scss/transitions";
+@import "../../gulp/node_modules/bootstrap/scss/dropdown";
+@import "../../gulp/node_modules/bootstrap/scss/button-group";
+@import "../../gulp/node_modules/bootstrap/scss/nav";
+@import "../../gulp/node_modules/bootstrap/scss/navbar";
+@import "../../gulp/node_modules/bootstrap/scss/card";
+@import "../../gulp/node_modules/bootstrap/scss/accordion";
+@import "../../gulp/node_modules/bootstrap/scss/breadcrumb";
+@import "../../gulp/node_modules/bootstrap/scss/pagination";
+@import "../../gulp/node_modules/bootstrap/scss/badge";
+@import "../../gulp/node_modules/bootstrap/scss/alert";
+@import "../../gulp/node_modules/bootstrap/scss/progress";
+@import "../../gulp/node_modules/bootstrap/scss/list-group";
+@import "../../gulp/node_modules/bootstrap/scss/close";
+@import "../../gulp/node_modules/bootstrap/scss/toasts";
+@import "../../gulp/node_modules/bootstrap/scss/modal";
+@import "../../gulp/node_modules/bootstrap/scss/tooltip";
+@import "../../gulp/node_modules/bootstrap/scss/popover";
+@import "../../gulp/node_modules/bootstrap/scss/carousel";
+@import "../../gulp/node_modules/bootstrap/scss/spinners";
+@import "../../gulp/node_modules/bootstrap/scss/offcanvas";
 
 // Helpers
-@import "node_modules/bootstrap/scss/helpers";
+@import "../../gulp/node_modules/bootstrap/scss/helpers";
 
 // Utilities
-@import "node_modules/bootstrap/scss/bootstrap-utilities";
-// @import "node_modules/bootstrap/scss/utilities/api";
+@import "../../gulp/node_modules/bootstrap/scss/bootstrap-utilities";
+// @import "../../gulp/node_modules/bootstrap/scss/utilities/api";
 // scss-docs-end import-stack

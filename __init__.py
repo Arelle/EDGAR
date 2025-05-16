@@ -1,6 +1,6 @@
 __pluginInfo__ = {
     'name': 'EDGAR',
-    'version': '3.25.1',
+    'version': '3.25.2',
     'description': "This plug-in implements U.S. SEC Edgar Renderer. Arelle version at SEC: 2.37.7 ",
     'license': 'Apache-2',
     'author': 'U.S. SEC Employees and Mark V Systems Limited',

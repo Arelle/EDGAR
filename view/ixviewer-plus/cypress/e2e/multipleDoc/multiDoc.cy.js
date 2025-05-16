@@ -1,8 +1,6 @@
 import { readFilingData, readFilingDataAccNum } from "../../dataPlus/filingsFunnel";
 import { selectors } from "../../utils/selectors.mjs";
 
-
-
 describe(`Multi Doc filings`, () => {
     it("should show the doc that was clicked", () => {
         let filing = readFilingDataAccNum('000121390021056659');
@@ -74,5 +72,17 @@ describe(`Multi Doc filings`, () => {
             .should('have.attr', 'selected-fact', 'true').should('be.visible')
         cy.hash().should('eq', '#fact-identifier-10')
     });
-
+    
+    it('Switch docs via sections menu should load doc with fact highlighting', () => {
+        cy.visit('/Archives/edgar/data/1837493/000101376223000425/ea185980ex99-1_inspiratech.htm')
+        cy.get(selectors.sectionsHeader).click();
+        cy.get('a[order="1"]').click();
+        cy.get('[id="nav-filter-tags"]').should('have.css', 'border-top');
+        cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top');
+        cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top-width', '2px');
+        cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top-style', 'solid');
+        cy.get('[id="fact-identifier-3"]').should('have.css', 'border-bottom');
+        // might be fragile
+        cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top', '2px solid rgb(255, 102, 0)');
+    })
 })

@@ -6,7 +6,7 @@ const filing = readFilingDataAccNum('000080786323000002');
 describe(`Menu Help`, () => {
     it('should show help info', () => {
         cy.loadFiling(filing)
-        cy.get(selectors.menu, { timeout: Number(filing.timeout) }).click({force: true})
+        cy.get(selectors.menuButton, { timeout: Number(filing.timeout) }).click({force: true})
         cy.get(selectors.helpLink).click({force: true})
 
         cy.get(selectors.gettingStarted).click({force: true})

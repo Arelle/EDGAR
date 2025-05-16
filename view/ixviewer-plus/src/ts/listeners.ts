@@ -308,3 +308,25 @@ export class Listeners {
         factsBreakdownMenu?.addEventListener('hidden.bs.offcanvas', () => FactsChart.toggle(false));
     }
 }
+
+export const addVArrowNav = (navigableElems: NodeListOf<Element>) => {
+    navigableElems.forEach((elem, index) => {
+        elem.addEventListener('keyup', (event) => {
+            const keyEvent = <KeyboardEvent> event;
+            if (keyEvent.key == 'ArrowUp') {
+                if (index === 0) {
+                    (navigableElems[navigableElems.length - 1] as HTMLElement)?.focus();
+                } else {
+                    (navigableElems[index - 1] as HTMLElement).focus();
+                }
+            }
+            if (keyEvent.key == 'ArrowDown') {
+                if (index === navigableElems.length - 1) {
+                    (navigableElems[0] as HTMLElement).focus();
+                } else {
+                    (navigableElems[index + 1] as HTMLElement).focus();
+                }
+            }
+        });
+    })
+}

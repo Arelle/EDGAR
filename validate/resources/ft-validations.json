@@ -785,22 +785,6 @@
     {
         "sub-types": ["@457f"],
         "xbrl-names": "ffd:OfferingSctyTp",
-        "where": {"ffd:Rule457fFlg": [true]},
-        "efm": "ft.ofRqdFlds",
-        "validation": "fw",
-        "axis": "of",
-        "store-db-name": "@lcName",
-        "store-db-object": "offeringTable",
-        "comment-validation": "Required if a Fees to be paid line or a Fees previously paid line is included.",
-        "comment-exception-handling": "",
-        "comment-conversion-requested": "",
-        "comment-requesting-do": "",
-        "comment-date-requested": "",
-        "comment-reason": ""
-    },
-    {
-        "sub-types": ["@457f"],
-        "xbrl-names": "ffd:OfferingSctyTp",
         "where": {"ffd:GnlInstrIIhiFlg": [true]},
         "efm": "ft.ofRqdFlds",
         "validation": "fw",
@@ -2547,12 +2531,29 @@
         "efm": "ft.r457fNewRqdFlds",
         "validation": "fdepflag-present",
         "references": [
-        	"ffd:FeeRate",
-            "ffd:FeeAmt"
+        	"ffd:FeeRate"
         ],
         "reference-value": ["!not!", "absent"],
         "axis": "of",
-        "comment-validation": "Required numeric value for 457(a), 457(o), and \"Other\" when a Fees to be paid or Fees previously paid line is included. FeeAmt editable on FEPT for previously paid line only.",
+        "comment-validation": "Required numeric value for 457(f) when a Fees to be paid line is included. FeeAmt editable on FEPT for previously paid line only.",
+        "comment-exception-handling": "",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
+        "sub-types": ["@457f"],
+        "xbrl-names": "ffd:Rule457fFlg",
+        "value": [true],
+        "efm": "ft.r457fNewRqdFlds",
+        "validation": "fdepflag-present",
+        "references": [
+        	"ffd:FeeAmt"
+        ],
+        "reference-value": ["!not!", "absent"],
+        "axis": "of",
+        "comment-validation": "Required numeric value for 457(f) when a Fees to be paid or Fees previously paid line is included. FeeAmt editable on FEPT for previously paid line only.",
         "comment-exception-handling": "",
         "comment-conversion-requested": "",
         "comment-requesting-do": "",

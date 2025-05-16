@@ -28,24 +28,21 @@ export const FactsGeneral = {
 	 * @param {any} element:HTMLElement
 	 * @returns {any} => 
 	 */
-	goToInlineFact: (event: MouseEvent | KeyboardEvent | Event, element: HTMLElement) =>
-	{
-		if (event instanceof KeyboardEvent && !((event).key === 'Enter' || (event).key === 'Space' || (event).key===' '))
+	goToInlineFact: (event: MouseEvent | KeyboardEvent | Event, element: HTMLElement) => {
+		if (event instanceof KeyboardEvent && !((event).key === 'Enter' || (event).key === 'Space' || (event).key === ' '))
 			return;
-		
+
 		const fact = FactMap.getByID(element.getAttribute('data-id') as string);
-		if (!fact?.file)
-		{
+		if (!fact?.file) {
 			ErrorsMinor.factNotFound();
 			return;
 		}
 
 		FactMap.setIsSelected(fact.id);
-		const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+		const currentInstance = Constants.getInstances.find(element => element.current);
 		const currentXHTML = currentInstance?.docs.find(element => element.current);
 
-		const afterLoad = () =>
-		{
+		const afterLoad = () => {
 			const tempDiv = document.createElement('div');
 			tempDiv.setAttribute('id', fact.id);
 			ModalsCommon.clickEvent(event, tempDiv);
@@ -55,13 +52,10 @@ export const FactsGeneral = {
 			Pagination.setSelectedFact(element, fact);
 		}
 
-		if (currentXHTML?.slug !== fact.file)
-		{
+		if (currentXHTML?.slug !== fact.file) {
 			ConstantsFunctions.switchDoc(fact.file)
 				.then(() => afterLoad());
-		}
-		else
-		{
+		} else {
 			afterLoad();
 		}
 	},
@@ -75,7 +69,7 @@ export const FactsGeneral = {
 		const aElement = document.createElement('a');
 		aElement.setAttribute(
 			'class',
-			'text-body sidebar-fact border-bottom click text-decoration-none click list-group-item list-group-item-action p-1'
+			'text-body sidebar-fact ix-focus-inset border-bottom click text-decoration-none click list-group-item list-group-item-action p-1'
 		);
 		aElement.setAttribute('selected-fact', `${factInfo?.isSelected}`);
 		if (factInfo?.id) {
@@ -130,7 +124,7 @@ export const FactsGeneral = {
 		periodElem.appendChild(pElementContent2);
 
 		const docNameElem = document.createElement('small');
-		const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+		const currentInstance = Constants.getInstances.find(element => element.current);
 		const currentXHTML = currentInstance?.docs.find(element => element.current);
 		docNameElem.setAttribute('class', `${currentXHTML?.slug === factInfo?.file ? 'text-primary' : 'text-success'}`);
 		docNameElem.setAttribute('data-cy', 'factFile');

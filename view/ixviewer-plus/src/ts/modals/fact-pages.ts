@@ -3,6 +3,7 @@
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  */
 
+import { fixImages } from "../app/app-helper";
 import { ConstantsFunctions } from "../constants/functions";
 import { xmlToDom } from "../helpers/utils";
 import { LabelEnum, SegmentClass, SingleFact } from "../interface/fact";
@@ -216,9 +217,9 @@ export const FactPages = {
 					const sanitizedHtml = ConstantsFunctions.sanitizeHtml(aspect.value);
 					const htmlDoc = parser.parseFromString(sanitizedHtml, 'text/html');
 					htmlDoc.body.classList.add('bg-inherit');
+					fixImages(htmlDoc);
 					tdContentsDiv.append(htmlDoc.body as HTMLElement);
 					tdElement.appendChild(tdContentsDiv);
-
 				} else {
 					//convert fact string to number to add in formatting
 					if (aspect["name"] === "Fact") {

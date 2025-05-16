@@ -3,8 +3,8 @@ import { FactMap } from "../facts/map";
 import { Facts } from "../facts/facts";
 import { UserFiltersDropdown } from "../user-filters/dropdown";
 import { UserFiltersState } from "../user-filters/state";
-import { SingleFact, ReferenceAsArray } from "../interface/fact";
-
+import { SingleFact, ReferenceAsArray, SegmentClass } from "../interface/fact";
+import { Logger, ILogObj } from "tslog";
 
 interface SearchObject {
     field: string,
@@ -28,7 +28,7 @@ interface SearchFacts { // eslint-disable-line
     (searchParams:SearchParams): void
 }
 
-interface document {
+interface index {
     id: string,
     field: string | undefined,
     search?: (searchObject:SearchObject) => SearchResult[]
@@ -46,9 +46,12 @@ interface document {
 //     type?: string[],
 // };
 
-export class FlexSearch {
+export class FlexSearch { // maybe this should be ixFlexSearch and we need to use new FlexSearch to init class
+    // https://github.com/nextapps-de/flexsearch?tab=readme-ov-file
+    // We have added a LOT of our own code to make filters work as expected.  Might be easier not to use a library at all...
     // Maybe look into https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
-    static document:document = {
+
+    static index:index = {
         id: '',
         field: undefined,
     }
@@ -61,9 +64,9 @@ export class FlexSearch {
     ];
     static referenceProps = ['refTopic', 'refSubtopic', 'refParagraph', 'refPublisher', 'refSection', 'refNumber'];
 
-
     static init(mapOfFacts: Map<string, SingleFact>): void {
-        this.document = new FlexSearchDocument({
+        const startPerf = performance.now();
+        this.index = new FlexSearchDocument({
             tokenize: 'full',
             document: {
                 id: 'id',
@@ -86,39 +89,66 @@ export class FlexSearch {
             return null;
         };
 
-        FactMap.map.forEach((currentValue, currentIndex) => {
+        const getAxes = (segments: Array<SegmentClass[] | SegmentClass>) => {
+            if (!segments) return;
+            return segments.map(seg => {
+                if (Array.isArray(seg)) {
+                    return seg.map(segItem => segItem.axis);
+                } else {
+                    return seg.axis;
+                }
+            })
+        }
+
+        const getMembers = (segments: Array<SegmentClass[] | SegmentClass>) => {
+            if (!segments) return;
+            return segments.map(seg => {
+                if (Array.isArray(seg)) {
+                    return seg.map(segItem => segItem.dimension);
+                } else {
+                    return seg.dimension;
+                }
+            })
+        }
+
+        FactMap.map.forEach((fact, factIndex) => {
             const searchable = {
-                'id': currentIndex,
-                'content': `${currentValue?.filter?.content}`,
-                'raw': currentValue?.format ? `${currentValue?.raw.toString()}` : null,
-                'factname': currentValue?.name,
-                'contextRef': currentValue?.contentRef,
-                'labels': currentValue.filter?.labels,
-                'definitions': currentValue?.filter?.definitions,
-                'period': currentValue.period,
-                'measure': currentValue.measure,
-                'axis': currentValue?.segment?.map(element => element.axis),
-                'member': currentValue?.segment?.map(element => element.dimension),
-                'scale': currentValue.scale,
-                'balance': currentValue.balance,
+                'id': factIndex,
+                'content': `${fact?.filterContent?.content}`,
+                'raw': fact?.format ? `${fact?.raw.toString()}` : null,
+                'factname': fact?.name,
+                'contextRef': fact?.contextRef,
+                'labels': fact.filterContent?.labels,
+                'definitions': fact?.filterContent?.definitions,
+                'period': fact.period,
+                'measure': fact.measure,
+                'axis': fact?.segment ? getAxes(fact?.segment) : null,
+                'member': fact?.segment ? getMembers(fact?.segment) : null,
+                'scale': fact.scale,
+                'balance': fact.balance,
                 // tags
-                'custom': currentValue.isCustom?.toString(),
+                'custom': fact.isCustom?.toString(),
                 // data
-                'amount': currentValue.isAmountsOnly?.toString(),
-                'text': currentValue.isTextOnly?.toString(),
-                'calculation': ((currentValue?.calculations?.length > 0) && (!currentValue?.segment?.map(element => element.dimension).length)).toString(),
-                'negative': currentValue.isNegativeOnly ? currentValue.isNegativeOnly.toString() : null,
-                'additional': currentValue.isAdditional ? currentValue.isAdditional.toString() : null,
+                'amount': fact.isAmountsOnly?.toString(),
+                'text': fact.isTextOnly?.toString(),
+                'calculation': ((fact?.calculations?.length > 0) && (!fact?.segment?.map(element => element.dimension).length)).toString(),
+                'negative': fact.isNegativeOnly ? fact.isNegativeOnly.toString() : null,
+                'additional': fact.isAdditional ? fact.isAdditional.toString() : null,
                 // references
-                'refTopic': getSearchableRefDataByProp(currentValue.references, 'Topic'),
-                'refSubtopic': getSearchableRefDataByProp(currentValue.references, 'SubTopic'),
-                'refParagraph': getSearchableRefDataByProp(currentValue.references, 'Paragraph'),
-                'refPublisher': getSearchableRefDataByProp(currentValue.references, 'Publisher'),
-                'refSection': getSearchableRefDataByProp(currentValue.references, 'Section'),
-                'refNumber': getSearchableRefDataByProp(currentValue.references, 'Number'),
+                'refTopic': getSearchableRefDataByProp(fact.references, 'Topic'),
+                'refSubtopic': getSearchableRefDataByProp(fact.references, 'SubTopic'),
+                'refParagraph': getSearchableRefDataByProp(fact.references, 'Paragraph'),
+                'refPublisher': getSearchableRefDataByProp(fact.references, 'Publisher'),
+                'refSection': getSearchableRefDataByProp(fact.references, 'Section'),
+                'refNumber': getSearchableRefDataByProp(fact.references, 'Number'),
             };
-            this.document.add(searchable);
+            this.index.add(searchable);
         });
+        const endPerf = performance.now();
+        if (LOGPERFORMANCE) {
+            const log: Logger<ILogObj> = new Logger();
+            log.debug(`FlexSearch init() completed in: ${(endPerf - startPerf).toFixed(2)}ms`);
+        }
     }
 
     /**
@@ -176,7 +206,7 @@ export class FlexSearch {
             }
             return acc;
         }, []);
-        const ids = this.document.search(searchObject);
+        const ids = this.index.search(searchObject);
         const uniqueArray = [...new Set([].concat(...ids.map(current => current.result)))];
         if (suggest) {
             return uniqueArray;
@@ -187,7 +217,7 @@ export class FlexSearch {
     }
 
     static filterFacts() {
-
+        const startPerf = performance.now();
         const dataFields = [
             null,
             'amount',
@@ -212,7 +242,7 @@ export class FlexSearch {
         let dataFilterActive = null;
         let tagFilterActive = null;
 
-        const searchObject = Object.keys(filterState).reduce((accumulator: Array<SearchObject>, filterKey: string|number|string[]) => {
+        const filterObject = Object.keys(filterState).reduce((accumulator: Array<SearchObject>, filterKey: string|number|string[]) => {
             if (filterKey === 'data') {
                 if (filterState[filterKey]) {
                     dataFilterActive = true;
@@ -237,21 +267,33 @@ export class FlexSearch {
                     });
                 }
             } else {
-                accumulator.push(filterState[filterKey].map((nested:string|number|string[]) => {
+                accumulator.push(filterState[filterKey].map((currentFilterVal:string|number|string[]) => {
+
+                    // have to manually figure out how many facts have the prop / val to set the limit of the search, which flexsearch is 
+                    // smart enough to choose the most correct matches.
+                    // On it's own flexsearch returns too many results due to partial matches.
+                    const matchCount = FactMap.asArray().filter(fact => fact[filterKey] == currentFilterVal).length
+                    // seems to increase filter time by only ~5%
+
                     return {
                         field: filterKey,
-                        query: nested,
+                        query: currentFilterVal,
                         bool: 'or',
-                        limit: FlexSearch.indexCount,
-                        key: filterKey
+                        // limit: FlexSearch.indexCount,
+                        limit: matchCount,
+                        key: filterKey,
+                        tokenize: 'strict', // does nothing; 'exact' also does nothing;
                     };
                 }));
             }
             return accumulator;
         }, []).flat();
 
-        if (searchObject.length > 0) {
-            const queryResultObjs = this.document.search(searchObject);
+        if (filterObject.length > 0) {
+
+            // APPLY FILTER
+            const queryResultObjs = this.index.search(filterObject);
+
             const resultsWithSets = queryResultObjs.map((res: SearchResult) => {
                 res.resultSet = new Set(res.result);
                 return res;
@@ -314,5 +356,10 @@ export class FlexSearch {
         Facts.inViewPort(true);
         UserFiltersDropdown.init();
         Facts.updateFactCount();
+        const endPerf = performance.now();
+        if (LOGPERFORMANCE) {
+            const log: Logger<ILogObj> = new Logger();
+            log.debug(`FlexSearch Filter completed in: ${(endPerf - startPerf).toFixed(2)}ms`);
+        }
     }
 }

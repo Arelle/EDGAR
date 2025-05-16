@@ -12,7 +12,7 @@ const concat = require('gulp-concat');
 const rename = require('gulp-rename');
 const order = require('gulp-order');
 const header = require('gulp-header');
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 const csso = require('gulp-csso');
 
 const jsFiles = ['../js/app/**/*.js', '!../js/production.js', '!../js/production.min.js'];
@@ -127,7 +127,7 @@ gulp.task('copyFontAwesomeCssToDist', () => {
 		.pipe(gulp.dest(`${distDir}/js/lib/fontawesome/css`));
 })
 gulp.task('copyFontAwesomeFontsToDist', () => {
-	return gulp.src(['../js/lib/fontawesome/webfonts/*.woff2'])
+	return gulp.src(['../js/lib/fontawesome/webfonts/*.woff*', '../js/lib/fontawesome/webfonts/*.ttf'], {encoding: false})
 		.pipe(gulp.dest(`${distDir}/js/lib/fontawesome/webfonts`));
 })
 gulp.task('copyHtmlToDist', () => {
@@ -148,7 +148,13 @@ gulp.task('clean', (callback) => {
 
 gulp.task('watch', () => {
 	gulp.watch(jsFiles, gulp.series(['development']));
-	gulp.watch('../js/scss/custom-bootstrap.scss', gulp.series(['sass']));
+	gulp.watch(
+		[
+			'../js/scss/custom-bootstrap.scss'
+			, '../js/scss/custom-reboot.scss'
+		]
+		, gulp.series(['sass'])
+	);
 });
 
 gulp.task('default', 

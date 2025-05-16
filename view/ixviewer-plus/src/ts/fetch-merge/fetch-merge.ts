@@ -22,8 +22,7 @@ import { buildSectionsArrayFlatter, fetchJson, fetchText, setScaleInfo } from '.
 
 /* eslint-disable @typescript-eslint/ban-types */
 
-export class FetchAndMerge
-{
+export class FetchAndMerge {
     private absolute: string;
     private params: UrlParams;
     private customPrefix: string | null;
@@ -33,9 +32,7 @@ export class FetchAndMerge
     private metaVersion: string | null = null;
     private instances: InstanceFile[];
 
-
-    constructor(input: FetchMergeArgs)
-    {
+    constructor(input: FetchMergeArgs) {
         this.absolute = input.absolute;
         this.params = input.params;
         this.customPrefix = input.customPrefix || null;
@@ -43,8 +40,7 @@ export class FetchAndMerge
         this.std_ref = input.std_ref;
     }
 
-    public async fetch(): Promise<FMResponse>
-    {
+    public async fetch(): Promise<FMResponse> {
         const docsAndInstance = () => {
             return Promise.all([this.fetchDocs(), this.fetchInstanceXml()]).then(async ([docs, instXml]) => {
                 const errors = [...docs, instXml].filter((element): element is ErrorResponse =>
@@ -70,35 +66,30 @@ export class FetchAndMerge
         };
 
         const metaAndSummary = () => {
-            return Promise.all([this.fetchMeta(), this.fetchSummary()])
-                .then(([ml, fs]) =>
-                {
-                    let error = false;
-                    const messages = [];
-                    for(const response of [ml, fs])
-                    {
-                        if ("error" in response && response.error)
-                        {
-                            messages.push(response.messages);
-                            error = true;
-                        }
+            return Promise.all([this.fetchMeta(), this.fetchSummary()]).then(([ml, fs]) => {
+                let error = false;
+                const messages = [];
+                for (const response of [ml, fs]) {
+                    if ("error" in response && response.error) {
+                        messages.push(response.messages);
+                        error = true;
                     }
-                    if (error)
-                    {
-                        throw { all: { error, messages: messages.flat() } };
-                    }
+                }
+                if (error) {
+                    throw { all: { error, messages: messages.flat() } };
+                }
 
-                    //At this point, neither of the responses had errors, so we can safely cast them
-                    const metalinks = ml as MetaLinks & { instances: InstanceFile[] };
-                    const filingSummary = fs as FilingSummary;
-                    
-                    this.metaVersion = metalinks.version || null;
-                    this.std_ref = metalinks.std_ref || {} as any;
-                    
-                    this.activeInstance = metalinks.instance;
+                //At this point, neither of the responses had errors, so we can safely cast them
+                const metalinks = ml as MetaLinks & { instances: InstanceFile[] };
+                const filingSummary = fs as FilingSummary;
 
-                    return [metalinks, filingSummary] as const;
-                });
+                this.metaVersion = metalinks.version || null;
+                this.std_ref = metalinks.std_ref || {} as any;
+
+                this.activeInstance = metalinks.instance;
+
+                return [metalinks, filingSummary] as const;
+            });
         };
 
         /** Sets each instance's `xmlUrl` to the correct value  */
@@ -125,15 +116,13 @@ export class FetchAndMerge
         }
 
 
-        try
-        {
+        try {
             let metalinks: (MetaLinks & { instances: InstanceFile[]}) | null = null;
             this.activeInstance = this.instances.filter((element) => element.current)[0];
             const initialLoad = this.activeInstance == null;
             let isNcsr = false;
 
-            if (initialLoad)
-            {
+            if (initialLoad) {
                 const [meta, summ] = await metaAndSummary();
                 getInstanceXmlUrlFromFilingSummary(summ, meta.instances);
                 
@@ -158,23 +147,18 @@ export class FetchAndMerge
         catch(e) { this.errorHandling(e) }
     }
 
-    public async facts(): Promise<FMResponse>
-    {
-        try
-        {
+    public async facts(): Promise<FMResponse> {
+        try {
             return { facts: this.buildFactMap() };
         }
-        catch(e) { this.errorHandling(e) }
+        catch (e) { this.errorHandling(e) }
     }
 
-    public async merge(): Promise<All>
-    {
-        try
-        {
+    public async merge(): Promise<All> {
+        try {
             await this.mergeAllResponses();
 
-            const all =
-            {
+            const all = {
                 instance: this.instances,
                 sections: this.sections,
                 std_ref: this.std_ref,
@@ -182,11 +166,10 @@ export class FetchAndMerge
 
             return { all };
         }
-        catch(e) { this.errorHandling(e) }
+        catch (e) { this.errorHandling(e) }
     }
 
-    private errorHandling(e: unknown): never
-    {  
+    private errorHandling(e: unknown): never {  
         console.error(e);
 
         if (!!e && typeof e == "object" && "all" in e)
@@ -237,22 +220,19 @@ export class FetchAndMerge
                     }
                 }
 
-                const params: RequestInit =
-                {
+                const params: RequestInit = {
                     headers: { "Content-Type": "application/xhtml+xml" },
                     mode: 'no-cors',
                     credentials: 'include',
                 };
 
                 fetchText(ixvUrl, params)
-                    .then((text) =>
-                    {
+                    .then((text) => {
                         // on SEC EDGAR workstation xhtml is encoded like this: <HTML><HEAD><TITLE> ... &lt;?xml ...
                         const xhtmlData = this.decodeWorkstationXmlInHtml(isWorkstation, text, "</html>");
                         resolve({ xhtml: xhtmlData });
                     })
-                    .catch((error) =>
-                    {
+                    .catch((error) => {
                         resolve({ error: true, messages: [`${error}; could not find "${this.params.doc}"`] });
                     });
             });
@@ -264,8 +244,7 @@ export class FetchAndMerge
             return Promise.all(promises);
     }
 
-    private fetchMeta(): Promise<ErrorResponse | (MetaLinks & { instances: InstanceFile[] })>
-    {
+    private fetchMeta(): Promise<ErrorResponse | (MetaLinks & { instances: InstanceFile[] })> {
         //TODO: use async/await to simplify this logic
         return new Promise<(MetaLinks & { instances: InstanceFile[] }) | ErrorResponse>((resolve) => {
             let jsonUrl = this.params.metalinks;
@@ -277,17 +256,17 @@ export class FetchAndMerge
                 }
             }
 
-            return fetchJson(jsonUrl, { credentials: 'include' })
-                .then((data: MetaLinksResponse) => {
+            return fetchJson(jsonUrl, { credentials: 'include', mode: 'same-origin' })
+                .then((mlData: MetaLinksResponse) => {
                     let XHTMLSlug = this.params.doc.substring(this.params.doc.lastIndexOf('/') + 1);
                     if (XHTMLSlug.startsWith("DisplayDocument.do") || XHTMLSlug.startsWith("view.html")) {
                         XHTMLSlug = this.params.doc.substring(this.params.doc.lastIndexOf('filename=') + 9);
                     }
 
-                    const instanceFileNames = Object.keys(data.instance).join().split(/[ ,]+/);
+                    const instanceFileNames = Object.keys(mlData.instance).join().split(/[ ,]+/);
                     let sections = {};
                     if (instanceFileNames.includes(XHTMLSlug)) {
-                        const instanceObjects: InstanceFile[] = Object.entries(data.instance).map(([currentInstance, instData], instanceIndex) => {
+                        const instanceObjects: InstanceFile[] = Object.entries(mlData.instance).map(([currentInstance, instData], instanceIndex) => {
                             // Sections
                             //TODO: combine these using `Object.entries`
                             Object.keys(instData.report).forEach((report) => {
@@ -316,8 +295,7 @@ export class FetchAndMerge
                                 };
                             });
 
-                            const instFile: InstanceFile =
-                            {
+                            const instFile: InstanceFile = {
                                 current: currentInstance.split(' ').includes(XHTMLSlug),
                                 instance: instanceIndex, // Why?
                                 map: new Map<string, SingleFact>(),
@@ -333,7 +311,7 @@ export class FetchAndMerge
                         });
 
                         const [instance] = instanceObjects.filter(({ current }) => current);
-                        const meta: MetaLinks = { ...data, instance, sections, version: data.version, meta: {} as Meta, inlineFiles: [] };
+                        const meta: MetaLinks = { ...mlData, instance, sections, version: mlData.version, meta: {} as Meta, inlineFiles: [] };
                         resolve(Object.assign(meta, { instances: instanceObjects }));
                     } else {
                         // this may occur when transferring a filing from one domain to another.  Not sure how to fix...
@@ -347,26 +325,22 @@ export class FetchAndMerge
         });
     }
 
-    private fetchSummary(): Promise<FilingSummary | ErrorResponse>
-    {
+    private fetchSummary(): Promise<FilingSummary | ErrorResponse> {
         let filingSummXmlUrl = this.params.summary;
 
         //TODO: use the new `isWorkstation` func in HelpersUrl instead
         const isWorkstation = filingSummXmlUrl.includes("DisplayDocument.do?");
-        if (isWorkstation && this.params.redline)
-        {
+        if (isWorkstation && this.params.redline) {
             filingSummXmlUrl = filingSummXmlUrl.replace('FilingSummary.xml', 'PrivateFilingSummary.xml');
         }
 
-        return fetchText(filingSummXmlUrl, { credentials: 'include' })
-            .then((data) =>
-            {
+        return fetchText(filingSummXmlUrl, { credentials: 'include', mode: 'same-origin' })
+            .then((data) => {
                 const xmlData = this.decodeWorkstationXmlInHtml(isWorkstation, data, "</FilingSummary>");
                 const convertedXml = convert.xml2json(xmlData, { compact: true });
                 return JSON.parse(convertedXml).FilingSummary as FilingSummary;
             })
-            .catch((error) =>
-            {
+            .catch((error) => {
                 return ({ error: true, messages: [`${error}; could not find "${this.params.summary}"`] })
             });
     }
@@ -409,8 +383,7 @@ export class FetchAndMerge
             .catch((error) => ({ error: true, messages: [`${error}; could not find "XML Instance Data"`] }));
     }
 
-    private buildFactMap(): Map<string, SingleFact>
-    {
+    private buildFactMap(): Map<string, SingleFact> {
         if (!this?.activeInstance?.xml) throw new Error("Error: Active Instance has no XML data");
 
         // why set to index [0] ? !!!
@@ -421,13 +394,11 @@ export class FetchAndMerge
         return this.activeInstance.map;
     }
 
-    private async mergeAllResponses(): Promise<void>
-    {
+    private async mergeAllResponses(): Promise<void> {
         this.activeInstance.formInformation = this.extractFormInformation(this.activeInstance.metaInstance);
         this.customPrefix = this.activeInstance.metaInstance.nsprefix?.toLowerCase() || null;
         
-        const prepperData: XhtmlPrepData =
-        {
+        const prepperData: XhtmlPrepData = {
             docs: this.activeInstance.docs,
             facts: this.activeInstance.map,
             customPrefix: this.customPrefix || "",
@@ -465,14 +436,12 @@ export class FetchAndMerge
 
         const factMap = new Map<string, SingleFact>();
 
-        const addFactToMap = (factElem: { _attributes: DeiAmendmentFlagAttributes; _text: string; }, tagName: string) =>
-        {
+        const addFactToMap = (factElem: { _attributes: DeiAmendmentFlagAttributes; _text: string; }, tagName: string) => {
             const attributes = factElem._attributes;
             const id = `fact-identifier-${factCounter++}`;
             const ix = attributes.id || id ;
 
-            factMap.set(ix,
-            {
+            factMap.set(ix, {
                 ...attributes,
                 ix,
                 id,
@@ -492,7 +461,7 @@ export class FetchAndMerge
                 isEnabled: true,
                 isHighlight: false,
                 isSelected: false,
-                filter: { content: this.getTextFromHTML(factElem._text) },
+                filterContent: { content: this.getTextFromHTML(factElem._text) },
                 file: null,
             });
         }
@@ -524,8 +493,7 @@ export class FetchAndMerge
         return factMap;
     }
 
-    private setSectionGroupType(sections: Section[]): Section[]
-    {
+    private setSectionGroupType(sections: Section[]): Section[] {
         // groupType is used in Metalinks v2.1 (and presumably earlier) and was replaced by menuCat in 2.2
         if (Number(this.metaVersion) < 2.2) return sections;
 
@@ -699,14 +667,14 @@ export class FetchAndMerge
                         return newObject
                     });
 
-                    currentFact.filter.labels = currentFact.labels.reduce((accumulator: string, current) => {
+                    currentFact.filterContent.labels = currentFact.labels.reduce((accumulator: string, current) => {
                         const tempCurrent = { ...current };
                         delete tempCurrent.documentation;
                         return `${accumulator} ${Object.values(tempCurrent).join(' ')}`;
 
                     }, '');
 
-                    currentFact.filter.definitions = currentFact.labels.reduce((accumulator, current: { Documentation: string; }) => {
+                    currentFact.filterContent.definitions = currentFact.labels.reduce((accumulator, current: { Documentation: string; }) => {
                         return `${accumulator} ${current.Documentation}`;
                     }, '');
                 }
@@ -746,8 +714,7 @@ export class FetchAndMerge
         return $.html('body');
     }
 
-    private isFactAmountsOnly(input: string, scale?: string | null | undefined): boolean
-    {
+    private isFactAmountsOnly(input: string, scale?: string | null | undefined): boolean {
         return /^-?\d+\d*$/.test(input) && scale != null;
     }
 
@@ -786,12 +753,9 @@ export class FetchAndMerge
                     const dayDiff = endDate.getUTCDate() - startDate.getUTCDate();
 
                     //If the difference in days is more than half a month, round up/down as appropriate
-                    if (dayDiff > 15)
-                    {
+                    if (dayDiff > 15) {
                         monthDiff++;
-                    }
-                    else if (dayDiff < -15)
-                    {
+                    } else if (dayDiff < -15) {
                         monthDiff--;
                     }
 
@@ -903,8 +867,7 @@ export class FetchAndMerge
             });
     }
 
-    private setMeasureInfo(unitRef: string, unit: Units): string | undefined
-    {
+    private setMeasureInfo(unitRef: string, unit: Units): string | undefined {
         if (unit)
         {
             const findMatchingUnit = (unitArray: Units[]) => unitArray.find((element) => element._attributes.id === unitRef);
@@ -918,10 +881,8 @@ export class FetchAndMerge
         }
     }
 
-    private setDecimalsInfo(decimals: string): Decimals | null
-    {
-        const decimalsOptions: Record<string, Decimals> =
-        {
+    private setDecimalsInfo(decimals: string): Decimals | null {
+        const decimalsOptions: Record<string, Decimals> = {
             "-1": Decimals.Tens,
             "-2": Decimals.Hundreds,
             "-3": Decimals.Thousands,
@@ -960,7 +921,7 @@ export class FetchAndMerge
      * @param {any} result?:string|undefined
      * @returns {any} concatenated text from all footnote nodes, joined by a ' '
      */
-    private accumulateFootnote(ftObj: LinkFootnote | Record<string, unknown>, result = "") {
+    private accumulateFootnoteText(ftObj: LinkFootnote | Record<string, unknown>, result = "") {
         const truncateFootnoteTo = 100;
 
         if (result?.length > truncateFootnoteTo) {
@@ -975,11 +936,11 @@ export class FetchAndMerge
             }
             else if (Array.isArray(value)) {
                 value.forEach(childNode => {
-                    result = this.accumulateFootnote(childNode, result);
+                    result = this.accumulateFootnoteText(childNode, result);
                 })
             }
             else if (key.substring(0,6) == "xhtml:") {
-                result = this.accumulateFootnote(value, result);
+                result = this.accumulateFootnoteText(value, result);
             }
         });
 
@@ -1010,6 +971,7 @@ export class FetchAndMerge
             if (factFootnote) {
                 if (footnotes['link:footnote']) {
                     if (Array.isArray(footnotes['link:footnote'])) {
+                        // multiple footnotes on instance
                         const actualFootnote = footnotes['link:footnote']?.find((element) => {
                             return element._attributes.id === factFootnote._attributes['xlink:to'];
                         });
@@ -1018,7 +980,7 @@ export class FetchAndMerge
                         const useParsedFootnote = !useFetchedFootnoteXmlStrings;
 
                         if (useParsedFootnote) {
-                            return this.accumulateFootnote(actualFootnote || {} as Record<string, unknown>);
+                            return this.accumulateFootnoteText(actualFootnote || {} as Record<string, unknown>);
                         }
 
                         // Rest of this if block is WIP for rendering all div types in footnote cell
@@ -1032,14 +994,14 @@ export class FetchAndMerge
                         const startTagRegex = /<link:footnote /gi; 
                         let startTagResults: RegExpExecArray | null = null;
                         const footnoteStartIndices:number[] = [];
-                        while(!!(startTagResults = startTagRegex.exec(footnotes.asXmlString))) {
+                        while (!!(startTagResults = startTagRegex.exec(footnotes.asXmlString))) {
                             footnoteStartIndices.push(startTagResults.index);
                         }
 
                         const endTagRegex = /<\/link:footnote>/gi; 
                         let endTagResults: RegExpExecArray | null = null;
                         const footnoteEndIndices:number[] = [];
-                        while(!!(endTagResults = endTagRegex.exec(footnotes.asXmlString))) {
+                        while (!!(endTagResults = endTagRegex.exec(footnotes.asXmlString))) {
                             footnoteEndIndices.push(endTagResults.index + ('</link:footnote>').length);
                         }
 
@@ -1056,10 +1018,11 @@ export class FetchAndMerge
 
                         return relevantFootnoteAsXmlString;
                     } else {
+                        // single footnote on instance
                         // TODO we need way more cases
                         //uhh, no we don't, because the first 2 cases cover EVERYTHING
                         if (!Array.isArray(footnotes['link:footnote']._text)) {
-                            return footnotes;
+                            return footnotes['link:footnote']._text;
                         } else if (Array.isArray(footnotes['link:footnote']._text)) {
                             return footnotes['link:footnote']._text.join('');
                         } else if (footnotes['link:footnote']['xhtml:span']) {

@@ -13,7 +13,7 @@ type MetaDocument = any;
 
 export const Constants =
 {
-	version: "25.1",
+	version: "25.2",
 	featureSet: "plus",
 
 	appWindow: (() => {
@@ -51,7 +51,11 @@ export const Constants =
 
 	getMetaTags: [] as unknown[],
 
-	getInstanceFiles: [] as InstanceFile[],
+	getInstances: [] as InstanceFile[],
+
+	getCurrentInstance: () => {
+		return Constants.getInstances.find(inst => inst.current);
+	},
 
 	getInlineFiles: [] as InlineFileMeta[],
 

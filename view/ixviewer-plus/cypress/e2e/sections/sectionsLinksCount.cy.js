@@ -19,7 +19,7 @@ describe(`Sections | Links number in instance header`, () => {
             const subSectionsCount = Number(subSectionsText) || 0;
 
             // count subsection elements
-            const subSectionsActual = elem.find('li.section-link').length || 0;
+            const subSectionsActual = elem.find('.section-link').length || 0;
 
             // should be the same
             expect(subSectionsCount).to.eq(subSectionsActual);
@@ -43,7 +43,7 @@ describe(`Sections | Links number in instance header`, () => {
                 expect(subSectionsCount).to.gt(0);
 
                 // count subsection elements
-                const subSectionsActual = elem.find('li.section-link').length || 0;
+                const subSectionsActual = elem.find('.section-link').length || 0;
 
                 // should be the same
                 expect(subSectionsCount).to.eq(subSectionsActual);

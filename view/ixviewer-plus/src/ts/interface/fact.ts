@@ -40,6 +40,12 @@ export interface SingleFact {
     segment?: Array<SegmentClass[] | SegmentClass>;
     isContinued: boolean;
     continuedIDs: Array<string>;
+    filterContent: {
+        content: string,
+        labels: string,
+        definitions: string,
+
+    }
     "xsi:nil"?: string;
     "xml:lang"?: string;
 }
@@ -52,7 +58,7 @@ export interface SingleFact2
     references: reference[];
     calculations: [{ label: string, value: string }] | [];
     labels: string[];
-    filter: { labels: string; definitions: string; };
+    filterContent: { labels: string; definitions: string; };
     balance: string;
     xbrltype: Xbrltype | null;
     localname: string | null;

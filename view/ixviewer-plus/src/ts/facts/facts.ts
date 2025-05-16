@@ -81,8 +81,11 @@ export const Facts = {
 		if (Constants.appWindow.location.hash.startsWith('#fact-identifier')) {
 			event.stopPropagation();
 			event.preventDefault();
-			const id = Constants.appWindow.location.hash;
+
+			let id = Constants.appWindow.location.hash;
+
 			const element = document.querySelector(id);
+			
 			if (element instanceof HTMLElement) {
 				Facts.clickEvent(event, element);
 				// element.scrollIntoView(false); // keeping as comment to remember alternative function
@@ -122,22 +125,24 @@ export const Facts = {
 		element.setAttribute('listeners', 'true');
 	},
 
+	hasBlockElem: (factElem: Element) => {
+		const blockLevelElems = ['<div', '<p', '<table', '<aside', '<footer', '<main', '<hr', '<h1', '<h2', '<h3', '<h4', '<h5', '<h6',];
+		return blockLevelElems.some(elemType => factElem.innerHTML?.includes(elemType))
+	},
+
 	inViewPort: (unobserveAfter = false) => {
 		const factSelector = '[id^=fact-identifier-], [continued-main-fact-id], [data-link], [xhtml-change]';
 		const allFactIdentifiers = Array.from(document?.getElementById('dynamic-xbrl-form')?.querySelectorAll(factSelector) || []);
-		const blockLevelElems = ['<div', '<p', '<table', '<aside', '<footer', '<main', '<hr', '<h1', '<h2', '<h3', '<h4', '<h5', '<h6',];
 
 		const setDisplayAttribute = (factData: SingleFact, factElem: Element) => {
 			const factDisplayProp = getComputedStyle(factElem).display;
 			if (factDisplayProp.includes('inline')) {
-				if (factData.xbrltype === 'textBlockItemType') {
-					if (blockLevelElems.some(elemType => factElem.innerHTML?.includes(elemType))) {
-						factElem.setAttribute("text-block-fact", 'true'); // rare
-					} else {
-						factElem.setAttribute("inline-block-fact", 'true'); // rare
-					}
+				if (Facts.hasBlockElem(factElem)) {
+					factElem.setAttribute("text-block-fact", 'true'); // rare - gets side borders
+				} else if (factData.xbrltype === 'textBlockItemType') {
+					factElem.setAttribute("inline-block-fact", 'true'); // rare - gets outline
 				} else {
-					factElem.setAttribute("inline-fact", 'true') // common, especially numerics
+					factElem.setAttribute("inline-fact", 'true'); // common - gets top and bottom borders
 				}
 			} else {
 				factElem.setAttribute("text-block-fact", 'true');
@@ -217,8 +222,7 @@ export const Facts = {
 		});
 	},
 
-	isElementContinued: (element: HTMLElement | null) =>
-	{
+	isElementContinued: (element: HTMLElement | null) => {
 		return element?.getAttribute("continued-fact") === "true" || element?.getAttribute("continued-main-fact") === "true";
 	},
 
@@ -359,9 +363,9 @@ export const Facts = {
 	updateURLHash: (factId: string) => {
 		if (Constants.appWindow.history.pushState) {
 			if (factId) {
-				Constants.appWindow.history.pushState(null, "", `#${factId}`);
+				Constants.appWindow.history.pushState(null, '', `#${factId}`);
 			} else {
-				Constants.appWindow.history.pushState(null, "", ``);
+				Constants.appWindow.history.pushState(null, '', '');
 			}
 		} else {
 			Constants.appWindow.location.hash = `#${factId}`;

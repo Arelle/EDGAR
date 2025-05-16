@@ -138,13 +138,13 @@
                 "axis-descendants": "Yes",
                 "additional-members": ["RepurchaseAgreementCounterpartyNameDomain", "AffiliatedEntityMember", "InvestorMember", "VariableInterestEntityNotPrimaryBeneficiaryMember", "ChiefFinancialOfficerMember", "IndividualMember", "GovernmentMember", "GuarantorSubsidiariesMember", "SubsidiaryIssuerMember", "DirectorMember", "ChiefExecutiveOfficerMember",  "ChiefOperatingOfficerMember", "GeneralPartnerMember", "CorporateJointVentureMember", "SubsidiaryOfCommonParentMember", "IndividuallyImmaterialCounterpartiesMember"],
                 "extensions-allowed": "Yes"
-            },
-			"60": {
-			    "axis": "DefinedContributionPlanNameAxis",
+				},
+			"59": {
+			    "axis": "PlanNameAxis",
 				"axis-descendants": "None",
-				"xuleConstants-members": ["MEM_DEF_CNT_PLN_NM_AXS"],
+				"xuleConstants-members": ["MBR_PLN_NM_AXS"],
 			    "extensions-allowed": "Yes"
-			},
+            },
             "61": {
                 "axis": "RangeAxis",
                 "axis-descendants": "Yes",
@@ -2548,7 +2548,7 @@
 			},
 			"9577": {
 				"name": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
-				"not-names": ["IncomeLossFromEquityMethodInvestments", "IncomeLossFromEquityMethodInvestmentsNetOfDividendsOrDistributions", "IncomeLossFromAffordableHousingProjectsEquityMethodInvestments"],
+				"not-names": ["IncomeLossFromEquityMethodInvestments", "IncomeLossFromEquityMethodInvestmentsNetOfDividendsOrDistributions"],
 				"message": "The company has included {name} as a component of the concept \"Income Loss From Continuing Operations Before Income Taxes Minority Interest And Income Loss From Equity Method Investments\". The element {name} cannot be included as a component of \"Income Loss From Continuing Operations Before Income Taxes Minority Interest And Income Loss From Equity Method Investments\" as this element excludes equity method investments.  The filer should use the concept IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest instead. \n\nElement: {name}"					
 			}
 	    }

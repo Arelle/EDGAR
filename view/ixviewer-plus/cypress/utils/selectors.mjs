@@ -1,5 +1,6 @@
 export const selectors = {
 
+    xbrlForm: 'div[id="dynamic-xbrl-form"]',
     webpackOverlay: "webpack-dev-server-client-overlay-div",
 
     factCountBadge: 'a[id="facts-menu-button"] span.fact-total-count',
@@ -7,18 +8,29 @@ export const selectors = {
     docTab1: 'a[data-cy="inlineDocTab-1"]',
     intanceTab0factCount: 'a[data-cy="inlineDocTab-0"] > span',
     intanceTab0factCountToolTip: 'a[data-cy="inlineDocTab-0"] > span *',
-    tableTab: 'a[data-cy="factTableTab',
+    tableTab: 'a[data-cy="factTableTab"]',
     tableTabFactCount: 'a[data-cy="factTableTab > span',
     factCountClock: 'a[id="facts-menu-button"] span.fact-total-count i',
 
-    menu: 'button[data-test="menu-dropdown-link"]',
+    menuButton: 'button[data-test="menu-dropdown-link"]',
+    menuDropdown: 'div[id="menuContents"]',
+    menuInfoButton: 'a[data-test="menu-dropdown-information"]',
+    menuXBRLInstance: 'a[data-test="form-information-instance"]',
+    menuXBRLZip: 'a[data-test="form-information-zip"]',
+    menuHTML: 'a[data-test="form-information-html"]',
+    menuSettings: 'a[data-test="menu-dropdown-settings"]',
+    menuHelp: 'a[id="form-information-help"]',
+    menuVersion: 'span[id="form-information-version"]',
+
+    infoModal: 'tbody[id="form-information-modal-carousel-page-1"]',
 
     taggedSections: '#tagged-sections',
     sectionsHeader: 'button[id="sections-dropdown-link"]',
+    sectionsSidebar: 'div[id="sections-menu"]',
     sectionActive: 'div.section-active',
     sectionHeaderActive: 'div[id^="sectionDoc-"].section-active button[data-cy*="instance-header"]',
     sectionSidebarBody: 'div[id^=instance-body-sectionDoc-]',
-    sectionsLinks: 'li.section-link',
+    sectionsLinks: '.section-link',
     getNthSection: (n) => {
         return `div[id="tagged-sections"] > div:nth-child(${n})`;
     },
@@ -26,8 +38,9 @@ export const selectors = {
         return `div[id="tagged-sections"] > div:nth-child(${n}) > div.accordion-collapse`;
     },
     sectionsFilterBtn: '[data-cy="sections-filter-btn"]',
-    allInstnacesFilter: 'div[data-cy="sections-filters"] input[data-cy="all-instances"]',
+    allInstancesFilter: 'div[data-cy="sections-filters"] input[data-cy="all-instances"]',
     currentInstanceFilter: 'div[data-cy="sections-filters"] input[data-cy="current-instance-only"]',
+    closeSectionsBtn: 'button[id="closeSectionsX"]',
 
     settings: 'a[data-test="menu-dropdown-settings"]',
     hoverForQuickInfoSelect: 'select[id="hover-option-select"]',
@@ -42,16 +55,23 @@ export const selectors = {
     },
     instanceContainer:'ul#tabs-container',
     instanceDropDownMenu:'ul.dropdown-menu',
+    instanceDropdownOptions:'#tabs-container button[data-cy="instance-dropdown"] .dropdown-item',
     search: 'input[data-test="global-search"]',
     submitSearchButton: 'form[data-test="global-search-form"] button[type="submit"]',
     searchSettingsGear: 'form[id="global-search-form"] button[data-name="global-search-options"]',
+    searchSettingsDropdown: 'div[id="searchOptionsContainer"]',
     searchDataTypeCheckboxFilter: 'form[id="global-search-form"] div.form-check',
     searchRefOption: 'form[id="global-search-form"] div.form-check:nth-child(6) input',
     searchSuggestBox: 'ul[id="suggestions"]',
+    clearSearchBtn: 'button[id="search-btn-clear"]',
 
     dataFiltersButton: 'button[data-test="nav-filter-data"]',
+    dataFilterDropdown: 'form[data-name="data-dropdown"]',
     dataAllFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(1) > label > input',
     dataAmountsOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(2) > label > input',
+    dataTextOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(3) > label > input',
+    dataCalcOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(4) > label > input',
+    dataNegOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(5) > label > input',
     dataAdditionalOnlyFilter: 'form[data-name="data-dropdown"] > div.form-check:nth-child(6) > label > input',
 
     tagsHeader: 'nav ul > li > button[data-test="nav-filter-tags"]',
@@ -61,6 +81,7 @@ export const selectors = {
 
     moreFiltersHeader: 'button[id="nav-filter-more"]',
     periodFilterTagsDrawer: 'form[data-test="more-filters-form"] button[data-test="Period"]',
+    period1FilterDrawer: '[data-bs-target="#period-filters-accordion-0"]',
     period1Filter: '#user-filters-periods > div > div:nth-child(1) input',
     period2Filter: '#user-filters-periods > div > div:nth-child(3) input',
     period3Filter: '#user-filters-periods > div > div:nth-child(5) input',
@@ -101,6 +122,7 @@ export const selectors = {
     tagShadingColorPickerSave: 'div[id="tag-shading-color-picker"] div.picker_done button',
 
     factsHeader: 'a[id="facts-menu-button"]',
+    factSidebar: 'div[id="facts-menu"]',
     factInFactBrowser: 'a[data-id^="fact-identifier-"]',
 
     factModal: 'div#fact-modal',
@@ -114,7 +136,6 @@ export const selectors = {
     factExpandMoreLess: 'a[data-cy="factExpandMoreLess"]',
 
     factValueInModal: '#fact-modal-carousel-page-1 > tbody > tr:nth-child(2) > td > div',
-
 
     factModalCarouselPrevArrow: 'div#fact-modal div.dialog-footer button[data-test="modal-fact-prev"]',
     factModalCarouselNextArrow: 'div#fact-modal div.dialog-footer button[data-test="modal-fact-next"]',

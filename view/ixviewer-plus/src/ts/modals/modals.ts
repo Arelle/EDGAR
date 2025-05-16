@@ -20,7 +20,7 @@ export const Modals = {
 
 			const button = document.createElement('button');
 			button.type = 'button';
-			button.setAttribute('class', `${activeSlide}`);
+			button.setAttribute('class', `${activeSlide} ix-focus`);
 			button.setAttribute('data-bs-target', `#${carouselId}`);
 			button.setAttribute('data-bs-slide-to', `${index}`);
 			button.setAttribute('title', current['dialog-title']);

@@ -4,7 +4,7 @@ import os
 from arelle import XbrlConst
 from .MessageNumericId import deiSubTblCodes, ftSubTbl, ftSumTbl, ftOfferingTbl, ftOffsetTbl, ftCmbPrsTbl, ft424iTbl, ftStart, ftTableStartCode, ftValidations, ftRuleCode, efmStart
 from .Consts import attachmentDocumentTypeValidationRulesFiles
-from .FtJsonToOimJson import getLatestTaxonomyFamily
+from .Util import getLatestTaxonomyFamily
 
 
 class FtValidations:
@@ -47,14 +47,9 @@ class FtValidations:
                 writer.writerow(validation)
 
     def parseValidations(self):
-        formTypeSevs = []
         for sev in self.validationsJson["sub-type-element-validations"]:
-            if sev.get("efm") == "6.5.20":
-                formTypeSevs.append(sev)
-            else:
-                for validation in self.getValidationsFromSev(sev):
-                    yield validation
-        yield self._getFormTypeSevsValidation(formTypeSevs)
+            for validation in self.getValidationsFromSev(sev):
+                yield validation
 
     def getValidationsFromSev(self, sev):
         if sev.get("validation"):
@@ -102,12 +97,6 @@ class FtValidations:
             self.outName = os.path.join(self.validationFileBasePath, "ft-validations.csv")
         latestFFD = getLatestTaxonomyFamily(self.cntlr, "FFD")
         self.cntlr.modelManager.load(latestFFD.href)
-
-    def _getFormTypeSevsValidation(self, formTypeSevs):
-        subTypes = self._getSubtypeFormMapping(formTypeSevs)
-        for validation in self.getValidationsFromSev(formTypeSevs[0]):
-            validation["Submission Types"] = json.dumps(subTypes)
-            return validation
 
     def _getSubtypeFormMapping(self, formTypeSevs):
         mapping = {}

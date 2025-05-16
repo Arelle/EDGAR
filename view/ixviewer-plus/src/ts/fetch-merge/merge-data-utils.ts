@@ -18,7 +18,7 @@ export const buildSectionsArrayFlatter = (filingSummary:FilingSummary, metaLinks
         .filter(r => r.MenuCategory)
         .map(r => r.MenuCategory._text?.toLowerCase())
         .some((menuCategory: string) => {
-            return menuCategory == 'statement' || 'statements';
+            return menuCategory == 'statement' || menuCategory == 'statements';
         })
 
     const addInstanceProps = (section: Section) => {

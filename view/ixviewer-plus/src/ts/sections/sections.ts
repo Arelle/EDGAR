@@ -14,9 +14,11 @@ import { Section } from "../interface/meta";
 import { convertToSelector, ixScrollTo } from "../helpers/utils";
 import { defaultKeyUpHandler } from "../helpers/utils";
 import { Logger, ILogObj } from "tslog";
+import { addVArrowNav } from "../listeners"
+import { Facts } from "../facts/facts"
+import { Modals } from "../modals/modals";
 
-export const Sections =
-{
+export const Sections = {
     init: () => {
         let fakeOrder = Constants.sections.length;
         const sections = Constants.sections.sort((a, b) => {
@@ -38,22 +40,11 @@ export const Sections =
         const sectionSearch = document.querySelector('#sections-menu-search-submit');
         sectionSearch?.classList.add('d-none');
 
+        const actionableSectionElems = document.querySelectorAll('#sections-dropdown-link, #closeSectionsX, #tagged-sections button, #tagged-sections a');
+        addVArrowNav(actionableSectionElems);
+        Sections.addEscListener();
+
         return sections;
-    },
-
-    scrollToSection: (sectionData: Section) => {
-        if (sectionData?.inlineFactSelector) {
-            const sectionElem = (document.querySelector(sectionData.inlineFactSelector) as HTMLElement);
-            if (!sectionElem) {
-                ErrorsMajor.message("Could not find inline section.");
-                console.error(`Could not find the chosen Section: ${sectionData.inlineFactSelector}`);
-                return;
-            }
-
-            ixScrollTo(sectionElem);
-        } else {
-            console.error('no inline section selector');
-        }
     },
 
     highlightInstanceInSidebar: () => {
@@ -72,64 +63,93 @@ export const Sections =
     },
 
     handleSectionLinkClick: (event: MouseEvent | KeyboardEvent) => {
-        const eventTarget = event.target instanceof Element ? event.target : null;
         const startPerformance = performance.now();
 
-        if (!eventTarget)
-        {
+        const sectionLinkElem = event.target instanceof Element ? event.target : null;
+        let id = sectionLinkElem?.getAttribute('fact-id') || "";
+        const name = sectionLinkElem?.getAttribute('fact-name') || "";
+        const contextRef = sectionLinkElem?.getAttribute('contextref') || "";
+
+        if (!id) {
+            // this won't work if we're changing instance as each instance has it's own fact map
+            // ... factMap for new inst won't be loaded until we change instances.
+            id = FactMap.getByNameContextRef(name, contextRef)?.id as string;
+        }
+
+        if (!sectionLinkElem) {
             console.error(`Not a valid Section Link: ${event.target}`);
             return;
         }
 
         const keyButNotSpaceOrEnter = Object.prototype.hasOwnProperty.call(event, 'key')
-            && !((event as KeyboardEvent).key === 'Enter' || 
-            (event as KeyboardEvent).key === 'Space' || (event as KeyboardEvent).key === ' ');
+            && !((event as KeyboardEvent).key === 'Enter' 
+            || (event as KeyboardEvent).key === 'Space' || (event as KeyboardEvent).key === ' ');
         if (keyButNotSpaceOrEnter) return;
 
         const sections = Constants.getSectionsFromSessionStorage();
 
-        let targetSectionData: Section | null = null;
-        for(const sect of sections)
-        {
-            const selectorForInlineFact = eventTarget?.getAttribute('inline-fact-selector');
-            if (sect.inlineFactSelector == selectorForInlineFact)
-            {
-                targetSectionData = sect;
-                break;
+        const scrollToSection = (section: Section, id: string, name: string, contextRef: string) => {
+            if (!id) {
+                // in the case of an instance change, this runs as callback after new instace loads
+                id = FactMap.getByNameContextRef(name, contextRef)?.id as string;
             }
-        }
-        
-        const scrollToSection = (section: Section) =>
-        {
             Sections.scrollToSection(section);
             Sections.highlightInstanceInSidebar();
             Sections.hightlightInlineSection(section);
+            Facts.updateURLHash(id);
+            queueModalsClose();
         };
-        const scrollToFact = (fact: FactInput) =>
-        {
+
+        const scrollToFact = (fact: FactInput, id: string, name: string, contextRef: string) => {
+            // used less often than scrollToSection, if at all...
+            if (!id) {
+                // in the case of an instance change, this runs as callback after new instace loads
+                id = FactMap.getByNameContextRef(name, contextRef)?.id as string;
+            }
             Sections.scrollToSectionOld(fact);
-            Sections.setSelectedAttributes(eventTarget);
+            Sections.setSelectedFact(sectionLinkElem);
             Sections.highlightInstanceInSidebar();
+            Facts.updateURLHash(id);
+            queueModalsClose();
         };
 
+        const queueModalsClose = () => {
+            // when new instance opened fact modal is opened too;  Close it.
+            window.setTimeout(() => {
+                // timeout ensures this is put in after hash update in execution order and modal is closed right after it's opened when changing instances.
+                Modals.close(new Event(''));
+            }, 0);
+        }
 
-        const currentInstance = HelpersUrl.getHTMLFileName || "BAD FILE NAME!";
-        const sectionInCurrentInstance = eventTarget.getAttribute('fact-file') === currentInstance;        
+        const selectorForInlineFact = sectionLinkElem?.getAttribute('inline-fact-selector');
+        let sectionData: Section | null = null;
+        sectionData = sections.filter(sect => sect.inlineFactSelector == selectorForInlineFact)[0];
         
-        const id = eventTarget?.getAttribute('fact-id') || "";
-        const name = eventTarget?.getAttribute('fact-name') || "";
-        const contextRef = eventTarget?.getAttribute('fact-contextRef') || "";
+        const currentInstance = Constants.getCurrentInstance();
+        const sectionInCurrentInstance = currentInstance?.instanceHtm.includes(sectionLinkElem.getAttribute('fact-file') as string);
+        const sectionFactData = sectionInCurrentInstance ? { id } : { name, contextRef };
+        
+        const currentDoc = HelpersUrl.getHTMLFileName || "BAD FILE NAME!";
+        const sectionInCurrentDoc = currentDoc == sectionLinkElem?.getAttribute('fact-file');
 
-        const section = sectionInCurrentInstance ? { id } : { name, contextRef };
-        const action = targetSectionData ? () => scrollToSection(targetSectionData) : () => scrollToFact(section);
+        let action = sectionData 
+            ? () => scrollToSection(sectionData, id, name, contextRef) 
+            : () => scrollToFact(sectionFactData, id, name, contextRef);
+
         if (sectionInCurrentInstance) {
-            action();
+            if (sectionInCurrentDoc) {
+                action();
+            } else {
+                // change doc
+                ConstantsFunctions.switchDoc(sectionLinkElem?.getAttribute('fact-file') as string)
+                    .then(() => action())
+            }
         } else {
-            const instanceIndex = Number(eventTarget?.getAttribute('fact-instance-index'));
-            const targetInstanceFile = eventTarget?.getAttribute('fact-file') || null;
-
+            const instanceIndex = Number(sectionLinkElem?.getAttribute('fact-instance-index'));
+            const targetInstanceFile = sectionLinkElem?.getAttribute('fact-file') || null;
             ConstantsFunctions.changeInstance(instanceIndex, targetInstanceFile, action);
         }
+
         const endPerformance = performance.now();
         if (LOGPERFORMANCE) {
             const log: Logger<ILogObj> = new Logger();
@@ -178,15 +198,27 @@ export const Sections =
     },
 
     // maybe deprecated
-    setSelectedAttributes: (element: Element) =>
-    {
+    setSelectedFact: (factElem: Element) => {
         const selected = document.querySelectorAll("#tagged-sections [selected-fact]");
-        for(const current of Array.from(selected))
-        {
+        for (const current of Array.from(selected)) {
             current.setAttribute("selected-fact", 'false');
         }
+        factElem.setAttribute("selected-fact", 'true');
+    },
 
-        element.setAttribute("selected-fact", 'true');
+    scrollToSection: (sectionData: Section) => {
+        if (sectionData?.inlineFactSelector) {
+            const sectionElem = (document.querySelector(sectionData.inlineFactSelector) as HTMLElement);
+            if (!sectionElem) {
+                ErrorsMajor.message("Could not find inline section.");
+                console.error(`Could not find the chosen Section: ${sectionData.inlineFactSelector}`);
+                return;
+            }
+
+            ixScrollTo(sectionElem);
+        } else {
+            console.error('no inline section selector');
+        }
     },
 
     scrollToSectionOld: (factInput: FactInput) => {
@@ -325,7 +357,7 @@ export const Sections =
                         <button 
                             id="${sectionItem.instanceSectionHeaderId}"
                             data-cy="${sectionItem.instanceSectionHeaderId}"
-                            class="section-instance-header accordion-button btn d-flex justify-content-between align-items-center w-100"
+                            class="section-instance-header accordion-button btn d-flex justify-content-between align-items-center w-100 ix-focus-inset"
                             type="button"
                             tabindex="2"
                             data-bs-toggle="collapse"
@@ -369,7 +401,7 @@ export const Sections =
                     <h6 class="mb-0 h6-override">
                         <button 
                             id="section-header-${sectionItem.menuCatMapped}"
-                            class="btn d-flex justify-content-between align-items-center"
+                            class="btn d-flex justify-content-between align-items-center ix-focus-inset"
                             type="button"
                             tabindex="2"
                             data-bs-toggle="collapse"
@@ -397,33 +429,32 @@ export const Sections =
     },
 
     createSectionItemLink: (sectionItem: Section) => {
-        const instanceCollapseString =
-            `<li 
+        const sectionLinkElem =
+            `<a 
                 xmlns="http://www.w3.org/1999/xhtml"
                 order="${sectionItem.order}"
                 inline-fact-selector='${sectionItem.inlineFactSelector}'
                 fact-file="${sectionItem.fact?.file}"
                 fact-name="${sectionItem.fact?.name}"
                 position="${sectionItem.position}"
-                class="click section-link list-group-item list-group-item-action d-flex align-items-center" 
+                class="click section-link list-group-item list-group-item-action ix-focus" 
                 selected-fact="false"
                 tabindex="2"
                 contextRef="${sectionItem.fact?.contextRef}"
                 fact-instance-index="${sectionItem.instanceIndex}"
             >
                 ${sectionItem.shortName}
-            </li>`;
+            </a>`;
         const parser = new DOMParser();
-        const doc = parser.parseFromString(instanceCollapseString, 'text/html')
-        const sectionFactLink = doc.querySelector('li') as HTMLElement
+        const doc = parser.parseFromString(sectionLinkElem, 'text/html')
+        const sectionFactLink = doc.querySelector('a') as HTMLElement
 
-        for(const eType of ["click", "keyup"] as const)
-        {
-            sectionFactLink.addEventListener(eType, (eventElem) =>{
+        for (const eType of ["click", "keyup"] as const) {
+            sectionFactLink.addEventListener(eType, (eventElem) => {
                 if (eventElem instanceof KeyboardEvent && !defaultKeyUpHandler(eventElem))
                     return;
-                Sections.handleSectionLinkClick(eventElem)
-        });
+                Sections.handleSectionLinkClick(eventElem);
+            });
         }
 
         document.getElementById(sectionItem.menuCatBodyId)?.appendChild(sectionFactLink);
@@ -445,4 +476,14 @@ export const Sections =
             });
         })
     },
+
+    addEscListener: () => {
+        document.querySelectorAll('#sections-dropdown-link, #sections-menu')?.forEach(elem => {
+            elem.addEventListener("keyup", (event) => {
+                if (event instanceof KeyboardEvent && event.key === 'Escape') {
+                    (document.querySelector('#closeSectionsX') as HTMLElement)?.click();
+                }
+            });
+        })
+    }
 };

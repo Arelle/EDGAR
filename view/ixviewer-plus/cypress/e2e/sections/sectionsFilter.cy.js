@@ -19,7 +19,7 @@ describe(`Sections | All instances vs current only filter`, () => {
         
         // select show all filter
         // cy.get(selectors.sectionsFilterBtn).click(); // still open for some reason
-        cy.get(selectors.allInstnacesFilter).click();
+        cy.get(selectors.allInstancesFilter).click();
         cy.get(selectors.getNthSection(1)).should('not.have.class', 'd-none');
         cy.get(selectors.getNthSection(2)).should('not.have.class', 'd-none');
     })

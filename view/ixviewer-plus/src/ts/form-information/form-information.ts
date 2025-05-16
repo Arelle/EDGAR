@@ -16,7 +16,7 @@ export const FormInformation = {
     },
 
     xbrlInstance: () => {
-       const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+       const currentInstance = Constants.getInstances.find(element => element.current);
        document.getElementById('form-information-instance')?.setAttribute('href', currentInstance?.xmlUrl || "#");
     },
 
@@ -61,7 +61,7 @@ export const FormInformation = {
     },
 
     xbrlHtml: () => {
-        const currentXHTML = Constants.getInstanceFiles.find(element => element.current)?.docs.find(element => element.current);
+        const currentXHTML = Constants.getInstances.find(element => element.current)?.docs.find(element => element.current);
         document.getElementById('form-information-html')?.setAttribute('href', currentXHTML?.url || "#");
     },
 

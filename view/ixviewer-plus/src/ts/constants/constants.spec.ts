@@ -66,7 +66,7 @@ describe('/src/ts/constants/indeex.ts', () => {
     //getInstanceFiles
     describe('basic checks for getInstanceFiles', () => {
         it('is a array', () => {
-            expect(typeof Constants.getInstanceFiles).toEqual('object');
+            expect(typeof Constants.getInstances).toEqual('object');
         });
     });
 

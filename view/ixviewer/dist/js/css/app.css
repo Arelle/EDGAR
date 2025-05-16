@@ -3,10 +3,16 @@
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  * */
 
-/* #dynamic-xbrl-form * {
-	box-sizing: initial;
-	line-height: initial;
-} */
+/* Viewer UI font */
+nav
+, div#taxonomies-menu
+, div[id*="modal"] 
+, .sidebar
+{
+	font-family: "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, 
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
 a::active {
 	background-color: pink;
 }
@@ -429,4 +435,46 @@ body {
 
 .z-index-max {
 	z-index: 2147483647;
+}
+
+body #dynamic-xbrl-form table td {
+	font-family: unset;
+}
+
+/* css reset 'fixes' to overwrite bootstrap stuff */
+#dynamic-xbrl-form * {
+	/* fixes sanserif on strata */
+	font-family: initial;
+
+	/* fixes sanserif on strata */
+	font-family: auto;
+	/* fix for super script table font */
+	font-family: revert-layer;
+	
+	/* fixes line height on mitek and strata */
+	line-height: initial; 
+}
+
+
+hr {
+	background-color: revert-layer;
+	border: revert-layer;
+}
+
+#dynamic-xbrl-form hr {
+	opacity: 1;
+	margin: revert-layer;
+}
+#dynamic-xbrl-form p {
+    margin-top: inherit;
+    margin-bottom: inherit;
+}
+
+#dynamic-xbrl-form {
+	font-size: initial;
+}
+
+sup {
+	top: revert-layer;
+	line-height: revert-layer;
 }

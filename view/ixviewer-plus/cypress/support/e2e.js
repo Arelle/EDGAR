@@ -22,6 +22,10 @@ import { getByAccessionNum } from '../dataPlus/filingsFunnel.js'
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+//A plugin that allows us to simulate pressing the 'Tab' key
+
+require('cypress-plugin-tab')
+
 Cypress.on('uncaught:exception', (err, runnable) => {
     // returning false here prevents Cypress from
     // failing the test
@@ -29,13 +33,21 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 })
 
 Cypress.Commands.add('loadByAccessionNum', (accessionNum) => {
-    //This function invokes the 'getByAccessionNum' function over in filingsFunnel.js
-    //Did it this way so we can keep this function usable by standalone scripts outside Cypress
+    // This function invokes the 'getByAccessionNum' function over in filingsFunnel.js
+    // Did it this way so we can keep this function usable by standalone scripts outside Cypress
     let filingObj = getByAccessionNum(accessionNum)
     if (filingObj) cy.loadFiling(filingObj);
 })
 
-//Sends Cypress browser to the filing with index X
+Cypress.Commands.add('loadWithHash', (accessionNum, hash) => {
+    // This function does the same thing as loadByAccessionNum,
+    // but allows the user to add a hash parameter to the end of the URL
+    let filingObj = getByAccessionNum(accessionNum)
+    filingObj.docPath = filingObj.docPath+"#"+hash
+    if (filingObj) cy.loadFiling(filingObj);
+})
+
+// Sends Cypress browser to the filing with index X
 Cypress.Commands.add('loadByIndex', (index) => {
     let filing = filings.find(filing => filing.index === index.toString())
     if (filing) cy.loadFiling(filing);
@@ -43,9 +55,11 @@ Cypress.Commands.add('loadByIndex', (index) => {
 })
 
 Cypress.Commands.add('loadFiling', (filing) => {
-    return cy.visit(filing.docPath).then(browser => {
-        //Standard mode of waiting until the filing has completely loaded
-        cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist');
+    // It may be helpful to use this instead of cy.visit when iterating over a collection of filing objects 
+    // ... as we can then leverage filing specific timeouts.
+    return cy.visit(filing.docPath, { timeout : Number(filing.timeout) }).then(browser => {
+        // Standard mode of waiting until the filing has completely loaded
+        cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) || 12000 }).should('not.exist');
     })
 })
 

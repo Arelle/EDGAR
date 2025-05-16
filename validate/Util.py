@@ -335,7 +335,7 @@ def resourcesFilePath(modelManager, *paths):
 def deprecatedConceptDatesFile(modelManager, abbrNs, latestTaxonomyDoc):
     cntlr = modelManager.cntlr
     _fileName = resourcesFilePath(modelManager, abbrNs.partition("/")[0] + "-deprecated-concepts.json")
-    _deprecatedLabelRole = latestTaxonomyDoc["deprecatedLabelRole"]
+    _deprecatedLabelRolePattern = re.compile(latestTaxonomyDoc["deprecatedLabelRolePattern"])
     _deprecatedDateMatchPattern = latestTaxonomyDoc["deprecationDatePattern"]
     if os.path.exists(_fileName):
         return _fileName
@@ -362,7 +362,7 @@ def deprecatedConceptDatesFile(modelManager, abbrNs, latestTaxonomyDoc):
             for labelRel in deprecationsInstance.relationshipSet(XbrlConst.conceptLabel).modelRelationships:
                 modelLabel = labelRel.toModelObject
                 conceptName = labelRel.fromModelObject.name
-                if modelLabel.role == _deprecatedLabelRole:
+                if _deprecatedLabelRolePattern.match(modelLabel.role or ""):
                     match = _deprecatedDateMatchPattern.match(modelLabel.text)
                     if match is not None:
                         date = match.group(1)

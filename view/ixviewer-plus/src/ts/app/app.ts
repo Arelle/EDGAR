@@ -38,7 +38,7 @@ export const App = {
         if (changeInstance) {
             ConstantsFunctions.emptyHTMLByID('dynamic-xbrl-form');
             document.getElementById('html-pagination')?.classList.toggle('d-none');
-            const activeInstance = Constants.getInstanceFiles.find(element => element.current);
+            const activeInstance = Constants.getInstances.find(element => element.current);
             docUrl = activeInstance?.docs.find(element => element.current)?.slug as string;
         }
 
@@ -46,8 +46,8 @@ export const App = {
             if (HelpersUrl.getAllParams && 
                 HelpersUrl.getAllParams!["metalinks"] &&
                 HelpersUrl.getAllParams!["doc"] &&
-                HelpersUrl.getFolderAbsUrl)
-            {
+                HelpersUrl.getFolderAbsUrl
+            ) {
                 //reset the progress bar and then increment it
                 resetProgress();
                 incrementProgress();
@@ -55,7 +55,7 @@ export const App = {
                 const fetchAndMergeArgs: FetchMergeArgs = {
                     params: HelpersUrl.getAllParams,
                     absolute: HelpersUrl.getFolderAbsUrl,
-                    instance: changeInstance ? Constants.getInstanceFiles : null,
+                    instance: changeInstance ? Constants.getInstances : null,
                     std_ref: Constants.getStdRef,
                 };
 
@@ -158,8 +158,7 @@ export const App = {
 
     enableNavsEtc: () => {
         const disabledNavsArray = Array.from(document.querySelectorAll(".navbar .disabled, [disabled]"));
-        disabledNavsArray.forEach((current) =>
-        {
+        disabledNavsArray.forEach((current) => {
             current.classList.remove("disabled");
             current.removeAttribute("disabled");
         });
@@ -393,7 +392,7 @@ function addPagination(): void {
     // maybe remove
     document.getElementById('html-pagination')?.classList.toggle('d-none');
 
-    const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+    const currentInstance = Constants.getInstances.find(element => element.current);
     const currentXHTML = currentInstance?.docs.find(element => element.current);
 
     const currentDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);

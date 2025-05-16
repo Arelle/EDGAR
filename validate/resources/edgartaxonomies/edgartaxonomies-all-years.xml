@@ -601,6 +601,52 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
     <Loc>
         <Family>IFRS</Family>
         <Version>2025</Version>
+        <Href>https://xbrl.ifrs.org/taxonomy/2025-03-27/full_ifrs/full_ifrs-cor_2025-03-27.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>https://xbrl.ifrs.org/taxonomy/2025-03-27/ifrs-full</Namespace>
+        <Prefix>ifrs-full</Prefix>
+    </Loc>
+    <Loc>
+        <Family>IFRS</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.ifrs.org/taxonomy/2025-03-27/full_ifrs/dimensions/dim_full_ifrs_2025-03-27_role-995000.xml</Href>
+        <AttType>DEF</AttType>
+        <FileTypeName>Definition, Dimensions</FileTypeName>
+        <Elements>0</Elements>
+    </Loc>
+    <Loc>
+        <Family>IFRS</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.ifrs.org/taxonomy/2025-03-27/full_ifrs/dimensions-ea/dim_ifrs_ea_2025-03-27_role-995000.xml</Href>
+        <AttType>DEF</AttType>
+        <FileTypeName>Definition, Dimensions</FileTypeName>
+        <Elements>0</Elements>
+    </Loc>
+    <Loc>
+        <Family>IFRS</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.ifrs.org/taxonomy/2025-03-27/full_ifrs/dimensions/rol_full_ifrs-dim_2025-03-27.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Roles</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>https://xbrl.ifrs.org/role/ifrs/dimensions_2025-03-27</Namespace>
+        <Prefix>rol_dim</Prefix>
+    </Loc>
+    <Loc>
+        <Family>IFRS</Family>
+        <Version>2025</Version>
+        <Href>https://xbrl.ifrs.org/taxonomy/2025-03-27/full_ifrs/dimensions-ea/rol_ifrs_ea-dim_2025-03-27.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Roles</FileTypeName>
+        <Elements>0</Elements>
+        <Namespace>https://xbrl.ifrs.org/role/ifrs-ea/dimensions_2025-03-27</Namespace>
+        <Prefix>rol_dim</Prefix>
+    </Loc>
+    <Loc>
+        <Family>IFRS</Family>
+        <Version>2025</Version>
         <Href>https://xbrl.org/2020/extensible-enumerations-2.0.xsd</Href>
         <AttType>SCH</AttType>
         <FileTypeName>Schema</FileTypeName>

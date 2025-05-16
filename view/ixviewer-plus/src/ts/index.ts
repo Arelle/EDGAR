@@ -39,8 +39,7 @@ import { Logger, ILogObj } from "tslog";
         }
     });
 
-    const removeHideClassFromSidebars = () =>
-    {
+    const removeHideClassFromSidebars = () => {
         // fact and sections sidebars must be in DOM to be populated, but we want visibility-none during load.
         document.querySelector('.sidebar-container-right')?.classList.remove('hide'); // Facts Sidebar
         document.querySelector('.help-sidebar')?.classList.remove('hide');

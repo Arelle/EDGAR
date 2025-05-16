@@ -100,14 +100,14 @@ export function ixScrollTo(sectionElem: HTMLElement): void {
  */
 function elemNearBottom(target: HTMLElement, parentElem?: HTMLElement, scrollableParent?: HTMLElement): boolean {
     if (!parentElem) {
-        const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+        const currentInstance = Constants.getInstances.find(element => element.current);
         const currentXHTML = currentInstance?.docs.find(element => element.current);
         if (currentXHTML?.slug) {
             parentElem = document.querySelector<HTMLElement>(`section[filing-url="${currentXHTML?.slug}"]`) || undefined;
         }
     }
     if (!scrollableParent) {
-        const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+        const currentInstance = Constants.getInstances.find(element => element.current);
         const currentXHTML = currentInstance?.docs.find(element => element.current);
         if (currentXHTML?.slug) {
             scrollableParent = document.getElementById('dynamic-xbrl-form') || undefined;
