@@ -345,7 +345,7 @@ class EdgarRenderer(Cntlr.Cntlr):
         self.defaultValueDict['deliveryFolder'] = 'Delivery'
         self.defaultValueDict['debugMode'] = str(False)
         self.defaultValueDict['errorsFolder'] = 'Errors'
-        self.defaultValueDict['excelXslt'] = 'InstanceReport_XmlWorkbook.xslt'
+        self.defaultValueDict['excelXslt'] = None # starting EDGAR release 25.1.3.u2 we don't want to generate Financial_Report.xlsx.
         self.defaultValueDict['failFile'] = 'errorLog.log'
         self.defaultValueDict['filingsFolder'] = 'Filings'
         self.defaultValueDict['htmlReportFormat'] = 'Complete'
@@ -526,6 +526,7 @@ class EdgarRenderer(Cntlr.Cntlr):
         # Excel XSLT is optional, but do report if you can't find it.
         # setResourceFile('excelXslt', options.excelXslt, 'INVALID_CONFIG_EXCELXSLT')
         # if options.excelXslt is "True" from web interface, it has no no string value, e.g., &excelXslt (looks like True here)
+        # starting EDGAR release 25.1.3.u2 we don't want to generate Financial_Report.xlsx but will allow if --excelXslt is passed in.
         options.excelXslt = setResourceFile('excelXslt', "" if options.excelXslt == True else options.excelXslt, "Cannot find excel xslt {}")
 
         # logMessageTextFile is optional resources file for messages text (SEC format)
@@ -1833,7 +1834,7 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
             summaryXslt=_summaryXslt,
             summaryXsltDissem=parameters["summaryXslt"][1] if "summaryXslt" in parameters else None,
             renderingLogsXslt=('RenderingLogs.xslt', None)[_combinedReports],
-            excelXslt=('InstanceReport_XmlWorkbook.xslt', None)[_combinedReports],
+            excelXslt=None, # starting EDGAR release 25.1.3.u2 we don't want to generate Financial_Report.xlsx.
             logMessageTextFile=None,
             logFile=None,  # from cntlrCmdLine but need to simulate for GUI operation
             labelLang=cntlr.labelLang,  # emulate cmd line labelLang
@@ -2094,7 +2095,7 @@ def edgarRendererRemoveRedlining(modelDocument, *args, **kwargs):
 __pluginInfo__ = {
     'name': 'Edgar Renderer',
     'version': VERSION,
-    'description': "This plug-in implements U.S. SEC Edgar Renderer.  Arelle version at SEC: 2.36.18 ",
+    'description': "This plug-in implements U.S. SEC Edgar Renderer.  Arelle version at SEC: 2.37.7 ",
     'license': 'Apache-2',
     'author': 'U.S. SEC Employees and Mark V Systems Limited',
     'copyright': '(c) Portions by SEC Employees not subject to domestic copyright, otherwise (c) Copyright 2015 Mark V Systems Limited, All rights reserved.',

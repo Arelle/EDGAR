@@ -7,6 +7,7 @@ from arelle import (ModelDocument, XmlUtil, XbrlConst, UrlUtil)
 from arelle.ModelObject import ModelObject
 from arelle.ModelDtsObject import ModelConcept
 from .Consts import standardNamespacesPattern
+from .Util import getEffectiveAuthority
 
 targetNamespaceDatePattern = None
 efmFilenamePattern = None
@@ -104,13 +105,15 @@ def checkFilingDTS(val, modelDocument, isEFM, isGFM, visited):
         # check schema contents types
         # 6.7.3 check namespace for standard authority
         targetNamespaceAuthority = UrlUtil.authority(modelDocument.targetNamespace)
-        if targetNamespaceAuthority in val.disclosureSystem.standardAuthorities:
+        targetNamespaceEffectiveAuthority = getEffectiveAuthority(modelDocument.targetNamespace)
+        standardEffectiveAuthorities = {getEffectiveAuthority(stdAuth) for stdAuth in val.disclosureSystem.standardAuthorities}
+        if targetNamespaceEffectiveAuthority in standardEffectiveAuthorities:
             val.modelXbrl.error(("EFM.6.07.03", "GFM.1.03.03"),
-                _("The target namespace, %(targetNamespace)s cannot have the same authority (%(targetNamespaceAuthority)s) as a standard "
+                _("The target namespace, %(targetNamespace)s cannot have the same effective authority (%(targetNamespaceEffectiveAuthority)s) as a standard "
                   "taxonomy, in %(schema)s.  Please change your target namespace."),
                 edgarCode="fs-0703-Extension-Has-Standard-Namespace-Authority",
                 modelObject=modelDocument, schema=modelDocument.basename, targetNamespace=modelDocument.targetNamespace,
-                targetNamespaceAuthority=UrlUtil.authority(modelDocument.targetNamespace, includeScheme=False))
+                targetNamespaceEffectiveAuthority=targetNamespaceEffectiveAuthority)
 
         # 6.7.4 check namespace format
         if modelDocument.targetNamespace is None or not modelDocument.targetNamespace.startswith("http://"):
