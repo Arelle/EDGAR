@@ -8,7 +8,7 @@
   <processingFolder>Processing</processingFolder>
   <reportsFolder>Reports</reportsFolder>
   <resourcesFolder>..\\resources</resourcesFolder>
-  <excelXslt>InstanceReport_XmlWorkbook.xslt</excelXslt>
+  <excelXslt />
   <reportXslt>InstanceReport.xslt</reportXslt>
   <renderingLogsXslt>RenderingLogs.xslt</renderingLogsXslt>
   <summaryXslt>Summarize.xslt</summaryXslt>

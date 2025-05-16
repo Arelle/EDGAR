@@ -30,7 +30,7 @@
   <!-- Optional, transform FilingSummary.xml into FilingSummary.htm -->
   <summaryXslt/>
   <!-- Optional transform output xml into Excel 2007 xlsx sheet, or empty if no Excel output desired -->
-  <excelXslt>InstanceReport_XmlWorkbook.xslt</excelXslt>
+  <excelXslt />
   <!-- Application settings that used by RE to manage the processing of XBRL filings: -->
   <!-- renderingService: {Instance: one time rendering || Daemon: background processing} -->
   <renderingService>Daemon</renderingService>

@@ -30,7 +30,7 @@
   <!-- Optional, transform FilingSummary.xml into FilingSummary.htm -->
   <summaryXslt>Summarize.xslt</summaryXslt>
   <!-- Optional transform one r.xml into Excel 2007 xlsx output, or empty if no Excel output desired -->
-  <excelXslt>InstanceReport_XmlWorkbook.xslt</excelXslt>
+  <excelXslt />
   <!--  Optional to transform rendering logs for browser reference (when browsers may no longer have XSLT Processors) -->
   <renderingLogsXslt>RenderingLogs.xslt</renderingLogsXslt>
   <!--  Optional to transform rendering logs in browser (if False, logs are transformed on server and htm file provided to browser) -->

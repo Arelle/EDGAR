@@ -7,7 +7,7 @@ from decimal import Decimal
 from collections import defaultdict, OrderedDict
 from arelle.FileSource import openFileStream, openFileSource, saveFile # only needed if building a cached file
 from arelle.ModelValue import qname, dateTime, DATE
-from arelle import XbrlConst
+from arelle import XbrlConst, UrlUtil
 from arelle.PythonUtil import attrdict, flattenSequence, pyObjectSize, OrderedSet
 from arelle.ValidateXbrlCalcs import inferredDecimals, floatINF
 from arelle.XmlValidateConst import VALID
@@ -36,6 +36,19 @@ def abbreviatedNamespace(namespaceURI, pattern=WITHYEAR):
         return {WITHYEAR: "{}/{}", WILD: "{}/*", NOYEAR: "{}"
                 }[pattern].format(match.group(2) or match.group(6), match.group(3) or match.group(5))
     return None
+
+def getEffectiveAuthority(url: str) -> str:
+    # the effective authority of a URI consists of the last part of the URI between the // 
+    # and the first / and containing at most one dot.
+    if url:
+        if url.lower().startswith("urn:"):
+            # UrlUtil.authority does not handle urn well
+            # effective authority for a urn is the NID
+            # part between the first 2 colons
+            return url.split(":")[1]
+        authority = UrlUtil.authority(url, includeScheme=False)
+        return ".".join(authority.split(".")[-2:])
+    return url
 
 def usgaapYear(modelXbrl):
     for d in modelXbrl.urlDocs.values():

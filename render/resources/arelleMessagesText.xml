@@ -1274,8 +1274,8 @@ Amount rxp:A missing for reporting currency and matching 12 months preceding dei
 <message code="EFM.6.07.03"
          level="error"
          module="ValidateFilingDTS.py" line="95"
-         args="schema targetNamespace targetNamespaceAuthority">
-[fs-0703-Extension-Has-Standard-Namespace-Authority]  The target namespace, {targetNamespace} cannot have the same authority ({targetNamespaceAuthority}) as a standard taxonomy, in {schema}.  Please change your target namespace.
+         args="schema targetNamespace targetNamespaceEffectiveAuthority">
+[fs-0703-Extension-Has-Standard-Namespace-Authority]  The target namespace, {targetNamespace} cannot have the same effective authority ({targetNamespaceEffectiveAuthority}) as a standard taxonomy, in {schema}.  Please change your target namespace.
 
 </message>
 
