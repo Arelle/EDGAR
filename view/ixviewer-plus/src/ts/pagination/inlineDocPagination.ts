@@ -2,7 +2,7 @@ import { Constants } from "../constants/constants";
 import { defaultKeyUpHandler } from "../helpers/utils";
 
 const toPrev = () => {
-    const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+    const currentInstance = Constants.getInstances.find(element => element.current);
     const currentXHTML = currentInstance?.docs.find(element => element.current);
 
     // e.g section[filing-url="ea185980-6k_inspiratech.htm"]
@@ -27,7 +27,7 @@ const toPrev = () => {
 };
 
 const toNext = () => {
-    const currentInstance = Constants.getInstanceFiles.find(element => element.current);
+    const currentInstance = Constants.getInstances.find(element => element.current);
     const currentXHTML = currentInstance?.docs.find(element => element.current);
 
     const currentDocElem = document.querySelector(`section[filing-url="${currentXHTML?.slug}"]`);
@@ -74,22 +74,22 @@ export const buildInlineDocPagination = () =>
         `<nav class="doc-pagination" data-cy="doc-pagination">
             <ul id="html-pagination" class="pagination pagination-sm mb-0">
                 <li class="page-item">
-                    <a class="page-link text-body" tabindex="13" id="to-top-btn">
+                    <a class="page-link text-body" tabindex="14" id="to-top-btn">
                         <i class="fas fa-lg fa-angle-double-left"></i>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link text-body" tabindex="13" id="to-prev-btn">
+                    <a class="page-link text-body" tabindex="14" id="to-prev-btn">
                         <i class="fas fa-lg fa-angle-left"></i>
                     </a>
                 </li>
                 <li class="page-item ">
-                    <a class="page-link text-body" tabindex="13" id="to-next-btn">
+                    <a class="page-link text-body" tabindex="14" id="to-next-btn">
                         <i class="fas fa-lg fa-angle-right"></i>
                     </a>
                 </li>
                 <li class="page-item ">
-                    <a class="page-link text-body" tabindex="13" id="to-bottom-btn">
+                    <a class="page-link text-body" tabindex="14" id="to-bottom-btn">
                         <i class="fas fa-lg fa-angle-double-right"></i>
                     </a>
                 </li>

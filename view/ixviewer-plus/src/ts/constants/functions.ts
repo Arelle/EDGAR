@@ -57,7 +57,7 @@ export const ConstantsFunctions = {
 	},
 
 	setInstanceFiles: (input: InstanceFile[]) => {
-		Constants.getInstanceFiles = input;
+		Constants.getInstances = input;
 	},
 
 	setInlineFiles: (input: Array<{ current: boolean, loaded: boolean, slug: string, table?: boolean, dropdown?: boolean }>) => {
@@ -105,7 +105,7 @@ export const ConstantsFunctions = {
 	) => {
 		Modals.close(new Event(''));
 
-		Constants.getInstanceFiles.forEach((instanceFile) => {
+		Constants.getInstances.forEach((instanceFile) => {
 			instanceFile.current = instanceFile.instance === instanceIndex ? true : false;
 			instanceFile.docs.forEach((xhtml, index) => {
 				if (targetInstanceFile) {
@@ -120,7 +120,7 @@ export const ConstantsFunctions = {
 			});
 		});
 
-		const needToLoadInstance = Constants.getInstanceFiles[instanceIndex].docs.some(element => !element.loaded);
+		const needToLoadInstance = Constants.getInstances[instanceIndex].docs.some(element => !element.loaded);
 		if (needToLoadInstance) {
 			// not loaded, go get the requested instance
 			App.init(true, (success: boolean) => {
@@ -129,12 +129,11 @@ export const ConstantsFunctions = {
 			});
 		} else {
 			// already loaded, just update the DOM and update FlexSearch
-			const activeInstance = Constants.getInstanceFiles.find(element => element.current);
+			const activeInstance = Constants.getInstances.find(element => element.current);
 			const inlineFileSlug = activeInstance?.docs.find(element => element.current)?.slug;
 			if (inlineFileSlug == null || activeInstance == null) return;
 
-			HelpersUrl.init(inlineFileSlug, () =>
-			{
+			HelpersUrl.init(inlineFileSlug, () => {
 				App.loadFromMemory(activeInstance);
 				return callback(true);
 			});
