@@ -27,8 +27,6 @@ export function fixImages(doc = document): void {
             const imgFileName = imgSrc.includes('/') ? imgSrc.substring(imgSrc.lastIndexOf('/') + 1) : imgSrc;
             imgParams.set("filename", imgFileName);
 
-            console.log('params', imgParams.toString());
-
             imgElem.setAttribute('src', `${docName}?${imgParams.toString()}`);
             imgElem.setAttribute('loading', 'lazy');
         }

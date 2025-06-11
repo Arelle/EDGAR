@@ -22,6 +22,7 @@ export const Pagination = {
 		Constants.sideBarPaginationState.pageNumber = 1;
 		Constants.sideBarPaginationState.totalPages = Math.ceil(Pagination.getArray.length / Constants.getPaginationPerPage);
 		Pagination.renderPage(Constants.sideBarPaginationState.pageNumber);
+		Pagination.addEscListener();
 
 		if (enabledFactIds.length === 0) {
 			document.getElementById('facts-menu-list-pagination')?.classList.add('d-none');
@@ -264,8 +265,9 @@ export const Pagination = {
 
 	setPageSelect: () => {
 		const select = document.createElement('select');
-		select.setAttribute('id','facts-menu-page-select');
-		select.setAttribute('class','pagination-border');
+		select.setAttribute('id', 'facts-menu-page-select');
+		select.setAttribute('class', 'pagination-border ix-focus');
+		select.setAttribute('tabindex', '13');
 		const option = document.createElement('option');
 		option.setAttribute('value', 'null');
 		const optionText = document.createTextNode('Select a Page');
@@ -374,6 +376,16 @@ export const Pagination = {
 				inline: "start"
 			});
 		}
+	},
+
+	addEscListener: () => {
+		document.querySelectorAll('#facts-menu-button, #facts-menu')?.forEach(elem => {
+			elem.addEventListener("keyup", (event) => {
+				if (event instanceof KeyboardEvent && event.key === 'Escape') {
+					(document.querySelector('#factSidebarCloseX') as HTMLElement)?.click();
+				}
+			});
+		})
 	}
 
 };

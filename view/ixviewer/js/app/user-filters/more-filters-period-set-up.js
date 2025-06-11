@@ -110,20 +110,17 @@ var UserFiltersMoreFiltersPeriodSetUp = {
         + current['year'] + '</a>';
       innerHtml += '</label>';
       innerHtml += '</div>';
-      innerHtml += '<span class="badge bg-secondary">';
-      innerHtml += current['options'].length;
-      innerHtml += '</span>';
-      innerHtml += '</button>';
+      innerHtml += '<span class="badge bg-secondary">' + current['options'].length + '</span>';
       innerHtml += '</div>';
-      innerHtml += '<div data-bs-parent="#user-filters-periods" id="period-filters-accordion-' + index + '"';
+      innerHtml += '<div data-bs-parent="#user-filters-periods" id="period-filters-accordion-' + index + '" class="collapse">';
 
       // we add all the individual 'options'
       current['options'].forEach(function (nestedCurrent, nestedIndex) {
         innerHtml += '<div class="d-flex justify-content-between align-items-center w-100 px-2">';
         innerHtml += '<div class="form-check">';
 
-        innerHtml += '<input onclick="UserFiltersMoreFiltersPeriod.childClick(event, this, ' + index + ', '
-          + nestedIndex
+        innerHtml += '<input onclick="UserFiltersMoreFiltersPeriod.childClick(event, this,' 
+          + index + ', ' + nestedIndex 
           + ')" title="Select/Deselect this option." class="form-check-input" type="checkbox" tabindex="9">';
         innerHtml += '<label class="form-check-label mb-0">';
         innerHtml += nestedCurrent['instanceDate'];

@@ -3706,7 +3706,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                               _("Validation was unable to complete XULE rules due to an internal error.  This is not considered an error in the filing."),
                               modelObject=modelXbrl)
             modelXbrl.debug(
-                "xule:validationException",
+                "xule:ValidationException",
                 _("An unexpected exception occurred in XULE\n%(traceback)s"),
                 traceback=traceback.format_exception(*sys.exc_info())
             )
@@ -5165,16 +5165,16 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             else: # axes are called for
                                 if id == "9566" and hasNondimValue:
                                     continue
-                                if not all(a not in localDims if not v else
-                                           a in localDims if v == True else
-                                           a in localDims and localDims[a].memberQname.localName not in notMems if v == "not-members" else
-                                           a in localDims and localDims[a].memberQname in memQns if v == "xule-const-members" else
+                                if not all((a not in localDims) if not v else
+                                           (a in localDims) if v == True else
+                                           (a in localDims and localDims[a].memberQname.localName not in notMems) if v == "not-members" else
+                                           (a in localDims and localDims[a].memberQname in memQns) if v == "xule-const-members" else
                                            True
                                            for a,v in axes.items()):
                                     continue
                                 if id == "9569":
                                     # if there's a third axis it passes
-                                    if sum(a in localDims for a in axes) < len(localDims):
+                                    if any(a not in localDims for a in axes):
                                         continue
                                 if rule.get("where") == "value!=1" and f.xValue == 1:
                                     continue
@@ -5329,8 +5329,13 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             componentsOfIncome = getDescendants(XbrlConst.summationItems, c, None)
                             for name in rule["not-names"]:
                                 if name in componentsOfIncome:
+                                    # find relationship to report in error message
+                                    rel = modelXbrl # fallback if not found
+                                    for c2 in modelXbrl.nameConcepts[name]:
+                                        for rel in modelXbrl.relationshipSet(XbrlConst.summationItems).toModelObject(c2):
+                                            break
                                     modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(rule["message"])),
-                                        modelObject=name,
+                                        modelObject=rel, name=name,
                                         edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0123":
                 # 0112 has only one id, rule

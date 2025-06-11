@@ -4,12 +4,12 @@
 The EDGAR plugin, developed and maintained by the staff of the U.S. Securities and Exchange Commission (SEC), is designed to provide traditional and inline XBRL viewers for SEC filings. It also integrates with and extends the EFM Validation plugin, offering EFM validation for SEC filings. For end-user support, please contact the SEC directly at: StructuredData@sec.gov.
 
 ## Arelle Version
-The current version of Arelle in use at the SEC is: **2.37.7**
+The current version of Arelle in use at the SEC is: **2.37.12**
 
 ## Installation
 The EDGAR plugin requires the xule plugin to be present under the Arelle plugin directory. You can clone the xule repository into the plugin directory. 
 
-The current version of xule in use at the SEC is: **30047**
+The current version of xule in use at the SEC is: **30048**
 
 ## XULE & DQCRT rules
 The SEC will begin using the XULE DQCRT rule implementation for filings using us-gaap/2025 and newer, otherwise the Python implemented rules will run for us-gaap/2023-4 filings. When XULE is integrated with EDGAR the Validate.Finally plugin call is disabled so that EDGAR can run XULE in its workflow with multiple IXDSes and multiple passes when redaction is involved. 
