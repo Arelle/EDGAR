@@ -167,7 +167,6 @@ export class SetCustomCSS {
 
 			colorPicker.value = index === 3 ? colorPicker.value = `#${rgbToHex(current.default)}` : `#${current.default}`;
 			colorPicker.addEventListener('change', event => {
-				console.log('change')
 				if (index === 3) {
 					//we save this as rgba();
 					const colorRange = document.querySelector('#tag-shading-color-picker-range') as HTMLInputElement;
@@ -187,11 +186,13 @@ export class SetCustomCSS {
 				localStorage.setItem(current.storage, current.reset);
 				this.init();
 			});
-			colorReset.addEventListener('keyup', () => {
-				colorPicker.value = index === 3 ? colorPicker.value = `#${rgbToHex(current.default)}` : `#${current.default}`;
-				index === 3 ? (document.querySelector('#tag-shading-color-picker-range') as HTMLInputElement).value = (parseFloat(current.default.split(',')[3]) * 10).toString() : null;
-				localStorage.setItem(current.storage, current.reset);
-				this.init();
+			colorReset.addEventListener('keyup', (event) => {
+				if (event.key == " " || event.key == "Space" || event.key == "Enter") {
+					colorPicker.value = index === 3 ? colorPicker.value = `#${rgbToHex(current.default)}` : `#${current.default}`;
+					index === 3 ? (document.querySelector('#tag-shading-color-picker-range') as HTMLInputElement).value = (parseFloat(current.default.split(',')[3]) * 10).toString() : null;
+					localStorage.setItem(current.storage, current.reset);
+					this.init();
+				}
 			});
 		});
 

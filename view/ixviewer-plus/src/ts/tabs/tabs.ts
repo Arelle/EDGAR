@@ -26,7 +26,7 @@ export const Tabs = {
 		const container = document.getElementById('tabs-container');
 		Constants.getInlineFiles.forEach((currentInlineDoc, inlineDocIndex) => {
 			// add Instance dropdown (if it's the first instance)
-			if (inlineDocIndex === 0 && Constants.getInstanceFiles.length > 1) {
+			if (inlineDocIndex === 0 && Constants.getInstances.length > 1) {
 				const li = document.createElement('li');
 				li.classList.add('nav-item');
 				const button = document.createElement('button');
@@ -39,21 +39,19 @@ export const Tabs = {
 				const ul = document.createElement('ul');
 				ul.classList.add('dropdown-menu');
 
-				Constants.getInstanceFiles.forEach((instanceFile) =>
-				{
-					const labels = instanceFile.docs.map(element =>
-						!element.dropdown && !element.table ? element.slug : null).filter(Boolean);
+				Constants.getInstances.forEach((instanceFile) => {
+					const labels = instanceFile.docs.map(doc => {
+						return !doc.dropdown && !doc.table ? doc.slug : null
+					}).filter(Boolean);
 					const li = document.createElement('li');
 					const a2 = document.createElement('a');
 					a2.classList.add('dropdown-item');
 					instanceFile.current ? a2.classList.add('active') : null;
 					const aText = document.createTextNode(labels.join(', '));
-					a2.addEventListener('click', (event: MouseEvent) =>
-					{
+					a2.addEventListener('click', (event: MouseEvent) => {
 						Tabs.clickEventInstance(event, instanceFile.instance);
 					});
-					a2.addEventListener('keyup', (event: KeyboardEvent) =>
-					{
+					a2.addEventListener('keyup', (event: KeyboardEvent) => {
 						Tabs.clickEventInstance(event, instanceFile.instance);
 					});
 					a2.append(aText);
@@ -79,19 +77,18 @@ export const Tabs = {
 			inlineDocTabElem.setAttribute('data-cy', `inlineDocTab-${inlineDocIndex}`);
 			inlineDocTabElem.setAttribute('href', currentInlineDoc.slug);
 			inlineDocTabElem.setAttribute('data-link', currentInlineDoc.slug);
+			inlineDocTabElem.setAttribute('tabindex', '14');
 
-			if (currentInlineDoc.current === true)
-			{
+			if (currentInlineDoc.current === true) {
 				inlineDocTabElem.classList.add('active');
 			}
 
-			const updateTabs = () =>
-			{
+			const switchDoc = () => {
 				ConstantsFunctions.switchDoc(currentInlineDoc.slug);
 			}
 
-			inlineDocTabElem.addEventListener('click', (e) => stopPropPrevDefault(e,updateTabs), true);
-			inlineDocTabElem.addEventListener('keyup', (e) => defaultKeyUpHandler(e,updateTabs), true);
+			inlineDocTabElem.addEventListener('click', (e) => stopPropPrevDefault(e, switchDoc), true);
+			inlineDocTabElem.addEventListener('keyup', (e) => defaultKeyUpHandler(e, switchDoc), true);
 			const text = document.createTextNode(currentInlineDoc.slug);
 			inlineDocTabElem.append(text);
 
@@ -181,8 +178,7 @@ export const Tabs = {
 		popoverTriggerList.forEach(popoverTiggerElement => new bootstrap.Popover(popoverTiggerElement));
 	},
 
-	updateTabs: () =>
-	{
+	updateTabs: () => {
 		ConstantsFunctions.emptyHTMLByID('tabs-container');
 		Tabs.populateTabs();
 	},

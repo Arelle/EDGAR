@@ -14,14 +14,14 @@ describe(`Sections Links to different instance`, () => {
     // clicking links too close to bottom of page will not result in a scroll, so change in position is not mandatory, but should be >=
     // however testing scroll has proved unreliable with Cypress... (see inline pagination tests.)
     it(`should change instances`, () => {
-        cy.visit('/Archives/edgar/data/wh-sections/out/sbsef03exc-20231231.htm');
+        cy.loadByAccessionNum('sbsef03');
         cy.get(selectors.sectionsHeader).click();
 
         // open exd instance section accordion
         cy.get('[id="instance-header-sectionDoc-EX-99-D-SBSEF"]').click();
 
         // click first section link in exd
-        cy.get('li[order="3"]').click();
+        cy.get('[order="3"]').click();
 
         // check instance name on tab
         cy.get(selectors.docTab0)
@@ -36,7 +36,7 @@ describe(`Sections Links multi doc (metalinks 2.1)`, () => {
 
         // click section link in ex99-1 doc
         cy.get('[id="section-header-Notes to Financial Statements"]').click();
-        cy.get('li.section-link[order="11"]').click();
+        cy.get('.section-link[order="11"]').click();
         cy.get(selectors.docTab0).should('not.have.class', 'active');
         cy.get(selectors.docTab1).should('have.class', 'active');
 
@@ -51,7 +51,7 @@ describe(`Sections Links multi doc (metalinks 2.2)`, () => {
         cy.get(selectors.sectionsHeader, { timeout: Number(multiDocFiling.timeout) }).click()
 
         // click section link in ex99-1 doc
-        cy.get('li.section-link[order="2"]').click();
+        cy.get('.section-link[order="2"]').click();
         cy.get(selectors.docTab0).should('not.have.class', 'active');
         cy.get(selectors.docTab1).should('have.class', 'active');
     })
@@ -134,6 +134,7 @@ describe("wh filing Section Links link to the correct fact/section", () => {
         });
     });
 });
+
 describe("docType Parentheses Test", () => {
     it('Filing should load even if there are parentheses in the docType tag ', () => {
         cy.loadByAccessionNum('austin')
@@ -147,4 +148,13 @@ describe("docType Parentheses Test", () => {
             cy.get(selectors.sectionSidebarBody).should('be.visible')
         })
    })
+});
+
+describe("Section links should update fact hash", () => {
+    it('Should update fact hash', () => {
+        cy.visit('/Archives/edgar/data/1837493/000101376223000425/ea185980ex99-1_inspiratech.htm')
+        cy.get(selectors.sectionsHeader).click();
+        cy.get('a[order="1"]').click();
+        cy.hash().should('eq', '#fact-identifier-3')
+    })
 });

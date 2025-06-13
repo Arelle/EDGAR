@@ -6,7 +6,7 @@
 "use strict";
 
 var Constants = {
-  version: "25.1", // release quarter
+  version: "25.2", // release quarter
   featureSet: "legacy",
 
   fileSizeError: [7500000, "7.5MB"],

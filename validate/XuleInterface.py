@@ -55,7 +55,15 @@ _xule_resources_dir_for_json = json.dumps(_xule_resources_dir + os.sep)[1:-1]
 _plugin_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 _rule_set_map_name = os.path.join(_xule_resources_dir, "edgarRulesetMap.json")
 _latest_map_name = 'https://github.com/Arelle/EDGAR/tree/master/validate/resources/xule/edgarRulesetMapOnline.json'
+_incompatible_plugin = None # trhe if DQC.py or other incompatible plugin is detected
 xule_error_code_pattern = re.compile(r"DQC\.|xule\.")
+DQC_plugin_url_pattern = re.compile(r"validate[/\\]DQC(\.py)?")
+
+DQCRT_RUN_ONLY_PATTERN = (r"DQC\.US\.(" # separate rules 0000-0009, 0010-0099, 0100-01XX
+    "000[145689]|"
+    "001[345]|003[36]|004[1345678]|005[123457]|006[012589]|007[01236789]|008[459]|009[01589]|"
+    "010[89]|011[289]|012[368]|013[34567]|0141"
+    ")")
 
 """Do not change anything below this line."""
 _xule_plugin_info = None
@@ -71,7 +79,13 @@ def init(cntlr):
         if xuleValidateFinally is not None: # xule is loaded
             # add EDGAR mapping for resource files to disclosureSystem.mappings
             if cntlr.modelManager.disclosureSystem:
-                cntlr.modelManager.disclosureSystem.mappedPaths.append((f"{os.sep}__xule_resources_dir__", _xule_resources_dir))
+                mappedPath = f"{os.sep}__xule_resources_dir__"
+                cntlr.modelManager.disclosureSystem.mappedPaths.append((mappedPath, _xule_resources_dir))
+                normalizedMappedPath = cntlr.webCache.normalizeUrl(mappedPath,None) # normalization occurs within ModelDocument.load()
+                if normalizedMappedPath != mappedPath: # python 3.13 on Windows also needs to map with drive letter added
+                    cntlr.modelManager.disclosureSystem.mappedPaths.append((normalizedMappedPath, _xule_resources_dir))
+                # Map the v27 DQC distribution to local content
+                cntlr.modelManager.disclosureSystem.mappedPaths.append(("https://raw.githubusercontent.com/DataQualityCommittee/dqc_us_rules/refs/heads/v27/dqc_us_rules/resources/Taxonomies", _xule_resources_dir))
 
 def close(cntlr): # unhook Xule's 'Validate.Finally' from validate/EFM
     global xuleValidateFinally
@@ -91,10 +105,12 @@ def blockXuleValidateFinally(val):
 
 def xuleValidate(val):
     usgYr = usgaapYear(val.modelXbrl)
-    xuleParam = val.params.get("dqcRuleFilter","") # see description in __init__.py header
+    xuleParam = val.params.get("dqcRuleFilter","") # see description in __init__.py header, comes from params or config file
+    runDqcrtOnly = True # EDGAR  default is to run DQCRT subset of rules only
     m = re.match(".*XULE:([0-9]{4})", xuleParam)
     if m:
         usgMinYr = m.group(1)
+        runDqcrtOnly = "XULE_RUN_ALL" not in xuleParam
     else:
         usgMinYr = "2025"
     m = re.match(".*XULE_time:([0-9.]+)", xuleParam)
@@ -102,22 +118,35 @@ def xuleValidate(val):
     # print(f"*** trace usgYr {usgYr} usgMinYr {usgMinYr} param \"{val.params.get('dqcRuleFilter','')}\"")
     if xuleValidateFinally is not None:
         if usgYr >= usgMinYr:
+            if _incompatible_plugin:
+                val.modelXbrl.warning("arelle.incompatibleRulePlugin",
+                                      _("Incompatible plugin %(plugin)s detected, xule rules not run."),
+                                      modelObject=val.modelXbrl, plugin=_incompatible_plugin)
+                return True # xule requested but incompatible configuration
             # must run without disclosure system blockage of URLs
             validateDisclosureSystem = val.modelXbrl.modelManager.validateDisclosureSystem
             val.modelXbrl.modelManager.validateDisclosureSystem = False
             # if we got here Xule should be active (force it otherwise)
-            xuleValidateFinally(val, extra_options={
+            extraOptions = {
                 "block_Validate.Finally": True,
                 "block_deregister": True,
-                "xule_rule_set": f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-ruleset.zip",
-                "xule_args_file": f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-constants.json",
-                "xule_time": xuleTime,
-                # to trace whether contexts are reloaded properly from build process, uncomment
-                #"xule_output_constants": "ACCRUAL_ITEMS,TAXONOMY_DEFAULTS"
-                "xule_trace": "XULE_trace" in xuleParam, # causes trace of each rule as it runs
-                "xule_debug": "XULE_debug" in xuleParam, # causes debug of each rule as it runs
                 "xule_crash": True # causes stacktrace on xule exceptions
-                })
+            }
+            # get xule options
+            xuleOptions = getattr(val.modelXbrl.modelManager.cntlr, "xule_vars", {}).get("options")
+            if not getattr(xuleOptions, "xule_rule_set", None):
+                extraOptions["xule_rule_set"] = f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-ruleset.zip"
+            if not getattr(xuleOptions, "xule_args_file", None):
+                extraOptions["xule_args_file"] = f"{os.sep}__xule_resources_dir__{os.sep}dqcrt-us-{usgYr}-constants.json"
+            if runDqcrtOnly and not (getattr(xuleOptions, "xule_run_only", None) or getattr(xuleOptions, "xule_run_only_pattern", None)):
+                extraOptions["xule_run_only_pattern"] = DQCRT_RUN_ONLY_PATTERN
+            if xuleTime and not getattr(xuleOptions, "xule_time", None):
+                extraOptions["xule_time"] = xuleTime
+            if "XULE_trace" in xuleParam and not getattr(xuleOptions, "xule_trace", None):
+                extraOptions["xule_trace"] = True # causes trace of each rule as it runs
+            if "XULE_debug" in xuleParam and not getattr(xuleOptions, "xule_rule_set", None):
+                extraOptions["xule_debug"] = True # causes debug of each rule as it runs
+            xuleValidateFinally(val, extra_options=extraOptions)
             val.modelXbrl.modelManager.validateDisclosureSystem = validateDisclosureSystem
             return True
         else:
@@ -134,6 +163,9 @@ def cmdOptions(parser):
 
     This is called by the Arelle controller.
     """
+
+    """ EDGAR operation uses static ruleset in EDGAR/validate/resources/xule
+
     if isinstance(parser, optparse.OptionParser):
         # This is the normal optparse.OptionsParser object.
         parserGroup = optparse.OptionGroup(parser,
@@ -180,6 +212,7 @@ def cmdOptions(parser):
                            action="store_true",
                            dest="{}_replace_rule_set_map_latest".format(_short_name),
                            help=_("Replace the rule set map currently used with the latest version."))
+    """
 
 
 def cntrlrCmdLineUtilityRun(cntlr, options, **kwargs):
@@ -187,6 +220,9 @@ def cntrlrCmdLineUtilityRun(cntlr, options, **kwargs):
 
     This is invoked by the Arelle controler after Arelle is fully up but before a filing is loaded.
     """
+
+    """ EDGAR operation uses static ruleset in EDGAR/validate/resources/xule
+
     # Save options in xule
     save_options_method = getXuleMethod(cntlr, 'Xule.CntrlCmdLine.Utility.Run.Init')
     save_options_method(cntlr, options, **kwargs)
@@ -241,6 +277,8 @@ def cntrlrCmdLineUtilityRun(cntlr, options, **kwargs):
         update_method = getXuleMethod(cntlr, 'Xule.RulesetMap.Replace')
         update_method(cntlr, _latest_map_name, _rule_set_map_name)
 
+    """
+
     # Register the xule validator
     registerMethod = getXuleMethod(cntlr, 'Xule.RegisterValidator')
     registerMethod(_short_name, _rule_set_map_name)
@@ -250,14 +288,18 @@ def getXulePlugin(cntlr):
 
     This will locate the Xule plugin module.
     """
-    global _xule_plugin_info
+    global _xule_plugin_info, _incompatible_plugin
     if _xule_plugin_info is None:
         for plugin_name, plugin_info in PluginManager.modulePluginInfos.items():
-            if plugin_info.get('moduleURL') == 'xule':
+            moduleUrl = plugin_info.get('moduleURL')
+            if moduleUrl == 'xule':
                 _xule_plugin_info = plugin_info
-                break
+            elif DQC_plugin_url_pattern.match(moduleUrl):
+                _incompatible_plugin = moduleUrl
+                cntlr.addToLog(_("EDGAR is not compatible with the DQC.py plugin, please remove the DQC.py plugin.  The EDGAR plugin directly manages running of to run DQC rules."),
+                               messageCode="arelle.incompatibleRulePlugin")
         if _xule_plugin_info is None:
-            # attempt to find xule plugin
+            # attempt to find xule plugi
             for path, childDirs, files in os.walk(_plugin_dir):
                 if path.endswith(os.sep + "xule") and childDirs in ([], ["__pycache__"]) and "__init__.py" in files:
                     _xule_plugin_info = PluginManager.moduleModuleInfo(moduleURL=path)
@@ -266,7 +308,8 @@ def getXulePlugin(cntlr):
                     _xule_plugin_info = PluginManager.modulePluginInfos[_xule_plugin_info["name"]]
                     break
     if _xule_plugin_info is None:
-        cntlr.addToLog(_("Xule plugin is not loaded. Xule plugin is required to run DQC rules. This plugin should be automatically loaded."))
+        cntlr.addToLog(_("Xule plugin is not loaded. Xule plugin is required to run DQC rules. This plugin should be automatically loaded."),
+                       messageCode="arelle.xulePluginNotLoaded")
 
     return _xule_plugin_info
 
