@@ -129,6 +129,21 @@ For GUI mode there are two ways to set rendering output, (1) by formula paramete
      ixRedline (when emulating EDGAR workstation, true specifies showing workstation inline XBRL redlines)
   Otherwise menu entry view/Workstation Redline Mode, when checked, selects Edgar Workstation xslt's and ixRedline as above.
 
+Test cases can verify via introduce processing flow exceptions, that the exceptions are caught, logged,
+and that processing flow completes as expected given the remaining processing which the exception terminated.
+
+	A test case inline XBRL document may have a processing instruction of this format:
+		<?arelle-unit-test location="EFM/Filing.py#validateFiling_start" action="AssertionError"?>
+	This will cause code in EFM/Filing.py (search on the location string) to raise an assertion error
+	which would correspond to the expected unit test code (see conformance test i003004gw testcase and
+	htm files).
+
+	The currently implemented assertion test locations are
+		Filing, before starting first IXDS validation: EFM/Filing.py#validateFiling_start
+		Filing, after completion of first IXDS validation: EFM/Filing.py#validateFiling_end
+		Rendering, after pass 1 of all filings EdgarRenderer/__init__.py#filingPass1
+		Rendering, after completion of all filings EdgarRenderer/__init__.py#filingEnd
+
 '''
 import os, io, json, zipfile, logging
 jsonIndent = 1  # None for most compact, 0 for left aligned

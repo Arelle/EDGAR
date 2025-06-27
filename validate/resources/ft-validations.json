@@ -4402,6 +4402,18 @@
         "comment-reason": ""
     },
     {
+        "sub-types": ["@G-3-4-5-6-9-10-11-12", "@G-7-8"],
+        "xbrl-names": "ffd:NetFeeAmt",
+        "efm": "ft.ttlRqdFlds",
+        "validation": "fw",
+        "comment-validation": "Required, non-negative numeric value.",
+        "comment-exception-handling": "",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
         "sub-types": ["@all-Ixbrl"],
         "xbrl-names": "ffd:TtlPrevslyPdAmt",
         "efm": "ft.ttlPrvPdAmt",
