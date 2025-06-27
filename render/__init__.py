@@ -311,6 +311,7 @@ class EdgarRenderer(Cntlr.Cntlr):
             cntlr.redlineIxDocs = {}
             cntlr.redactTgtElts = set()
             cntlr.redactTgtEltContent = set()
+            cntlr.redactFileReferences = set()
 
     # wrap controler properties as needed
 
@@ -781,6 +782,7 @@ class EdgarRenderer(Cntlr.Cntlr):
             self.zipOutputFile = options.zipOutputFile
             self.doneFile = options.doneFile
         self.isWorkstationFirstPass = os.path.split(self.reportXslt or "")[-1] == "EdgarWorkstationInstanceReport.xslt"
+        self.confidentialityDocList = (options.confidentialityDocList).split("|") if options.confidentialityDocList else []
         self.loopnum = 0
 
     def processInstance(self, options, modelXbrl, filing, report):
@@ -912,8 +914,17 @@ class EdgarRenderer(Cntlr.Cntlr):
             if getattr(doc, "securityClassification", None):
                 # note for SBSEF confidential reports have only one ix doc so whole report is treated confidential
                 report.securityClassification = doc.securityClassification
-            if any((f in report.reportedFiles) for f in (options.confidentialityDocList or "").split("|")):
-                report.securityClassification = "confidential"
+                
+            if getattr(report, "securityClassification", "") != "confidential":
+                # if the report is not confidential, check for references that are confidential and remove from public report
+                for f in self.confidentialityDocList:
+                    # may be a relative reference like ./hello.jpg, get the basename
+                    reportedFiles = {os.path.basename(f) for f in report.reportedFiles}
+                    if not f.lower().endswith(".xsd") and f in reportedFiles:
+                        if identifyDocumentReferences(modelXbrl, f):
+                            self.cntlr.editedIxDocs[doc.basename] = doc
+                            self.cntlr.editedModelXbrls.add(modelXbrl)
+                            self.cntlr.redlineIxDocs[doc.basename] = doc
         # block closing filesource when modelXbrl closes because it's used by filingEnd (and may be an archive)
         modelXbrl.closeFileSource = False
         modelXbrl.profileStat(_("EdgarRenderer process instance {}").format(report.basenames[0]))
@@ -1016,6 +1027,7 @@ class EdgarRenderer(Cntlr.Cntlr):
         privateFilesNotDisseminated = set()
         publicRefDocs = set()
         privateRefDocs = set()
+        nonStrippedFileRef = set()
         for report in filing.reports:
             # note that there is no efmIxdsType if EFM validation is not enabled
             if (filing.exhibitTypesPrivateNotDisseminated.match(getattr(report.modelXbrl, "efmIxdsType", None) or "") or
@@ -1026,11 +1038,31 @@ class EdgarRenderer(Cntlr.Cntlr):
                 privateRefDocs |= report.reportedFiles
             else:
                 publicRefDocs |= report.reportedFiles
+            if getattr(report.modelXbrl, "efmIxdsType", None) not in filing.strippedFiles:
+                nonStrippedFileRef |= report.reportedFiles
+        
         strippedFiles = set()
         for s in filing.strippedFiles.values():
-            s -= publicRefDocs  # don't strip files which are still referenced by unstripped public reports
+            s -= nonStrippedFileRef # don't strip files which are still referenced in unstripped document
             strippedFiles |= s
         privateFilesNotDisseminated |= privateRefDocs - publicRefDocs
+        if not bool(publicRefDocs):
+            # since there were no public documents reference we do not want to disseminate show.js and report.css
+            privateFilesNotDisseminated.add("Show.js")
+            privateFilesNotDisseminated.add("report.css")
+
+        if getattr(cntlr, "redactFileReferences", None):
+            # send delete for any files that were redacted and aren't reference
+            # in any non-redacted section
+            for file in cntlr.redactFileReferences - cntlr.nonRedactedFileNames:
+                privateFilesNotDisseminated.add(file)
+
+        # just to be doubly sure that we don't disseminate confidential document we are sending this list back to EDGAR
+        # we also exclude any privateFilesNotDisseminated when creating the xbrl zip
+        for file in self.confidentialityDocList:
+            if not file.lower().endswith(".xsd"):
+                privateFilesNotDisseminated.add(file)
+
         hasPrivateData = bool(cntlr.redactTgtElts) or bool(cntlr.redlineIxDocs) or bool(privateFilesNotDisseminated)
         isGUIprivateView = hasPrivateData and cntlr.hasGui
 
@@ -1075,7 +1107,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                             self.renderedFiles.add(filename)
 
                 _startedAt = time.time()
-                if 'html' in (self.reportFormat or "").casefold() or self.summaryXslt is not None:
+                if filing.reports and ('html' in (self.reportFormat or "").casefold() or self.summaryXslt is not None):
                     copyResourceToReportFolder("Show.js")
                     copyResourceToReportFolder("report.css")
                 if self.summaryXslt and len(self.summaryXslt) > 0 and self.processXsltInBrowser:
@@ -1149,8 +1181,9 @@ class EdgarRenderer(Cntlr.Cntlr):
                 rootETree = summary.buildSummaryETree()
                 dissemReportsFolder = None
                 if self.reportZip or self.reportsFolder is not None:
-                    IoManager.writeXmlDoc(filing, rootETree, self.reportZip, self.reportsFolder,
-                                          "PrivateFilingSummary.xml" if hasPrivateData and self.isWorkstationFirstPass else'FilingSummary.xml')
+                    if filing.reports:
+                        IoManager.writeXmlDoc(filing, rootETree, self.reportZip, self.reportsFolder,
+                                            "PrivateFilingSummary.xml" if hasPrivateData and self.isWorkstationFirstPass else'FilingSummary.xml')
                     # generate supplemental AllReports and other such outputs at this time
                     for supplReport in pluginClassMethods("EdgarRenderer.FilingEnd.SupplementalReport"):
                         supplReport(cntlr, filing, self.reportsFolder)
@@ -1257,8 +1290,17 @@ class EdgarRenderer(Cntlr.Cntlr):
                             edgarRendererRemoveRedlining(doc)
                             uncloseSelfClosedTags(doc)
                             cntlr.editedIxDocs[reportedFile] = doc  # add to editedIxDocs for output in dissem zip and dissem folder
+
                         for report in filing.reports:
                             modelXbrl = report.modelXbrl
+                            # remove any confidential references
+                            if getattr(report, "securityClassification", "") != "confidential":
+                                # if the report is not confidential, check for references that are confidential and remove from public report
+                                for f in self.confidentialityDocList:
+                                    # may be a relative reference like ./hello.jpg, get the basename
+                                    reportedFiles = {os.path.basename(f) for f in report.reportedFiles}
+                                    if not f.lower().endswith(".xsd") and f in reportedFiles:
+                                        removeElementsWithDocumentReference(report.modelXbrl, f)
                             # rebuild redacted continuation chains
                             if hasRedactedContinuation:
                                 for f in modelXbrl.facts:
@@ -1273,6 +1315,16 @@ class EdgarRenderer(Cntlr.Cntlr):
                                         xmlValidate(f.modelXbrl, f, ixFacts=True)
                                 revalidateXbrl = True
                             report.redactedContinuationSources.clear()  # deref
+
+                        if hasPrivateData and privateFilesNotDisseminated:
+                            # any file in privateFilesNotDisseminated should also not make it into the
+                            # supplementalFileList in the disseminated filingSummary
+                            nonConfindentialsupplementalFileList = []
+                            for file in self.supplementalFileList:
+                                if os.path.basename(file) not in privateFilesNotDisseminated:
+                                    nonConfindentialsupplementalFileList.append(file)
+                            self.supplementalFileList = nonConfindentialsupplementalFileList
+
                         if cntlr.redlineIxDocs:
                             self.logInfo(f"Revalidating xhtml{', xbrl and EFM ' if revalidateXbrl else ' '}after redline removal or redaction")
                         for report in filing.reports:
@@ -1285,15 +1337,15 @@ class EdgarRenderer(Cntlr.Cntlr):
                             if revalidateXbrl:
                                 # revalidate after redaction
                                 Validate.validate(report.modelXbrl)
-                    self.renderedFiles.add("FilingSummary.xml")
-                    if self.renderingLogsXslt and self.summaryHasLogEntries and not self.processXsltInBrowser:
+                    if filing.reports: self.renderedFiles.add("FilingSummary.xml")
+                    if filing.reports and self.renderingLogsXslt and self.summaryHasLogEntries and not self.processXsltInBrowser:
                         _startedAt = time.time()
                         logs_transform = etree.XSLT(etree.parse(self.renderingLogsXslt))
                         result = logs_transform(rootETree, asPage=etree.XSLT.strparam('true'))
                         self.logDebug("RenderingLogs XSLT transform {:.3f} secs.".format(time.time() - _startedAt))
                         IoManager.writeHtmlDoc(filing, result, self.reportZip, self.reportsFolder, 'RenderingLogs.htm')
                         self.renderedFiles.add("RenderingLogs.htm")
-                    if self.summaryXslt and len(self.summaryXslt) > 0:
+                    if filing.reports and self.summaryXslt and len(self.summaryXslt) > 0:
                         _startedAt = time.time()
                         self.transformFilingSummary(filing, rootETree, self.summaryXslt, self.reportsFolder,
                                                     "PrivateFilingSummary.htm" if hasPrivateData and self.isWorkstationFirstPass else "FilingSummary.htm",
@@ -1301,7 +1353,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                                                     "Private Filing Data" if hasPrivateData else None)
                         self.renderedFiles.add("FilingSummary.htm")
                         self.logDebug("FilingSummary XSLT transform {:.3f} secs.".format(time.time() - _startedAt))
-                    if generateiXBRLViewerStub:
+                    if filing.reports and generateiXBRLViewerStub:
                         self.renderedFiles.add("ixbrlviewer.html")
                         _startedAt = time.time()
                         iXBRLViewerInterface.generateViewer(cntlr, self.reportsFolder)
@@ -1344,7 +1396,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                                     for filepath in report.filepaths:  # may be multi-document IXDS (even in different directories)
                                         _xbrldir = os.path.dirname(filepath)
                                         for reportedFile in sorted(report.reportedFiles):
-                                            if reportedFile not in xbrlZip.namelist():
+                                            if reportedFile not in privateFilesNotDisseminated and reportedFile not in xbrlZip.namelist():
                                                 if reportedFile in cntlr.editedIxDocs:
                                                     doc = cntlr.editedIxDocs[reportedFile]
                                                     # redline removed file is not readable in encoded version, create from dom in memory
@@ -1443,6 +1495,9 @@ class EdgarRenderer(Cntlr.Cntlr):
                             else:
                                 filing.writeFile(os.path.join(dissemReportsFolder, basename), serializedDoc)
 
+                    if "EdgarRenderer/__init__.py#filingPass1" in filing.arelleUnitTests:
+                        raise arelle.PythonUtil.pyNamedObject(filing.arelleUnitTests["EdgarRenderer/__init__.py#filingPass1"], "EdgarRenderer/__init__.py#filingEnd")
+
                     # reissue R files and excel after validation
                     if hasPrivateData:
                         # dissemination and Arelle GUI redacted R file
@@ -1532,6 +1587,7 @@ class EdgarRenderer(Cntlr.Cntlr):
         cntlr.editedModelXbrls.clear()
         cntlr.redactTgtElts.clear()
         cntlr.redactTgtEltContent.clear()
+        cntlr.redactFileReferences.clear()
 
         # non-GUI (cmd line) options.keepOpen kept modelXbrls open, use keepFilingOpen to block closing here
         if not options.keepFilingOpen and not self.isRunningUnderTestcase():
@@ -1791,6 +1847,7 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
             cntlr.redlineIxDocs = {}
             cntlr.redactTgtElts = set()
             cntlr.redactTgtEltContent = set()
+            cntlr.redactFileReferences = set()
         isNonEFMorGFMinline = (not getattr(cntlr.modelManager.disclosureSystem, "EFMplugin", False) and
                                modelXbrl.modelDocument.type in (ModelDocument.Type.INLINEXBRL, ModelDocument.Type.INLINEXBRLDOCUMENTSET))
         showViewer = cntlr.showFilingData.get() or cntlr.showiXBRLViewer.get()
@@ -1840,7 +1897,7 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
             labelLang=cntlr.labelLang,  # emulate cmd line labelLang
             keepFilingOpen=True,  # closed by CntrlWinMain
             iXBRLViewerStub=cntlr.showiXBRLViewer.get(),  # generates iXBRLViewerStub
-            confidentialityDocList=None,  # not used for GUI operation
+            confidentialityDocList=parameters.get("confidentialityDocList", [None, None])[1],
         )
         if modelXbrl.modelDocument.type in ModelDocument.Type.TESTCASETYPES:
             modelXbrl.efmOptions = options  # save options in testcase's modelXbrl
@@ -1884,7 +1941,7 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
             strippedFiles=defaultdict(set),
             reports=reports,
             hasInlineReport=hasInlineReport,
-            arelleUnitTests={},
+            arelleUnitTests=modelXbrl.arelleUnitTests,
             writeFile=guiWriteFile,
             readFile=guiReadFile,
             exhibitTypesStrippingOnErrorPattern=kwargs.get("exhibitTypesStrippingOnErrorPattern"),
@@ -2037,8 +2094,10 @@ redliningPattern = re.compile(r"(.*;)?\s*-sec-ix-(redline|redact)\s*:\s*true(?:\
 def edgarRendererDetectRedlining(modelDocument, *args, **kwargs):
     cntlr = modelDocument.modelXbrl.modelManager.cntlr
     foundMatchInDoc = False
+    if not getattr(cntlr, "nonRedactedFileNames", None):
+        cntlr.nonRedactedFileNames = set()
     if modelDocument.type == ModelDocument.Type.INLINEXBRL and (not cntlr.hasGui or cntlr.redlineMode.get()):
-        for e in modelDocument.xmlRootElement.getroottree().iterfind(".//{http://www.w3.org/1999/xhtml}*[@style]"):
+        for e in modelDocument.xmlRootElement.getroottree().iterfind(".//{http://www.w3.org/1999/xhtml}*"):
             rlMatch = redliningPattern.match(e.get("style", ""))
             if rlMatch:
                 if not hasattr(cntlr, "editedIxDocs"):
@@ -2047,6 +2106,7 @@ def edgarRendererDetectRedlining(modelDocument, *args, **kwargs):
                     cntlr.redlineIxDocs = {}
                     cntlr.redactTgtElts = set()
                     cntlr.redactTgtEltContent = set()
+                    cntlr.redactFileReferences = set()
                 if not foundMatchInDoc:
                     cntlr.redlineIxDocs[modelDocument.basename] = modelDocument
                     foundMatchInDoc = True
@@ -2055,7 +2115,16 @@ def edgarRendererDetectRedlining(modelDocument, *args, **kwargs):
                         cntlr.redactTgtElts.add(c)
                     for c in e.iterancestors("{http://www.xbrl.org/2013/inlineXBRL}*"):
                         cntlr.redactTgtEltContent.add(c)
-
+                    # track any file references that are being redacted
+                    for elt in e.iter("a", "img", "{http://www.w3.org/1999/xhtml}a", "{http://www.w3.org/1999/xhtml}img"):
+                        attrValue = getElementReferenceFileName(elt)
+                        if attrValue:
+                            cntlr.redactFileReferences.add(attrValue)
+            elif e.tag in ("{http://www.w3.org/1999/xhtml}a", "{http://www.w3.org/1999/xhtml}img") and \
+                not redliningPattern.match(e.getparent().get("style", "")):
+                fileName = getElementReferenceFileName(e)
+                if fileName:
+                    cntlr.nonRedactedFileNames.add(fileName)
 
 def edgarRendererRemoveRedlining(modelDocument, *args, **kwargs):
     # strip redlining from modelDocument
@@ -2091,6 +2160,45 @@ def edgarRendererRemoveRedlining(modelDocument, *args, **kwargs):
                         setattr(e0, prop, (getattr(e0, prop) or "") + e.tail)
                     e.getparent().remove(e)
 
+def getElementReferenceFileName(elt):
+    for attr in ("src", "href"):
+        attrValue = elt.get(attr)
+        if attrValue:
+            attrValue = attrValue.partition('#')[0].strip() # remove anchor
+            return attrValue
+    return None
+
+def identifyDocumentReferences(modelXbrl, document):
+    # need to first find the matching element since we can't remove from the tree while iterating
+    matchingElements = []
+    for elt in modelXbrl.modelDocument.xmlRootElement.getroottree().iter("a", "img", "{http://www.w3.org/1999/xhtml}a", "{http://www.w3.org/1999/xhtml}img"):
+        attrValue = getElementReferenceFileName(elt)
+        if attrValue:
+            # reference may be relative like ./hello.jpg get the basename only
+            if os.path.basename(attrValue) == document:
+                matchingElements.append(elt)
+                # this is necessary to later update facts that may have been updated.
+                for c in elt.iter("{http://www.xbrl.org/2013/inlineXBRL}*"):
+                    modelXbrl.modelManager.cntlr.redactTgtElts.add(c)
+                for c in elt.iterancestors("{http://www.xbrl.org/2013/inlineXBRL}*"):
+                    modelXbrl.modelManager.cntlr.redactTgtEltContent.add(c)
+    return matchingElements
+    
+def removeElementsWithDocumentReference(modelXbrl, document):
+    matchingElements = identifyDocumentReferences(modelXbrl, document)
+    # remove elements
+    for elt in matchingElements:
+        precedingElement = elt.getprevious()
+        propertyToAppend = "tail"
+        if precedingElement is None:
+            # no preceding sibling so we get the parent
+            precedingElement = elt.getparent()
+            propertyToAppend = "text"
+        if elt.tail:
+            # if there was text after the element's end tag appended after the text in the siblings end tag or
+            # to append it to the parent's text
+            setattr(precedingElement, propertyToAppend, (getattr(precedingElement, propertyToAppend) or "") + elt.tail)
+        elt.getparent().remove(elt)
 
 __pluginInfo__ = {
     'name': 'Edgar Renderer',

@@ -1152,7 +1152,7 @@ class Report(object):
         factList = []
         yMax = 0.0
         yMin = 0.0
-        isOefBarChartFact = re.compile(r'^\{http://xbrl.sec.gov/oef/.*\}AnnlRtrPct$')  # WcH in a hurry 4/6/2023
+        isOefBarChartFact = re.compile(r'^\{http://xbrl.sec.gov/oef/2023.*\}AnnlRtrPct$')
         for row in self.rowList:
             for fact in row.factList:
                 m = Utils.isBarChartFactRegex.match(fact.qname.clarkNotation)

@@ -364,7 +364,7 @@ class Summary(object):
                     numList.sort()
                     tagAa['auth_ref'] = ['r' + str(num) for num in numList]
                 root['tag'] = s.tagDict
-            if self.controller.reportZip or self.controller.reportsFolder is not None:
+            if self.summaryList and (self.controller.reportZip or self.controller.reportsFolder is not None):
                 file = io.StringIO()
             else:
                 file = None

@@ -74,8 +74,8 @@
 
         "comment2": "entries for currently-supported taxonomies. All versions only compatible with same year.  No exceptions anymore.",
 
-        "us-gaap/2024": ["@stx-2024", "srt/2024", "ifrs/2024", "cef/2024"],
-        "us-gaap/2025": ["@stx-extended-2025", "srt/2025", "ifrs/2025", "cef/2025"],
+        "us-gaap/2024": ["@stx-2024", "srt/2024", "ifrs/2024", "cef/2024", "vip/2024", "vip/2024q4"],
+        "us-gaap/2025": ["@stx-extended-2025", "srt/2025", "ifrs/2025", "cef/2025", "vip/2025"],
 
         "ifrs/2024": ["us-gaap/2024", "srt/2024", "@stx-2024"],
         "ifrs/2025": ["us-gaap/2025", "srt/2025", "@stx-extended-2025"],
@@ -83,12 +83,12 @@
         "cef/2024": ["@stx-2024", "us-gaap/2024", "srt/2024"],
         "cef/2025": ["@stx-extended-2025", "us-gaap/2025", "srt/2025"],
 
-        "srt/2024": ["@stx-2024"],
-        "srt/2025": ["@stx-extended-2025"],
+        "srt/2024": ["@stx-2024", "vip/2024", "vip/2024q4"],
+        "srt/2025": ["@stx-extended-2025", "vip/2025"],
 
-        "vip/2024": ["@stx-2024"],
-        "vip/2024q4": ["@stx-2024"],
-        "vip/2025": ["@stx-core-2025"],
+        "vip/2024": ["@stx-2024", "us-gaap/2024", "srt/2024"],
+        "vip/2024q4": ["@stx-2024", "us-gaap/2024", "srt/2024"],
+        "vip/2025": ["@stx-core-2025", "us-gaap/2025", "srt/2025"],
 
         "ffd/2025": ["@stx-core-2025"]
         }
