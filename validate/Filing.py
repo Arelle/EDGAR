@@ -1090,7 +1090,10 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     logArgs["severity"] = severity
                 for validationParam, validationParamValue in validation.items():
                     if validationParam not in ("message", "severity", "comment"):
-                        logArgs[validationParam] = validationParamValue
+                        if sev.get(validationParam):
+                            logArgs[validationParam] = sev.get(validationParam)
+                        else:
+                            logArgs[validationParam] = validationParamValue
                 severity = severity.upper()
                 if severity == "WARNINGIFPRAGMATICELSEERROR":
                     severity = "WARNING" if validateEFMpragmatic else "ERROR"
@@ -1376,6 +1379,18 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         items.append(fw)
                                     itemVals = [g.xValue if g is not None else 0 for g in items]
                                     wValue = sum(itemVals)
+                                elif "!axis-exist!" == wName:
+                                    for axisKey in wCond:
+                                        axes = deiValidations["axis-validations"][axisKey]["axes"]
+                                        axesQNs = [qname(axis, deiDefaultPrefixedNamespaces) for axis in axes]
+                                        for axisQN in axesQNs:
+                                            if not modelXbrl.factsByDimMemQname(axisQN):
+                                                skipF = True
+                                                break
+                                    if skipF:
+                                        break
+                                    else:
+                                        continue
                                 else:
                                     fw = sevFact(sev, wName, f, sevCovered=False)
                                     wValue = "absent" if fw is None else fw.xValue
@@ -2491,6 +2506,20 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                         break
                                 if not found:
                                     sevMessage(sev, subType=submissionType, modelObject=None, tag=ftName(name), axis=axisQN, value=value)
+                elif validation and validation.startswith("axis-"):
+                    for name in names:
+                        for f in sevFacts(sev, name, deduplicate=True, whereKey="where", fallback=True):
+                            if f is not None and validation == "axis-not-exist":
+                                if f.xValue in value:
+                                    axisQN = qname(sev["axis-name"], deiDefaultPrefixedNamespaces)
+                                    factsInAxis = modelXbrl.factsByDimMemQname(axisQN)
+                                    if factsInAxis:
+                                        sevMessage(sev, ftContext="Submission / Fees Summary", subType=submissionType, modelObject=None, tag=ftName(name), axisName=sev["axis-name"], value=value)
+                            elif f is None and validation == "axis-exist":
+                                axisQN = qname(sev["axis-name"], deiDefaultPrefixedNamespaces)
+                                factsInAxis = modelXbrl.factsByDimMemQname(axisQN)
+                                if not factsInAxis:
+                                    sevMessage(sev, ftContext="Submission / Fees Summary", subType=submissionType, modelObject=None, tag=ftName(name), axisName=sev["axis-name"], value=value)
                 elif validation == "skip-if-absent":
                     #if efmSection == "ft.r011Flg":
                     #    print("trace") # uncomment for debug tracing specific validation rules

@@ -407,16 +407,92 @@
         "comment-reason": ""
     },
     {
+        "sub-types": ["@G-3-4-5-6-9-10-11-12", "@G-7", "@G-8"],
+        "xbrl-names": ["ffd:OfferingTableNa"],
+        "value": ["N/A"],
+        "efm": "ft.naFlagUnexpected",
+        "validation": "axis-not-exist",
+        "axis-name": "ffd:OfferingAxis",
+        "comment-validation": "If the OfferingTableNa tag value is N/A the offering axis should not contain any elements",
+        "comment-exception-handling": "",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
+        "sub-types": ["@G-3-4-5-6-9-10-11-12", "@G-7", "@G-8"],
+        "xbrl-names": ["ffd:OfferingTableNa"],
+        "efm": "ft.naFlagExpected",
+        "validation": "axis-exist",
+        "axis-name": "ffd:OfferingAxis",
+        "comment-validation": "If the OfferingTableNa tag value does not exist or the tag value is xsi:nil the offering axis should contain at least 1 element",
+        "comment-exception-handling": "",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
+        "sub-types": ["@G-1", "@G-3-4-5-6-9-10-11-12", "@G-7", "@G-8"],
+        "xbrl-names": ["ffd:OffsetTableNa"],
+        "value": ["N/A"],
+        "efm": "ft.naFlagUnexpected",
+        "validation": "axis-not-exist",
+        "axis-name": "ffd:OffsetAxis",
+        "comment-validation": "If the OffsetTableNa tag value is N/A the offset axis should not contain any elements",
+        "comment-exception-handling": "",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
+        "sub-types": ["@G-1", "@G-3-4-5-6-9-10-11-12", "@G-7", "@G-8"],
+        "xbrl-names": ["ffd:OffsetTableNa"],
+        "efm": "ft.naFlagExpected",
+        "validation": "axis-exist",
+        "axis-name": "ffd:OffsetAxis",
+        "comment-validation": "If the OffsetTableNa tag value does not exist or the tag value is xsi:nil the offset axis should contain at least 1 element",
+        "comment-exception-handling": "",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
+        "sub-types": ["@G-3", "@G-4", "@G-5", "@G-6", "@G-9", "@G-10", "@G-11"],
+        "xbrl-names": ["ffd:CombinedProspectusTableNa"],
+        "value": ["N/A"],
+        "efm": "ft.naFlagUnexpected",
+        "validation": "axis-not-exist",
+        "axis-name": "ffd:CmbndPrspctsItemAxis",
+        "comment-validation": "If the CombinedProspectusTableNa tag value is N/A the combined prospectus axis should not contain any elements",
+        "comment-exception-handling": "",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
+        "sub-types": ["@G-3", "@G-4", "@G-5", "@G-6", "@G-9", "@G-10", "@G-11"],
+        "xbrl-names": ["ffd:CombinedProspectusTableNa"],
+        "efm": "ft.naFlagExpected",
+        "validation": "axis-exist",
+        "axis-name": "ffd:CmbndPrspctsItemAxis",
+        "comment-validation": "If the CombinedProspectusTableNa tag value does not exist or the tag value is xsi:nil the combined prospectus axis should contain at least 1 element",
+        "comment-exception-handling": "",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
         "sub-types": ["@G-4", "@G-6", "@G-8", "@G-11"],
-        "xbrl-names": "ffd:NrrtvDsclsr",
-        "bind-if-absent": true,
-        "value": ["absent"],
+        "xbrl-names": "ffd:TtlPrevslyPdAmt",
+        "where": {"!axis-exist!": ["of"]},
         "efm": "ft.rqdAmdFlds",
-        "validation": "fdepflag-present",
-        "message": "ft-{otherTag}-Missing-Amending-Filing",
-        "references": ["ffd:TtlPrevslyPdAmt"],
-        "reference-value": ["!not!", "absent"],
-        "severityVerb": "should",
+        "validation": "fw",
         "dei/cover": "dei",
         "comment-validation": "For filer-constructed amendment submissions, validate that filers include the \"Fees Previously Paid\" transactional valuation line.\r\n\r\nFor amended filings, warning message if blank for \"Fees Previously Paid\" transaction valuation line.",
         "comment-exception-handling": "",
@@ -4352,16 +4428,10 @@
     },
     {
         "sub-types": ["@G-3-4-5-6-9-10-11-12"],
-        "xbrl-names": "ffd:NrrtvDsclsr",
-        "bind-if-absent": true,
-        "value": ["absent"],
+        "xbrl-names": ["ffd:TtlOfferingAmt", "ffd:TtlFeeAmt"],
+        "where": {"!axis-exist!": ["of"]},
         "efm": "ft.ttlRqdFlds",
-        "validation": "fdepflag-present",
-        "references": [
-        	"ffd:TtlOfferingAmt",
-		    "ffd:TtlFeeAmt"
-        ],
-        "reference-value": ["!not!", "absent"],
+        "validation": "fw",
         "comment-validation": "Required, for all Rules. Not applicable for Rule 0-11 (Form Groups 7 and 8).",
         "comment-exception-handling": "",
         "comment-conversion-requested": "",
@@ -4371,16 +4441,10 @@
     },
     {
         "sub-types": ["@G-7", "@G-8"],
-        "xbrl-names": "ffd:NrrtvDsclsr",
-        "bind-if-absent": true,
-        "value": ["absent"],
+        "xbrl-names": ["ffd:TtlTxValtn", "ffd:TtlFeeAmt"],
+        "where": {"!axis-exist!": ["of"]},
         "efm": "ft.ttlRqdFlds",
-        "validation": "fdepflag-present",
-        "references": [
-        	"ffd:TtlTxValtn",
-            "ffd:TtlFeeAmt"
-        ],
-        "reference-value": ["!not!", "absent"],
+        "validation": "fw",
         "comment-validation": "Exchange Act filings Form groups 7 and 8: Required, non-negative numeric value for Rule 0-11.",
         "comment-exception-handling": "",
         "comment-conversion-requested": "",
@@ -4404,6 +4468,7 @@
     {
         "sub-types": ["@G-3-4-5-6-9-10-11-12", "@G-7-8"],
         "xbrl-names": "ffd:NetFeeAmt",
+        "where": {"!axis-exist!": ["of"]},
         "efm": "ft.ttlRqdFlds",
         "validation": "fw",
         "comment-validation": "Required, non-negative numeric value.",
@@ -4566,7 +4631,6 @@
         "efm": "ft.usrSty42",
         "validation": "fdepflag-any",
         "references": [
-        	"ffd:NrrtvDsclsr",
         	"ffd:NrrtvMaxAggtOfferingPric",
         	"ffd:NrrtvMaxAggtAmt",
         	"ffd:Rule457aFlg",
@@ -4579,7 +4643,7 @@
         ],
         "references-axes": "tot-of",
         "message": "ft-{otherTag}-Missing",
-        "severityVerb": "should be a value for one of",
+        "severityVerb": "should be a value for at least one of",
         "msgCoda": " The EX-FILING FEES exhibit is missing fee data - please include the required narrative disclosure specifying, with respect to a shelf takedown, the maximum aggregate amount or maximum aggregate offering price for the takedown, and/or include fee data in the tables. If not corrected, the submission may require subsequent amendment.",
         "comment": "using fdepglag-any since fany adds to sevCoveredFacts but some of these rule flags are not applicable to the submission types.",
         "comment-validation": "When the filer has attached an inline EX-FILING FEES, the system shall validate that the filer has included either a narrative disclosure or included Table 1,  Table 2 and Table 3 fee data when submitting N-2 POSASR, POSASR, POS AM, 424B1, 424B2, 424B3, 424B4, 424B5, 424B7, 424B8  filings. The system will generate a warning message, if filers do not include either the narrative tag or the tables (more specifically a Table 1 tag of some sort since Tables 2 and 3 do not always apply)\r\n\r\nNote: presence of a narrative disclosure means ffd:NrrtvDsclsr accompanied by either or both ffd:NrrtvMaxAggtOfferingPric and ffd:NrrtvMaxAggtAmt\r\n\r\nNote: presence of Tables 1, 2, or 3 data means the presence of nonzero for any of ffd:TtlPrevslyPdAmt, ffd:TtlFeeAmt, ffd:TtlTxValtn and ffd:TtlOffsetAmt\r\n\r\nNote: Narrative Maximum Aggregate Offering Price and Amount fields have schema checks on the numeric range.\r\n\r\nNote: the table 1 data may have zero fee such as for 457(r) entries, which is a valid table 1 entry and does not trigger a warning.",
@@ -4611,12 +4675,13 @@
     {
         "sub-types": ["424B1", "424B2", "424B3", "424B4", "424B5", "424B7", "424B8"],
         "xbrl-names": "ffd:FnlPrspctsFlg",
-        "where": {"ffd:NrrtvDsclsr": ["!not!", "absent"]},
+        "where": {"ffd:FnlPrspctsFlg": [true]},
         "efm": "ft.usrSty43",
         "validation": "fdepflag-any",
         "references": ["ffd:NrrtvMaxAggtOfferingPric", "ffd:NrrtvMaxAggtAmt"],
         "store-db-name": "@lcName",
         "store-db-object": "feesSummaryTable",
+        "otherTagQualifier": "at least one of ",
         "comment-validation": "The Fee Exhibit Preparation Tool will provide filers the ability to specify if it is a final prospectus for the related offering. For filer-constructed submissions, filers must specify if it is a final prospectus for the related offering. The generated iXBRL exhibit will include the \"This is a final prospectus for the related offering\" statement as part of the narrative disclosure.\r\n\r\nNote 3: The Fee Exhibit Preparation Tool will allow filers to provide only narrative disclosure even if the 424B* filing is NOT a final prospectus for the related offering. In that case, as part of the narrative disclosure, filers are required only to provide narrative disclosure text, and may optionally provide the maximum aggregate amount and  maximum aggregate offering price values.\r\n\r\nNote 4: The FEPT system must tag  the \"This is a final prospectus for the related offering\" statement with its values (Yes, No) in addition to the maximum aggregate amount or maximum aggregate offering price values (if applicable) in this narrative disclosure.",
         "comment-exception-handling": "",
         "comment-conversion-requested": "",
@@ -4768,10 +4833,14 @@
         "efm": "ft.dbtVal8",
         "validation": "fdep-not-flag-any-gt-zero",
         "references": [{"name": "ffd:NrrtvDsclsr", "axis": "", "where-key":"where-nd"},
+                       {"name": "ffd:NrrtvMaxAggtAmt", "axis": "", "where-key":"where-nda"},
+                       {"name": "ffd:NrrtvMaxAggtOfferingPric", "axis": "", "where-key":"where-ndp"},
         			   {"name": "ffd:Rule457aFlg", "where-key":"where-457a"},
         			   {"name": "ffd:Rule457oFlg", "where-key":"where-457o"},
         			   {"name": "ffd:Rule415a6Flg", "where-key":"where-415a6"}],
         "where-nd": {"ffd:NrrtvDsclsr": ["absent", ""]},
+        "where-nda": {"ffd:NrrtvMaxAggtAmt": ["absent", ""]},
+        "where-ndp": {"ffd:NrrtvMaxAggtOfferingPric": ["absent", ""]},
         "where-457a": {"ffd:Rule457aFlg": [true]},
         "where-457o": {"ffd:Rule457oFlg": [true]},
         "where-415a6": {"ffd:Rule415a6Flg": [true]},
@@ -5711,6 +5780,18 @@
 			"severity": "warning",
             "severityVerb": "should",
             "comment": "Item should exist in axis"
+        },
+        "axis-not-exist": {
+            "message": "ft-{axisName}-{tag}-not-exist",
+            "severity": "warning",
+            "severityVerb": "should",
+            "comment": "axis should not exist when tag present"
+        },
+        "axis-exist": {
+            "message": "ft-{axisName}-{tag}-exist",
+            "severity": "warning",
+            "severityVerb": "should",
+            "comment": "axis should exist when tag not present"
         }
 	},
 
@@ -5827,7 +5908,9 @@
         "ft-{tag}-{otherTag}-RefValue": "for submission type {subType}, {ftContext}, {tag} value {value} {severityVerb} be provided when {otherTag} value is {otherValue}.",
         "ft-{context}-{otherContext}-Duplicate": "{ftContext} is a duplicate of {otherftContext}.",
         "ft-{axis}-{tag}-expected": "for submission type {subType}, {axis}, {tag} is missing.{msgCoda}",
-        "ft-{axis}-{tag}-expected-value": "for submission type {subType}, {axis}, {tag} with a value of {value} is missing.{msgCoda}"
+        "ft-{axis}-{tag}-expected-value": "for submission type {subType}, {axis}, {tag} with a value of {value} is missing.{msgCoda}",
+        "ft-{axisName}-{tag}-not-exist": "for submission type {subType}, {ftContext}, when {tag} with a value of {value} is present, {axisName} should not exist.",
+        "ft-{axisName}-{tag}-exist": "for submission type {subType}, {ftContext}, when {tag} is missing or nil, {axisName} should exist."
 	}
 
 }
