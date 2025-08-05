@@ -68,6 +68,7 @@ DQCRT_RUN_ONLY_PATTERN = (r"DQC\.US\.(" # separate rules 0000-0009, 0010-0099, 0
 """Do not change anything below this line."""
 _xule_plugin_info = None
 xuleValidateFinally = None
+xulePluginDoesNotExist = False
 
 def noop(*args, **kwargs):
     return # do nothing
@@ -281,15 +282,16 @@ def cntrlrCmdLineUtilityRun(cntlr, options, **kwargs):
 
     # Register the xule validator
     registerMethod = getXuleMethod(cntlr, 'Xule.RegisterValidator')
-    registerMethod(_short_name, _rule_set_map_name)
+    if registerMethod is not None:
+        registerMethod(_short_name, _rule_set_map_name)
 
 def getXulePlugin(cntlr):
     """Find the Xule plugin
 
     This will locate the Xule plugin module.
     """
-    global _xule_plugin_info, _incompatible_plugin
-    if _xule_plugin_info is None:
+    global _xule_plugin_info, _incompatible_plugin, xulePluginDoesNotExist
+    if _xule_plugin_info is None and not xulePluginDoesNotExist:
         for plugin_name, plugin_info in PluginManager.modulePluginInfos.items():
             moduleUrl = plugin_info.get('moduleURL')
             if moduleUrl == 'xule':
@@ -307,9 +309,11 @@ def getXulePlugin(cntlr):
                     PluginManager.pluginConfigChanged = False # don't save this change
                     _xule_plugin_info = PluginManager.modulePluginInfos[_xule_plugin_info["name"]]
                     break
-    if _xule_plugin_info is None:
+    if _xule_plugin_info is None and not xulePluginDoesNotExist:
         cntlr.addToLog(_("Xule plugin is not loaded. Xule plugin is required to run DQC rules. This plugin should be automatically loaded."),
                        messageCode="arelle.xulePluginNotLoaded")
+        # we've determined the plugin is not available
+        xulePluginDoesNotExist = True
 
     return _xule_plugin_info
 
@@ -318,7 +322,10 @@ def getXuleMethod(cntlr, class_name):
 
     Get a method/function from the Xule plugin. This is how this validator calls functions in the Xule plugin.
     """
-    return getXulePlugin(cntlr).get(class_name)
+    xule_plugin = getXulePlugin(cntlr)
+    if xule_plugin is not None:
+        return xule_plugin.get(class_name)
+    return None
 
 def menuTools(cntlr, menu):
     """Add validator menu the Tools menu in the Arelle GUI
@@ -327,7 +334,8 @@ def menuTools(cntlr, menu):
     """
     menu_method = getXuleMethod(cntlr, 'Xule.AddMenuTools')
     version_method = getXuleMethod(cntlr, 'Xule.ValidatorVersion')
-    menu_method(cntlr, menu, _short_name, _version_prefix, __file__, _rule_set_map_name, _latest_map_name)
+    if menu_method is not None:
+        menu_method(cntlr, menu, _short_name, _version_prefix, __file__, _rule_set_map_name, _latest_map_name)
 
 def validateMenuTools(cntlr, validateMenu, *args, **kwargs):
     """Add validator checkbutton to the Arelle Validate menu (under Tools).
@@ -344,8 +352,9 @@ def validateMenuTools(cntlr, validateMenu, *args, **kwargs):
     '''
     # Register the xule validator
     registerMethod = getXuleMethod(cntlr, 'Xule.RegisterValidator')
-    registerMethod(_short_name, _rule_set_map_name)
-    cntlr.config['xule_activated'] = False # block xule initialization from Tools menu path
+    if registerMethod is not None:
+        registerMethod(_short_name, _rule_set_map_name)
+        cntlr.config['xule_activated'] = False # block xule initialization from Tools menu path
 
 ''' original plugininfo from DQC.py
     incorporated as validate/EFM/__init__.py
