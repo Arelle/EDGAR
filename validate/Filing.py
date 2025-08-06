@@ -5203,7 +5203,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     continue
                                 if id == "9569":
                                     # if there's a third axis it passes
-                                    if any(a not in localDims for a in axes):
+                                    if any(l not in axes for l in localDims):
                                         continue
                                 if rule.get("where") == "value!=1" and f.xValue == 1:
                                     continue

@@ -14,6 +14,7 @@ import regex as re
 from itertools import chain
 import arelle.ModelValue, arelle.XbrlConst
 from arelle.ModelDtsObject import ModelConcept
+from arelle.ModelObject import ModelObject
 from arelle.PythonUtil import OrderedSet
 from arelle.XmlUtil import collapseWhitespace
 from arelle.XmlValidateConst import VALID, VALID_NO_CONTENT
