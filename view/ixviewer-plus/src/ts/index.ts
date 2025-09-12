@@ -5,7 +5,10 @@ import { ErrorsMajor } from "./errors/major";
 import { Listeners } from "./listeners";
 import { SetCustomCSS } from "./settings";
 import { App } from "./app/app";
-import { Logger, ILogObj } from "tslog";
+import { addToJsPerfTable } from "./helpers/ixPerformance";
+import { HelpersUrl } from "./helpers/url";
+import { FactMap } from "./facts/map";
+import { initSearch } from "./flex-search/search-worker-interface";
 
 /* Created by staff of the U.S. Securities and Exchange Commission.
  * Data and content created by government employees within the scope of their employment
@@ -13,29 +16,39 @@ import { Logger, ILogObj } from "tslog";
  */
 
 (() => {
+    // Get start time to compare when other load stages finish
+    const appStartPerformance = performance.now();
+    Constants.appStart = appStartPerformance;
+
+    let params = new URLSearchParams(document.location.search);
+    Constants.logPerfParam = !!params.get('logPerf');
+    
     new Listeners();
     new SetCustomCSS();
-    const startPerformance = performance.now();
 
-    App.init(false, (formLoaded: boolean) => {
-        console.log(`Version: ${Constants.version} (${Constants.featureSet})`);
-        console.log(`CSS Mode: ${(document.compatMode=="CSS1Compat" ? "Standards 🎉" : "Quirks 😢")}`);
-
+    App.init(false).then((formLoaded) => {
         if (formLoaded) {
+            console.log(`Version: ${Constants.version} (${Constants.featureSet})`);
+            console.log(`CSS Mode: ${(document.compatMode == "CSS1Compat" ? "Standards 🎉" : "Quirks 😢")}`);
+
             Errors.updateMainContainerHeight(false);
             App.initialSetup();
             removeHideClassFromSidebars();
+
+            HelpersUrl.addHashChangeListener();
+            HelpersUrl.handleHash();
+
+            initSearch(FactMap.map)
+
+            if (DEBUGCSS) {
+                ErrorsMajor.debug();
+            }
+            if (LOGPERFORMANCE || Constants.logPerfParam ) {
+                const endPerformance = performance.now();
+                addToJsPerfTable('AppInit.init()', Constants.appStart, endPerformance);
+            }
         } else {
             ErrorsMajor.formNotLoaded();
-        }
-
-        const endPerformance = performance.now();
-        if (DEBUGCSS) {
-            // ErrorsMajor.debug();
-        }
-        if (LOGPERFORMANCE) {
-            const log: Logger<ILogObj> = new Logger();
-            log.debug(`AppInit.init() completed in: ${(endPerformance - startPerformance).toFixed(2)}ms`);
         }
     });
 

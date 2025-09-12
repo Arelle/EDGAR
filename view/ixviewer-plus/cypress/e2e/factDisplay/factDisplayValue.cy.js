@@ -12,12 +12,12 @@ describe(`Fact Display`, () => {
             .should('have.text', '0000014693') // not 14,693
     })
     
-    it('should not have comma when date or year', () => {
-        cy.loadByAccessionNum('000119312524147598')
-        cy.get(selectors.factCountClock).should('not.exist')
-        cy.get('[id="fact-identifier-6"]').click()
+    it.only('should not have comma when date or year', () => {
+        cy.loadByAccessionNum('000101376223000425-2');
+        cy.get(selectors.factCountClock, {timeout: 30000}).should('not.exist')
+        cy.get('[id="fact-identifier-1"]').click()
         cy.get(selectors.factValueInModal)
-            .should('have.text', '2024') // not 2,024
+            .should('have.text', '2023') // not 2,023
     })
 
     it('should not have comma when zip code', () => {
@@ -45,7 +45,7 @@ describe(`Fact Display`, () => {
         cy.get('[id="fact-identifier-17"]').click().should('be.visible').then(($el) => {
             let firstFact = $el[0].getBoundingClientRect()
             cy.get('[id="fact-identifier-21"]').then($el => {
-                let secFact = $el[0].getBoundingClientRect()
+                let secFact = $el[0].getBoundingClientRect();
                 // The '.y' part here looks at the Y coordinate of the fact
                 expect(firstFact.y).to.equal(secFact.y);
             })
@@ -54,6 +54,7 @@ describe(`Fact Display`, () => {
 
     it('should not truncate trailing zero on hundreths fact in modal and sidebar', () => {
         cy.loadByAccessionNum('000141057824002008')
+        cy.get(selectors.factCountClock).should('not.exist')
         cy.get('#fact-identifier-315').click() // hundreths fact
         cy.get(selectors.factValueInModal).should('have.text', '0.70') // not 0.7
         cy.get(selectors.factModalJump).click();

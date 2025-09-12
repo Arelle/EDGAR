@@ -10,6 +10,7 @@ describe(`Reset Filters`, () => {
     it(`should clear filters ${filing?.ticker || filing.docName} ${filing.formType || filing.submissionType}`, () => {
         cy.loadFiling(filing)
         cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist')
+        cy.get(selectors.searchHourglass, { timeout: Number(filing.timeout) }).should('not.be.visible')
 
         cy.get(selectors.factCountBadge).invoke('text').then(text => {
             initialFactCount = Number(text.replace(',', ''))

@@ -3,8 +3,8 @@
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  */
 
-import { FlexSearch } from "../flex-search/flex-search";
 import { UserFiltersState } from "./state";
+import { callFilter } from "../flex-search/search-worker-interface";
 
 export const UserFiltersDropdown = {
 
@@ -120,7 +120,8 @@ export const UserFiltersDropdown = {
             current.checked = false;
         });
 
-        FlexSearch.filterFacts();
+        // FlexSearch.filterFacts();
+        callFilter();
     },
 
     updateFilterActive: () => {

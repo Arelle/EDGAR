@@ -9,7 +9,7 @@ import { ConstantsFunctions } from "../constants/functions";
 import { FactMap } from "../facts/map";
 import { HelpersUrl } from "../helpers/url";
 import { Sections } from "../sections/sections";
-import { defaultKeyUpHandler } from "../helpers/utils";
+import { actionKeyHandler } from "../helpers/utils";
 import { stopPropPrevDefault } from "../helpers/utils";
 
 export const Tabs = {
@@ -87,8 +87,14 @@ export const Tabs = {
 				ConstantsFunctions.switchDoc(currentInlineDoc.slug);
 			}
 
-			inlineDocTabElem.addEventListener('click', (e) => stopPropPrevDefault(e, switchDoc), true);
-			inlineDocTabElem.addEventListener('keyup', (e) => defaultKeyUpHandler(e, switchDoc), true);
+			inlineDocTabElem.addEventListener('click', (e) => {
+				stopPropPrevDefault(e);
+				switchDoc();
+			}, true);
+			inlineDocTabElem.addEventListener('keyup', (e) => {
+				if (!actionKeyHandler(e)) return;
+				switchDoc();
+			}, true);
 			const text = document.createTextNode(currentInlineDoc.slug);
 			inlineDocTabElem.append(text);
 
@@ -99,12 +105,13 @@ export const Tabs = {
 			factCountSpan.classList.add('ms-1');
 			currentInlineDoc.table ? null : factCountSpan.setAttribute('doc-slug', currentInlineDoc.slug);
 
-			const factText = document.createTextNode(FactMap.getFactCountForFile(currentInlineDoc.slug));
+			// const factCountSpan = document.createElement('span');
+			const factCountText = document.createTextNode(FactMap.getFactCountForFile(currentInlineDoc.slug));
 
 			factCountSpan.setAttribute('data-bs-toggle', 'tooltip');
 			factCountSpan.setAttribute('title', 'Filtered Fact Count');
 
-			factCountSpan.append(factText);
+			factCountSpan.append(factCountText);
 			inlineDocTabElem.append(factCountSpan);
 
 			li.append(inlineDocTabElem);
@@ -193,9 +200,13 @@ export const Tabs = {
 
 	clickEventInstance: (event: MouseEvent | KeyboardEvent, instance: number) => {
 		event.preventDefault();
-		ConstantsFunctions.changeInstance(+instance as number, null, () => {
-			Sections.highlightInstanceInSidebar();
-			Sections.applyFilterRadios();
+		ConstantsFunctions.changeInstance(+instance as number, null).then((success) => {
+			if (success) {
+				Sections.highlightInstanceInSidebar();
+				Sections.applyFilterRadios();
+			} else {
+				console.error("Error: There was an issue changing instances via Instance Dropdown.");
+			}
 		});
 	},
 };

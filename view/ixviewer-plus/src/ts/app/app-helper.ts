@@ -1,8 +1,6 @@
-import { ILogObj, Logger } from "tslog";
 import { HelpersUrl } from "../helpers/url";
 
 export function fixImages(doc = document): void {
-    const startPerformance = performance.now();
 
     if (HelpersUrl.isWorkstation()) {
         // example MetaLinks path: '../DisplayDocument.do?step=docOnly&accessionNumber=0001314610-24-800735&interpretedFormat=false&redline=true&filename=MetaLinks.json'
@@ -39,18 +37,9 @@ export function fixImages(doc = document): void {
             imgElem.setAttribute("loading", "lazy");
         }
     }
-
-    const endPerformance = performance.now();
-    if (LOGPERFORMANCE) {
-        const items = doc.querySelectorAll("img").length;
-        const log: Logger<ILogObj> = new Logger();
-        log.debug(`AppHelper.fixImages() completed in: ${(endPerformance - startPerformance).toFixed(2)}ms - ${items} items`);
-    }
 }
 
-export function fixLinks(doc = document): void {
-    const startPerformance = performance.now();
-
+export function fixLinks(doc = document): void {    
     const foundLinksArray = Array.from(doc.querySelectorAll("[data-link], :not(link)[href]"));
     foundLinksArray.forEach((linkElem) => {
         linkElem.setAttribute('tabindex', '18');
@@ -85,13 +74,6 @@ export function fixLinks(doc = document): void {
             }
         }
     });
-
-    const endPerformance = performance.now();
-    if (LOGPERFORMANCE) {
-        const items = foundLinksArray.length;
-        const log: Logger<ILogObj> = new Logger();
-        log.debug(`AppHelper.fixLinks() completed in: ${(endPerformance - startPerformance).toFixed(2)}ms - ${items} items`);
-    }
 }
 
 function getFirstStyleValue(el: Element, styles: string[]): string {
@@ -129,7 +111,6 @@ export function hiddenFacts(doc = document) {
             d. next to file value show "(No Inline Location)"
     */
 
-    const startPerformance = performance.now();
     const inlineElems = [...doc.querySelectorAll<HTMLElement>('[style*="-ix-hidden"]')].reverse();
 
     for (let inlineElem of inlineElems) {
@@ -154,19 +135,11 @@ export function hiddenFacts(doc = document) {
             console.warn(`HiddenFacts: Found no element with ID ${hiddenElemId}`);
         }
     }
-
-    const endPerformance = performance.now();
-    if (LOGPERFORMANCE) {
-        const items = inlineElems.length;
-        const log: Logger<ILogObj> = new Logger();
-        log.debug(`AppHelper.hiddenFacts() completed in: ${(endPerformance - startPerformance).toFixed(2)}ms - ${items} items`);
-    }
 }
 
 export function redLineFacts(doc = document) {
     if (!HelpersUrl.getAllParams?.redline) return;
 
-    const startPerformance = performance.now();
     let foundElements = [];
     
     for (let r of ["redline", "redact"]) {
@@ -178,13 +151,6 @@ export function redLineFacts(doc = document) {
         for (let current of foundElements) {
             current.setAttribute(r, "true");
         }
-    }
-
-    const endPerformance = performance.now();
-    if (LOGPERFORMANCE) {
-        const items = foundElements?.length;
-        const log: Logger<ILogObj> = new Logger();
-        log.debug(`AppHelper.redLineFacts() completed in: ${(endPerformance - startPerformance).toFixed(2)}ms - ${items} items`);
     }
 }
 

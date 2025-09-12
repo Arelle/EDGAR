@@ -115,7 +115,6 @@ export class FetchAndMerge {
             }
         }
 
-
         try {
             let metalinks: (MetaLinks & { instances: InstanceFile[]}) | null = null;
             this.activeInstance = this.instances.filter((element) => element.current)[0];
@@ -138,10 +137,11 @@ export class FetchAndMerge {
                 isNcsr = summ.InputFiles?.File?.reduce((acc, { _attributes }) => {
                     return acc || _attributes?.isNcsr == "true";
                 }, isNcsr);
-            }
+            }                                        
 
             await docsAndInstance();
 
+            // this is returned to the webworker
             return { xhtml: this.activeInstance.docs.find((x) => x.current)?.xhtml || "", isNcsr };
         }
         catch(e) { this.errorHandling(e) }
@@ -404,7 +404,7 @@ export class FetchAndMerge {
             customPrefix: this.customPrefix || "",
         };
 
-        await new XhtmlPrepper(prepperData).doWork();
+        await new XhtmlPrepper(prepperData).updateFactMapWithDocsData();
     }
 
     private buildInitialFactMap(instanceXml: Instance): Map<string, SingleFact> {
@@ -422,7 +422,7 @@ export class FetchAndMerge {
 
         const context = instance[xbrlKey][contextKey];
         const unit = instance[xbrlKey][unitKey] || [];
-        const footnote = instance[xbrlKey]['link:footnoteLink'];
+        const instanceFootnoteData = instance[xbrlKey]['link:footnoteLink'];
 
         delete instance[xbrlKey][contextKey];
         delete instance[xbrlKey][unitKey];
@@ -457,7 +457,7 @@ export class FetchAndMerge {
                 decimals: this.setDecimalsInfo(attributes.decimals || ""),
                 decimalsVal: attributes.decimals,
                 sign: null, // sign exists as attr in inlineDoc, not instance
-                footnote: this.setFootnoteInfo(ix, footnote),
+                footnote: this.setFootnoteInfo(ix, instanceFootnoteData),
                 isEnabled: true,
                 isHighlight: false,
                 isSelected: false,
@@ -524,19 +524,24 @@ export class FetchAndMerge {
             return [];
         }
 
+        const addDimensionRefToFactRefs = (seg: any, refKeys: string[]) => {
+            if (seg.dimension) refKeys.push(...getRefFromMetalinks(seg.dimension));
+            if (seg.member) refKeys.push(...getRefFromMetalinks(seg.member));
+            return refKeys;
+        }
+
         this.activeInstance?.map.forEach((currentFact: SingleFact) => {
             /* 
                 @Doc: Fact 'tags' in metalinks.json vs fact 'names' in instance and doc files
                 facts are stored in metalinks.json under instance[<instanceName>].tags
-                Not sure why they are called 'tags'
-                Tags in xbrl speak are 'concepts', which are also qNames.
-                Some tag names look like: 
+                Tags can be concepts or dimensions which are also qNames.
+                Some tag names look like:
                     dei_AmendmentDescription
                 They have underscores, but in the instance and doc files they have colons:
                     dei:AmendmentDescription
             */
             const factNameTag = currentFact.name.replace(':', '_');
-            const factObjectMl = this.activeInstance && this.activeInstance.metaInstance && this.activeInstance.metaInstance.tag ? this.activeInstance.metaInstance.tag[factNameTag]: null; // Ml being metalinks
+            const factObjectMl = this.activeInstance?.metaInstance?.tag ? this.activeInstance.metaInstance?.tag[factNameTag] : null;
 
             if (factObjectMl) {
 
@@ -547,17 +552,15 @@ export class FetchAndMerge {
                     let referenceKeys = [...factObjectMl.auth_ref];
 
                     if (currentFact.segment) {
-                        const refKeys: string[] = [];
+                        let refKeys: string[] = [];
 
-                        currentFact.segment.forEach((seg: any) => {
+                        currentFact.segment.map((seg: any) => {
                             if (Array.isArray(seg)) {
                                 seg.forEach((nestedSeg: any) => {
-                                    if (nestedSeg.dimension) refKeys.push(...getRefFromMetalinks(nestedSeg.dimension));
-                                    if (nestedSeg.axis) refKeys.push(...getRefFromMetalinks(nestedSeg.axis));
+                                    refKeys = addDimensionRefToFactRefs(nestedSeg, refKeys);
                                 })
                             } else {
-                                if (seg.dimension) refKeys.push(...getRefFromMetalinks(seg.dimension));
-                                if (seg.axis) refKeys.push(...getRefFromMetalinks(seg.axis));
+                                refKeys = addDimensionRefToFactRefs(seg, refKeys);
                             }
                         })
 
@@ -569,7 +572,6 @@ export class FetchAndMerge {
                         .filter(Boolean);
 
                     currentFact.references = references.length > 0 ? references : null;
-
 
                     // this order specifically for Fact References
                     // any other key => value will be ignored and not shown to the user
@@ -801,32 +803,104 @@ export class FetchAndMerge {
         }
     }
 
+    private getTagLabelFromMetalinks = (tag: string) => {
+        const mlDimTag = tag.replace(':', '_');
+        if (this.activeInstance?.metaInstance?.tag && this.activeInstance.metaInstance.tag[mlDimTag]) {
+            let engLang = this.activeInstance.metaInstance.tag[mlDimTag].lang?.['en-us'];
+            if (!engLang) engLang = this.activeInstance.metaInstance.tag[mlDimTag].lang?.['en-US'];
+            const label = engLang?.role?.label;
+            return label || tag;
+        }
+    }
+    
     private setSegmentData(context: Context | undefined) {
+        // we want to think of these as aspects of a fact with key value pairs
+        // for typed members 
+        //      - it's dimension value will be the type of axis it is
+        //      - it's member value will be the value on that axis
+        // Segment is a container tag for dimensional data.
+        // There is only one segment tag for a fact (stored in context), but segment can contain multiple dimension tags
+
+        /*
+        Example Typed Member as xml
+        <segment>
+            <xbrldi:typedMember dimension="sbs:SbsefTradgSysOrPltfmAxis">
+                <sbs:SbsefTradgSysOrPltfmAxis.domain>
+                    1
+                </sbs:SbsefTradgSysOrPltfmAxis.domain>
+            </xbrldi:typedMember>
+        </segment>
+
+        example in json
+        {
+            sbs:SbsefTradgSysOrPltfmAxis.domain: {
+                _text: '1'
+            },
+            _attributes: {
+                dimension: 'sbs:SbsefTradgSysOrPltfmAxis'
+            }
+        }
+        */
+
+        /*
+        Example of Explicit Member 
+
+        xml data:
+        <segment>
+            <xbrldi:explicitMember dimension="us-gaap:StatementClassOfStockAxis">us-gaap:CommonStockMember</xbrldi:explicitMember>
+            <xbrldi:explicitMember dimension="dei:EntityListingsExchangeAxis">exch:XCHI</xbrldi:explicitMember>
+        </segment>
+
+        json data (first one)
+        {
+            _attributes: {
+                dimension: 'us-gaap:StatementClassOfStockAxis'
+            }
+            _text: "us-gaap:CommonStockMember"
+        }
+
+        display as:
+        (dimension)                         (member)
+        Class of Stock [Axis]               Common Stock [Member]
+        Entity Listings, Exchange [Axis]    NEW YORK STOCK EXCHANGE, INC. [Member]
+
+        */
+
+
         const context2 = Array.isArray(context) ? context : [context];
-        context2.forEach((current) => {
-            if (current.entity && current.entity.segment) {
-                current.entity.segment.data = Object.keys(current.entity.segment).map((key) => {
-                    if (Array.isArray(current.entity.segment[key])) {
-                        return current.entity.segment[key].map((segment: { _attributes: { dimension: string; }; _text: string; }) => {
-                            return {
-                                axis: segment._attributes.dimension,
-                                dimension: segment._text,
-                                type: key.endsWith('explicitMember') ? 'explicit' : 'implicit'
-                            }
+        context2.forEach((ctx) => {
+            if (ctx.entity && ctx.entity.segment) {
+                const segment = ctx.entity.segment;
+                segment.data = Object.keys(segment).map((tag) => {
+                    const isExplicit = tag.endsWith('explicitMember');
+                    if (Array.isArray(segment[tag])) {
+                        return segment[tag].map((seg: { _attributes: { dimension: string; }; _text: string; }) => {
+                            const memberVal = seg._text
+                                ? seg._text
+                                : seg[Object.keys(seg).filter((element: string) => !element.startsWith('_'))[0]]?._text;
+                            const dimensionData = {
+                                axis: seg._attributes.dimension,
+                                dimension: seg._attributes.dimension,
+                                dimensionLabel: this.getTagLabelFromMetalinks(seg._attributes.dimension),
+                                type: isExplicit ? 'explicit' : 'implicit',
+                                member: memberVal
+                            };
+                            if (isExplicit) dimensionData.memberLabel = this.getTagLabelFromMetalinks(memberVal);
+                            return dimensionData;
                         });
                     } else {
-                        return {
-                            axis: current.entity.segment[key]._attributes.dimension,
-                            dimension: current.entity.segment[key]._text ?
-                                current.entity.segment[key]._text :
-                                current.entity.segment[key][Object.keys(current.entity.segment[key]).filter(element => !element.startsWith('_'))[0]]?._text,
-                            type: key.endsWith('explicitMember') ?
-                                'explicit' :
-                                'implicit',
-                            value: !key.endsWith('explicitMember') ?
-                                current.entity.segment[key][Object.keys(current.entity.segment[key])[1]]._text :
-                                null
+                        const memberVal = isExplicit 
+                            ? segment[tag]._text
+                            : segment[tag][Object.keys(segment[tag])[1]]._text;
+                        const dimensionData = {
+                            axis: segment[tag]._attributes.dimension,
+                            dimension: segment[tag]._attributes.dimension,
+                            dimensionLabel: this.getTagLabelFromMetalinks(segment[tag]._attributes.dimension),
+                            type: isExplicit ? 'explicit' : 'implicit',
+                            member: memberVal
                         };
+                        if (isExplicit) dimensionData.memberLabel = this.getTagLabelFromMetalinks(memberVal);
+                        return dimensionData;
                     }
                 });
             }
@@ -950,7 +1024,7 @@ export class FetchAndMerge {
     /**
      * Description
      * @param {any} id:string
-     * @param {any} footnotes:{"link:loc":LinkLOC[]
+     * @param {any} instanceFootnotes:{"link:loc":LinkLOC[]
      * @param {any} "link:footnote":LinkFootnote[];"link:footnoteArc":LinkFootnoteArc[];}
      * @param {string} asXmlString footnotes part of fetched xml text
      * @returns {any} renderable footnote text (or xml string) to be displayed in fact modal
@@ -958,29 +1032,37 @@ export class FetchAndMerge {
      * todo: handle images, tables, ...other html elements (currently just concatenating text content)
      * the above todos are WIP and are handled when useFetchedFootnoteXmlStrings is set to true.
      */
-    private setFootnoteInfo(id: string, footnotes: {
+    private setFootnoteInfo(id: string, instanceFootnotes: {
         "link:loc": LinkLOC[],
         "link:footnote": LinkFootnote[],
         "link:footnoteArc": LinkFootnoteArc[],
         "asXmlString": string,
     }) {
-        if (footnotes && footnotes['link:footnoteArc']) {
-            const factFootnote = Array.isArray(footnotes['link:footnoteArc']) 
-                ? footnotes['link:footnoteArc'].find((element) => element._attributes['xlink:from'] === id ) 
-                : [footnotes['link:footnoteArc']].find((element) => element._attributes['xlink:from'] === id )
-            if (factFootnote) {
-                if (footnotes['link:footnote']) {
-                    if (Array.isArray(footnotes['link:footnote'])) {
-                        // multiple footnotes on instance
-                        const actualFootnote = footnotes['link:footnote']?.find((element) => {
-                            return element._attributes.id === factFootnote._attributes['xlink:to'];
-                        });
+        if (instanceFootnotes && instanceFootnotes['link:footnoteArc']) {
+            /*
+                link:footnoteArc tags are link tags with xlink:from some fact id xlink:to some xlink:footnote id that contains actual footnote content.
+            */
+            const factFootnoteArcTags = Array.isArray(instanceFootnotes['link:footnoteArc'])
+                ? instanceFootnotes['link:footnoteArc'].filter((element) => element._attributes['xlink:from'] === id ) 
+                : [instanceFootnotes['link:footnoteArc']].find((element) => element._attributes['xlink:from'] === id )
+            if (factFootnoteArcTags?.length) {
+                if (instanceFootnotes['link:footnote']) {
+                    if (Array.isArray(instanceFootnotes['link:footnote'])) {
+                        const footnoteTags = factFootnoteArcTags?.map(arcTag => arcTag._attributes['xlink:to'])
+                            .map(footnoteId => instanceFootnotes['link:footnote'].find((footnoteElem) => footnoteElem._attributes.id === footnoteId));
 
                         const useFetchedFootnoteXmlStrings = false;
                         const useParsedFootnote = !useFetchedFootnoteXmlStrings;
 
                         if (useParsedFootnote) {
-                            return this.accumulateFootnoteText(actualFootnote || {} as Record<string, unknown>);
+                            if (Array.isArray(footnoteTags)) {
+                                const footnotesTexts = footnoteTags.map(footnote => {
+                                    return this.accumulateFootnoteText(footnote || {} as Record<string, unknown>);
+                                });
+                                return footnotesTexts.join('<br>');
+                            } else {
+                                return this.accumulateFootnoteText(footnoteTags || {} as Record<string, unknown>);
+                            }
                         }
 
                         // Rest of this if block is WIP for rendering all div types in footnote cell
@@ -994,26 +1076,26 @@ export class FetchAndMerge {
                         const startTagRegex = /<link:footnote /gi; 
                         let startTagResults: RegExpExecArray | null = null;
                         const footnoteStartIndices:number[] = [];
-                        while (!!(startTagResults = startTagRegex.exec(footnotes.asXmlString))) {
+                        while (!!(startTagResults = startTagRegex.exec(instanceFootnotes.asXmlString))) {
                             footnoteStartIndices.push(startTagResults.index);
                         }
 
                         const endTagRegex = /<\/link:footnote>/gi; 
                         let endTagResults: RegExpExecArray | null = null;
                         const footnoteEndIndices:number[] = [];
-                        while (!!(endTagResults = endTagRegex.exec(footnotes.asXmlString))) {
+                        while (!!(endTagResults = endTagRegex.exec(instanceFootnotes.asXmlString))) {
                             footnoteEndIndices.push(endTagResults.index + ('</link:footnote>').length);
                         }
 
                         const footnotesAsXmlStrings: string[] = [];
 
                         footnoteStartIndices.forEach((start, indexInArrayOfStarts) => {
-                            const pluckedFootnote = footnotes.asXmlString.substring(start, footnoteEndIndices[indexInArrayOfStarts]);
+                            const pluckedFootnote = instanceFootnotes.asXmlString.substring(start, footnoteEndIndices[indexInArrayOfStarts]);
                             footnotesAsXmlStrings.push(pluckedFootnote);
                         })
 
                         const relevantFootnoteAsXmlString = footnotesAsXmlStrings.find(fn => {
-                            return fn.indexOf(factFootnote._attributes['xlink:to']) != -1;
+                            return fn.indexOf(factFootnoteArcTags._attributes['xlink:to']) != -1;
                         })
 
                         return relevantFootnoteAsXmlString;
@@ -1021,12 +1103,12 @@ export class FetchAndMerge {
                         // single footnote on instance
                         // TODO we need way more cases
                         //uhh, no we don't, because the first 2 cases cover EVERYTHING
-                        if (!Array.isArray(footnotes['link:footnote']._text)) {
-                            return footnotes['link:footnote']._text;
-                        } else if (Array.isArray(footnotes['link:footnote']._text)) {
-                            return footnotes['link:footnote']._text.join('');
-                        } else if (footnotes['link:footnote']['xhtml:span']) {
-                            return footnotes['link:footnote']['xhtml:span']._text;
+                        if (!Array.isArray(instanceFootnotes['link:footnote']._text)) {
+                            return instanceFootnotes['link:footnote']._text;
+                        } else if (Array.isArray(instanceFootnotes['link:footnote']._text)) {
+                            return instanceFootnotes['link:footnote']._text.join('');
+                        } else if (instanceFootnotes['link:footnote']['xhtml:span']) {
+                            return instanceFootnotes['link:footnote']['xhtml:span']._text;
                         }
                     }
                 }

@@ -13,7 +13,7 @@ describe(`Tag Filters for ${filingsSample.length} filings`, () => {
             
             // this assertion forces it to wait for it to be populated with number
             cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist')
-
+            cy.get(selectors.searchHourglass, { timeout: Number(filing.timeout) }).should('not.be.visible')
             
             cy.get(selectors.factCountBadge).invoke('text').then(text => {
                 initialFactCount = Number(text.replace(',', ''))

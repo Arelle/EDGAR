@@ -156,8 +156,10 @@ export interface ReferenceAsArray {
 }
 
 export interface SegmentClass {
-    axis: string;
+    axis?: string;
     dimension: string;
+    dimensionLabel: string;
     type: string;
-    value?: null;
+    member: null; // value
+    memberLabel?: string;
 }

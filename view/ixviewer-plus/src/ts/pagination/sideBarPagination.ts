@@ -9,7 +9,7 @@ import { ErrorsMinor } from "../errors/minor";
 import { FactsGeneral } from "../facts/general";
 import { SingleFact } from "../interface/fact";
 import { ConstantsFunctions } from "../constants/functions";
-import { defaultKeyUpHandler } from "../helpers/utils";
+import { actionKeyHandler } from "../helpers/utils";
 
 export const Pagination = {
 
@@ -184,7 +184,7 @@ export const Pagination = {
 		firstPageAElement.setAttribute('id', 'firstFactPage');
 		firstPageAElement.addEventListener('click', () => { Pagination.firstPage(); });
 		firstPageAElement.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Pagination.firstPage();
 		});
 
@@ -205,7 +205,7 @@ export const Pagination = {
 		previousPageAElement.setAttribute('id', 'prevFactPage');
 		previousPageAElement.addEventListener('click', () => { Pagination.previousPage(); });
 		previousPageAElement.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Pagination.previousPage();
 		});
 
@@ -226,7 +226,7 @@ export const Pagination = {
 		nextPageAElement.setAttribute('id', 'nextFactPage');
 		nextPageAElement.addEventListener('click', () => { Pagination.nextPage(); });
 		nextPageAElement.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Pagination.nextPage();
 		});
 
@@ -247,7 +247,7 @@ export const Pagination = {
 		lastPageAElement.setAttribute('id', 'lastFactPage');
 		lastPageAElement.addEventListener('click', () => { Pagination.lastPage(); });
 		lastPageAElement.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Pagination.lastPage();
 		});
 

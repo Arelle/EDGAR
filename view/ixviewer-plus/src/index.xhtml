@@ -33,7 +33,7 @@
                 <circle class="bg"></circle>
                 <circle class="fg"></circle>
                 <text x="50%" y="50%" text-anchor="middle">
-                    Processing Inline Facts...
+                    Loading Inline Docs
                 </text>
             </svg>
         </div>
@@ -132,21 +132,20 @@
                                                 <span>Include Dimensions</span>
                                             </label>
                                         </div>
-                                        <div class="form-check">
+                                        <!-- <div class="form-check">
                                             <label class="form-check-label mb-0">
                                                 <input disabled="true" class="form-check-input meta-required"
                                                     type="checkbox" name="search-options" value="6" tabindex="3" />
                                                 <span>Include References</span>
                                             </label>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                                 
 
                                 <input type="text" class="form-control disabled focus-inner" id="global-search"
                                     data-test="global-search" placeholder="Search Facts" disabled="true"
-                                    aria-label="Search all Facts and highlight them accordingly." tabindex="4" />
-
+                                    aria-label="Search all Facts and highlight them accordingly." tabindex="4" autocomplete="off" />
                                 <button id="search-btn-clear" data-name="global-search-clear"
                                     class="btn btn-outline-light nav-search-btn disabled" type="button" tabindex="5">
                                     <i class="nav-loading fas fa-times-circle" title="Clear Search"></i>
@@ -154,7 +153,8 @@
                                         Clear Search</span>
                                 </button>
                                 <button id="submit-search" class="btn btn-outline-light nav-search-btn disabled" type="submit" tabindex="6">
-                                    <i class="nav-loading fas fa-search" title="Submit Search"></i>
+                                    <i id="search-submit-icon" class="d-none nav-loading fas fa-search" title="Submit Search"></i>
+                                    <i id="search-hourglass" class="fa-hourglass fas fa-regular fa-fade"></i>
                                     <span class="sr-only sr-only-focusable">
                                         Submit Search</span>
                                 </button>
@@ -164,7 +164,7 @@
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
                         <button id="nav-filter-data" data-test="nav-filter-data"
-                            class="nav-link dropdown-toggle disabled click" data-bs-toggle="dropdown"
+                            class="nav-link dropdown-toggle not-ready click" data-bs-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false" tabindex="7" accesskey="3">
                             <i class="nav-loading fas fa-list-alt" title="Data"></i>
                             <span class="d-md-none d-lg-inline">Data</span>
@@ -218,7 +218,7 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
-                        <button id="nav-filter-tags" data-test="nav-filter-tags" class="nav-link dropdown-toggle disabled click"
+                        <button id="nav-filter-tags" data-test="nav-filter-tags" class="nav-link dropdown-toggle not-ready click"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="8" accesskey="4">
                             <i class="nav-loading fas fa-tags" title="Tags"></i>
                             <span class="d-md-none d-lg-inline">Tags</span>
@@ -254,7 +254,7 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown my-auto ml-1">
-                        <button id="nav-filter-more" class="nav-link dropdown-toggle disabled click" data-bs-toggle="dropdown"
+                        <button id="nav-filter-more" class="nav-link dropdown-toggle not-ready click" data-bs-toggle="dropdown"
                             data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false" tabindex="9" accesskey="5">
                             <i id="loading-more-filters" class="nav-loading fas fa-filter" title="More Filters"></i>
                             <span class="d-md-none d-lg-inline">More Filters</span>
@@ -544,7 +544,7 @@
                             class="nav-link click disabled" accessKey="9" data-test="facts-menu-button">
                             Facts
                             <span class="fact-total-count badge text-bg-light">
-                                <i class="fa fa-regular fa-clock"></i>
+                                <i id="factClock" data-cy="fact-clock" class="fa fa-regular fa-clock fa-fade"></i>
                             </span>
                         </a>
                     </li>
@@ -687,8 +687,7 @@
                                     </h5>
                                 </div>
                                 <div id="help-search" class="collapse" data-parent="#help-sections">
-                                    <p class="m-2">There are two ways to search the
-                                        document: FACTS AND SECTIONS. To search information, enter a
+                                    <p class="m-2">The search input in the menu bar can be used to search facts. To search information, enter a
                                         keyword in a search box and select the magnifying glass icon to
                                         return matching results. Search operators "and" (via "AND" or
                                         "&amp;") and "or" (via "OR" or "|") are available to further refine a
@@ -707,12 +706,6 @@
                                         included tag definitions, dimensions, and authoritative
                                         references by selecting the cog / wheel icon to the left of the
                                         search box. See Settings for more information.</p>
-
-                                    <p class="m-2">
-                                        <strong>SECTIONS</strong>
-                                    </p>
-                                    <p class="m-2">The Search Sections box can be used to
-                                        filter the tagged sections of the financial statements.</p>
                                 </div>
                             </div>
                             <div class="card">
@@ -827,7 +820,7 @@
                                 <div id="help-tagged-sections" class="collapse" data-parent="#help-sections">
                                     <p class="m-2">The SECTIONS toolbar item provides a
                                         listing of the tagged sections of the Inline document. Sections
-                                        are divided into three groups:</p>
+                                        are divided into groups, the three most common being:</p>
                                     <ul>
                                         <li>Document &amp; Entity Information</li>
                                         <li>Financial Statements</li>
@@ -835,9 +828,7 @@
                                     </ul>
                                     <p class="m-2">By expanding a group and selecting a
                                         section item in the listing, Inline XBRL viewer will navigate to that section.
-                                        When the Tagged Sections feature is open, the Search Sections box
-                                        will additionally filter the list of sections to only those
-                                        sections that match the entered criteria.</p>
+                                    </p>
                                 </div>
                             </div>
                             <div class="card">
@@ -889,8 +880,8 @@
                                     </p>
                                     <ul>
                                         <li>On - Displays the hover fact review
-                                            window for any tagged fact*</li>
-                                        <li>Off - Hides the hover fact review window
+                                            popup for any tagged fact*</li>
+                                        <li>Off - Hides the hover fact review popup
                                             for any tagged fact (default)</li>
                                     </ul>
                                     <p class="m-2">* May impact performance with certain
@@ -933,10 +924,10 @@
                                             include tag definitions</li>
                                         <li>Include Dimensions - Extends Search to
                                             include dimensional detail</li>
-                                        <li>Include References - Extends Search to
+                                        <!-- <li>Include References - Extends Search to
                                             include authoritative reference information. Optionally specify
                                             the reference parts to include in the search (e.g., topic,
-                                            subtopic, section)</li>
+                                            subtopic, section)</li> -->
                                     </ul>
                                     <p class="m-2">
                                         <strong>Help</strong>(this content)

@@ -3,7 +3,7 @@
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  */
 
-import { FlexSearch } from "../flex-search/flex-search";
+import { callFilter } from "../flex-search/search-worker-interface";
 import { UserFiltersState } from "./state";
 
 export const UserFiltersMoreFiltersPeriod = {
@@ -15,7 +15,8 @@ export const UserFiltersMoreFiltersPeriod = {
             addIfTrue ? tempSet.add(periodInput) : tempSet.delete(periodInput);
         });
         UserFiltersState.getPeriod = [...tempSet];
-        FlexSearch.filterFacts();
+        // FlexSearch.filterFacts();
+        callFilter();
     },
 
     childClick: (input: string) => {
@@ -28,7 +29,8 @@ export const UserFiltersMoreFiltersPeriod = {
             tempSet.add(input);
         }
         UserFiltersState.getPeriod = [...tempSet];
-        FlexSearch.filterFacts();
+        // FlexSearch.filterFacts();
+        callFilter();
     },
 
     checkToggleAll: (event: MouseEvent | KeyboardEvent, parentIndex: number | string) => {

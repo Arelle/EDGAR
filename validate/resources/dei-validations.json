@@ -2531,19 +2531,26 @@
     {
         "comment": "N-CSR*"
     },
-    {
-        "sub-types": ["@N-CSR"],
-        "xbrl-names": [
-        	"oef:ShareholderReportAnnualOrSemiAnnual",
-        	"oef:FundName",
-        	"oef:ClassName"
-        	],
-        "efm": "6.5.57",
-        "validation": "fw",
-        "axis": "oef:class",
-        "source": "both",
-        "dei/cover": "dei"
-    },
+	{
+	    "sub-types": ["@N-CSR"],
+	    "xbrl-names": "oef:ShareholderReportAnnualOrSemiAnnual",
+	    "efm": "6.5.57",
+	    "validation": "r",
+	    "source": "both",
+	    "dei/cover": "dei"
+	},
+	{
+	    "sub-types": ["@N-CSR"],
+	    "xbrl-names": [
+	        "oef:FundName",
+	        "oef:ClassName"
+	        ],
+	    "efm": "6.5.57",
+	    "validation": "fw",
+	    "axis": "oef:class",
+	    "source": "both",
+	    "dei/cover": "dei"
+	},
     {
         "sub-types": ["@N-CSR"],
         "xbrl-names": [

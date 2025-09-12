@@ -4,7 +4,7 @@
  */
 
 import { Constants } from "../constants/constants";
-import { ErrorsMinor } from "../errors/minor";
+// import { ErrorsMinor } from "../errors/minor";
 import { Facts } from "../facts/facts";
 import { SearchFunctions } from "../search/functions";
 
@@ -22,7 +22,7 @@ export const UserFiltersState = {
         if (input >= 0 && input <= 5) {
             UserFiltersState.getDataRadios = input;
         } else {
-            ErrorsMinor.unknownError();
+            // ErrorsMinor.unknownError();
         }
     },
 
@@ -32,7 +32,7 @@ export const UserFiltersState = {
         if (input >= 0 && input <= 2) {
             UserFiltersState.getTagsRadios = input;
         } else {
-            ErrorsMinor.unknownError();
+            // ErrorsMinor.unknownError();
         }
     },
 
@@ -40,6 +40,7 @@ export const UserFiltersState = {
 
     setUserSearch: (input: { options: { indexOf: (x: any) => number }, regex: RegExp }) => {
         UserFiltersState.getUserSearch = input;
+        Constants.getSearchCriteria = input; // this one not tied with UI and can be called from workers
     },
 
     tagRadios: (current: HTMLElement, enabledFact: boolean) => {
@@ -201,6 +202,7 @@ export const UserFiltersState = {
                 fullContentToRegexAgainst += ' ' + SearchFunctions.elementDimensionsForRegex(current);
             }
 
+            // currently hidden Since a Reference is split into parts, which isn't helpful.  e.g. (SX 210.5-02(27)(b)) could search b, but not (27)(b)
             if (UserFiltersState.getUserSearch['options'].indexOf(6) >= 0
                 || UserFiltersState.getUserSearch['options'].indexOf(7) >= 0
                 || UserFiltersState.getUserSearch['options'].indexOf(9) >= 0

@@ -6,8 +6,12 @@
 import { ConstantsFunctions } from "../constants/functions";
 import { FactMap } from "../facts/map";
 import { FactsGeneral } from "../facts/general";
-import { FlexSearch } from "../flex-search/flex-search";
 import { UserFiltersState } from "../user-filters/state";
+import { actionKeyHandler } from "../helpers/utils";
+import { callSearch } from "../flex-search/search-worker-interface";
+import { searchUiUpdate } from "../flex-search/flex-search-ui";
+import { showSearchingHourglass } from "../flex-search/flex-search-ui";
+// import { buildArrowKeyListenerForElems } from "../helpers/utils"; // WIP
 
 export const Search = {
 
@@ -15,7 +19,14 @@ export const Search = {
     ConstantsFunctions.emptyHTMLByID('suggestions');
     (document.getElementById('global-search') as HTMLInputElement).value = '';
     UserFiltersState.setUserSearch({});
-    FlexSearch.searchFacts({});
+    // FlexSearch.searchFacts({});
+    callSearch({}, true).then(searchResults => {
+      searchUiUpdate(searchResults);
+    })
+  },
+
+  closeSuggestions: () => {
+    ConstantsFunctions.emptyHTMLByID('suggestions');
   },
 
   submit: () => {
@@ -25,6 +36,7 @@ export const Search = {
     // 4 => Include Definitions
     // 5 => Include Dimensions
     // 6 => Include References
+    showSearchingHourglass();
     ConstantsFunctions.emptyHTMLByID('suggestions');
     // let valueToSearchFor = (document.getElementById('global-search') as HTMLInputElement).value;
     // here we sanitize the users input to account for Regex patterns
@@ -43,12 +55,15 @@ export const Search = {
 
     valueToSearchFor = Search.createValueToSearchFor(valueToSearchFor);
 
-    const objectForState = {
+    const query = {
       value: [valueToSearchFor],
       'options': optionsArray
     };
-    UserFiltersState.setUserSearch(objectForState);
-    FlexSearch.searchFacts(objectForState);
+    UserFiltersState.setUserSearch(query);
+
+    callSearch(query).then(searchResults => {
+      searchUiUpdate(searchResults);
+    })
   },
 
   createValueToSearchFor: (input: string) => {
@@ -74,6 +89,8 @@ export const Search = {
   },
 
   suggestions: () => {
+    const smallSetSize = 3;
+    const lrgSetSize = 6;
     let valueToSearchFor = (document.getElementById('global-search') as HTMLInputElement).value;
     const search = document.getElementById('global-search');
     ConstantsFunctions.emptyHTMLByID('suggestions');
@@ -93,35 +110,79 @@ export const Search = {
 
       valueToSearchFor = Search.createValueToSearchFor(valueToSearchFor);
 
-      const objectForState = {
+      const query = {
         value: [valueToSearchFor],
         'options': optionsArray
       };
-      const results: Array<string> | undefined = FlexSearch.searchFacts(objectForState, true);
-      const ul = document.getElementById('suggestions') as HTMLElement;
-      results?.slice(0, 3).forEach((current: string) => {
-        const template = FactsGeneral.renderFactElem(current);
-        ul.append(template);
-      });
 
-      if (results!.length > 5) {
-        const li = document.createElement('li');
-        li.classList.add('list-group-item');
-        li.classList.add('not-numbered');
-        li.classList.add('d-flex');
-        li.classList.add('justify-content-between');
-        li.classList.add('align-items-start');
+      const suggestionsUl = document.getElementById('suggestions') as HTMLElement;
 
-        const div = document.createElement('div');
-        div.classList.add('ms-2');
-        div.classList.add('me-auto');
-
-        const title = document.createTextNode(`More Facts`);
-        div.append(title);
-        li.append(div);
-        ul.append(li);
+      const populateSuggestionsUi = (results) => {
+        results?.slice(0, lrgSetSize).forEach((current: string, index) => {
+          const hidden = index >= smallSetSize;
+          const factListMember = FactsGeneral.renderFactElem(current, hidden);
+          suggestionsUl.append(factListMember);
+        });
       }
-      document.getElementById('global-search-form')?.append(ul);
+
+      const addMoreFactsButton = (results) => {
+        // More Facts Button
+        if (results && results!.length > smallSetSize) {
+          const moreFactsLi = document.createElement('li');
+          moreFactsLi.classList.add('hover-dim');
+          moreFactsLi.classList.add('list-group-item');
+          moreFactsLi.classList.add('not-numbered');
+          moreFactsLi.classList.add('d-flex');
+          moreFactsLi.classList.add('justify-content-between');
+          moreFactsLi.classList.add('align-items-start');
+
+          const moreFactsDiv = document.createElement('div');
+          moreFactsDiv.setAttribute('id', 'moreFactsBtn');
+          moreFactsDiv.classList.add('ms-2');
+          moreFactsDiv.classList.add('me-auto');
+
+          const title = document.createTextNode(`More Facts`);
+          moreFactsDiv.append(title);
+          moreFactsLi.append(moreFactsDiv);
+          suggestionsUl.append(moreFactsLi);
+
+          // action
+          moreFactsLi.addEventListener('click', (e) => {
+            e.stopPropagation(); // so it doesn't close suggestions
+            const hiddenSuggestions = suggestionsUl.querySelectorAll('#suggestions a.d-none');
+            hiddenSuggestions.forEach(hiddenFactResult => {
+              hiddenFactResult.classList.remove('d-none');
+            })
+            moreFactsLi.classList.add('d-none')
+            suggestionsUl.style.maxHeight = '85vh';
+          })
+        }
+      }
+
+      callSearch(query, true).then(searchResults => {
+        populateSuggestionsUi(searchResults);
+        addMoreFactsButton(searchResults);
+      })
+
+      document.getElementById('global-search-form')?.append(suggestionsUl);
+
+      window.setTimeout(() => {
+        // submit search upon clicking suggestion
+        const suggestionElems = document.querySelectorAll('#suggestions > a');
+        suggestionElems?.forEach(((suggestionElem) => {
+          suggestionElem.addEventListener('click', Search.submit);
+          suggestionElem.addEventListener('keyup', (event) => {
+            if (!actionKeyHandler(event as KeyboardEvent)) return;
+            Search.submit()
+          })
+        }))
+      }, 200)
+
+      // wip adding arrow key functionality amongst suggestions
+      // const moreFactsBtn = document.getElementById('moreFactsBtn');
+      // const searchSuggestionElems = Array.from(document.querySelectorAll('[id="suggestions"] > a'));
+      // const suggestionElems = [search, ...searchSuggestionElems, moreFactsBtn]
+      // buildArrowKeyListenerForElems(suggestionElems)
     }
   },
 

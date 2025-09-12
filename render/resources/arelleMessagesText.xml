@@ -1094,7 +1094,7 @@ FootnoteLink {footnoteLinkNumber} has disallowed role {linkrole}</message>
          level="warning"
          module="plugin/validate/EFM/Filing.py" line="682"
          args="edgarCode element count date version1 version2">
-[dq-0542-Deprecated-Concept] Concept {element} in {version1} used in {count} facts was deprecated in {version2} as of {date} and should not be used. {refSources}
+[dq-0542-Deprecated-Concept] Concept {element} in {version1} used in {count} facts was deprecated as of {date} and should not be used. {refSources}
 </message>
 
 <message code="EFM.6.05.43"

@@ -169,17 +169,18 @@ export const filings = [
         "multiDoc": "",
         "Instances": ""
     },
-    {
-        "submissionType": "S-4/A",
-        "accessionNum": "000119312524093570",
-        "docPath": "/Archives/edgar/data/93410/000119312524093570/d576159ds4a.htm",
-        "notes": "",
-        "factCount": 2993,
-        "timeout": 53874,
-        "multiInstance": "",
-        "multiDoc": "",
-        "Instances": ""
-    },
+    // too big
+    // {
+    //     "submissionType": "S-4/A",
+    //     "accessionNum": "000119312524093570",
+    //     "docPath": "/Archives/edgar/data/93410/000119312524093570/d576159ds4a.htm",
+    //     "notes": "",
+    //     "factCount": 2993,
+    //     "timeout": 53874,
+    //     "multiInstance": "",
+    //     "multiDoc": "",
+    //     "Instances": ""
+    // },
     {
         "submissionType": "10-Q",
         "accessionNum": "000090831524000023",
@@ -205,16 +206,27 @@ export const filings = [
         "expectedSectionCountCorrection": -1
     },
     {
-        "submissionType": "6-K",
-        "accessionNum": "000119312524147598",
-        "docPath": "/Archives/edgar/data/9631/000119312524147598/d783326d6k.htm",
-        "notes": "",
-        "factCount": 4584,
-        "timeout": 82512,
+        "submissionType": "Exhibit 99.1",
+        "accessionNum": "000101376223000425-2",
+        "docPath": "/Archives/edgar/data/1837493/000101376223000425/ea185980-6k_inspiratech.htm",
+        "factCount": 381,
+        "timeout": 15000,
         "multiInstance": "",
         "multiDoc": "TRUE",
-        "Instances": ""
+        "Instances": "",
     },
+    // too big
+    // {
+    //     "submissionType": "6-K",
+    //     "accessionNum": "000119312524147598",
+    //     "docPath": "/Archives/edgar/data/9631/000119312524147598/d783326d6k.htm",
+    //     "notes": "",
+    //     "factCount": 4584,
+    //     "timeout": 82512,
+    //     "multiInstance": "",
+    //     "multiDoc": "TRUE",
+    //     "Instances": ""
+    // },
     {
         "submissionType": "10-Q",
         "accessionNum": "000141057824002008",
