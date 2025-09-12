@@ -136,20 +136,41 @@ export function isTruthy<T>(t: T): t is NonNullable<T> {
     return Boolean(t);
 }
 
-export function defaultKeyUpHandler(event: KeyboardEvent, callback?: () => any): boolean {
+export function actionKeyHandler(event: KeyboardEvent): boolean {
     const defaultActionKeys = ['Enter', 'Space', ' ']
     if (event instanceof KeyboardEvent && !defaultActionKeys.includes(event.key))
         return false;
 
     stopPropPrevDefault(event);
-
-    if (callback) callback();
     return true;
 }
 
-export function stopPropPrevDefault(event: Event, callback?: () => any): void {
+export function stopPropPrevDefault(event: Event): void {
     event.stopPropagation();
     event.preventDefault();
+}
 
-    if (callback) callback();
+// Generic func that takes array of elements that up/down arrows will nav through
+// WIP
+export function buildArrowKeyListenerForElems(elemSet: Node[]) : void {
+    console.log('elemSet', elemSet)
+    elemSet.forEach((elem, index) => {
+        elem.addEventListener('keyup', (event) => {
+            const keyEvent = <KeyboardEvent> event;
+            if (keyEvent.key == 'ArrowUp') {
+                if (index === 0) {
+                    (elemSet[elemSet.length - 1] as HTMLElement)?.focus();
+                } else {
+                    (elemSet[index - 1] as HTMLElement).focus();
+                }
+            }
+            if (keyEvent.key == 'ArrowDown') {
+                if (index === elemSet.length - 1) {
+                    (elemSet[0] as HTMLElement).focus();
+                } else {
+                    (elemSet[index + 1] as HTMLElement).focus();
+                }
+            }
+        });
+    })
 }

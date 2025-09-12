@@ -16,4 +16,11 @@ describe('Fact Footnotes', () => {
         cy.get('[data-cy="Tag-value"]').should('exist')
         cy.get(selectors.modalFootnoteVal).should('not.exist')
     });
+
+    it('Fact 1362 should show text of 2 footnotes', () => {
+        cy.visit('/Archives/edgar/data/1123799/000095017025076303/wit-20250331.htm#fact-identifier-1362')
+        cy.get('[data-cy="Tag-value"]').should('exist')
+        cy.get(selectors.modalFootnoteVal).should('contain.text', 'Includes 11,905,480 treasury shares held as at March 31, 2025 by a controlled trust.');
+        cy.get(selectors.modalFootnoteVal).should('contain.text', 'Refer to Note 22');
+    });
 })

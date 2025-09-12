@@ -88,4 +88,40 @@ describe(`Fact Hash`, () => {
         cy.get(selectors.nestedFactModal).should('not.be.visible')
         cy.get(selectors.factModal).should('have.css', 'display', 'none')
     })
+
+    it("Selected fact should remain selected after refresh", () => {
+        cy.loadByAccessionNum('000121390021056659-991')
+        cy.get('[ix="fact-identifier-569"]').click()
+            .then(() => {
+                cy.visibleOnScreen('[ix="fact-identifier-569"]')
+                    .then(() => {
+                        cy.reload()
+                            .then(() => {
+                                cy.get('div[id="loading-animation"]').should('not.be.visible')
+                                    .then(() => {
+                                        cy.hash().should('eq', '#fact-identifier-569')
+                                        cy.wait(1000); // wait for scroll to fact
+                                        cy.visibleOnScreen('[ix="fact-identifier-569"]')
+                                        cy.visibleOnScreen('[id="fact-modal"]')
+                                    })
+                            })
+                    })
+            })
+    })
+
+    it("Selected fact should remain selected after refresh (No Cache)", () => {
+        cy.loadByAccessionNum('000121390021056659-991')
+        cy.get('[ix="fact-identifier-569"]').click().then(() => {
+            cy.visibleOnScreen('[ix="fact-identifier-569"]').then(() => {
+                cy.reload(true).then(() => {
+                    cy.get('div[id="loading-animation"]').should('not.be.visible').then(() => {
+                        cy.hash().should('eq', '#fact-identifier-569')
+                        cy.wait(2000); // wait for scroll to fact
+                        cy.visibleOnScreen('[ix="fact-identifier-569"]')
+                        cy.visibleOnScreen('[id="fact-modal"]')
+                    })
+                })
+            })
+        })
+    })
 })

@@ -3,10 +3,8 @@ import { readFilingDataAccNum } from "../../dataPlus/filingsFunnel.js";
 
 let nmexfiling = readFilingDataAccNum('000143774923034166');
 
-describe(`Hidden Facts`, () =>
-{
-    it('Hidden Fact should have file location', () =>
-    {
+describe(`Hidden Facts`, () => {
+    it('Hidden Fact should have file location', () => {
         cy.loadFiling(nmexfiling);
         cy.get(selectors.factSidebarToggleBtn).click();
 
@@ -20,8 +18,7 @@ describe(`Hidden Facts`, () =>
         cy.get(selectors.factModal).should('be.visible');
     });
 
-    it('Hidden within Hidden Fact', () =>
-    {
+    it('Hidden within Hidden Fact', () => {
         cy.loadFiling(nmexfiling);
 
         cy.get('[id="fact-identifier-195"]').click();
@@ -34,9 +31,9 @@ describe(`Hidden Facts`, () =>
         cy.get(selectors.factModal).should('be.visible');
     });
 
-    it('Normal fact within Hidden Fact', () =>
-    {
+    it('Normal fact within Hidden Fact', () => {
         cy.loadByAccessionNum('000121390021056659');
+        
         // switch docs
         cy.get('[data-cy="inlineDocTab-1"]').click();
 
@@ -51,8 +48,7 @@ describe(`Hidden Facts`, () =>
         cy.get(selectors.factModal).should('be.visible');
     });
 
-    it('Hidden Fact should have file location (2)', () =>
-    {
+    it('Hidden Fact should have file location (2)', () => {
         cy.loadByAccessionNum('000121390021056659');
         cy.get(selectors.factSidebarToggleBtn).click();
 
@@ -65,8 +61,7 @@ describe(`Hidden Facts`, () =>
         cy.get(selectors.factModal).should('be.visible');
     });
 
-    it('Nested Hidden Fact is scrolled to and highlighted', () =>
-    {
+    it('Nested Hidden Fact is scrolled to and highlighted', () => {
         cy.loadByAccessionNum('000121390021056659');
         cy.get(selectors.factSidebarToggleBtn).click();
 

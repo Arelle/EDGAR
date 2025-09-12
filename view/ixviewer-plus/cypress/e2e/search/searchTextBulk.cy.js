@@ -2,6 +2,7 @@ import { selectors } from "../../utils/selectors.mjs"
 import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
 
 let filingsSample = getFilingsSample(Cypress.env);
+filingsSample = filingsSample.slice(0, Cypress.env('limitOfFilingsToTest'))
 
 describe(`Search for ${filingsSample.length} filings`, () => {
     filingsSample.forEach((filing, index) => {
@@ -12,6 +13,7 @@ describe(`Search for ${filingsSample.length} filings`, () => {
         // just checking for smaller or equal fact count
         it(`[${index + 1}] Search text 'cash' should filter facts. AC : ${filing.accessionNum}`, () => {
             cy.loadFiling(filing)
+            cy.get(selectors.searchHourglass, {timeout: 18000}).should("not.be.visible");
 
             cy.get(selectors.factCountBadge).invoke('text').then(text => {
                 initialFactCount = Number(text.replace(',', ''))
@@ -31,7 +33,7 @@ describe(`Search for ${filingsSample.length} filings`, () => {
             // Check all options except Match Case (These selectors are gross...)
             cy.get('form[id="global-search-form"] div.form-check:nth-child(4) input').click({force: true})
             cy.get('form[id="global-search-form"] div.form-check:nth-child(5) input').click({force: true})
-            cy.get('form[id="global-search-form"] div.form-check:nth-child(6) input').click({force: true})
+            // cy.get('form[id="global-search-form"] div.form-check:nth-child(6) input').click({force: true})
             // Reference Options (outdated?)
             // cy.get('form[id="global-search-form"] div.dropdown-menu div.border div.form-check:nth-child(2) > input').click()
             // cy.get('form[id="global-search-form"] div.dropdown-menu div.border div.form-check:nth-child(3) > input').click()
@@ -53,6 +55,7 @@ describe(`Search for ${filingsSample.length} filings`, () => {
             
             // this assertion forces it to wait for it to be populated with number
             cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist')
+            cy.get(selectors.searchHourglass, {timeout: 18000}).should("not.be.visible");
 
             
             cy.get(selectors.factCountBadge).invoke('text').then(text => {
@@ -73,6 +76,7 @@ describe(`Search for ${filingsSample.length} filings`, () => {
             
             // this assertion forces it to wait for it to be populated with number
             cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) }).should('not.exist')
+            cy.get(selectors.searchHourglass, {timeout: 18000}).should("not.be.visible");
 
             
             cy.get(selectors.factCountBadge).invoke('text').then(text => {

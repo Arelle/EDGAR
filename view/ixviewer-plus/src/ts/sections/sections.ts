@@ -12,14 +12,17 @@ import { HelpersUrl } from "../helpers/url";
 import { FactInput } from "../interface/fact-input";
 import { Section } from "../interface/meta";
 import { convertToSelector, ixScrollTo } from "../helpers/utils";
-import { defaultKeyUpHandler } from "../helpers/utils";
+import { actionKeyHandler } from "../helpers/utils";
 import { Logger, ILogObj } from "tslog";
 import { addVArrowNav } from "../listeners"
 import { Facts } from "../facts/facts"
 import { Modals } from "../modals/modals";
+import { addToJsPerfTable } from "../helpers/ixPerformance";
 
 export const Sections = {
     init: () => {
+        const startPerformance = performance.now();
+
         let fakeOrder = Constants.sections.length;
         const sections = Constants.sections.sort((a, b) => {
             if (a.order && b.order) {
@@ -43,6 +46,11 @@ export const Sections = {
         const actionableSectionElems = document.querySelectorAll('#sections-dropdown-link, #closeSectionsX, #tagged-sections button, #tagged-sections a');
         addVArrowNav(actionableSectionElems);
         Sections.addEscListener();
+        
+        if (LOGPERFORMANCE || Constants.logPerfParam ) {
+            const endPerformance = performance.now();
+            addToJsPerfTable('Sections.init()', startPerformance, endPerformance);
+        }
 
         return sections;
     },
@@ -90,7 +98,6 @@ export const Sections = {
 
         const scrollToSection = (section: Section, id: string, name: string, contextRef: string) => {
             if (!id) {
-                // in the case of an instance change, this runs as callback after new instace loads
                 id = FactMap.getByNameContextRef(name, contextRef)?.id as string;
             }
             Sections.scrollToSection(section);
@@ -103,7 +110,6 @@ export const Sections = {
         const scrollToFact = (fact: FactInput, id: string, name: string, contextRef: string) => {
             // used less often than scrollToSection, if at all...
             if (!id) {
-                // in the case of an instance change, this runs as callback after new instace loads
                 id = FactMap.getByNameContextRef(name, contextRef)?.id as string;
             }
             Sections.scrollToSectionOld(fact);
@@ -147,11 +153,17 @@ export const Sections = {
         } else {
             const instanceIndex = Number(sectionLinkElem?.getAttribute('fact-instance-index'));
             const targetInstanceFile = sectionLinkElem?.getAttribute('fact-file') || null;
-            ConstantsFunctions.changeInstance(instanceIndex, targetInstanceFile, action);
+            // maybe refactor changeInstance to promise
+            ConstantsFunctions.changeInstance(instanceIndex, targetInstanceFile).then((success) => {
+                if (success) {
+                    action()
+                }
+                else console.error("Error changin instance.");
+            })
         }
 
         const endPerformance = performance.now();
-        if (LOGPERFORMANCE) {
+        if (LOGPERFORMANCE || Constants.logPerfParam ) {
             const log: Logger<ILogObj> = new Logger();
             // takes a lot longer if doc change, which makes sense
             log.debug(`Section Link Handler completed in: ${(endPerformance - startPerformance).toFixed(2)}ms`);
@@ -451,7 +463,7 @@ export const Sections = {
 
         for (const eType of ["click", "keyup"] as const) {
             sectionFactLink.addEventListener(eType, (eventElem) => {
-                if (eventElem instanceof KeyboardEvent && !defaultKeyUpHandler(eventElem))
+                if (eventElem instanceof KeyboardEvent && !actionKeyHandler(eventElem))
                     return;
                 Sections.handleSectionLinkClick(eventElem);
             });

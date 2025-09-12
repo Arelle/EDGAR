@@ -10,7 +10,7 @@ export const selectors = {
     intanceTab0factCountToolTip: 'a[data-cy="inlineDocTab-0"] > span *',
     tableTab: 'a[data-cy="factTableTab"]',
     tableTabFactCount: 'a[data-cy="factTableTab > span',
-    factCountClock: 'a[id="facts-menu-button"] span.fact-total-count i',
+    factCountClock: '[data-cy="fact-clock"]',
 
     menuButton: 'button[data-test="menu-dropdown-link"]',
     menuDropdown: 'div[id="menuContents"]',
@@ -57,6 +57,7 @@ export const selectors = {
     instanceDropDownMenu:'ul.dropdown-menu',
     instanceDropdownOptions:'#tabs-container button[data-cy="instance-dropdown"] .dropdown-item',
     search: 'input[data-test="global-search"]',
+    searchHourglass: '#search-hourglass',
     submitSearchButton: 'form[data-test="global-search-form"] button[type="submit"]',
     searchSettingsGear: 'form[id="global-search-form"] button[data-name="global-search-options"]',
     searchSettingsDropdown: 'div[id="searchOptionsContainer"]',
@@ -93,10 +94,13 @@ export const selectors = {
     measure3Filter: '#user-filters-measures > div:nth-child(4) input',
 
     axisFilterTagDrawer: 'form button[data-test="Axis"]',
+    axisExplicitTagDrawer: 'button[data-bs-target="#axes-filters-accordion-0"]',
     axis1Filter: '#user-filters-axis > div:nth-child(1) button',
 
     membersFilterTagDrawer: 'form button[data-test="Members"]',
+    membersExplicitTagDrawer: 'button[data-bs-target="#members-filters-accordion-0"]',
     membersFilter1: 'form input[id="members-all-0"]',
+    membersExplicitAccordion: 'button[data-bs-target="#members-filters-accordion-0"]',
 
     scaleFilterTagDrawer: 'form button[data-test="Scale"]',
     scaleFilter1: '#user-filters-scales > div:nth-child(2) input',
@@ -136,6 +140,7 @@ export const selectors = {
     factExpandMoreLess: 'a[data-cy="factExpandMoreLess"]',
 
     factValueInModal: '#fact-modal-carousel-page-1 > tbody > tr:nth-child(2) > td > div',
+    modalFootnoteVal: '[data-cy="Footnote-value"]',
 
     factModalCarouselPrevArrow: 'div#fact-modal div.dialog-footer button[data-test="modal-fact-prev"]',
     factModalCarouselNextArrow: 'div#fact-modal div.dialog-footer button[data-test="modal-fact-next"]',

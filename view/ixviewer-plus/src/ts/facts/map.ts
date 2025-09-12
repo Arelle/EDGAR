@@ -1,7 +1,7 @@
-import { ErrorsMinor } from "../errors/minor";
-import { isTruthy } from "../helpers/utils";
+import { isTruthy } from "../helpers/utilsData";
 import { SingleFact } from "../interface/fact";
-import { UserFiltersState } from "../user-filters/state";
+import { addToJsPerfTable } from "../helpers/ixPerformance";
+import { Constants } from "../constants/constants";
 
 export const FactMap: {
     map: Map<string, SingleFact>,
@@ -32,6 +32,7 @@ export const FactMap: {
     map: new Map<string, SingleFact>(),
 
     init: (mapOfFacts: Map<string, unknown>): void => {
+        const startPerformance = performance.now();
         FactMap.map.clear();
 
         Array.from(new Map([...mapOfFacts]), (entry: any) => {
@@ -40,27 +41,28 @@ export const FactMap: {
                 FactMap.map.set(entry[1].id, entry[1]);
             }
         });
+        const endPerformance = performance.now();
+        if (LOGPERFORMANCE || Constants.logPerfParam ) {
+            addToJsPerfTable('FactMap.init', startPerformance, endPerformance)
+        }
+
     },
 
-    asArray: (): SingleFact[] =>
-    {
+    asArray: (): SingleFact[] => {
         return [...FactMap.map.values()];
     },
 
-    setHighlightedFacts: (arrayOfIDs) =>
-    {
+    setHighlightedFacts: (arrayOfIDs) => {
+        if (!arrayOfIDs) return;
         const setOfIDs = new Set(arrayOfIDs);
-        for(let [key, current] of FactMap.map)
-        {
+        for (let [key, current] of FactMap.map) {
             current.isHighlight = setOfIDs.has(current.id);
         }
     },
 
-    setEnabledFacts: (arrayOfIDs) =>
-    {
+    setEnabledFacts: (arrayOfIDs) => {
         const setOfIDs = new Set(arrayOfIDs);
-        for(let [key, current] of FactMap.map)
-        {
+        for (let [key, current] of FactMap.map) {
             current.isEnabled = setOfIDs.has(current.id);
         }
     },
@@ -124,11 +126,11 @@ export const FactMap: {
     getAllMembers: () => {
         const members = Array.from(new Map([...FactMap.map]), (entry: any) => {
             return entry[1].segment ? entry[1].segment.map((current: any) => {
-                if (current.dimension) {
-                    return { type: current.type, value: current.dimension };
+                if (current.member) {
+                    return { type: current.type, value: current.member };
                 } else if (Array.isArray(current)) {
                     return current.map((nestedCurrent) => {
-                        return { type: nestedCurrent.type, value: nestedCurrent.dimension };
+                        return { type: nestedCurrent.type, value: nestedCurrent.member };
                     });
                 }
             }).flat().filter(Boolean) : null;
@@ -176,7 +178,8 @@ export const FactMap: {
         if (FactMap.map.has(id)) {
             return FactMap.map.get(id) || null;
         } else {
-            ErrorsMinor.factNotFound();
+            // ErrorsMinor.factNotFound();
+            console.error('Fact id not found:', id)
             return null;
         }
     },
@@ -226,7 +229,8 @@ export const FactMap: {
     },
 
     getFullFacts: () => {
-        const includeHighlights = Object.keys(UserFiltersState.getUserSearch).length !== 0;
+        // const includeHighlights = Object.keys(UserFiltersState.getUserSearch).length !== 0;
+        const includeHighlights = Object.keys(Constants.getSearchCriteria).length !== 0;
         return Array.from(new Map([...FactMap.map]), (entry: any) => {
             if (includeHighlights) {
                 if (entry[1].isEnabled && entry[1].isHighlight) {
@@ -242,10 +246,10 @@ export const FactMap: {
 
     /** Returns the number of facts as a string with "," inserted as appropriate */
     getFactCount: (): string => {
-        const includeHighlights = Object.keys(UserFiltersState.getUserSearch).length !== 0;
+        // const includeHighlights = Object.keys(UserFiltersState.getUserSearch).length !== 0;
+        const includeHighlights = Object.keys(Constants.getSearchCriteria).length !== 0;
         const count = [...FactMap.map.values()]
-            .filter((fact) => fact.isEnabled && (!includeHighlights || fact.isHighlight))
-            .length;
+            .filter((fact) => fact.isEnabled && (!includeHighlights || fact.isHighlight)).length;
 
         return count.toString()
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -266,7 +270,8 @@ export const FactMap: {
     },
 
     getFactCountForFile: (docSlug: string): string => {
-        const includeHighlights = Object.keys(UserFiltersState.getUserSearch).length !== 0;
+        // const includeHighlights = Object.keys(UserFiltersState.getUserSearch).length !== 0;
+        const includeHighlights = Object.keys(Constants.getSearchCriteria).length !== 0;
         const count = [...FactMap.map.values()]
             .filter((fact) => fact.file == docSlug)
             .filter((fact) => fact.isEnabled && (!includeHighlights || fact.isHighlight))
@@ -339,4 +344,3 @@ export const FactMap: {
     },
 
 };
-

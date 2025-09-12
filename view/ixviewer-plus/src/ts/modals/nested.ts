@@ -11,7 +11,7 @@ import { ModalsCommon } from "./common";
 import { FactPages } from "./fact-pages";
 import { Modals } from "./modals";
 import { Facts } from "../facts/facts";
-import { defaultKeyUpHandler } from "../helpers/utils";
+import { actionKeyHandler } from "../helpers/utils";
 
 export const ModalsNested = {
 
@@ -208,7 +208,7 @@ export const ModalsNested = {
 
 			// selectedElement.scrollIntoView(false);    // keeping as comment to remember alternative function
 			Facts.updateURLHash(selectedElement.id);
-			FactMap.setIsSelected(selectedElement.id);
+			Facts.setIsSelected(selectedElement.id);
 			ixScrollTo(selectedElement);
 
 			ModalsNested.createContentCarousel(event.to);
@@ -246,7 +246,7 @@ export const ModalsNested = {
 			Pagination.goToFactInSidebar(event);
 		});
 		document.getElementById('nested-fact-modal-jump')?.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Pagination.goToFactInSidebar(event);
 		});
 
@@ -261,7 +261,7 @@ export const ModalsNested = {
 			Modals.expandToggle(event, 'fact-nested-modal', 'fact-nested-modal-expand', 'fact-nested-modal-compress');
 		});
 		document.getElementById('fact-nested-modal-compress')?.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Modals.expandToggle(event, 'fact-nested-modal', 'fact-nested-modal-expand', 'fact-nested-modal-compress');
 		});
 
@@ -269,7 +269,7 @@ export const ModalsNested = {
 			Modals.expandToggle(event, 'fact-nested-modal', 'fact-nested-modal-expand', 'fact-nested-modal-compress');
 		});
 		document.getElementById('fact-nested-modal-expand')?.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Modals.expandToggle(event, 'fact-nested-modal', 'fact-nested-modal-expand', 'fact-nested-modal-compress');
 		});
 
@@ -277,7 +277,7 @@ export const ModalsNested = {
 			Modals.close(event);
 		});
 		document.getElementById('fact-nested-modal-close')?.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Modals.close(event);
 		});
 

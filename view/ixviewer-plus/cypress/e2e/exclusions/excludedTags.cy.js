@@ -6,15 +6,16 @@ import { selectors } from "../../utils/selectors.mjs"
 describe(`XBRL tags that should not be considered facts`, () => {
 	Cypress.config('defaultCommandTimeout', 20000);
 	it('"ix:exclude" tags are not facts', () => {
-		cy.loadByAccessionNum('000143774923027411')
+		// cy.loadByAccessionNum('000143774923027411')
+		cy.loadByAccessionNum('Navios')
 		cy.get('ix\\:exclude').should('not.have.attr', 'contextref')
     })
     it('"ix:footnote" tags are not facts', () => {
-		cy.loadByAccessionNum('000143774923027411')
+		cy.loadByAccessionNum('Navios')
 		cy.get('ix\\:footnote').should('not.have.attr', 'contextref')
     })
     it('"ix:header" tags are not facts', () => {
-		cy.loadByAccessionNum('000143774923027411')
+		cy.loadByAccessionNum('Navios')
 		cy.get('ix\\:header').should('not.have.attr', 'contextref')
     })
 })

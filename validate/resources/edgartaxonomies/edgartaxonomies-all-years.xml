@@ -451,6 +451,67 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
         <Namespace>http://xbrl.sec.gov/snj-def/2025</Namespace>
         <Prefix>snj-def</Prefix>
     </Loc>
+    <!-- SPAC 2025q3 -->
+	<Loc>
+		<Family>SPAC</Family>
+		<Version>2025q3</Version>
+		<Href>https://xbrl.sec.gov/spac/2025q3/spac-2025q3.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Schema</FileTypeName>
+		<Elements>1</Elements>
+		<Namespace>http://xbrl.sec.gov/spac/2025q3</Namespace>
+		<Prefix>spac</Prefix>
+	</Loc>
+	<Loc>
+		<Family>SPAC</Family>
+		<Version>2025q3</Version>
+		<Href>https://xbrl.sec.gov/spac/2025q3/spac-2025q3_lab.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Schema</FileTypeName>
+		<Elements>1</Elements>
+		<Namespace>http://xbrl.sec.gov/spac-lab/2025q3</Namespace>
+		<Prefix>spac</Prefix>
+	</Loc>
+	<Loc>
+		<Family>SPAC</Family>
+		<Version>2025q3</Version>
+		<Href>https://xbrl.sec.gov/spac/2025q3/spac-despac-2025q3.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Entry Point</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://xbrl.sec.gov/spac-despac/2025q3</Namespace>
+		<Prefix>spac-despac</Prefix>
+	</Loc>
+	<Loc>
+		<Family>SPAC</Family>
+		<Version>2025q3</Version>
+		<Href>https://xbrl.sec.gov/spac/2025q3/spac-proj-2025q3.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Entry Point</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://xbrl.sec.gov/spac-proj/2025q3</Namespace>
+		<Prefix>spac-proj</Prefix>
+	</Loc>
+	<Loc>
+		<Family>SPAC</Family>
+		<Version>2025q3</Version>
+		<Href>https://xbrl.sec.gov/spac/2025q3/spac-reg-2025q3.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Entry Point</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://xbrl.sec.gov/spac-reg/2025q3</Namespace>
+		<Prefix>spac-reg</Prefix>
+	</Loc>
+	<Loc>
+		<Family>SPAC</Family>
+		<Version>2025q3</Version>
+		<Href>https://xbrl.sec.gov/spac/2025q3/spac-com-2025q3.xsd</Href>
+		<AttType>SCH</AttType>
+		<FileTypeName>Entry Point</FileTypeName>
+		<Elements>0</Elements>
+		<Namespace>http://xbrl.sec.gov/spac-com/2025q3</Namespace>
+		<Prefix>spac-com</Prefix>
+	</Loc>
     <!-- SPAC 2025 -->
 	<Loc>
 		<Family>SPAC</Family>

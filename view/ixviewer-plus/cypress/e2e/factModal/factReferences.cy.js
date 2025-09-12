@@ -2,8 +2,7 @@ import { selectors } from "../../utils/selectors.mjs";
 import { getByAccessionNum } from "../../dataPlus/filingsFunnel.js";
 
 describe('Fact References', () => {
-    it('Ensure all fact references are shown in fact modal', () =>
-    {
+    it('Ensure all fact references are shown in fact modal', () => {
         cy.loadByAccessionNum('000005114323000021')
         cy.get('#fact-identifier-6').click()
         cy.get(selectors.factModalCarouselNextArrow).click().click()

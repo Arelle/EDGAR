@@ -840,10 +840,10 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 date = deprecatedConceptDates[conceptQn]
                 version1 = abbreviatedNamespace(conceptQn.namespaceURI)
                 modelXbrl.warning("EFM.6.05.42",
-                    _("Concept %(element)s in %(version1)s used in %(count)s facts was deprecated in %(version2)s as of %(date)s and should not be used."),
+                    _("Concept %(element)s in %(version1)s used in %(count)s facts was deprecated as of %(date)s and should not be used."),
                     edgarCode="dq-0542-Deprecated-Concept",
                     modelObject=facts, element=conceptQn.localName, count=len(facts), date=date,
-                    version1=version1, version2=version1[:-4]+date[0:4])
+                    version1=version1)
 
         del deprecatedConceptContexts, deprecatedConceptFacts, deprecatedConceptDates, nonNegFacts
         val.modelXbrl.profileActivity("... filer unit checks", minTimeToShow=1.0)
@@ -3607,6 +3607,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 if getattr(lbVal, 'exgDef', None) and ('elrDefDocTypes' not in lbVal or deiDocumentType in lbVal.elrDefDocTypes):
                     tgtMemRoles.clear()
                     tgtMemRels.clear()
+                    relationShipNotPermittedMsgTemplate = "The %(arcrole)s relationship from %(conceptFrom)s to %(conceptTo)s, link role %(linkroleDefinition)s, is not permitted."
                     for rel in modelXbrl.relationshipSet("XBRL-dimensions").modelRelationships:
                         if not isStandardUri(val, rel.modelDocument.uri) and rel.modelDocument.targetNamespace not in val.otherStandardTaxonomies:
                             relFrom = rel.fromModelObject
@@ -3623,7 +3624,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     )
                                    ):
                                     modelXbrl.error(f"EXG.{lbVal.exgDef}.relationshipNotPermitted",
-                                        _("The %(arcrole)s relationship from %(conceptFrom)s to %(conceptTo)s, link role %(linkroleDefinition)s, is not permitted."),
+                                        _(relationShipNotPermittedMsgTemplate),
                                         edgarCode=f"du-{lbVal.exgDef[3:5]}{lbVal.exgDef[6:]}-Relationship-Not-Permitted",
                                         modelObject=(rel,relFrom,relTo), arc=rel.qname, arcrole=rel.arcrole,
                                         linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
@@ -3648,6 +3649,16 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 if 'exgDefTgtMemsUnique' in lbVal and rel.arcrole == XbrlConst.domainMember and lbVal.elrDefRgtMemsRole.match(rel.linkrole):
                                     tgtMemRoles[relTo].add(rel.linkrole)
                                     tgtMemRels[relTo].append(rel)
+                                if getattr(lbVal, 'elrDefTgt', None) and \
+                                    any(r.match(rel.linkrole) and \
+                                         not q.match(str(relTo.qname)) \
+                                                for r, q in lbVal.elrDefTgt):
+                                    modelXbrl.error(f"EXG.{lbVal.exgDef}.relationshipNotPermitted",
+                                        _(relationShipNotPermittedMsgTemplate),
+                                        edgarCode=f"du-{lbVal.exgDef[3:5]}{lbVal.exgDef[6:]}-Relationship-Not-Permitted",
+                                        modelObject=(rel,relFrom,relTo), arc=rel.qname, arcrole=rel.arcrole,
+                                        linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
+                                        conceptFrom=relFrom.qname, conceptTo=relTo.qname)
                     for tgtMem, roles in tgtMemRoles.items():
                         if len(roles) > 1:
                             modelXbrl.error(f"EXG.{lbVal.exgDefTgtMemsUnique}",
@@ -4682,7 +4693,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     cubeRoots = tableRelSet.rootConcepts
                     for cubeRoot in cubeRoots:
                         for cube in getDescendants("XBRL-dimensions",cubeRoot, linkroleUri, cubeOnly=True):
-                            if (tableRelSet.isRelated(cube, "descendant", dimToSkipIfPresent, isDRS=True) or
+                            if ( (dimToSkipIfPresent is not None and tableRelSet.isRelated(cube, "descendant", dimToSkipIfPresent, isDRS=True)) or
                                 not tableRelSet.isRelated(cube, "descendant", dimConcept, isDRS=True) or not any(
                                     priItemRelSet.isRelated(cubeRoot, "descendant", priItemConcept, isDRS=True)
                                     for priItemConcept in priItemConcepts)):
@@ -4798,7 +4809,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     for rel in modelXbrl.relationshipSet(XbrlConst.dimensionDomain).modelRelationships:
                         if rel.fromModelObject is not None and rel.fromModelObject.name not in ignoreDims:
                             checkMember(rel.fromModelObject, rel, set())
-            elif dqcRuleName == "DQC.US.0084":
+            elif dqcRuleName == "DQC.US.0084" and deiDocumentType != "N-CSR": # update for XULE v27 change
                 # 0084 has only one id, rule
                 id, rule = next(iter(dqcRule["rules"].items()))
                 tolerance = rule["tolerance"]
@@ -5450,7 +5461,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     definition = (roleTypes[0].definition or linkroleUri) if roleTypes else linkroleUri
                     if not "- Statement " in definition:
                         continue
-                    hasStatementLinkrole = False
+                    hasStatementLinkrole = True
                     for stmtRoot in modelXbrl.relationshipSet(XbrlConst.parentChild, linkroleUri).rootConcepts:
                         for stmtConceptName in getDescendants(XbrlConst.parentChild, stmtRoot, linkroleUri):
                             for stmtConcept in modelXbrl.nameConcepts.get(stmtConceptName,()):

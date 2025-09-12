@@ -11,7 +11,7 @@ import { Pagination } from "../pagination/sideBarPagination";
 import { FactMap } from "../facts/map";
 import { ConstantsFunctions } from "../constants/functions";
 import { ErrorsMinor } from "../errors/minor";
-import { defaultKeyUpHandler } from "../helpers/utils";
+import { actionKeyHandler } from "../helpers/utils";
 
 export const ModalsCommon = {
 	currentSlide: 0,
@@ -71,7 +71,7 @@ export const ModalsCommon = {
 			Pagination.goToFactInSidebar(event);
 		});
 		document.getElementById('fact-modal-jump')?.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Pagination.goToFactInSidebar(event);
 		});
 
@@ -79,7 +79,7 @@ export const ModalsCommon = {
 			Modals.copyContent(event, 'fact-modal-carousel', 'fact-copy-content');
 		});
 		document.getElementById('fact-modal-copy-content')?.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Modals.copyContent(event, 'fact-modal-carousel', 'fact-copy-content');
 		});
 
@@ -87,7 +87,7 @@ export const ModalsCommon = {
 			Modals.expandToggle(event, 'fact-modal', 'fact-modal-expand', 'fact-modal-compress');
 		});
 		document.getElementById('fact-modal-compress')?.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Modals.expandToggle(event, 'fact-modal', 'fact-modal-expand', 'fact-modal-compress');
 		});
 
@@ -95,7 +95,7 @@ export const ModalsCommon = {
 			Modals.expandToggle(event, 'fact-modal', 'fact-modal-expand', 'fact-modal-compress');
 		});
 		document.getElementById('fact-modal-expand')?.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Modals.expandToggle(event, 'fact-modal', 'fact-modal-expand', 'fact-modal-compress');
 		});
 
@@ -103,7 +103,7 @@ export const ModalsCommon = {
 			Modals.close(event);
 		});
 		document.getElementById('fact-modal-close')?.addEventListener('keyup', (event: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(event)) return;
+			if (!actionKeyHandler(event)) return;
 			Modals.close(event);
 		});
 

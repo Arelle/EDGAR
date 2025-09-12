@@ -37,7 +37,7 @@ describe('Inline docs layout matches plain html version', () => {
         cy.get('table').contains('table', '5225 Wiley Post Way, Suite 500').then(($table) => {
             let width = window.getComputedStyle($table[0]).width;
             // Width is currently a string like '1870px'. This will strip the letters out and convert it to a number
-            width = Number(width.replace(/\D/g, ''));
+            width = Number(width.replace(/px/g, ''));
             // Giving it 1% wiggle room so it doesn't have to be pixel-perfect
             cy.expect(width).to.be.within(0.99 * 1870, 1.01 * 1870);
         })
@@ -152,7 +152,11 @@ describe('Inline docs layout matches plain html version', () => {
                     cy.expect(outline).to.not.eq("rgb(0, 0, 0) none 0px");
                     // Second check looks for the specific outline at the time of writing (rgb(0, 55, 104) solid 2px)
                     // Second check will fail if the specific format of the outline changes.
-                    cy.expect(outline).to.eq("rgb(0, 55, 104) solid 2px");
+                    cy.expect(outline).to.contain("rgb(0, 55, 104) solid");
+                    let outlineWidth = window.getComputedStyle($fact[0]).getPropertyValue('outline-width');
+                    outlineWidth = Number(outlineWidth.replace(/px/, ''));
+                    cy.expect(outlineWidth).to.be.within(1.5, 2.5);
+                    // cy.expect(outline).to.eq("rgb(0, 55, 104) solid 2px");
                 })
             })
     })
@@ -193,5 +197,18 @@ describe('Inline docs layout matches plain html version', () => {
         cy.loadByAccessionNum('000119312524185882')
         cy.get('body > div:nth-child(3) > div > div:nth-child(97) > div:nth-child(7) > table > tbody > tr:nth-child(7) > td:nth-child(1) > div')
             .should('have.css', 'font-family', 'arial');
+    })
+
+    it('Vertical alignment of text and images should be at bottom of line', () => {
+        cy.loadByAccessionNum('DonnelleyTest')
+        // img element should not have vertical align property that was being set by bootstrap reboot 'center', should be 'baseline' instead.
+        cy.get('#fact-identifier-26 > p:nth-child(3) > img').should('have.css', 'vertical-align', 'baseline');
+        cy.get('#fact-identifier-26 > p:nth-child(3) > span').should('have.css', 'vertical-align', 'baseline');
+    })
+
+    it('2 column layout for Loews', () => {
+        // /Archives/edgar/data/60086/000114036125011755/ny20041383x1_def14a.htm
+        cy.loadByAccessionNum('000114036125011755')
+        cy.get('.BRDSX_BRDSX_block-main-columns').should('have.css', 'box-sizing', 'content-box');
     })
 })

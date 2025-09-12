@@ -34,6 +34,7 @@ describe(`Multi Doc filings`, () => {
         cy.get(`section[filing-url="stratasys-6k.htm"]`).should("not.have.class", "d-none");
         cy.get(`section[filing-url="stratasys-991.htm"]`).should("have.class", "d-none");
     });
+    
     it("should select and show the fact click on the side bar while switching to the rigth doc", () => {
         //a multi-doc filing
         let filing = readFilingDataAccNum('000101376223000425');
@@ -79,10 +80,16 @@ describe(`Multi Doc filings`, () => {
         cy.get('a[order="1"]').click();
         cy.get('[id="nav-filter-tags"]').should('have.css', 'border-top');
         cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top');
-        cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top-width', '2px');
+
+        // reference for css within, closeTo
+        cy.get('[id="fact-identifier-3"]')
+            .invoke('css', 'border-top-width')
+            .then(parseFloat)
+            .should('be.closeTo', 2, 0.1);
+
+        cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top-color', 'rgb(255, 102, 0)');
+
         cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top-style', 'solid');
         cy.get('[id="fact-identifier-3"]').should('have.css', 'border-bottom');
-        // might be fragile
-        cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top', '2px solid rgb(255, 102, 0)');
     })
 })

@@ -22,14 +22,15 @@ const formatSegment = (segment: string) => {
 	
 		let conceptFormatted = ''
 		if (concept) {
-			const conceptArr: string[] | null = concept.match(/[A-Z][a-z]+/g);
+			const conceptArr: string[] | null = concept.match(/[A-Z][a-z]*/g);
 			conceptArr?.map((word, index, arr) => {
 				if (index === arr.length -1) {
 					if (dimensionLabels.includes(word)) {
 						word = `[${word}]`;  // wrap dimension labels (last word) in square brackets
 					}
 				}
-				if (word.length > 1) {
+				// why greater > length ???  (used to be > 1, but caused issues with "Class A Ordinary")
+				if (word.length > 0) {
 					conceptFormatted += word + ' '
 				} else {
 					conceptFormatted += word
@@ -64,19 +65,27 @@ const getMembersByType = (segment: Array<SegmentClass[] | SegmentClass>, targetT
 	*/
 	if (segment) {
 		const segsWithTargetType: SegmentClass[] = [];
-		segment.filter(seg => {
+		segment.forEach(seg => {
 			if (Array.isArray(seg)) {
 				seg.forEach(nestedSeg => {
 					if (nestedSeg.type === targetType) {
 						segsWithTargetType.push(nestedSeg);
 					}
 				})
-			}
-			else if (seg.type === targetType) {
+			} else if (seg.type === targetType) {
 				segsWithTargetType.push(seg);
 			}
 		})
-		return segsWithTargetType.map(seg => seg.dimension).join('<br />')
+
+		if (segsWithTargetType.length) {
+			return segsWithTargetType.map(seg => {
+				return {
+					name: seg.dimensionLabel,
+					value: seg.memberLabel || seg.member,
+					type: `${targetType}-member`
+				}
+			})
+		}
 	}
 	return null;
 };
@@ -91,7 +100,7 @@ export const FactPages = {
 	 * @returns {any} html table containing all fact "attributes"
 	 */
 	firstPage: (factInfo: SingleFact, idToFill: string) => {
-		const possibleAspects = [
+		let possibleAspects = [
 			{
 				name: "Tag",
 				value: factInfo.name
@@ -112,11 +121,13 @@ export const FactPages = {
 				value: factInfo.period
 			},
 			{
+				// deprecated?
 				name: "Axis",
 				value: getSegmentAttr(factInfo.segment || [], 'axis'),
 				html: true
 			},
 			{
+				// deprecated?
 				name: "Member",
 				value: getSegmentAttr(factInfo.segment || [], "dimension"),
 				html: true
@@ -124,7 +135,7 @@ export const FactPages = {
 			{
 				name: "Typed Member",
 				value: getMembersByType(factInfo.segment || [], 'implicit'),
-				html: true 
+				html: false,
 			},
 			{
 				name: "Explicit Member",
@@ -161,23 +172,51 @@ export const FactPages = {
 			},
 			{
 				name: "Footnote",
-				value: factInfo.footnote
+				value: factInfo.footnote,
+				html: true
 			}
 		];
+
+		// map typed members to new name value pairs (even if only one) and add to possibleAspects
+		// delete typed members or just don't display...
+		if (possibleAspects.some(asp => asp.name === "Typed Member")) {
+			const typedMember = possibleAspects.find(aspect => aspect.name === "Typed Member");
+			const typedMembIndex = possibleAspects.indexOf(typedMember);
+			typedMember?.value?.forEach((dim, index) => {
+				possibleAspects.splice(typedMembIndex + index + 1, 0, dim);
+			})
+			// Delete Typed Member object since we extact contents to be their own entries.
+			possibleAspects.splice(typedMembIndex, 1);
+		}
+
+		if (possibleAspects.some(asp => asp.name === "Explicit Member")) {
+			const explicitMember = possibleAspects.find(aspect => aspect.name === "Explicit Member");
+			const explicitMembIndex = possibleAspects.indexOf(explicitMember);
+			explicitMember?.value?.forEach((dim, index) => {
+				possibleAspects.splice(explicitMembIndex + index + 1, 0, dim);
+			})
+			// Delete Explicit Member object since we extact contents to be their own entries.
+			possibleAspects.splice(explicitMembIndex, 1);
+		}
 
 		const elementsToReturn = document.createElement("tbody");
 
 		possibleAspects.forEach((aspect) => {
+			if (aspect["name"] === 'Member' ||  aspect["name"] === 'Axis') return;
 			const debugXmlParsing = false;
 
 			if (aspect["value"]) {
 				const trElement = document.createElement("tr");
 				const thElement = document.createElement("th");
-				thElement.setAttribute("class", `${aspect["name"] === 'Fact' ? 'fact-collapse' : ''}`);
+				// thElement.setAttribute("class", `${aspect["name"] === 'Fact' ? 'fact-collapse' : ''}`);
+				if (aspect["name"] === 'Fact') {
+					thElement.setAttribute("class", 'fact-collapse');
+				}
+				thElement.setAttribute('data-cy', `${aspect["name"] || aspect.type}`);
+
 
 				const thContent = document.createTextNode(aspect["name"]);
 				thElement.appendChild(thContent);
-
 				const tdElement = document.createElement("td");
 				const tdContentsDiv = document.createElement("div");
 				tdContentsDiv.classList.add(aspect["name"] === 'Tag' ? "break-all" : "break-word");
@@ -220,6 +259,7 @@ export const FactPages = {
 					fixImages(htmlDoc);
 					tdContentsDiv.append(htmlDoc.body as HTMLElement);
 					tdElement.appendChild(tdContentsDiv);
+
 				} else {
 					//convert fact string to number to add in formatting
 					if (aspect["name"] === "Fact") {

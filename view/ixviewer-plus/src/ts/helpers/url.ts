@@ -12,8 +12,17 @@ import { ixScrollTo } from "../helpers/utils";
 import { Facts } from "../facts/facts";
 
 export const HelpersUrl = {
-    init: (internalUrl: string, callback: (arg0: boolean | void) => void): void => {
-        callback(HelpersUrl.updateUrlState(internalUrl));
+    fullURL: null as string | null,
+    getFolderAbsUrl: null as string | null,
+    getURL: null as string | null,
+    getExternalFile: null as string | null,
+    getExternalMeta: null as string | null,
+    getHTMLFileName: null as string | null,
+    getAnchorTag: null as string | null,
+    getAllParams: null as UrlParams | null,
+
+    init: async (internalUrl: string, onBack = false): Promise<boolean> => {
+        return HelpersUrl.updateUrlState(internalUrl, onBack);
     },
 
     initPromise: (internalUrl: string, onBack = false): Promise<boolean> => {
@@ -26,24 +35,19 @@ export const HelpersUrl = {
             // already absolute URL
             element.setAttribute('tabindex', '18');
         } else {
-            if (element.getAttribute('href')?.startsWith('#'))
-            {
+            if (element.getAttribute('href')?.startsWith('#')) {
                 element.setAttribute('tabindex', '18');
                 // already simple anchor tag
             }
-            else if (HelpersUrl.getFolderAbsUrl && element.getAttribute('href'))
-            {
+            else if (HelpersUrl.getFolderAbsUrl && element.getAttribute('href')) {
                 element.setAttribute('tabindex', '18');
                 element.setAttribute('href', HelpersUrl.getFolderAbsUrl + element.getAttribute('href'));
-            }
-            else
-            {
+            } 
+            else {
                 console.warn("Unable to set `href` for element:", element);
             }
         }
     },
-
-    fullURL: null as string | null,
 
     addLinkattributes: (element: HTMLElement): void => {
         let attribute = "";
@@ -97,8 +101,7 @@ export const HelpersUrl = {
         }
     },
 
-    isWorkstation: (): boolean =>
-    {
+    isWorkstation: (): boolean => {
         const url = Constants.appWindow.location.href;
         let isWorkstation = url.includes("DisplayDocument.do?");
         isWorkstation ||= Constants.appWindow.location.host.indexOf("edgar.sec.gov") > 0; //originally used in form-information
@@ -180,20 +183,6 @@ export const HelpersUrl = {
         return objToReturn;
     },
 
-    getFolderAbsUrl: null as string | null,
-
-    getURL: null as string | null,
-
-    getExternalFile: null as string | null,
-
-    getExternalMeta: null as string | null,
-
-    getHTMLFileName: null as string | null,
-
-    getAnchorTag: null as string | null,
-
-    getAllParams: null as UrlParams | null,
-
     /** Description
      * By WLK 7/23/24
      * @param {string | boolean} internalURL: URL slug
@@ -207,7 +196,7 @@ export const HelpersUrl = {
             HelpersUrl.fullURL = HelpersUrl.fullURL?.replace(HelpersUrl.getHTMLFileName || "", internalUrl) || null;
             const hash = HelpersUrl.fullURL?.indexOf('#');
 			if (hash !== -1 && HelpersUrl) {
-				HelpersUrl.fullURL = HelpersUrl?.fullURL.substring(0, hash);
+				HelpersUrl.fullURL = HelpersUrl.fullURL.substring(0, hash);
 			}
             if (!onBack) {
                 HelpersUrl.updateURLWithoutReload();
@@ -243,7 +232,6 @@ export const HelpersUrl = {
 
             if (url['hash']) {
                 if (url['hash'].endsWith('#')) {
-
                     url['hash'] = url['hash'].substring(0, url['hash'].length - 1);
                 }
                 HelpersUrl.getAnchorTag = url['hash'];
@@ -371,5 +359,9 @@ export const HelpersUrl = {
         if (internalLinkElem instanceof HTMLElement) {
             ixScrollTo(internalLinkElem);
         }
+    },
+
+    getDocFromSearchParam: (searchParam: string) => {
+        return searchParam.substring(searchParam.lastIndexOf('/') + 1, searchParam.indexOf('.htm') + 4); 
     }
 };
