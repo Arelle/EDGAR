@@ -3,7 +3,7 @@
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  */
 
-import { FlexSearch } from "../flex-search/flex-search";
+import { callFilter } from "../flex-search/search-worker-interface";
 import { UserFiltersState } from "./state";
 
 export const UserFiltersTagsRadios = {
@@ -14,6 +14,7 @@ export const UserFiltersTagsRadios = {
 
         const radioValue = parseInt((event.target as HTMLInputElement).value) || 0;
         UserFiltersState.getTagsRadios = radioValue;
-        FlexSearch.filterFacts();
+        // FlexSearch.filterFacts();
+        callFilter();
     }
 };

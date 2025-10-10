@@ -3,8 +3,8 @@
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  */
 
-import { FlexSearch } from "../flex-search/flex-search";
 import { UserFiltersState } from "./state";
+import { callFilter } from "../flex-search/search-worker-interface";
 
 export const UserFiltersMoreFiltersAxes = {
 
@@ -18,7 +18,8 @@ export const UserFiltersMoreFiltersAxes = {
             tempSet.add(input);
         }
         UserFiltersState.getAxes = [...tempSet];
-        FlexSearch.filterFacts()
+        callFilter();
+
     },
 
     parentClick: (input: Array<{ type: string, value: string }>, element: HTMLInputElement) => {
@@ -34,6 +35,6 @@ export const UserFiltersMoreFiltersAxes = {
             }
         });
         UserFiltersState.getAxes = [...tempSet];
-        FlexSearch.filterFacts()
+        callFilter();
     },
 };

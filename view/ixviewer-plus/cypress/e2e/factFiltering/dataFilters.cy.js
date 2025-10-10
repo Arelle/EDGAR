@@ -2,6 +2,7 @@ import { getFilingsSample } from '../../dataPlus/filingsFunnel.js'
 import { selectors } from "../../utils/selectors.mjs"
 
 let filingsSample = getFilingsSample(Cypress.env);
+filingsSample = filingsSample.slice(0, Cypress.env('limitOfFilingsToTest'))
 
 describe(`Filter - Amounts Only`, () => {
     for(let f=0; f<filingsSample.length; f++) {
@@ -13,6 +14,7 @@ describe(`Filter - Amounts Only`, () => {
             
             // this assertion forces it to wait for it to be populated with number
             cy.get(selectors.factCountClock).should('not.exist')
+            cy.get(selectors.searchHourglass, { timeout: 30000 }).should('not.be.visible')
 
             cy.get(selectors.factCountBadge).invoke('text').then(text => {
                 initialFactCount = Number(text.replace(',', ''))

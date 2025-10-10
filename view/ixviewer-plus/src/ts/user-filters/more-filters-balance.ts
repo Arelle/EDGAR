@@ -3,8 +3,8 @@
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  */
 
-import { FlexSearch } from "../flex-search/flex-search";
 import { UserFiltersState } from "./state";
+import { callFilter } from "../flex-search/search-worker-interface";
 
 export const UserFiltersMoreFiltersBalances = {
     clickEvent: (_event: MouseEvent | KeyboardEvent, balanceType: string): void => {
@@ -19,6 +19,7 @@ export const UserFiltersMoreFiltersBalances = {
             tempSet.add(balanceType);
         }
         UserFiltersState.getBalance = [...tempSet];
-        FlexSearch.filterFacts();
+        // FlexSearch.filterFacts();
+        callFilter();
     },
 };

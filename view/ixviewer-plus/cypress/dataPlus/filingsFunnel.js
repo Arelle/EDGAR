@@ -44,8 +44,7 @@ const getBaseSet = (setName) => {
     return filingSet;
 }
 
-export const getFilingsSample = (CyEnv) =>
-{
+export const getFilingsSample = (CyEnv) => {
     const cyEnvVars = CyEnv();
     let filingsSample = getBaseSet(cyEnvVars.filingSet);
 

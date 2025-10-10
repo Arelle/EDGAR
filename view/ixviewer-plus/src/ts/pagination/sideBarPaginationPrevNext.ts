@@ -7,7 +7,7 @@ import { Constants } from "../constants/constants";
 import { ConstantsFunctions } from "../constants/functions";
 import { FactsGeneral } from "../facts/general";
 import { Pagination } from "./sideBarPagination";
-import { defaultKeyUpHandler } from "../helpers/utils";
+import { actionKeyHandler } from "../helpers/utils";
 
 export class SideBarPaginationPrevNext {
 
@@ -135,7 +135,7 @@ export class SideBarPaginationPrevNext {
 			this.previousFact(e, prevFactBtn);			
 		});
 		prevFactBtn.addEventListener('keyup', (e: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(e)) return;
+			if (!actionKeyHandler(e)) return;
 			this.previousFact(e, prevFactBtn);
 		});
 
@@ -146,7 +146,7 @@ export class SideBarPaginationPrevNext {
 			this.nextFact(e, nextFactBtn);			
 		});
 		nextFactBtn.addEventListener('keyup', (e: KeyboardEvent) => {
-			if (!defaultKeyUpHandler(e)) return;
+			if (!actionKeyHandler(e)) return;
 			this.nextFact(e, nextFactBtn);
 		});
 				

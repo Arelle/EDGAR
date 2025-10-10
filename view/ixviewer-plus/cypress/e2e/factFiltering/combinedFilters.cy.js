@@ -3,6 +3,7 @@ import { selectors } from "../../utils/selectors.mjs"
 describe(`Filters - Combo`, () => {
     it(`Amts & Standard Tags for nmex filing`, () => {
         cy.loadByAccessionNum('000143774923034166')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.tagsHeader).click()
@@ -12,6 +13,7 @@ describe(`Filters - Combo`, () => {
 
     it(`Amts & Period (2023) Tags for nmex filing`, () => {
         cy.loadByAccessionNum('000143774923034166')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.moreFiltersHeader).click()
@@ -22,6 +24,7 @@ describe(`Filters - Combo`, () => {
 
     it(`Amts & Std Tags & Period (2022 & 2023) Tags for nmex filing`, () => {
         cy.loadByAccessionNum('000143774923034166')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.moreFiltersHeader).click()
@@ -33,6 +36,7 @@ describe(`Filters - Combo`, () => {
 
     it(`Amts & Std Tags & Period (2023) Tags for nmex filing`, () => {
         cy.loadByAccessionNum('000143774923034166')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.tagsHeader).click()
@@ -45,6 +49,7 @@ describe(`Filters - Combo`, () => {
 
     it(`Amts & Std Tags & Period (2022 & 2023) Tags for nmex filing`, () => {
         cy.loadByAccessionNum('000143774923034166')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.tagsHeader).click()
@@ -58,6 +63,7 @@ describe(`Filters - Combo`, () => {
 
     it(`Match for Data, NO match for Tags for nmex filing`, () => {
         cy.loadByAccessionNum('000143774923034166')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAdditionalOnlyFilter).click()
         cy.get(selectors.tagsHeader).click()
@@ -77,6 +83,7 @@ describe(`Filters - Combo`, () => {
 
     it(`Zip Code is Amount Only Test`, () => {
         cy.loadByAccessionNum('000121390021056659')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         //It would show 743 if zip was included.

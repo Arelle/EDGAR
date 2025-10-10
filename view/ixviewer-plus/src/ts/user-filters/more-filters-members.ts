@@ -3,7 +3,7 @@
  * are not subject to domestic copyright protection. 17 U.S.C. 105.
  */
 
-import { FlexSearch } from "../flex-search/flex-search";
+import { callFilter } from "../flex-search/search-worker-interface";
 import { UserFiltersState } from "./state";
 
 export const UserFiltersMoreFiltersMembers = {
@@ -20,7 +20,8 @@ export const UserFiltersMoreFiltersMembers = {
 
         UserFiltersState.getMembers = [...tempSet];
 
-        FlexSearch.filterFacts();
+        // FlexSearch.filterFacts();
+        callFilter();
     },
 
     parentClick: (memberInputs: Array<{ type: string, value: string }>, element: HTMLInputElement) => {
@@ -38,6 +39,7 @@ export const UserFiltersMoreFiltersMembers = {
 
         UserFiltersState.getMembers = [...tempSet];
 
-        FlexSearch.filterFacts();
+        // FlexSearch.filterFacts();
+        callFilter();
     },
 };

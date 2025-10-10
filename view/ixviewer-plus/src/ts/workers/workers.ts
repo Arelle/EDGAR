@@ -5,8 +5,24 @@
 
 import { FetchAndMerge } from '../fetch-merge/fetch-merge';
 
-self.onmessage = ({ data }) =>
-{
+/*
+data in 
+const fetchAndMergeArgs: FetchMergeArgs = {
+    params: HelpersUrl.getAllParams,
+    absolute: HelpersUrl.getFolderAbsUrl,
+    instance: changeInstance ? Constants.getInstances : null,
+    std_ref: Constants.getStdRef,
+};
+From docsAndInstance
+- this.activeInstance.xml = instXml]
+- [this.activeInstance.docs]
+from metaAndSummary
+- this.metaVersion = metalinks.version || null;
+- this.std_ref = metalinks.std_ref || {} as any;
+- this.activeInstance = metalinks.instance;
+*/
+
+self.onmessage = ({ data }) => {
     const fetchAndMerge = new FetchAndMerge(data);
     fetchAndMerge.fetch()
         .then((data) => self.postMessage(data))

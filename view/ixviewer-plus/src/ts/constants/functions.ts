@@ -4,7 +4,7 @@
  */
 
 import * as bootstrap from "bootstrap";
-import * as DOMPurify from "dompurify";
+import DOMPurify from "dompurify";
 
 import { App } from "../app/app";
 import { FactMap } from "../facts/map";
@@ -19,8 +19,7 @@ import { FactsGeneral } from "../facts/general";
 import { Pagination } from "../pagination/sideBarPagination";
 import { SideBarPaginationPrevNext } from "../pagination/sideBarPaginationPrevNext";
 import { UserFiltersState } from "../user-filters/state";
-import { incrementProgress, resetProgress, showLoadingUi } from "../app/loading-progress";
-
+import { incrementProgress, startProgress } from "../app/loading-progress";
 
 export const ConstantsFunctions = {
 
@@ -98,46 +97,54 @@ export const ConstantsFunctions = {
 		});
 	},
 
-	changeInstance: (
-		instanceIndex: number,
-		targetInstanceFile: string | null,
-		callback: (arg0: boolean) => void
-	) => {
-		Modals.close(new Event(''));
+	changeInstance: (instanceIndex: number, targetInstanceFile: string | null, onBack = false):Promise<boolean> => {
+		return new Promise<boolean>((resolve) => {
+			Modals.close(new Event(''));
 
-		Constants.getInstances.forEach((instanceFile) => {
-			instanceFile.current = instanceFile.instance === instanceIndex ? true : false;
-			instanceFile.docs.forEach((xhtml, index) => {
-				if (targetInstanceFile) {
-					if (instanceFile.instance === instanceIndex && targetInstanceFile === xhtml.slug) {
-						xhtml.current = true;
+			Constants.getInstances.forEach((instanceFile) => {
+				instanceFile.current = instanceFile.instance === instanceIndex ? true : false;
+				instanceFile.docs.forEach((doc, index) => {
+					if (targetInstanceFile) {
+						if (instanceFile.instance === instanceIndex && targetInstanceFile === doc.slug) {
+							doc.current = true;
+						} else {
+							doc.current = false;
+						}
 					} else {
-						xhtml.current = false;
+						doc.current = index === 0 ? true : false;
 					}
-				} else {
-					xhtml.current = index === 0 ? true : false;
-				}
+				});
 			});
-		});
 
-		const needToLoadInstance = Constants.getInstances[instanceIndex].docs.some(element => !element.loaded);
-		if (needToLoadInstance) {
-			// not loaded, go get the requested instance
-			App.init(true, (success: boolean) => {
-				if (success) App.additionalSetup();
-				callback(success);
-			});
-		} else {
-			// already loaded, just update the DOM and update FlexSearch
-			const activeInstance = Constants.getInstances.find(element => element.current);
-			const inlineFileSlug = activeInstance?.docs.find(element => element.current)?.slug;
-			if (inlineFileSlug == null || activeInstance == null) return;
+			const needToLoadInstance = Constants.getInstances[instanceIndex].docs.some(element => !element.loaded);
+			if (needToLoadInstance) {
+				// not loaded, go get the requested instance
+				App.init(true).then((success) => {
+					if (success) {
+						App.additionalSetup();
+						resolve(true);
+					} else {
+						console.error('Failed to Load Instance.')
+						resolve(false);
+					}
+				});
+			} else {
+				// already loaded, just update the DOM and update FlexSearch
+				const activeInstance = Constants.getInstances.find(element => element.current);
+				const inlineFileSlug = activeInstance?.docs.find(element => element.current)?.slug;
+				if (inlineFileSlug == null || activeInstance == null) return;
 
-			HelpersUrl.init(inlineFileSlug, () => {
-				App.loadFromMemory(activeInstance);
-				return callback(true);
-			});
-		}
+				HelpersUrl.init(inlineFileSlug, onBack).then((success) => {
+					if (success) {
+						App.loadFromMemory(activeInstance);
+						resolve(true);
+					} else {
+						console.error('Failed to Re-Load Instance.')
+						resolve(false);
+					}
+				}) 
+			}
+		})
 	},
 
 	hideFactTable: () => {
@@ -153,33 +160,32 @@ export const ConstantsFunctions = {
 			return Promise.resolve();
 		}
 
-		resetProgress();
+		startProgress();
 		incrementProgress();
-		showLoadingUi();
 
 		ConstantsFunctions.hideFactTable();
 
 		const switchTabs = () => {
-			//requires setTimeout, otherwise the Loading UI doesn't show
+			// requires setTimeout, otherwise the Loading UI doesn't show
 			return new Promise<void>((resolve) => setTimeout(() => {
 				for (let inlineFile of Constants.getInlineFiles) {
 					inlineFile.current = inlineFile.slug === fileToChangeTo;
 				}
 
 				for (let e of document.querySelectorAll("#tabs-container a.nav-link.active")) {
-					//set the tab as inactive
+					// set the tab as inactive
 					e.classList.remove("active");
 
-					//hide the section containing the doc HTML
+					// hide the section containing the doc HTML
 					const slug = e.querySelector("[doc-slug]")?.getAttribute("doc-slug");
 					document.querySelector(`section[filing-url="${slug}"]`)?.classList.add("d-none");
 				}
 
-				//set the new tab as active
+				// set the new tab as active
 				const element = document.querySelector(`#tabs-container a.nav-link[data-link="${fileToChangeTo}"]`);
 				element?.classList.add("active");
 
-				//show the relevant section containing the doc HTML
+				// show the relevant section containing the doc HTML
 				document.querySelector(`section[filing-url="${fileToChangeTo}"]`)?.classList.remove("d-none");
 
 				incrementProgress();
@@ -192,7 +198,7 @@ export const ConstantsFunctions = {
 
 		return HelpersUrl.initPromise(fileToChangeTo, onBack)
 			.then(() => switchTabs())
-			.then(() => incrementProgress())
+			.then(() => incrementProgress(true))
 			.then(() => HelpersUrl.handleHash())
 	},
 

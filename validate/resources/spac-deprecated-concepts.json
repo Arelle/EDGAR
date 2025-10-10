@@ -1,1 +1,9 @@
-{}
+{
+"DeSpacCompanyValuationAtWhichSharesNotRedeemedAreAtLeastIpoValuePerShare": "2025-09-30",
+"DeSpacNumberOfSharesUsedToDetermineNetTangibleBookValuePerShare": "2025-09-30",
+"DifferenceBetweenTheOfferingPriceAndTheAdjustedNetTangibleBookValuePerShare": "2025-09-30",
+"NumberOfSharesUsedToDetermineNetTangibleBookValueAdjusted": "2025-09-30",
+"NumberOfSharesUsedToDetermineNetTangibleBookValuePreTransactionPerShare": "2025-09-30",
+"RegisteredOfferingPricePerShare": "2025-09-30",
+"UnderwritingFeesMember": "2025-09-30"
+}

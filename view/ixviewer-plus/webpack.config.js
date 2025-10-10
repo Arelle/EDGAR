@@ -31,6 +31,7 @@ module.exports = (env = { copy: true, analyze: false }, argv = { mode: `producti
     resolvedPath = undefined;
   }
 
+  console.log('env', env)
   return {
     mode: argv.mode,
 
@@ -70,7 +71,7 @@ module.exports = (env = { copy: true, analyze: false }, argv = { mode: `producti
         PRODUCTION: forProd ? true : false,
         DEBUGJS: env.debugJs || env.debug ? true : false,
         DEBUGCSS: env.debugCss || env.debug ? true : false,
-        LOGPERFORMANCE: env.logPerformance ? true : false,
+        LOGPERFORMANCE: env.LOGPERFORMANCE? true : false,
       }),
 
     ].filter(Boolean),

@@ -36,7 +36,7 @@ const testAddingMoreFilterCategories = (categoryHeaderSelector, filters, initial
 describe('Filters | More', () => {
     it('More-period-2023 should have specific result for nmex filing', () => {
         cy.loadByAccessionNum('000143774923034166')
-
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.moreFiltersHeader).click()
         cy.get(selectors.periodFilterTagsDrawer).click()
         cy.get(selectors.period1Filter).click()
@@ -44,7 +44,7 @@ describe('Filters | More', () => {
     })
     it('Period-2023 & 2022 should have specific result for nmex filing', () => {
         cy.loadByAccessionNum('000143774923034166')
-
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.moreFiltersHeader).click()
         cy.get(selectors.periodFilterTagsDrawer).click()
         cy.get(selectors.period1Filter).click()
@@ -53,6 +53,7 @@ describe('Filters | More', () => {
     })
     it('3 months ending 10/31/2023 should match 90 facts', () => {
         cy.loadByAccessionNum('000143774923034166')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.moreFiltersHeader).click()
         cy.get(selectors.periodFilterTagsDrawer).click()
         cy.get(selectors.period1FilterDrawer).click()
@@ -61,6 +62,7 @@ describe('Filters | More', () => {
     })
     it('10/31/2023 - 10/31/2023 should match 2 facts', () => {
         cy.loadByAccessionNum('000143774923034166')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.moreFiltersHeader).click()
         cy.get(selectors.periodFilterTagsDrawer).click()
         cy.get(selectors.period1FilterDrawer).click()
@@ -69,6 +71,7 @@ describe('Filters | More', () => {
     })
     it('As of 10/31/2023 should match 39 facts', () => {
         cy.loadByAccessionNum('000143774923034166')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.moreFiltersHeader).click()
         cy.get(selectors.periodFilterTagsDrawer).click()
         cy.get(selectors.period1FilterDrawer).click()
@@ -77,6 +80,7 @@ describe('Filters | More', () => {
     })
     it('2023 minus 3 months ending 10/31/2023 should match 81 facts', () => {
         cy.loadByAccessionNum('000143774923034166')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.moreFiltersHeader).click()
         cy.get(selectors.periodFilterTagsDrawer).click()
         cy.get(selectors.period1Filter).click() // apply 2023
@@ -92,6 +96,7 @@ describe(`Filters | More (bulk - more selected should have more results)`, () =>
 
     beforeEach(() => {
         cy.loadByAccessionNum('000090831524000023')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.moreFiltersHeader).click()
 
         // highFactCountFilings.forEach(f => {
@@ -169,9 +174,11 @@ describe('Filters | multiple Axes', () => {
     it('Facts with multiple Axes should show up in filter results', () => {
         // fact 215
         cy.visit('/Archives/edgar/data/1415744/000143774923034166/nmex20231031_10q.htm')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.moreFiltersHeader).click()
         cy.get(selectors.axisFilterTagDrawer).click()
-        cy.get(selectors.axisExplicitTagDrawer).click()
+        //cy.get(selectors.axisExplicitTagDrawer).click()
+        cy.get(selectors.axis1Filter).click()
         cy.get('[id="us-gaap:BusinessAcquisitionAxis"]').click()
         cy.get(selectors.factCountBadge).should('contain.text', '1')
     })
@@ -182,9 +189,11 @@ describe('Filters | multiple Members', () => {
     it('Facts with multiple Members should show up in filter results', () => {
         // fact 223, 224
         cy.visit('/Archives/edgar/data/1415744/000143774923034166/nmex20231031_10q.htm')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
         cy.get(selectors.moreFiltersHeader).click()
         cy.get(selectors.membersFilterTagDrawer).click()
-        cy.get(selectors.membersExplicitTagDrawer).click()
+        //cy.get(selectors.membersExplicitTagDrawer).click()
+        cy.get(selectors.membersExplicitAccordion).click()
         cy.get('[name="srt:ChiefFinancialOfficerMember"]').click()
         cy.get(selectors.factCountBadge).should('contain.text', '2')
     })

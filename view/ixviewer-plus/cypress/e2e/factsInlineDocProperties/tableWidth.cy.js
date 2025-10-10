@@ -7,7 +7,7 @@ describe('Table Width Test', () => {
         cy.get('table').contains('table', '5225 Wiley Post Way, Suite 500').then(($table) => {
             let width = window.getComputedStyle($table[0]).width;
             //Width is currently a string like '1870px'. This will strip the letters out and convert it to a number
-            width = Number(width.replace(/\D/g,''));
+            width = Number(width.replace(/px/g,''));
             //Giving it 1% wiggle room so it doesn't have to be pixel-perfect
             cy.expect(width).to.be.within(0.99*1870, 1.01*1870);
         })

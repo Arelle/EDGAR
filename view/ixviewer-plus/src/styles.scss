@@ -1,58 +1,7 @@
 $enable-rounded: false;
 
-
-@import "~bootstrap/scss/bootstrap";
-
-// start bootstrap cutom imports
-// @import "~bootstrap/scss/mixins/banner";
-// @include bsBanner("");
-// // scss-docs-start import-stack
-// // Configuration
-// @import "~bootstrap/scss/functions";
-// @import "~bootstrap/scss/variables";
-// @import "~bootstrap/scss/variables-dark";
-// @import "~bootstrap/scss/maps";
-// @import "~bootstrap/scss/mixins";
-// @import "~bootstrap/scss/utilities";
-
-// @import "~bootstrap/scss/root";
-// // @import "~bootstrap/scss/reboot";
-// // @import "~bootstrap/scss/type";
-// // @import "~bootstrap/scss/images";
-// // @import "~bootstrap/scss/containers";
-// @import "~bootstrap/scss/grid";
-// // @import "~bootstrap/scss/tables";
-// @import "~bootstrap/scss/forms";
-// @import "~bootstrap/scss/buttons";
-// @import "~bootstrap/scss/transitions";
-// @import "~bootstrap/scss/dropdown";
-// @import "~bootstrap/scss/button-group";
-// @import "~bootstrap/scss/nav";
-// @import "~bootstrap/scss/navbar";
-// @import "~bootstrap/scss/card";
-// @import "~bootstrap/scss/accordion";
-// @import "~bootstrap/scss/breadcrumb";
-// @import "~bootstrap/scss/pagination";
-// @import "~bootstrap/scss/badge";
-// @import "~bootstrap/scss/alert";
-// @import "~bootstrap/scss/progress";
-// @import "~bootstrap/scss/list-group";
-// @import "~bootstrap/scss/close";
-// @import "~bootstrap/scss/toasts";
-// @import "~bootstrap/scss/modal";
-// @import "~bootstrap/scss/tooltip";
-// @import "~bootstrap/scss/popover";
-// @import "~bootstrap/scss/carousel";
-// @import "~bootstrap/scss/spinners";
-// @import "~bootstrap/scss/offcanvas";
-// @import "~bootstrap/scss/placeholders";
-
-// // Helpers
-// @import "~bootstrap/scss/helpers";
-
-// // Utilities
-// @import "~bootstrap/scss/utilities/api";
-// ^ end boostrap custom imports
+// @import "~bootstrap/scss/bootstrap"; // node_modules bootstrap
+@import "./custom-bootstrap.scss"; // using custom version instead so we can point to modified versions that are tracked in our repo
 
 $fa-font-path: "~@fortawesome/fontawesome-free/webfonts/";
 @import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
@@ -309,7 +258,9 @@ a#facts-menu-button:focus-visible
   box-shadow: inset 0 0 0 2px rgb(89 156 255 / 50%);
   outline: none;
 }
-
+#submit-search {
+  width: 42px;
+}
 #global-search-options.show {
   color: white !important;
   background-color: $blue-lighter-3 !important;
@@ -394,6 +345,9 @@ textarea.form-control {
   overflow: auto;
   padding: 0 15px !important;
 }
+#dynamic-xbrl-form * {
+  box-sizing: initial;
+}
 
 #fact-table-container {
   height: calc(100vh - 85px);
@@ -462,6 +416,13 @@ textarea.form-control {
 .hide {
   visibility: hidden;
 }
+.d-none {
+  display: none;
+}
+
+.hover-dim:hover {
+  background-color: #f8f9fa;
+}
 
 // css reset 'fixes' to overwrite bootstrap stuff
 #dynamic-xbrl-form section {
@@ -495,7 +456,9 @@ kbd {
   background-color: inherit;
 }
 
-.elevated, .popover {
+.elevated,
+.popover 
+{
   box-shadow: rgba(0, 0, 0, 0.3) 2px 2px 4px;
 }
 .main-navbar {
@@ -542,6 +505,19 @@ kbd {
 }
 .navbar-dark .navbar-nav .nav-link.disabled {
   color: #487fab;
+}
+
+a.disabled, button.disabled {
+  color: #cccccc;
+  cursor: not-allowed; 
+}
+
+.nav-link.not-ready {
+  color: #cccccc !important;
+  cursor: not-allowed, auto !important;
+}
+.not-ready {
+  cursor: not-allowed !important; // hourglass would be better
 }
 
 .ix-btn-link {
@@ -898,7 +874,6 @@ kbd {
 }
 
 .page-link {
-  height: 31px;
   i {
     margin-top: 12px;
   }

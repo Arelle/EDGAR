@@ -38,7 +38,7 @@ export class XhtmlPrepper {
         this.idAllocator = new FactIdAllocator(this.facts);
     }
 
-    public doWork() {
+    public updateFactMapWithDocsData() {
         const promises = [...this.docs]
             .sort((a, b) => +b.current - +a.current)
             .map((doc) =>
@@ -51,29 +51,21 @@ export class XhtmlPrepper {
         return Promise.all(promises);
     }
 
-    private applyElementDataToFact(current: XhtmlFileMeta) {
-        const startPerformance = performance.now();
+    
 
-        let $ = load(current.xhtml, {});
-
+    private applyElementDataToFact(doc: XhtmlFileMeta) {
+        let $ = load(doc.xhtml, {});
         const factElements = Array.from($(`[contextRef]`));
 
         for (let factElem of factElements) {
             const id = $(factElem).attr("id") || this.idAllocator.getId($(factElem).attr('contextref'), $(factElem).attr('name'));
             if (id) {
-                this.updateMap(id, $(factElem), current.slug);
+                this.updateMap(id, $(factElem), doc.slug);
             }
             else {
                 const log: Logger<ILogObj> = new Logger();
                 log.error(`Fact [name] && [contextRef] could not be located in the Map Object.`);
             }
-        }
-
-        const endPerformance = performance.now();
-        if (LOGPERFORMANCE) {
-            const items = factElements.length;
-            const log: Logger<ILogObj> = new Logger();
-            log.debug(`FetchAndMerge.doWork() completed in: ${(endPerformance - startPerformance).toFixed(2)}ms - ${items} items`);
         }
     }
 

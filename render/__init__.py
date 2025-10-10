@@ -143,7 +143,7 @@ Language of labels:
     GUI may use tools->language labels setting to override system language for labels
 
 """
-VERSION = '3.25.2'
+VERSION = '3.25.3'
 
 from collections import defaultdict
 from arelle import PythonUtil
@@ -1497,6 +1497,8 @@ class EdgarRenderer(Cntlr.Cntlr):
 
                     if "EdgarRenderer/__init__.py#filingPass1" in filing.arelleUnitTests:
                         raise arelle.PythonUtil.pyNamedObject(filing.arelleUnitTests["EdgarRenderer/__init__.py#filingPass1"], "EdgarRenderer/__init__.py#filingEnd")
+                    if "ArelleWrapper#phase2start" in filing.arelleUnitTests:
+                        filing.writeFile(join(dissemReportsFolder, "ArelleWrapperPhase2_start.test"), b"")
 
                     # reissue R files and excel after validation
                     if hasPrivateData:
@@ -1559,6 +1561,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                             filing.writeFile(join(dissemReportsFolder, "FilingSummary.xml.delete"), b"")
                 if "EdgarRenderer/__init__.py#filingEnd" in filing.arelleUnitTests:
                     raise arelle.PythonUtil.pyNamedObject(filing.arelleUnitTests["EdgarRenderer/__init__.py#filingEnd"], "EdgarRenderer/__init__.py#filingEnd")
+                self.logDebug("Successfully completed filing end processing", messageCode="RenderFilingEndCompletion")
 
                 if self.isDaemon:  # save file in Archives
                     try:

@@ -8,9 +8,10 @@ npx cypress run --spec 'cypress/e2e/factCount.cy.js'
 */
 
 describe(`Fact Count`, () => {
-    filingsSample.forEach((filing) => {
-		it(`fact count for ${filing.docName} should match`, () => {
+    filingsSample.forEach((filing, index) => {
+		it(`[${index}] fact count for ${filing.docName || filing.accessionNum } should match`, () => {
             cy.loadFiling(filing)
+            cy.get(selectors.searchHourglass, { timeout: 30000 }).should('not.be.visible')
             // // give app 15 secs per 1000 facts to load.
             // const timeout = filing.factCount > 1000 ? filing.factCount * 15 : 15000
 

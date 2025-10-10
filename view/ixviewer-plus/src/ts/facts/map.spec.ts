@@ -152,11 +152,11 @@ describe('/src/ts/fact-map/index.ts', () => {
 
     describe('basic checks for setIsSelected()', () => {
         it('is a function', () => {
-            expect(typeof FactMap.setIsSelected).toEqual('function');
+            expect(typeof FactsUi.setIsSelected).toEqual('function');
         });
 
         it('returns undefined', () => {
-            expect(FactMap.setIsSelected(null)).toEqual(undefined);
+            expect(FactsUi.setIsSelected(null)).toEqual(undefined);
         });
     });
 

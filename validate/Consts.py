@@ -250,7 +250,8 @@ latestTaxonomyDocs = { # note that these URLs are blocked by EFM validation mode
         "deprecationDatePattern": usDeprecatedLabelPattern
         },
     "spac/*": {
-        "deprecatedLabels": ["https://xbrl.sec.gov/spac/2025/spac-entire-2025.xsd"],
+        "deprecatedLabels": ["https://xbrl.sec.gov/spac/2025/spac-entire-2025.xsd",
+                             "https://xbrl.sec.gov/spac/2025q3/spac-entire-2025q3.xsd"],
         "deprecatedLabelRolePattern": usDeprecatedLabelRolePattern,
         "deprecationDatePattern": usDeprecatedLabelPattern
         },
@@ -353,6 +354,7 @@ linkbaseValidations = {
     # elrDefNoTgtRole - true to block extension arcs with target role
     # preSources - local names of allowed source elements
     # preCustELFs - true to allow custom linkroles in extension
+    # elrDefTgt - patterns of role and allowed target concept qname.
     "cef": attrdict(
         exgPre = "10.08.01",
         exgCal = "10.08.01",
@@ -384,9 +386,16 @@ linkbaseValidations = {
         exgDef = "10.08.02",
         elrPre = None,
         elrDefInNs = re.compile("http://xbrl.sec.gov/ecd/role/"),
-        elrDefExNs = re.compile("http://xbrl.sec.gov/ecd/role/[^/]*Only"),
+        elrDefExNs = re.compile("http://xbrl.sec.gov/ecd/role/([^/]*Only|PvpTable)"),
         elrDefRoleSrc = (),
         elrDefNoTgtRole = False,
+        elrDefTgt = (
+            # Custom domain-member arcs with ECD Concepts as source may only appear in one of two cases: 
+            # http://xbrl.sec.gov/ecd/role/ and ending in Only, and the target may be a domain member in any namespace.
+            (re.compile("http://xbrl.sec.gov/ecd/role/[^/]*Only"), re.compile(".")),
+            # http://xbrl.sec.gov/ecd/role/PvpTable, and the target may be an element in a us-gaap, srt, or ifrs namespace. 
+            (re.compile("http://xbrl.sec.gov/ecd/role/PvpTable"), re.compile("(us-gaap|srt|ifrs-full):.*"))
+        ),
         preSources = (),
         preCustELRs = True
     ),
@@ -444,15 +453,15 @@ linkbaseValidations = {
     ),
     "spac": attrdict(
         exgPre = None,
-        exgCal = "10.08.10",
-        exgDef = "10.08.10",
+        exgCal = "10.08.11",
+        exgDef = "10.08.11",
         elrDefInNs = re.compile("."),
         elrDefExNs = re.compile(".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
         elrDefRoleSrc = (
             # Custom domain-member arcs with SPAC concepts as source may only appear in roles with a URI matching .*sec.gov/spac/([^/]*/)*role/[^/]*Only
+            # The target may be a domain member in any namespace.
             (re.compile(r".*sec.gov/spac/([^/]*/)*role/[^/]*Only$"),
-                # only as descendants of the default member of a SPAC concept explicit dimension.
-                re.compile(r"@defaults")),
+                re.compile(r".")),
         ),
         elrDefNoTgtRole = False,
         preSources = (),

@@ -38,7 +38,8 @@ extMimeType = {
     ".json": "application/json",
     ".woff": "font/woff",
     ".woff2": "font/woff2",
-    ".pdf": "application/pdf"
+    ".pdf": "application/pdf",
+    ".zip": "application/zip"
     }
 
 

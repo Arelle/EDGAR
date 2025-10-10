@@ -1,5 +1,5 @@
 import { Constants } from "../constants/constants";
-import { defaultKeyUpHandler } from "../helpers/utils";
+import { actionKeyHandler } from "../helpers/utils";
 
 const toPrev = () => {
     const currentInstance = Constants.getInstances.find(element => element.current);
@@ -65,11 +65,10 @@ const toTop = () => {
 
 export const toBottomOfInlineDoc = () => {
     const formElement = document.getElementById("dynamic-xbrl-form") as HTMLElement;
-    formElement?.scrollTo({top: formElement.scrollHeight, behavior: 'smooth'});
+    formElement?.scrollTo({ top: formElement.scrollHeight, behavior: 'smooth' });
 }
 
-export const buildInlineDocPagination = () =>
-{
+export const buildInlineDocPagination = () => {
     const paginationHtmlString =
         `<nav class="doc-pagination" data-cy="doc-pagination">
             <ul id="html-pagination" class="pagination pagination-sm mb-0">
@@ -108,7 +107,7 @@ export const addPaginationListeners = () => {
         toTop();
     });
     document.getElementById('to-top-btn')?.addEventListener("keyup", (event: KeyboardEvent) => {
-       if (!defaultKeyUpHandler(event)) return;
+        if (!actionKeyHandler(event)) return;
         toTop();
     });
 
@@ -116,20 +115,20 @@ export const addPaginationListeners = () => {
         toPrev();
     });
     document.getElementById('to-prev-btn')?.addEventListener("keyup", (event: KeyboardEvent) => {
-       if (!defaultKeyUpHandler(event)) return;
+        if (!actionKeyHandler(event)) return;
         toPrev();
     });
-    document.getElementById('to-prev-btn')?.addEventListener('keydown', (event: KeyboardEvent) =>{
-        if(event.key=== ' ') {
-          event.preventDefault();
+    document.getElementById('to-prev-btn')?.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (event.key === ' ') {
+            event.preventDefault();
         }
-      });
+    });
 
     document.getElementById('to-next-btn')?.addEventListener("click", () => {
         toNext();
     });
-    document.getElementById('to-next-btn')?.addEventListener("keyup", (event: KeyboardEvent)  => {
-       if (!defaultKeyUpHandler(event)) return;
+    document.getElementById('to-next-btn')?.addEventListener("keyup", (event: KeyboardEvent) => {
+        if (!actionKeyHandler(event)) return;
         toNext();
     });
 
@@ -137,7 +136,7 @@ export const addPaginationListeners = () => {
         toBottomOfInlineDoc();
     });
     document.getElementById('to-bottom-btn')?.addEventListener("keyup", (event: KeyboardEvent) => {
-       if (!defaultKeyUpHandler(event)) return;
+        if (!actionKeyHandler(event)) return;
         toBottomOfInlineDoc();
     });
 }

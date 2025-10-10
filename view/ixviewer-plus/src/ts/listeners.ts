@@ -17,9 +17,10 @@ import { UserFiltersDropdown } from "./user-filters/dropdown";
 import { UserFiltersGeneral } from "./user-filters/general";
 import { UserFiltersMoreFiltersBalances } from "./user-filters/more-filters-balance";
 import { UserFiltersTagsRadios } from "./user-filters/tags-radios";
-import { defaultKeyUpHandler, stopPropPrevDefault } from "./helpers/utils";
+import { actionKeyHandler, stopPropPrevDefault } from "./helpers/utils";
 import { Constants } from "./constants/constants";
 import { ConstantsFunctions } from "./constants/functions";
+import { HelpersUrl } from "./helpers/url";
 
 export class Listeners {
     constructor() {
@@ -27,17 +28,37 @@ export class Listeners {
     }
     init() {
         Constants.appWindow.addEventListener('popstate', () => {
-            const newStateDoc = Constants.getInlineFiles.filter(file => Constants.appWindow.location.search.includes(file.slug))[0];
-            if (!newStateDoc.current) {
-                ConstantsFunctions.switchDoc(newStateDoc.slug, true);
-            } 
+            /*
+                Because we are circumventing default back/forward behavior in browser (in order to prevent full, time-expensive reload),
+                We must tell any app loading functions that loading is triggered from back action, so they don't push another state to history.
+                We accomplished with passing boolean "onBack" to changeInstance() and switchDoc()
+            */
+            const poppedUrlQueryString = Constants.appWindow.location.search;
+            const newStateDoc = Constants.getInlineFiles.filter(file => poppedUrlQueryString.includes(file.slug))[0];
+
+            if (newStateDoc) {
+                if (!newStateDoc.current) {
+                    ConstantsFunctions.switchDoc(newStateDoc.slug, true).then(() => Constants.appWindow.focus());
+                }
+            }
+            // newStateDoc in another instance
+            else {
+                const instances = Constants.getInstances;
+                const targetDoc = HelpersUrl.getDocFromSearchParam(Constants.appWindow.location.search);
+                const instanceToChangeTo = instances.find(inst => {
+                    return inst.docs.find(doc => doc.slug === targetDoc);
+                })
+                if (instanceToChangeTo) {
+                    ConstantsFunctions.changeInstance(instanceToChangeTo.instance, targetDoc, true);
+                }
+            }
         });
 
         document.getElementById('menu-dropdown-information')?.addEventListener('click', (event: MouseEvent) => {
             ModalsFormInformation.clickEvent(event);
         });
         document.getElementById('menu-dropdown-information')?.addEventListener('keyup', (event: KeyboardEvent) => {
-            if (!defaultKeyUpHandler(event)) return;
+            if (!actionKeyHandler(event)) return;
             ModalsFormInformation.clickEvent(event);
         });
 
@@ -52,7 +73,7 @@ export class Listeners {
             ModalsSettings.clickEvent(event);
         });
         document.getElementById('menu-dropdown-settings')?.addEventListener('keyup', (event: KeyboardEvent) => {
-            if (!defaultKeyUpHandler(event)) return;
+            if (!actionKeyHandler(event)) return;
             ModalsSettings.clickEvent(event);
         });
 
@@ -106,7 +127,7 @@ export class Listeners {
             UserFiltersDropdown.resetAll();
         });
         document.getElementById("current-filters-reset-all")?.addEventListener("keyup", (event: KeyboardEvent) => {
-            if (!defaultKeyUpHandler(event)) return;
+            if (!actionKeyHandler(event)) return;
             UserFiltersDropdown.resetAll();
         });
 
@@ -114,7 +135,7 @@ export class Listeners {
             FactsMenu.toggle(event);
         });
         document.getElementById("fact-menu-secondary-toggle")?.addEventListener("keyup", (event: KeyboardEvent) => {
-            if (!defaultKeyUpHandler(event)) return;
+            if (!actionKeyHandler(event)) return;
             FactsMenu.toggle(event);
         });
 
@@ -124,6 +145,14 @@ export class Listeners {
         document.getElementById('nav-filter-tags-dropdown')?.addEventListener('change', (event) => {
             UserFiltersTagsRadios.clickEvent(event);
         });
+
+        // when clicking outside of search suggestions, make sure suggestions div disappears
+        // Need to handle doc, inline facts, and fact list elems, as the latter click events aren't propagating to doc.
+        document?.addEventListener('click', (event) => {
+            if (event.target?.id !== "global-search") {
+                ConstantsFunctions.emptyHTMLByID('suggestions');
+            }
+        })
 
         document.getElementById('sections-menu-search-submit')?.addEventListener('submit', (event) => {
             event.preventDefault();
@@ -135,7 +164,7 @@ export class Listeners {
             SectionsSearch.clear();
         });
         document.getElementById('section-menu-search-btn-clear')?.addEventListener('keyup', (event: KeyboardEvent) => {
-            if (!defaultKeyUpHandler(event)) return;
+            if (!actionKeyHandler(event)) return;
             SectionsSearch.clear();
         });
 
@@ -219,10 +248,10 @@ export class Listeners {
             });
         })
 
-        const search = document.getElementById('global-search') as HTMLInputElement;
-        search?.addEventListener('blur', () => {
+        const dataFilterNav = document.getElementById("nav-filter-data") as HTMLInputElement;
+        dataFilterNav?.addEventListener('keyup', () => {
             ConstantsFunctions.emptyHTMLByID('suggestions');
-        })
+        });
 
         document.getElementById('hover-option-select')?.addEventListener("change", (event: Event) => {
             ModalsSettings.hoverOption(event);

@@ -10,6 +10,7 @@ import { ConstantsFunctions } from "../constants/functions";
 import { Pagination } from "../pagination/sideBarPagination";
 import { Constants } from "../constants/constants";
 import { Facts } from "../facts/facts";
+import { Search } from "../search/search";
 
 export const FactsGeneral = {
 	getElementByNameContextref: (name: string, contextref: string) => {
@@ -62,7 +63,7 @@ export const FactsGeneral = {
 
 	//TODO factmap.getbyid is used a lot
 	// fact in fact sidebar
-	renderFactElem: (elementID: string): Node => {
+	renderFactElem: (elementID: string, hidden = false): Node => {
 		const factInfo = FactMap.getByID(elementID);
 		const factElem = document.createDocumentFragment();
 
@@ -71,6 +72,9 @@ export const FactsGeneral = {
 			'class',
 			'text-body sidebar-fact ix-focus-inset border-bottom click text-decoration-none click list-group-item list-group-item-action p-1'
 		);
+		if (hidden) {
+			aElement.classList.add('d-none');
+		}
 		aElement.setAttribute('selected-fact', `${factInfo?.isSelected}`);
 		if (factInfo?.id) {
 			aElement.setAttribute('data-id', factInfo?.id);
@@ -80,6 +84,7 @@ export const FactsGeneral = {
 
 		aElement.addEventListener('click', (e) => {
 			FactsGeneral.goToInlineFact(e, aElement);
+			Search.closeSuggestions();
 		});
 		aElement.addEventListener('keyup', (e) => {
 			FactsGeneral.goToInlineFact(e, aElement);
