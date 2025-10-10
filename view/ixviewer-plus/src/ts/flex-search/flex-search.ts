@@ -128,7 +128,7 @@ export class FlexSearch { // maybe this should be ixFlexSearch and we need to us
         mapOfFacts.forEach((fact, factIndex) => {
             const searchable = {
                 'id': factIndex,
-                'content': `${mapOfFacts.size > 4000 ? fact?.filterContent?.content?.substring(0, 200) : fact?.filterContent?.content}`,
+                'content': fact?.filterContent?.content,
                 'raw': fact?.format ? `${fact?.raw.toString()}` : null,
                 'factname': fact?.name,
                 'contextRef': fact?.contextRef,
