@@ -112,12 +112,25 @@ module.exports = (env = { copy: true, analyze: false }, argv = { mode: `producti
         {
           test: /\.s[ac]ss$/i,
           use: [
-            forProd
-              ? MiniCssExtractPlugin.loader
-              : MiniCssExtractPlugin.loader,
+            MiniCssExtractPlugin.loader,
+            // forProd
+            //   ? MiniCssExtractPlugin.loader
+            //   : MiniCssExtractPlugin.loader,
               // : `style-loader`,
-            "css-loader",
-            `sass-loader`,
+            {
+              loader: "css-loader",
+              options: {
+                sourceMap: false,
+              }
+            },
+            {
+              loader: "sass-loader",
+              options: {
+                sourceMap: false,
+              }
+            }
+            // "css-loader",
+            // `sass-loader`,
           ],
         },
         // load html
@@ -151,7 +164,8 @@ module.exports = (env = { copy: true, analyze: false }, argv = { mode: `producti
       },
     },
 
-    devtool: forProd ? `source-map` : `eval-source-map`,
+    // devtool: forProd ? `source-map` : `eval-source-map`,
+    devtool: forProd ? `source-map` : `eval-cheap-source-map`,
 
     devServer: {
       compress: false, // false helps with breakpoints
