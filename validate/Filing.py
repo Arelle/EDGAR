@@ -5600,14 +5600,16 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 Ext_Enum_Minus_Leases = set(ext_pair
                                             for ext_pair in xuleConstants["EXT_ENUM"]
                                             if ext_pair[0] not in rule["LEASE_ITEMS"])
+                fsMonetaryConceptsQnames = {concept.qname for concept in fsMonetaryConcepts}
                 for FS_concept, related_ext_enum in Ext_Enum_Minus_Leases:
-                    for b in factBindings(modelXbrl, (FS_concept.localName,)).values():
+                    for b in factBindings(modelXbrl, (related_ext_enum.localName,)).values():
                         for f in b.values():
-                            if f.concept not in fsMonetaryConcepts:
-                                modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
-                                    modelObject=f,
-                                    related_ext_enum=str(related_ext_enum), x=f.xValue,
-                                    edgarCode=edgarCode, ruleElementId=id)
+                            for conceptQname in f.xValue:
+                                if conceptQname not in fsMonetaryConceptsQnames:
+                                    modelXbrl.warning(f"{dqcRuleName}.{id}", _(logMsg(msg)),
+                                        modelObject=f,
+                                        related_ext_enum=str(related_ext_enum), x=conceptQname,
+                                        edgarCode=edgarCode, ruleElementId=id)
             elif dqcRuleName == "DQC.US.0137" and  deiDocumentType in dqcRule["document-types"]:
                 # 0112 has only one id, rule
                 balShtLocAxisQn = incStmtLocAxisQn = None
