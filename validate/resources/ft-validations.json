@@ -48,7 +48,7 @@
         "         eg1. exclude references where (Rule457oFlg is true and FeeAmt is absent) or (Rule415a6Flg and CfwdPrevslyPdFee is absent)",
         "            [",
         "               {\"ffd:Rule457oFlg\": [true], \"ffd:FeeAmt\": [\"absent\"]}," ,
-        "               {\"ffd:Rule415a6Flg\": [true], \"ffd:CfwdPrevslyPdFee\": [\"absent\"]",
+        "               {\"ffd:Rule415a6Flg\": [true], \"ffd:CfwdPrevslyPdFee\": [\"absent\"]}",
         "            ]",
         "         eg2. exclude references where (Rule457oFlg is true and FeeAmt is absent and another line exist where Rule457oFlg is true and ffd:OfferingSctyTp is Unallocated (Universal) Shelf)",
         "            [",
@@ -4491,6 +4491,9 @@
         "validation": "tsum-of",
         "references": "ffd:FeeAmt",
         "references-axes": "of-s424i",
+        "references-exclude": [
+            {"ffd:Rule415a6Flg": [true]}
+        ],
         "tolerance": 1.00,
         "comment-validation": "Validate that the Total Registration Fees = sum of the \"Amount of  Registration Fee\" for newly registered securities (Fees to be paid and Fees Previously Paid)",
         "comment-exception-handling": "",

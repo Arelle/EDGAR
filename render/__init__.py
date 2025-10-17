@@ -1454,7 +1454,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                                           messageCode="EFM.stripExhibit",
                                           level=logging._checkLevel("INFO-RESULT"))
 
-                    if not self.isWorkstationFirstPass:
+                    if not self.isWorkstationFirstPass and "report.css" not in privateFilesNotDisseminated:
                         if self.reportZip:
                             self.reportZip.write(os.path.join(self.resourcesFolder, "report.css"), "dissem/report.css")
                         else:
@@ -1468,7 +1468,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                                     Inline.saveTargetDocumentIfNeeded(self, options, modelXbrl, filing)  # EDGAR dissemination file goes in report folder so it gets into EDGAR database
                                 else:
                                     Inline.saveTargetDocumentIfNeeded(self, options, modelXbrl, filing, altFolder=dissemReportsFolder, suplSuffix=dissemSuffix, zipDir="dissem/")
-                        elif hasattr(modelXbrl, "ixTargetFilename"):
+                        elif hasattr(modelXbrl, "ixTargetFilename") and not getattr(report, "isNotDisseminated", False):
                             inputsToCopyToOutput.add(modelXbrl.ixTargetFilename)
                     for filename in inputsToCopyToOutput - privateFilesNotDisseminated:
                         if not self.isWorkstationFirstPass or filename.endswith("_ht2.xml") or filename.endswith("_ix2.htm"):
