@@ -69,7 +69,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta http-equiv="Cache-Control" content="no-cache"/>
         <title>View Filing Data</title>
-        <script type="text/javascript" src="/include/jquery-1.4.3.min.js"/>
+        <script type="text/javascript" src="/include/jquery-3.7.1.min.js"/>
         <script type="text/javascript" src="/include/accordionMenu.js"/>
         <script type="text/javascript" src="/include/Show.js"/>
         <link rel="stylesheet" type="text/css" href="/include/interactive.css"/>
