@@ -88,7 +88,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta http-equiv="Cache-Control" content="no-cache"/>
         <title><xsl:value-of select="$title"/></title>
-        <script type="text/javascript" src="{$includeDir}/jquery-1.4.3.min.js"/>
+        <script type="text/javascript" src="{$includeDir}/jquery-3.7.1.min.js"/>
         <script type="text/javascript" src="{$includeDir}/accordionMenu.js"/>
         <script type="text/javascript" src="{$includeDir}/Show.js"/>
         <link rel="stylesheet" type="text/css" href="{$includeDir}/interactive.css"/>
