@@ -609,8 +609,8 @@ class InstanceSummary(object):
 
         # build a dictionary tree of the eventual JSON output.
         self.tagDict = OrderedDict()
-        for concept in sorted(conceptInUseSet, key=lambda concept: concept.qname.localName):
-            self.tagDict[concept.attrib['id']] = {'xbrltype': (concept.typeQname).localName
+        for concept in sorted(conceptInUseSet, key=lambda concept: getattr(concept.qname, 'localName', None)):
+            self.tagDict[concept.attrib['id']] = {'xbrltype': getattr(concept.typeQname, 'localName', None)
                                                   , 'nsuri': concept.qname.namespaceURI
                                                   , 'localname': concept.qname.localName}
             tag = self.tagDict[concept.attrib['id']]

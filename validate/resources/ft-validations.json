@@ -5078,11 +5078,28 @@
         "efm": "ft.numAmtSec",
         "validation": "ov",
         "axis": "of",
-        "value-numeric-range": ["0", "999999999999.99"],
+        "value-numeric-range": ["0", "999999999999.99999999"],
         "store-db-name": "@lcName",
         "store-db-object": "offeringTable",
-        "comment-validation": "Decimal value can range from 0 to 999,999,999,999.99",
+        "comment-validation": "Decimal value can range from 0 to 999,999,999,999.99999999",
         "comment-exception-handling": "Do not send to EDGAR if value outside of this range",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
+        "sub-types": "n/a",
+        "xbrl-names": [
+        	"ffd:AmtSctiesRegd",
+        	"ffd:AmtSctiesRcvd"
+        ],
+        "efm": "ft.maxDecimals",
+        "validation": "max-decimals",
+        "axis": "of",
+        "max-decimals": 8,
+        "comment-validation": "The decimal value must not exceed 8 decimals.",
+        "comment-exception-handling": "Do not send to EDGAR if value exceeds 8 decimals.",
         "comment-conversion-requested": "",
         "comment-requesting-do": "",
         "comment-date-requested": "",
@@ -5096,11 +5113,27 @@
         "efm": "ft.numAmtSec",
         "validation": "ov",
         "axis": "cp",
-        "value-numeric-range": ["0", "999999999999.99"],
+        "value-numeric-range": ["0", "999999999999.99999999"],
         "store-db-name": "@lcName",
         "store-db-object": "cmbndPrspctsTable",
-        "comment-validation": "Decimal value can range from 0 to 999,999,999,999.99",
+        "comment-validation": "Decimal value can range from 0 to 999,999,999,999.99999999",
         "comment-exception-handling": "Do not send to EDGAR if value outside of this range",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
+        "sub-types": "n/a",
+        "xbrl-names": [
+        	"ffd:Rule429NbOfUnsoldScties"
+        ],
+        "efm": "ft.maxDecimals",
+        "validation": "max-decimals",
+        "axis": "cp",
+        "max-decimals": 8,
+        "comment-validation": "The decimal value must not exceed 8 decimals.",
+        "comment-exception-handling": "Do not send to EDGAR if value exceeds 8 decimals.",
         "comment-conversion-requested": "",
         "comment-requesting-do": "",
         "comment-date-requested": "",
@@ -5114,11 +5147,27 @@
         "efm": "ft.numAmtSec",
         "validation": "ov",
         "axis": "o",
-        "value-numeric-range": ["0", "999999999999.99"],
+        "value-numeric-range": ["0", "999999999999.99999999"],
         "store-db-name": "@lcName",
         "store-db-object": "offsetTable",
-        "comment-validation": "Decimal value can range from 0 to 999,999,999,999.99",
+        "comment-validation": "Decimal value can range from 0 to 999,999,999,999.99999999",
         "comment-exception-handling": "Do not send to EDGAR if value outside of this range",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
+        "sub-types": "n/a",
+        "xbrl-names": [
+        	"ffd:OffsetPrrNbOfUnsoldScties"
+        ],
+        "efm": "ft.maxDecimals",
+        "validation": "max-decimals",
+        "axis": "o",
+        "max-decimals": 8,
+        "comment-validation": "The decimal value must not exceed 8 decimals.",
+        "comment-exception-handling": "Do not send to EDGAR if value exceeds 8 decimals.",
         "comment-conversion-requested": "",
         "comment-requesting-do": "",
         "comment-date-requested": "",
@@ -5133,11 +5182,28 @@
         "efm": "ft.numPerSec",
         "validation": "ov",
         "axis": "of",
-        "value-numeric-range": ["0", "999999999999.9999"],
+        "value-numeric-range": ["0", "999999999999.99999999"],
         "store-db-name": "@lcName",
         "store-db-object": "offeringTable",
-        "comment-validation": "A value of zero is permitted. The decimal values can range from 0 to 999,999,999,999.9999.",
+        "comment-validation": "A value of zero is permitted. The decimal values can range from 0 to 999,999,999,999.99999999.",
         "comment-exception-handling": "Do not send to EDGAR if value outside of this range",
+        "comment-conversion-requested": "",
+        "comment-requesting-do": "",
+        "comment-date-requested": "",
+        "comment-reason": ""
+    },
+    {
+        "sub-types": "n/a",
+        "xbrl-names": [
+        	"ffd:MaxOfferingPricPerScty",
+        	"ffd:ValSctiesRcvdPerShr"
+        ],
+        "efm": "ft.maxDecimals",
+        "validation": "max-decimals",
+        "axis": "of",
+        "max-decimals": 8,
+        "comment-validation": "The decimal value must not exceed 8 decimals.",
+        "comment-exception-handling": "Do not send to EDGAR if value exceeds 8 decimals.",
         "comment-conversion-requested": "",
         "comment-requesting-do": "",
         "comment-date-requested": "",
@@ -5795,6 +5861,12 @@
             "severity": "warning",
             "severityVerb": "should",
             "comment": "axis should exist when tag not present"
+        },
+        "max-decimals": {
+            "message": "ft-{tag}-expected-decimals",
+            "severity": "error",
+            "severityVerb": "must not exceed",
+            "comment": "Decimals must not exceed max-decimals value"
         }
 	},
 
@@ -5913,7 +5985,7 @@
         "ft-{axis}-{tag}-expected": "for submission type {subType}, {axis}, {tag} is missing.{msgCoda}",
         "ft-{axis}-{tag}-expected-value": "for submission type {subType}, {axis}, {tag} with a value of {value} is missing.{msgCoda}",
         "ft-{axisName}-{tag}-not-exist": "for submission type {subType}, {ftContext}, when {tag} with a value of {value} is present, {axisName} should not exist.",
-        "ft-{axisName}-{tag}-exist": "for submission type {subType}, {ftContext}, when {tag} is missing or nil, {axisName} should exist."
+        "ft-{axisName}-{tag}-exist": "for submission type {subType}, {ftContext}, when {tag} is missing or nil, {axisName} should exist.",
+        "ft-{tag}-expected-decimals": "for submission type {subType}, {ftContext}, {tag} value {value} must not contain more than {maxDecimals} decimals.{msgCoda}"
 	}
-
 }

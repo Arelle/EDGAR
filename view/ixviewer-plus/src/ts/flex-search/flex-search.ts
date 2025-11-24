@@ -157,11 +157,6 @@ export class FlexSearch { // maybe this should be ixFlexSearch and we need to us
                 // 'refSection': getSearchableRefDataByProp(fact.references, 'Section'),
                 // 'refNumber': getSearchableRefDataByProp(fact.references, 'Number'),
             };
-            // if (factIndex == 4 || factIndex == "4") {
-                // console.log('fact.segment', fact?.segment)
-                // console.log('tern exp', fact?.segment ? Constants.membersCount < 750 ? getMembers(fact?.segment) : null : null)
-                // console.log('searchable.member', searchable.member)
-            // }
             this.index.add(searchable);
         });
         return new Promise(resolve => {
@@ -235,6 +230,7 @@ export class FlexSearch { // maybe this should be ixFlexSearch and we need to us
     }
 
     static filterFacts(dataFields: any, filterState: any) {
+        console.log('filterState', filterState)
         const startPerf = performance.now();
 
         let dataFilterActive = null;

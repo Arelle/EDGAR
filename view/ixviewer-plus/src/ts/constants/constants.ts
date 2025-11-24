@@ -13,7 +13,7 @@ type MetaDocument = any;
 
 export const Constants =
 {
-	version: "25.3",
+	version: "25.4",
 	featureSet: "plus",
 	appStart: 0,
 	loadPhaseComplete: 0,
@@ -52,6 +52,8 @@ export const Constants =
 	getSearchCriteria: {} as { options: { indexOf: (x: any) => number }, regex: RegExp },
 
 	isNcsr: false,
+	sumOfDocsSizes: 0,
+	docSizeFallbackLimit: 70 * 1000000,
 
 	scrollPosition: typeof window !== 'undefined' && window.localStorage.getItem("scrollPosition") || "start",
 
@@ -61,7 +63,7 @@ export const Constants =
 
 	getPaginationPerPage: 10,
 
-	getHtmlOverallFactsCount: null as string | null,
+	factCount: null as string | null,
 
 	getMetaSourceDocuments: [] as string[],
 

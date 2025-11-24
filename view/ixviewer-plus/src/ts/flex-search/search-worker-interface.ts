@@ -9,6 +9,7 @@ import { Constants } from "../constants/constants";
 let worker: Worker;
 
 export const initSearch = (factMap: any) => {
+    console.log('initSearch')
     if (typeof window !== 'undefined' && window.Worker) {
         const searchStart = performance.now();
         worker = new Worker(
@@ -17,11 +18,9 @@ export const initSearch = (factMap: any) => {
         );
 
         window.addEventListener('beforeunload', () => {
-            console.log('beforeunload');
             worker.terminate(); // else memory leak on reload ?
         });
         window.addEventListener('pagehide', () => {
-            console.log('pagehide');
             worker.terminate(); // else memory leak on reload ?
         });
 
