@@ -700,14 +700,11 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
 
         val.modelXbrl.profileActivity("... filer fact checks", minTimeToShow=1.0)
 
-        if len(contextIDs) > 0: # check if contextID is on any undefined facts
-            for undefinedFact in modelXbrl.undefinedFacts:
-                contextIDs.discard(undefinedFact.get("contextRef"))
-            if len(contextIDs) > 0:
-                modelXbrl.error(("EFM.6.05.08", "GFM.1.02.08"),
-                                _("The instance document contained a context %(contextIDs)s that was not used in any fact. Please remove the context from the instance."),
-                                edgarCode="du-0508-Unused-Context",
-                                modelXbrl=modelXbrl, contextIDs=", ".join(str(c) for c in contextIDs))
+        if len(modelXbrl.ixdsUnmappedContexts) > 0:
+            modelXbrl.error(("EFM.6.05.08", "GFM.1.02.08"),
+                            _("The instance document contained a context %(contextIDs)s that was not used in any fact. Please remove the context from the instance."),
+                            edgarCode="du-0508-Unused-Context",
+                            modelXbrl=modelXbrl, contextIDs=", ".join(str(c) for c in modelXbrl.ixdsUnmappedContexts))
 
         #6.5.9, .10 start-end durations
         if disclosureSystem.GFM or \
@@ -1127,7 +1124,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
 
                 # replacement for efmSection. Based on sev msgSection
                 if sev.get("msgSection"):
-                    msgPrefix, _, msgSectionNumber = sev["msgSection"].partition(":")
+                    msgPrefix, _sep, msgSectionNumber = sev["msgSection"].partition(":")
                     logArgs[f"{msgPrefix.lower()}Section"] = msgPrefix
                     logArgs["arelleCode"] = msgPrefix
                     for i, e in enumerate(msgSectionNumber.split(".")):
@@ -2077,6 +2074,23 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     f.xValid = INVALID
                             if f is None and name in eloValueFactNames:
                                 missingReqInlineTag = True
+                elif validation == "max-decimals":
+                    maxDecimals = sev.get("max-decimals", 0)
+                    for name in names:
+                        for f in sevFacts(sev, name, requiredContext=not axisKey, whereKey="where", sevCovered=subTypes != {"n/a"}):
+                            try:
+                                decimalPrecision = abs(Decimal(f.xValue).as_tuple().exponent)
+                            except Exception:
+                                modelXbrl.debug(
+                                    "arelle:ValidationException",
+                                    _("An unexpected exception occurred in Arelle\n%(traceback)s"),
+                                    traceback=traceback.format_exception(*sys.exc_info())
+                                )
+                                decimalPrecision = 0
+                            if decimalPrecision > maxDecimals:
+                                sevMessage(sev, subType=submissionType, modelObject=f, efmSection=efmSection, tag=ftName(name), label=ftLabel(name), value=f"!do-not-quote!{f.value}", decimals=decimalPrecision, maxDecimals=maxDecimals, ftContext=ftContext(axisKey,f))
+                                # avoid writing to store-db-object since this is an invalid value
+                                f.xValid = INVALID
                 elif validation  == "not-in-future":
                     for name in names:
                         for f in sevFacts(sev, name):
@@ -3581,7 +3595,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 relset = modelXbrl.relationshipSet(XbrlConst.parentChild, rel.linkrole)
                                 roleMatch = lbVal.elrPre.match(rel.linkrole)
                                 if ((roleMatch and relTo.qname.namespaceURI != ns and (
-                                             not relTo.type.isDomainItemType or (lbVal.preSources and not
+                                             not getattr(relTo.type, "isDomainItemType", None) or (lbVal.preSources and not
                                              any(relset.isRelated(c, "descendant-or-self", relFrom) for c in preSrcConcepts))))
                                     or
                                     (not roleMatch and not lbVal.preCustELRs and  (relFrom.qname.namespaceURI == ns or relTo.qname.namespaceURI == ns))):
@@ -5078,7 +5092,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             preNumericItems = set(c.name for c in preConcepts if c.isMonetary and c.periodType == "duration")
                             calcItems = set()
                             for rel in calcRelSet.modelRelationships:
-                                if rel.fromModelObject.name in preNumericItems and rel.toModelObject.name in preNumericItems:
+                                if getattr(rel.fromModelObject, 'name', None) in preNumericItems and getattr(rel.toModelObject, 'name', None) in preNumericItems:
                                     calcItems.add(rel.fromModelObject.name)
                                     calcItems.add(rel.toModelObject.name)
                             supplementalCashItems = set()

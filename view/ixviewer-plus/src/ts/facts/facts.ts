@@ -20,21 +20,21 @@ import { addToJsPerfTable } from "../helpers/ixPerformance";
 export const Facts = {
 	updateFactCounts: () => {
 		let factCount = FactMap.getFactCount();
+		Constants.factCount = factCount;
 		
 		// FactsTable.update();
 		const instanceFactCountElems = Array.from(document.querySelectorAll(".fact-total-count"));
 
-		Constants.getHtmlOverallFactsCount = factCount;
 
 		instanceFactCountElems.forEach((instanceFactCntElem) => {
-			if (Constants.getHtmlOverallFactsCount === "0") {
+			if (Constants.factCount === "0") {
 				document.getElementById("facts-menu")?.setAttribute("disabled", 'true');
 				document.getElementById("facts-menu")?.classList.add("disabled");
 			} else {
 				document.getElementById("facts-menu")?.removeAttribute("disabled");
 				document.getElementById("facts-menu")?.classList.remove("disabled");
 			}
-			instanceFactCntElem.textContent = Constants.getHtmlOverallFactsCount;
+			instanceFactCntElem.textContent = Constants.factCount;
 		});
 
 		// do the slugs too:

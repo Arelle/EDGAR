@@ -45,7 +45,7 @@ describe('/src/ts/constants/indeex.ts', () => {
     //getHtmlOverallFactsCount
     describe('basic checks for getHtmlOverallFactsCount', () => {
         it('is a string', () => {
-            expect(typeof Constants.getHtmlOverallFactsCount).toEqual('string');
+            expect(typeof Constants.factCount).toEqual('string');
         });
     });
 

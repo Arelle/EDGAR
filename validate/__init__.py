@@ -944,7 +944,7 @@ class Report:
 __pluginInfo__ = {
     # Do not use _( ) in pluginInfo itself (it is applied later, after loading
     'name': 'Validate EFM',
-    'version': '1.25.3', # SEC EDGAR release 25.3
+    'version': '1.25.4', # SEC EDGAR release 25.4
     'description': '''EFM Validation.''',
     'license': 'Apache-2',
     'import': ('EDGAR/transform',), # SEC inline can use SEC transformations

@@ -4,8 +4,7 @@ import { Instance } from "./instance";
 import { Meta, MetalinksReport, Section } from "./meta";
 
 
-export interface InstanceFile
-{
+export interface InstanceFile {
     current: boolean;
     formInformation: FormInformation;
     instance: number;
@@ -19,8 +18,7 @@ export interface InstanceFile
 }
 
 
-export interface MetaLinks
-{
+export interface MetaLinks {
     instance: InstanceFile;
     meta: Meta;
     inlineFiles: Array<{ slug: string, current: boolean, loaded: boolean }>;
@@ -29,15 +27,13 @@ export interface MetaLinks
     std_ref?: { [key: string]: Reference };
 }
 
-export interface MetaLinksResponse
-{
+export interface MetaLinksResponse {
     instance: Record<string, InstanceData>;
     version: string;
     std_ref: Record<string, Reference>;
 }
 
-export interface InstanceData
-{
+export interface InstanceData {
     axisCustom: number;
     axisStandard: number;
     baseTaxonomies: Record<string, number>;
@@ -71,8 +67,7 @@ export interface InstanceData
 // }
 
 
-export interface XhtmlFileMeta
-{
+export interface XhtmlFileMeta {
     current: boolean;
     loaded: boolean;
     slug: string;
@@ -82,8 +77,7 @@ export interface XhtmlFileMeta
     table?: boolean;
 }
 
-export interface InlineFileMeta
-{
+export interface InlineFileMeta {
     current: boolean,
     loaded: boolean,
     slug: string,

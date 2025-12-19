@@ -17,6 +17,7 @@ import { excludeFacts, fixImages, fixLinks, hiddenFacts, redLineFacts } from "./
 import { hideLoadingUi, incrementProgress, startProgress } from "./loading-progress";
 import { addToJsPerfTable, timeUiCheckpoints } from "../helpers/ixPerformance";
 import { FactMap } from "../facts/map";
+import { XhtmlFileMeta } from "../interface/instance-file";
 
 
 /* Created by staff of the U.S. Securities and Exchange Commission.
@@ -67,6 +68,7 @@ export const App = {
                 absolute: HelpersUrl.getFolderAbsUrl,
                 instance: changeInstance ? Constants.getInstances : null,
                 std_ref: Constants.getStdRef,
+                docSizeFallbackLimit: Constants.docSizeFallbackLimit,
             };
             return new Promise<boolean>((resolve) => {
                 if (typeof window !== 'undefined' && window.Worker) {
@@ -87,9 +89,27 @@ export const App = {
                             if (!changeInstance) closeSidebars();
 
                             Constants.isNcsr = event.data.isNcsr
+                            Constants.sumOfDocsSizes = event.data.sumOfDocsSizes
                             progressiveLoadDoc(event.data.xhtml);
-                            incrementProgress();
-                            // incrementProgress();
+
+                            if (Constants.sumOfDocsSizes > Constants.docSizeFallbackLimit && event.data.docs) {
+                                console.warn(`Docs size of ${Constants.sumOfDocsSizes} exceeds limit of ${Constants.docSizeFallbackLimit}`)
+                                incrementProgress();
+                                ConstantsFunctions.setInlineFiles(event.data.docs);
+                                addAdditionalDocsToDom(event.data.docs);
+                                Tabs.init(true);
+                                App.liteNavMode();
+                                incrementProgress(true);
+                                ErrorsMinor.message("Very large document detected.  To avoid an 'Out of Memory' crash extra features are disabled and the document is being rendered as orignal HTML.")
+                                worker.terminate();
+                                resolve(true);
+                            } else {
+                                incrementProgress();
+                                if (LOGPERFORMANCE || Constants.logPerfParam ) {
+                                    console.info(`Docs size of ${Constants.sumOfDocsSizes} does not exceed limit of ${Constants.docSizeFallbackLimit}`)
+                                }
+                            }
+
                             if (LOGPERFORMANCE || Constants.logPerfParam ) {
                                 const modEnd = performance.now();
                                 addToJsPerfTable('Worker 1 - xhtml', moduleStart, modEnd)
@@ -103,7 +123,7 @@ export const App = {
 
                             if (LOGPERFORMANCE || Constants.logPerfParam ) {
                                 const workerStageDone = performance.now();
-                                addToJsPerfTable('Worker 2 - facts', moduleStart, workerStageDone)
+                                addToJsPerfTable('Worker 2 - facts', moduleStart, workerStageDone);
                             }
                         } else if ("all" in event.data) {
                             // 3 handling fetchAndMerge.merge())
@@ -118,7 +138,7 @@ export const App = {
                             resolve(true);
                             if (LOGPERFORMANCE || Constants.logPerfParam ) {
                                 const workerStageDone = performance.now();
-                                addToJsPerfTable('Worker 3 - all', moduleStart, workerStageDone)
+                                addToJsPerfTable('Worker 3 - all', moduleStart, workerStageDone);
                             }
                         }
                     };
@@ -166,6 +186,24 @@ export const App = {
         });
     },
 
+    liteNavMode: () => {
+        document.getElementById("sections-dropdown-link")?.classList.add('d-none');
+        document.getElementById("global-search-form")?.classList.add('d-none');
+        document.getElementById("nav-filter-data")?.classList.add('d-none');
+        document.getElementById("nav-filter-tags")?.classList.add('d-none');
+        document.getElementById("nav-filter-more")?.classList.add('d-none');
+        document.getElementById("facts-menu-button")?.classList.add('d-none');
+
+        document.getElementById("menu-dropdown-link")?.classList.remove('disabled');
+
+        // menu options
+        document.getElementById("menu-dropdown-information")?.classList.add('d-none');
+        document.getElementById("form-information-instance")?.classList.add('d-none');
+        document.getElementById("form-information-zip")?.classList.add('d-none');
+        document.getElementById("form-information-html")?.classList.add('d-none');
+        document.getElementById("form-information-help")?.classList.add('d-none');
+    },
+
     /**
      * Updates tabs, instance facts, fact count, global-search-form;
      * runs every time a new instance is loaded
@@ -197,12 +235,7 @@ function handleFetchAndMerge(activeInstance: InstanceFile | null): true | never 
     const [{ slug }] = activeInstance.docs.filter(x => x.current);
     document.querySelector("#xbrl-section-current")?.setAttribute('filing-url', slug);
 
-    activeInstance.docs
-        .filter(({ xhtml, current }) => !current && !!xhtml)
-        .forEach(({ xhtml, current, slug }, i) => {
-            prepDocAndAddToDom(xhtml, current, i);
-            document.querySelector(`#xbrl-section-${i}`)?.setAttribute('filing-url', slug);
-        });
+    addAdditionalDocsToDom(activeInstance.docs);
         
     addAttributesToInlineFacts(activeInstance.map, false);
     addPagination();
@@ -214,6 +247,14 @@ function handleFetchAndMerge(activeInstance: InstanceFile | null): true | never 
     }
 
     return true;
+}
+
+function addAdditionalDocsToDom(docs: XhtmlFileMeta[]) {
+    docs.filter(({ xhtml, current }) => !current && !!xhtml)
+        .forEach(({ xhtml, current, slug }, i) => {
+            prepDocAndAddToDom(xhtml, current, i);
+            document.querySelector(`#xbrl-section-${i}`)?.setAttribute('filing-url', slug);
+        });
 }
 
 function storeData(
@@ -307,7 +348,10 @@ function prepDocAndAddToDom(xhtml: string, current: boolean, i?: number): void {
  * 2. utilize `content-visibility: auto` to load elements only when necessary
  */
 function splitBodyContents(body: HTMLElement): void {
-    ErrorsMinor.message("IX Viewer has detected a very large file.  Performance may be degraded, and some features may not work as expected.");
+    if (Constants.sumOfDocsSizes < Constants.docSizeFallbackLimit) {
+        ErrorsMinor.message("IX Viewer has detected a very large file.  Performance may be degraded, and some features may not work as expected.");
+        // else (docs greater than doc limit) message handled elsewhere
+    }
 
     const ELEMENTS_PER_GROUP = Math.floor(Math.sqrt(body.childElementCount));
     const groupCount = Math.ceil(body.childElementCount / ELEMENTS_PER_GROUP);

@@ -26,7 +26,7 @@ class PresentationGroupNode(object):
         self.typedValue = typedValue
 
     def __str__(self):
-        if self.TypedValue is not none:
+        if self.TypedValue is not None:
             return "[typedValue: {} with {!s} children]".format(self.typedValue, self.arelleRelationship.preferredLabel, len(self.childrenList))
         return "[{} {} with {!s} children]".format(self.arelleConcept.qname, self.arelleRelationship.preferredLabel, len(self.childrenList))
 

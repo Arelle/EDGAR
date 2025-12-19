@@ -14,15 +14,16 @@ import { stopPropPrevDefault } from "../helpers/utils";
 
 export const Tabs = {
 
-	init: () => {
-		Tabs.populateTabs();
+	init: (lite=false) => {
+		Tabs.populateTabs(lite);
 	},
 
 	/**
 	 * Description
+	 * lite param true when very large filings and we don't have fact features.
 	 * @returns {any} populates tabs, i.e. instance tab(s), fact table, fact chart
 	 */
-	populateTabs: () => {
+	populateTabs: (lite=false) => {
 		const container = document.getElementById('tabs-container');
 		Constants.getInlineFiles.forEach((currentInlineDoc, inlineDocIndex) => {
 			// add Instance dropdown (if it's the first instance)
@@ -98,21 +99,23 @@ export const Tabs = {
 			const text = document.createTextNode(currentInlineDoc.slug);
 			inlineDocTabElem.append(text);
 
-			const factCountSpan = document.createElement('span');
-			currentInlineDoc.table ? factCountSpan.classList.add('fact-total-count') : factCountSpan.classList.add('fact-file-total-count');
-
-			factCountSpan.classList.add('badge');
-			factCountSpan.classList.add('ms-1');
-			currentInlineDoc.table ? null : factCountSpan.setAttribute('doc-slug', currentInlineDoc.slug);
-
-			// const factCountSpan = document.createElement('span');
-			const factCountText = document.createTextNode(FactMap.getFactCountForFile(currentInlineDoc.slug));
-
-			factCountSpan.setAttribute('data-bs-toggle', 'tooltip');
-			factCountSpan.setAttribute('title', 'Filtered Fact Count');
-
-			factCountSpan.append(factCountText);
-			inlineDocTabElem.append(factCountSpan);
+			if (!lite) {
+				const factCountSpan = document.createElement('span');
+				currentInlineDoc.table ? factCountSpan.classList.add('fact-total-count') : factCountSpan.classList.add('fact-file-total-count');
+	
+				factCountSpan.classList.add('badge');
+				factCountSpan.classList.add('ms-1');
+				currentInlineDoc.table ? null : factCountSpan.setAttribute('doc-slug', currentInlineDoc.slug);
+	
+				// const factCountSpan = document.createElement('span');
+				const factCountText = document.createTextNode(FactMap.getFactCountForFile(currentInlineDoc.slug));
+	
+				factCountSpan.setAttribute('data-bs-toggle', 'tooltip');
+				factCountSpan.setAttribute('title', 'Filtered Fact Count');
+	
+				factCountSpan.append(factCountText);
+				inlineDocTabElem.append(factCountSpan);
+			}
 
 			li.append(inlineDocTabElem);
 			container?.append(li);

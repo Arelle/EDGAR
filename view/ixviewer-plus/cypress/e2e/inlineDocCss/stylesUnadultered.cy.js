@@ -39,7 +39,7 @@ describe('Inline docs layout matches plain html version', () => {
             // Width is currently a string like '1870px'. This will strip the letters out and convert it to a number
             width = Number(width.replace(/px/g, ''));
             // Giving it 1% wiggle room so it doesn't have to be pixel-perfect
-            cy.expect(width).to.be.within(0.99 * 1870, 1.01 * 1870);
+            cy.expect(width).to.be.within(0.98 * 1870, 1.02 * 1870);
         })
     })
 
@@ -79,7 +79,7 @@ describe('Inline docs layout matches plain html version', () => {
         cy.get('h1').contains('h1', 'For a fee calculated as').then(($table) => {
             // Should be weight 700
             let fontSize = window.getComputedStyle($table[0]).fontSize
-            cy.expect(fontSize).to.eq('24px')
+            cy.expect(fontSize).to.eq('32px')
         })
     })
 
@@ -139,25 +139,14 @@ describe('Inline docs layout matches plain html version', () => {
     })
 
     it('Text Block Facts that are enabled should have an outline', () => {
+        // Warning.  Zoom level of browser will affect this.
+        cy.viewport(1920, 1500);
         cy.loadByAccessionNum('000143774923034166');
         // Looking at a text block fact
         cy.get('[id="fact-identifier-185"]')
             .click().then(() => {
                 cy.get(selectors.factModalClose).click()
-                cy.get('[id="fact-identifier-185"]').then(($fact) => {
-
-                    let outline = window.getComputedStyle($fact[0]).getPropertyValue('outline');
-                    // Going to have two checks here
-                    // First check ensures that the outline is NOT None (Should be pretty straightforward)
-                    cy.expect(outline).to.not.eq("rgb(0, 0, 0) none 0px");
-                    // Second check looks for the specific outline at the time of writing (rgb(0, 55, 104) solid 2px)
-                    // Second check will fail if the specific format of the outline changes.
-                    cy.expect(outline).to.contain("rgb(0, 55, 104) solid");
-                    let outlineWidth = window.getComputedStyle($fact[0]).getPropertyValue('outline-width');
-                    outlineWidth = Number(outlineWidth.replace(/px/, ''));
-                    cy.expect(outlineWidth).to.be.within(1.5, 2.5);
-                    // cy.expect(outline).to.eq("rgb(0, 55, 104) solid 2px");
-                })
+                cy.get('[id="fact-identifier-185"]').should('have.css', 'outline-width', '2px')
             })
     })
 

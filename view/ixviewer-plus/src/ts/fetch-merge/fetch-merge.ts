@@ -22,6 +22,11 @@ import { buildSectionsArrayFlatter, fetchJson, fetchText, setScaleInfo } from '.
 
 /* eslint-disable @typescript-eslint/ban-types */
 
+type DocMeta = {
+    url: string;
+    size: number | null;
+}
+
 export class FetchAndMerge {
     private absolute: string;
     private params: UrlParams;
@@ -31,6 +36,8 @@ export class FetchAndMerge {
     private sections: Array<Section> = [];
     private metaVersion: string | null = null;
     private instances: InstanceFile[];
+    private sumOfDocsSizes: number;
+    private docSizeFallbackLimit: number;
 
     constructor(input: FetchMergeArgs) {
         this.absolute = input.absolute;
@@ -38,6 +45,16 @@ export class FetchAndMerge {
         this.customPrefix = input.customPrefix || null;
         this.instances = input.instance ?? [];
         this.std_ref = input.std_ref;
+        this.sumOfDocsSizes = 0;
+        this.docSizeFallbackLimit = input.docSizeFallbackLimit
+    }
+
+    activeDocs: DocMeta[] = [];
+
+    async fetchLength(url: string): Promise<number | null> {
+        const res = await fetch(url, { method: "HEAD" });
+        const lengthHeader = res.headers.get("content-length");
+        return lengthHeader ? parseInt(lengthHeader, 10) : null;
     }
 
     public async fetch(): Promise<FMResponse> {
@@ -65,6 +82,27 @@ export class FetchAndMerge {
             });
         };
 
+        const getJustDocs = () => {
+            return this.fetchDocs().then(async (docs) => {
+                const errors = docs.filter((element): element is ErrorResponse =>
+                    element ? Object.prototype.hasOwnProperty.call(element, 'error') : false);
+
+                if (errors.length) {
+                    const errorMessages = errors.map(current => current.messages);
+                    throw { all: { error: true, messages: errorMessages.flat() } };
+                }
+
+                //At this point, neither of the responses had errors, so we can safely cast them
+                docs = docs as Array<{ xhtml: string }>;
+
+                docs.filter((doc): doc is { xhtml: string } => "xhtml" in doc)
+                    .forEach((doc, index) => {
+                        this.activeInstance.docs[index].loaded = true;
+                        this.activeInstance.docs[index].xhtml = doc.xhtml;
+                    });
+            });
+        };
+
         const metaAndSummary = () => {
             return Promise.all([this.fetchMeta(), this.fetchSummary()]).then(([ml, fs]) => {
                 let error = false;
@@ -79,7 +117,6 @@ export class FetchAndMerge {
                     throw { all: { error, messages: messages.flat() } };
                 }
 
-                //At this point, neither of the responses had errors, so we can safely cast them
                 const metalinks = ml as MetaLinks & { instances: InstanceFile[] };
                 const filingSummary = fs as FilingSummary;
 
@@ -123,6 +160,7 @@ export class FetchAndMerge {
 
             if (initialLoad) {
                 const [meta, summ] = await metaAndSummary();
+
                 getInstanceXmlUrlFromFilingSummary(summ, meta.instances);
                 
                 // iterate over FilingSummary.xml Reports to build sections, adding data from metalinks
@@ -137,17 +175,45 @@ export class FetchAndMerge {
                 isNcsr = summ.InputFiles?.File?.reduce((acc, { _attributes }) => {
                     return acc || _attributes?.isNcsr == "true";
                 }, isNcsr);
-            }                                        
+            }
+            
+            this.activeDocs = await Promise.all(
+                this.activeInstance.docs.map(async (doc) => ({
+                    url: doc.url,
+                    size: await this.fetchLength(doc.url)
+                }))
+            );
 
-            await docsAndInstance();
+            this.sumOfDocsSizes = this.activeDocs.reduce((acc, cur) => acc + (cur.size || 0), 0)
+            if (this.sumOfDocsSizes > this.docSizeFallbackLimit) {
+                await getJustDocs();
+                // this is returned to the webworker
+                return {
+                    xhtml: this.activeInstance.docs.find((x) => x.current)?.xhtml || "", 
+                    isNcsr,
+                    sumOfDocsSizes: this.sumOfDocsSizes,
+                    docs: this.activeInstance.docs
+                };
+            } else {
+                await docsAndInstance();
+                // this is returned to the webworker
+                return {
+                    xhtml: this.activeInstance.docs.find((x) => x.current)?.xhtml || "", 
+                    isNcsr,
+                    sumOfDocsSizes: this.sumOfDocsSizes
+                };
+            }
 
-            // this is returned to the webworker
-            return { xhtml: this.activeInstance.docs.find((x) => x.current)?.xhtml || "", isNcsr };
         }
         catch(e) { this.errorHandling(e) }
     }
 
-    public async facts(): Promise<FMResponse> {
+    public async facts(): Promise<FMResponse | string> {
+        if (this.sumOfDocsSizes > this.docSizeFallbackLimit) {
+            return new Promise((reject) => {
+                reject({error: 'Filing too large'});
+            });
+        }
         try {
             return { facts: this.buildFactMap() };
         }
@@ -156,6 +222,11 @@ export class FetchAndMerge {
 
     public async merge(): Promise<All> {
         try {
+            if (this.sumOfDocsSizes > this.docSizeFallbackLimit) {
+                return new Promise((reject) => {
+                    reject({error: 'Filing too large'});
+                });
+            }
             await this.mergeAllResponses();
 
             const all = {

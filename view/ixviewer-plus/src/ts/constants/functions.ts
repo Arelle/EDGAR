@@ -156,6 +156,7 @@ export const ConstantsFunctions = {
 	},
 
 	switchDoc: (fileToChangeTo: string, onBack = false): Promise<void> => {
+		console.log('fileToChangeTo', fileToChangeTo)
 		if (Constants.appWindow.location.href.includes(fileToChangeTo) && !onBack) {
 			return Promise.resolve();
 		}
