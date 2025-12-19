@@ -214,6 +214,16 @@ are not subject to domestic copyright protection. 17 U.S.C. 105.
         <Namespace>http://xbrl.sec.gov/ffd/2025</Namespace>
         <Prefix>ffd</Prefix>
     </Loc>
+    <Loc>
+        <Family>FFD</Family>
+        <Version>2025q4</Version>
+        <Href>https://xbrl.sec.gov/ffd/2025q4/ffd-2025q4.xsd</Href>
+        <AttType>SCH</AttType>
+        <FileTypeName>Schema</FileTypeName>
+        <Elements>1</Elements>
+        <Namespace>http://xbrl.sec.gov/ffd/2025q4</Namespace>
+        <Prefix>ffd</Prefix>
+    </Loc>
     <!-- FND 2025 -->
     <Loc>
         <Family>FND</Family>

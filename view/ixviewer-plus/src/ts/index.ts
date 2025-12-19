@@ -26,11 +26,19 @@ import { initSearch } from "./flex-search/search-worker-interface";
     new Listeners();
     new SetCustomCSS();
 
+    /**
+     * Description
+     * @param {any} false
+     * @returns {any(
+     *  formLoaded = succfully loaded full app
+     *  docsOnly = lite mode, loading only html if filing is too big and likely to crash browser for want of memory
+     * )}
+     */
     App.init(false).then((formLoaded) => {
-        if (formLoaded) {
-            console.log(`Version: ${Constants.version} (${Constants.featureSet})`);
-            console.log(`CSS Mode: ${(document.compatMode == "CSS1Compat" ? "Standards 🎉" : "Quirks 😢")}`);
-
+        console.log(`Version: ${Constants.version} (${Constants.featureSet})`);
+        console.log(`CSS Mode: ${(document.compatMode == "CSS1Compat" ? "Standards 🎉" : "Quirks 😢")}`);
+        const liteMode = Constants.sumOfDocsSizes > Constants.docSizeFallbackLimit;
+        if (formLoaded && !liteMode) {
             Errors.updateMainContainerHeight(false);
             App.initialSetup();
             removeHideClassFromSidebars();
@@ -48,7 +56,11 @@ import { initSearch } from "./flex-search/search-worker-interface";
                 addToJsPerfTable('AppInit.init()', Constants.appStart, endPerformance);
             }
         } else {
-            ErrorsMajor.formNotLoaded();
+            if (liteMode) {
+                console.info('IX Viewer in lite mode due to doc size')
+            } else {
+                ErrorsMajor.formNotLoaded();
+            }
         }
     });
 

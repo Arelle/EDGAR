@@ -459,7 +459,7 @@ class Filing(object):
                         if discardedCounter > 0:
                             # start it off because we can assume that these facts have a qname and a context
                             qnameContextIDUnitStr = 'qname {!s}, context {}'.format(firstFact.qname, firstFact.contextID)
-                            if firstFact.unit is not None:
+                            if getattr(firstFact, 'unitID', None) is not None:
                                 qnameContextIDUnitStr += ', unit ' + firstFact.unitID
                             self.modelXbrl.debug("debug",
                                                  _("There are multiple facts with %(contextUnitIds)s. The first fact on line %(lineNumOfFactWeAreKeeping)s of the instance "
@@ -970,7 +970,7 @@ class Filing(object):
         # this is fine, but each time you render, they might appear in a different order.  so this will sort the facts by source line
         # so that each run the same facts don't appear in different orders.
         if cube.isElements:
-            sortedFAMGL = sorted(embedding.factAxisMemberGroupList, key=lambda thing: (thing.axisMemberPositionTupleRowList, thing.fact.sourceline))
+            sortedFAMGL = sorted(embedding.factAxisMemberGroupList, key=lambda thing: (thing.axisMemberPositionTupleRowList, thing.fact.sourceline or 0))
         else:
             sortedFAMGL = sorted(embedding.factAxisMemberGroupList, key=lambda thing: thing.axisMemberPositionTupleRowList)
         report.generateRowsOrCols('row', sortedFAMGL)

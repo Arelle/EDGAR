@@ -143,7 +143,7 @@ Language of labels:
     GUI may use tools->language labels setting to override system language for labels
 
 """
-VERSION = '3.25.3'
+VERSION = '3.25.4'
 
 from collections import defaultdict
 from arelle import PythonUtil
@@ -1311,7 +1311,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                                 for rel in modelXbrl.relationshipSet("XBRL-footnotes").modelRelationships:
                                     f = rel.toModelObject
                                     if isinstance(f, ModelInlineFootnote):
-                                        del f._ixValue  # force rebuilding continuation chain value
+                                        if hasattr(f, "_ixValue"): del f._ixValue  # force rebuilding continuation chain value
                                         xmlValidate(f.modelXbrl, f, ixFacts=True)
                                 revalidateXbrl = True
                             report.redactedContinuationSources.clear()  # deref
@@ -1530,8 +1530,8 @@ class EdgarRenderer(Cntlr.Cntlr):
                                     self.transformFilingSummary(filing, rootETree, self.summaryXslt, dissemReportsFolder, "FilingSummary.htm" + dissemSuffix, True, "Public Filing Data", zipDir="dissem/")
                         elif self.isWorkstationFirstPass:  # redact filing summary
                             filing.writeFile(join(dissemReportsFolder, "FilingSummary.xml.delete"), b"")
-                        if self.hasXlout:
-                            if self.xlWriter and numDisseminatedReports > 0:
+                        if self.xlWriter and self.hasXlout:
+                            if numDisseminatedReports > 0:
                                 _startedAt = time.time()
                                 self.xlWriter.save(suffix=dissemSuffix, zipDir="dissem/")
                                 self.xlWriter.close()
@@ -2206,7 +2206,7 @@ def removeElementsWithDocumentReference(modelXbrl, document):
 __pluginInfo__ = {
     'name': 'Edgar Renderer',
     'version': VERSION,
-    'description': "This plug-in implements U.S. SEC Edgar Renderer.  Arelle version at SEC: 2.37.37 ",
+    'description': "This plug-in implements U.S. SEC Edgar Renderer.  Arelle version at SEC: 2.37.65 ",
     'license': 'Apache-2',
     'author': 'U.S. SEC Employees and Mark V Systems Limited',
     'copyright': '(c) Portions by SEC Employees not subject to domestic copyright, otherwise (c) Copyright 2015 Mark V Systems Limited, All rights reserved.',

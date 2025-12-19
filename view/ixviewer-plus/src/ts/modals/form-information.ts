@@ -222,7 +222,7 @@ export const ModalsFormInformation = {
 		const possibleLabels = [
 			[{
 				'label': 'Total Facts',
-				'value': Constants.getHtmlOverallFactsCount
+				'value': Constants.factCount
 			}, {
 				'label': 'Inline Version',
 				'value': Constants.getFormInformation.version

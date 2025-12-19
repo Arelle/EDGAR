@@ -16,7 +16,6 @@ export const UserFiltersMoreFiltersMembersSetUp = {
 
     setMembers: () => {
         const members = FactMap.getAllMembers();
-        console.log('members', members)
         document.getElementById("filters-members-count")!.innerText = members.length.toString();
         if (members.length > Constants.memberLimit) {
             document.getElementById("more-filters-menu-members")?.classList.add('disabled');
