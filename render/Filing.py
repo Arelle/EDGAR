@@ -330,6 +330,7 @@ class Filing(object):
         self.validatedForEFM = controller.validatedForEFM
         self.reportXmlFormat = 'xml' in controller.reportFormat.casefold()
         self.reportHtmlFormat = 'html' in controller.reportFormat.casefold()
+        self.reportJsonFormat = 'json' in controller.reportFormat.casefold()
         self.fileNamePrefix = 'R'
         if controller.reportZip:
             self.fileNameBase = None
