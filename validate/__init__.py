@@ -947,7 +947,7 @@ __pluginInfo__ = {
     'version': '1.25.4', # SEC EDGAR release 25.4
     'description': '''EFM Validation.''',
     'license': 'Apache-2',
-    'import': ('EDGAR/transform',), # SEC inline can use SEC transformations
+    'import': ('EDGAR/transform', 'xule'), # SEC inline can use SEC transformations
     'author': authorLabel,
     'copyright': copyrightLabel,
     'aliases': ('validate/EFM', ),

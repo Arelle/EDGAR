@@ -292,7 +292,7 @@ def getXulePlugin(cntlr):
     """
     global _xule_plugin_info, _incompatible_plugin, xulePluginDoesNotExist
     if _xule_plugin_info is None and not xulePluginDoesNotExist:
-        for plugin_name, plugin_info in PluginManager.modulePluginInfos.items():
+        for plugin_info in PluginManager.modulePluginInfos.values():
             moduleUrl = plugin_info.get('moduleURL')
             if moduleUrl == 'xule':
                 _xule_plugin_info = plugin_info
@@ -300,15 +300,6 @@ def getXulePlugin(cntlr):
                 _incompatible_plugin = moduleUrl
                 cntlr.addToLog(_("EDGAR is not compatible with the DQC.py plugin, please remove the DQC.py plugin.  The EDGAR plugin directly manages running of to run DQC rules."),
                                messageCode="arelle.incompatibleRulePlugin")
-        if _xule_plugin_info is None:
-            # attempt to find xule plugi
-            for path, childDirs, files in os.walk(_plugin_dir):
-                if path.endswith(os.sep + "xule") and childDirs in ([], ["__pycache__"]) and "__init__.py" in files:
-                    _xule_plugin_info = PluginManager.moduleModuleInfo(moduleURL=path)
-                    PluginManager.loadModule(_xule_plugin_info)
-                    PluginManager.pluginConfigChanged = False # don't save this change
-                    _xule_plugin_info = PluginManager.modulePluginInfos[_xule_plugin_info["name"]]
-                    break
     if _xule_plugin_info is None and not xulePluginDoesNotExist:
         cntlr.addToLog(_("Xule plugin is not loaded. Xule plugin is required to run DQC rules. This plugin should be automatically loaded."),
                        messageCode="arelle.xulePluginNotLoaded")
