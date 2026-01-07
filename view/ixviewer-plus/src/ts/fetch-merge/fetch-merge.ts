@@ -142,7 +142,7 @@ export class FetchAndMerge {
 
                     // add xmlUrls to instances
                     const [metaInstanceModel] = instances.filter((inst) => inst.instanceHtm.includes(reportInstanceHtmSlug));
-                    metaInstanceModel.xmlUrl = this.params.metalinks.replace('MetaLinks.json', reportInstanceHtmSlug.replace('.htm', '_htm.xml'));
+                    metaInstanceModel.xmlUrl = this.params.metalinks.replace('MetaLinks.json', reportInstanceHtmSlug.replace(/\.htm$/i, '_htm.xml'));
                 }
             });
 

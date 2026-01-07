@@ -26,6 +26,7 @@ export const selectors = {
 
     taggedSections: '#tagged-sections',
     sectionsHeader: 'button[id="sections-dropdown-link"]',
+    sectionsCount: '[data-cy="sectionLinkCount"]',
     sectionsSidebar: 'div[id="sections-menu"]',
     sectionActive: 'div.section-active',
     sectionHeaderActive: 'div[id^="sectionDoc-"].section-active button[data-cy*="instance-header"]',
