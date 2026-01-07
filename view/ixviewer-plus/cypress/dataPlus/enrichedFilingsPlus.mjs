@@ -3713,6 +3713,18 @@ export const filings = [
 		"NCSR": true,
 	},
 	{
+		"accessionNum": "000117625625000090",
+		"docPath": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1011509/000117625625000090/aumn-20250930.htm.htm",
+		"timeout": "40000",
+        "multiInstance": false,
+        "multiDoc": false,
+		"filingFees": "",
+        "Instances": "",
+		"docName": "aumn-20250930.htm.htm",
+		"factCount": 579,
+		"NCSR": false,
+	},
+	{
 		"accessionNum": "000110465925020739",
 		"docPath": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/813900/000110465925020739/tm255536d1_ncsr.htm",
 		"timeout": "400000",

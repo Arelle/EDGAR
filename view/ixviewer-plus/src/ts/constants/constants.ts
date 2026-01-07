@@ -13,7 +13,7 @@ type MetaDocument = any;
 
 export const Constants =
 {
-	version: "25.4",
+	version: "26.0.u1",
 	featureSet: "plus",
 	appStart: 0,
 	loadPhaseComplete: 0,
