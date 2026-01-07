@@ -426,7 +426,9 @@ def filingStart(cntlr, options, filesource, entrypointFiles, sourceZipStream=Non
             ixdsIndex = primaryIndex = -1
             for i, ep in enumerate(entrypointFiles):
                 if "ixds" in ep:
-                    ixdsIndex = i
+                    # select index of first IXDS encountered
+                    if ixdsIndex < 0:
+                        ixdsIndex = i
                     for i, ixdsEntry in enumerate(ep["ixds"]):
                         submissionType = ixdsEntry.get("submissionType")
                         attachmentDocumentType = ixdsEntry.get("attachmentDocumentType")
