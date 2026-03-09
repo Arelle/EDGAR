@@ -77,10 +77,11 @@ def init(cntlr):
     global xuleValidateFinally
     if xuleValidateFinally is None:
         xuleValidateFinally = getXuleMethod(cntlr, 'Validate.Finally')
-        if xuleValidateFinally is not None: # xule is loaded
-            # add EDGAR mapping for resource files to disclosureSystem.mappings
-            if cntlr.modelManager.disclosureSystem:
-                mappedPath = f"{os.sep}__xule_resources_dir__"
+    if xuleValidateFinally is not None: # xule is loaded
+        # add EDGAR mapping for resource files to disclosureSystem.mappings (re-register each call; DisclosureSystem.select() clears mappedPaths)
+        if cntlr.modelManager.disclosureSystem:
+            mappedPath = f"{os.sep}__xule_resources_dir__"
+            if (mappedPath, _xule_resources_dir) not in cntlr.modelManager.disclosureSystem.mappedPaths:
                 cntlr.modelManager.disclosureSystem.mappedPaths.append((mappedPath, _xule_resources_dir))
                 normalizedMappedPath = cntlr.webCache.normalizeUrl(mappedPath,None) # normalization occurs within ModelDocument.load()
                 if normalizedMappedPath != mappedPath: # python 3.13 on Windows also needs to map with drive letter added
