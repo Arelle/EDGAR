@@ -2094,7 +2094,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 elif validation  == "not-in-future":
                     for name in names:
                         for f in sevFacts(sev, name):
-                            if deiDocumentType and f.context.endDatetime > documentTypeFact.context.endDatetime:
+                            if deiDocumentType and f.context is not None and f.context.endDatetime is not None and f.context.endDatetime > documentTypeFact.context.endDatetime:
                                 sevMessage(sev, subType=submissionType, modelObject=f, efmSection=efmSection, tag=name, context="context " + f.contextID)
 
                 elif validation in ("ru", "ou"):
