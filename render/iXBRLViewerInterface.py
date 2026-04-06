@@ -12,8 +12,6 @@ Subclasses operation for use as Python Classes (not plugin operation) under Edga
 """
 
 import io, os, sys, zipfile
-from arelle.PluginManager import pluginClassMethods
-from arelle import PluginManager
 
 _iXBRLViewerPlugin = None
 _iXBRLViewer_plugin_info = None
@@ -26,7 +24,7 @@ def hasIXBRLViewerPlugin(cntlr):
     global _iXBRLViewerPlugin
     if _iXBRLViewerPlugin is not None:
         return True
-    if "ixbrl-viewer" not in PluginManager.pluginConfig["modules"]:
+    if "ixbrl-viewer" not in cntlr.plugins.get_plugins():
         return False
     try:
         from arelle.plugin import iXBRLViewerPlugin as _iXBRLViewerPlugin
@@ -40,7 +38,7 @@ def generateViewer(cntlr, stubDir):
     stubPath = os.path.join(stubDir, STUB_NAME)
     securityIsActive = securityHasWritten = False
     stubBytes = None
-    for pluginMethod in pluginClassMethods("Security.Crypt.IsActive"):
+    for pluginMethod in cntlr.plugins.hooks("Security.Crypt.IsActive"):
         securityIsActive = pluginMethod(self)  # must be active for the save method to save encrypted files
     _iXBRLViewerPlugin.pluginData(cntlr).builder = _iXBRLViewerPlugin.IXBRLViewerBuilder(cntlr, useStubViewer = True)
     _iXBRLViewerPlugin.processModel(cntlr, cntlr.modelManager.modelXbrl)
@@ -61,14 +59,19 @@ def generateViewer(cntlr, stubDir):
     if not stubBytes:
         return
     if securityIsActive:
-        for pluginMethod in pluginClassMethods("Security.Crypt.Write"):
+        for pluginMethod in cntlr.plugins.hooks("Security.Crypt.Write"):
             securityHasWritten = pluginMethod(self, stubPath, stubBytes)
     if not securityHasWritten:
         with open(stubPath, "wb") as fout:
             fout.write(stubBytes)
 
 def disableiXBRLViewerPluginInfo(cntlr):
-    if PluginManager.pluginConfig["modules"].get("ixbrl-viewer", {}).get("status", "disabled") == "enabled":
-        PluginManager.pluginConfig["modules"]["ixbrl-viewer"]["status"] = "disabled"
-        PluginManager.reset()
-        cntlr.addToLog(_("iXBRLViewer plugin disabled for EdgarRenderer. EdgarRenderer manages iXBRLViewer within its workflow."))
+    pluginMeta = cntlr.plugins.handles.get_plugins().get("ixbrl-viewer")
+    if pluginMeta is None:
+        return
+    if pluginMeta.status == "enabled":
+        cntlr.addToLog(
+            _("iXBRLViewer plugin should not be enabled for EdgarRenderer. "
+              "EdgarRenderer manages iXBRLViewer within its workflow."),
+             messageCode="arelle.ixbrlViewerPluginEnabled",
+        )
