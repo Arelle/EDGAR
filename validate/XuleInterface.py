@@ -37,9 +37,9 @@ DOCSKIP
 """
 import optparse, os, json
 import regex as re
+from arelle.plugin_system.plugin_meta import PluginMeta
 import traceback
 import sys
-from arelle import PluginManager
 from arelle.PythonUtil import attrdict, pyNamedObject
 from .Util import usgaapYear
 
@@ -68,7 +68,7 @@ DQCRT_RUN_ONLY_PATTERN = (r"DQC\.US\.(" # separate rules 0000-0009, 0010-0099, 0
     ")")
 
 """Do not change anything below this line."""
-_xule_plugin_info = None
+_xule_plugin_info: PluginMeta | None = None
 xuleValidateFinally = None
 xulePluginDoesNotExist = False
 user_defined_xule_rule_set = False
@@ -103,8 +103,8 @@ def close(cntlr): # unhook Xule's 'Validate.Finally' from validate/EFM
     global xuleValidateFinally
     '''
     if xuleValidateFinally is not None:
-        PluginManager.modulePluginInfos[getXulePlugin(cntlr)["name"]]['Validate.Finally'] = xuleValidateFinally # restore original finally
-        PluginManager.reset()
+        cntlr._pluginManager.modulePluginInfos[getXulePlugin(cntlr).name]['Validate.Finally'] = xuleValidateFinally # restore original finally
+        cntlr._pluginManager.reset()
         xuleValidateFinally = None
     '''
 def blockXuleValidateFinally(val):
@@ -316,10 +316,10 @@ def getXulePlugin(cntlr):
     """
     global _xule_plugin_info, _incompatible_plugin, xulePluginDoesNotExist
     if _xule_plugin_info is None and not xulePluginDoesNotExist:
-        for plugin_info in PluginManager.modulePluginInfos.values():
-            moduleUrl = plugin_info.get('moduleURL')
+        for plugin_meta in cntlr.plugins.get_plugins().values():
+            moduleUrl = plugin_meta.module_url
             if moduleUrl.endswith('xule'):
-                _xule_plugin_info = plugin_info
+                _xule_plugin_info = plugin_meta
             elif DQC_plugin_url_pattern.match(moduleUrl):
                 _incompatible_plugin = moduleUrl
                 cntlr.addToLog(_("EDGAR is not compatible with the DQC.py plugin, please remove the DQC.py plugin.  The EDGAR plugin directly manages running of to run DQC rules."),
@@ -338,10 +338,8 @@ def getXuleMethod(cntlr, class_name):
 
     Get a method/function from the Xule plugin. This is how this validator calls functions in the Xule plugin.
     """
-    xule_plugin = getXulePlugin(cntlr)
-    if xule_plugin is not None:
-        return xule_plugin.get(class_name)
-    return None
+    __ = getXulePlugin(cntlr)  # Triggers logs if xule plugin is not available.
+    return next(cntlr.plugins.hooks(class_name), None)
 
 def menuTools(cntlr, menu):
     """Add validator menu the Tools menu in the Arelle GUI

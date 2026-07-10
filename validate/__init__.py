@@ -153,7 +153,6 @@ from arelle import ModelDocument, ModelValue, XmlUtil, FileSource
 from arelle.ModelDocument import Type
 from arelle.ModelInstanceObject import ModelFact
 from arelle.ModelValue import qname
-from arelle.PluginManager import pluginClassMethods  # , pluginMethodsForClasses, modulePluginInfos
 from arelle.PythonUtil import flattenSequence
 from arelle.UrlUtil import authority, relativeUri
 from arelle.ValidateFilingText import referencedFiles
@@ -455,18 +454,18 @@ def filingStart(cntlr, options, filesource, entrypointFiles, sourceZipStream=Non
         # cntlr.addToLog("TRACE EFM filing start 2 classes={} moduleInfos={}".format(pluginMethodsForClasses, modulePluginInfos))
         modelManager.efmFiling = Filing(cntlr, options, filesource, entrypointFiles, sourceZipStream, responseZipStream)
         # this event is called for filings (of instances) as well as test cases, for test case it just keeps options accessible
-        for pluginXbrlMethod in pluginClassMethods("EdgarRenderer.Filing.Start"):
+        for pluginXbrlMethod in cntlr.plugins.hooks("EdgarRenderer.Filing.Start"):
             pluginXbrlMethod(cntlr, options, entrypointFiles, modelManager.efmFiling)
         # check if any entrypointFiles have an encryption is specified
         if isinstance(entrypointFiles, list):
-            for pluginXbrlMethod in pluginClassMethods("Security.Crypt.Filing.Start"):
+            for pluginXbrlMethod in cntlr.plugins.hooks("Security.Crypt.Filing.Start"):
                 pluginXbrlMethod(modelManager.efmFiling, options, filesource, entrypointFiles, sourceZipStream)
 
 
 def guiTestcasesStart(cntlr, modelXbrl, *args, **kwargs):
     modelManager = cntlr.modelManager
     if cntlr.hasGui: # enable EdgarRenderer to initiate ixviewer irregardless of whether an EFM disclosure system is active
-        for pluginXbrlMethod in pluginClassMethods("EdgarRenderer.Gui.Run"):
+        for pluginXbrlMethod in cntlr.plugins.hooks("EdgarRenderer.Gui.Run"):
             xuleInit(cntlr)
             pluginXbrlMethod(cntlr, modelXbrl, *args,
                              # pass plugin items to GUI mode of EdgarRenderer
@@ -531,7 +530,7 @@ def xbrlRun(cntlr, options, modelXbrl, *args, **kwargs):
         efmFiling = modelManager.efmFiling
         _report = efmFiling.getReport(modelXbrl)
         if _report is not None: # HF TESTING: not (options.abortOnMajorError and len(modelXbrl.errors) > 0):
-            for pluginXbrlMethod in pluginClassMethods("EdgarRenderer.Xbrl.Run"):
+            for pluginXbrlMethod in cntlr.plugins.hooks("EdgarRenderer.Xbrl.Run"):
                 pluginXbrlMethod(cntlr, options, modelXbrl, modelManager.efmFiling, _report)
 
 def filingValidate(cntlr, options, filesource, entrypointFiles, sourceZipStream=None, responseZipStream=None, *args, **kwargs):
@@ -582,7 +581,7 @@ def filingEnd(cntlr, options, filesource, entrypointFiles, sourceZipStream=None,
     #cntlr.addToLog("TRACE EFM filing end")
     modelManager = cntlr.modelManager
     if hasattr(modelManager, "efmFiling"):
-        for pluginXbrlMethod in pluginClassMethods("EdgarRenderer.Filing.End"):
+        for pluginXbrlMethod in cntlr.plugins.hooks("EdgarRenderer.Filing.End"):
             pluginXbrlMethod(cntlr, options, filesource, modelManager.efmFiling, sourceZipStream=sourceZipStream)
         #cntlr.addToLog("TRACE EdgarRenderer end")
         # save JSON file of instances and referenced documents
@@ -616,7 +615,7 @@ def testcaseVariationXbrlLoaded(testcaseModelXbrl, instanceModelXbrl, modelTestc
         if not hasattr(modelManager, "efmFiling"): # first instance of filing
             modelManager.efmFiling = Filing(cntlr, options, instanceModelXbrl.fileSource, entrypointFiles, None, None, instanceModelXbrl.errorCaptureLevel)
             # this event is called for filings (of instances) as well as test cases, for test case it just keeps options accessible
-            for pluginXbrlMethod in pluginClassMethods("EdgarRenderer.Filing.Start"):
+            for pluginXbrlMethod in cntlr.plugins.hooks("EdgarRenderer.Filing.Start"):
                 pluginXbrlMethod(cntlr, options, entrypointFiles, modelManager.efmFiling)
         xuleInit(cntlr)
         modelManager.efmFiling.addReport(instanceModelXbrl)
@@ -637,7 +636,7 @@ def testcaseVariationXbrlValidated(testcaseModelXbrl, instanceModelXbrl, *args, 
         efmFiling = modelManager.efmFiling
         _report = efmFiling.getReport(instanceModelXbrl)
         if _report is not None: # HF TESTING: not (options.abortOnMajorError and len(modelXbrl.errors) > 0):
-            for pluginXbrlMethod in pluginClassMethods("EdgarRenderer.Xbrl.Run"):
+            for pluginXbrlMethod in modelManager.cntlr.plugins.hooks("EdgarRenderer.Xbrl.Run"):
                 pluginXbrlMethod(modelManager.cntlr, efmFiling.options, instanceModelXbrl, efmFiling, _report)
 
 def testcaseVariationValidated(testcaseModelXbrl, instanceModelXbrl, errors=None, *args, **kwargs):
@@ -660,7 +659,7 @@ def testcaseVariationValidated(testcaseModelXbrl, instanceModelXbrl, errors=None
 def fileSourceFile(cntlr, filepath, binary, stripDeclaration):
     modelManager = cntlr.modelManager
     if hasattr(modelManager, "efmFiling"):
-        for pluginXbrlMethod in pluginClassMethods("Security.Crypt.FileSource.File"):
+        for pluginXbrlMethod in cntlr.plugins.hooks("Security.Crypt.FileSource.File"):
             _file = pluginXbrlMethod(cntlr, modelManager.efmFiling, filepath, binary, stripDeclaration)
             if _file is not None:
                 return _file
@@ -669,7 +668,7 @@ def fileSourceFile(cntlr, filepath, binary, stripDeclaration):
 def fileSourceExists(cntlr, filepath):
     modelManager = cntlr.modelManager
     if hasattr(modelManager, "efmFiling"):
-        for pluginXbrlMethod in pluginClassMethods("Security.Crypt.FileSource.Exists"):
+        for pluginXbrlMethod in cntlr.plugins.hooks("Security.Crypt.FileSource.Exists"):
             _existence = pluginXbrlMethod(modelManager.efmFiling, filepath)
             if _existence is not None:
                 return _existence
@@ -728,7 +727,7 @@ class Filing:
         self.errorCaptureLevel = errorCaptureLevel or logging._checkLevel("INCONSISTENCY")
         self.errors = []
         self.arelleUnitTests = {} # copied from each instance loaded
-        for pluginXbrlMethod in pluginClassMethods("Security.Crypt.Init"):
+        for pluginXbrlMethod in cntlr.plugins.hooks("Security.Crypt.Init"):
             pluginXbrlMethod(self, options, filesource, entrypointfiles, sourceZipStream)
         self.exhibitTypesStrippingOnErrorPattern = exhibitTypesStrippingOnErrorPattern
         self.exhibitTypesPrivateNotDisseminated = exhibitTypesPrivateNotDisseminated
@@ -807,7 +806,7 @@ class Filing:
 
     def writeFile(self, filepath, data):
         # write the data (string or binary)
-        for pluginXbrlMethod in pluginClassMethods("Security.Crypt.Write"):
+        for pluginXbrlMethod in self.cntlr.plugins.hooks("Security.Crypt.Write"):
             if pluginXbrlMethod(self, filepath, data):
                 return
         with io.open(filepath, "wt" if isinstance(data, str) else "wb") as fh:

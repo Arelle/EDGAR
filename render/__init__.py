@@ -147,11 +147,10 @@ VERSION = '3.26.1'
 
 from collections import defaultdict
 from arelle import PythonUtil
-from arelle import (Cntlr, FileSource, ModelDocument, XmlUtil, Version, ModelValue, Locale, PluginManager, WebCache, ModelFormulaObject, Validate,
+from arelle import (Cntlr, FileSource, ModelDocument, XmlUtil, Version, ModelValue, Locale, WebCache, ModelFormulaObject, Validate,
                     ViewFileFactList, ViewFileFactTable, ViewFileConcepts, ViewFileFormulae,
                     ViewFileRelationshipSet, ViewFileTests, ViewFileRssFeed, ViewFileRoleTypes)
 from arelle.ModelInstanceObject import ModelFact, ModelInlineFootnote
-from arelle.PluginManager import pluginClassMethods
 from arelle.ValidateFilingText import elementsWithNoContent
 from arelle.XhtmlValidate import xhtmlValidate
 from arelle.XmlValidateConst import VALID, NONE, UNVALIDATED
@@ -722,7 +721,7 @@ class EdgarRenderer(Cntlr.Cntlr):
             else:
                 _url = filesource.url
                 # filesource.url may have an inline document set, trim it off
-                for pluginXbrlMethod in pluginClassMethods("InlineDocumentSet.Url.Separator"):
+                for pluginXbrlMethod in filesource.hooks("InlineDocumentSet.Url.Separator"):
                     inlineDocSetSeparator = pluginXbrlMethod()
                     _url = _url.partition(inlineDocSetSeparator)[0]
                 self.processingFolder = os.path.dirname(_url)
@@ -1192,7 +1191,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                         IoManager.writeXmlDoc(filing, rootETree, self.reportZip, self.reportsFolder,
                                             "PrivateFilingSummary.xml" if hasPrivateData and self.isWorkstationFirstPass else'FilingSummary.xml')
                     # generate supplemental AllReports and other such outputs at this time
-                    for supplReport in pluginClassMethods("EdgarRenderer.FilingEnd.SupplementalReport"):
+                    for supplReport in cntlr.plugins.hooks("EdgarRenderer.FilingEnd.SupplementalReport"):
                         supplReport(cntlr, filing, self.reportsFolder)
                     # if there's a dissem directory and no logs, remove summary logs
                     if (hasPrivateData or
@@ -1367,7 +1366,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                         self.logDebug("Arelle viewer generated {:.3f} secs.".format(time.time() - _startedAt))
                         if self.isWorkstationFirstPass and not hasPrivateData:
                             _startedAt = time.time()
-                            for generate in pluginClassMethods("iXBRLViewer.Generate"):
+                            for generate in cntlr.plugins.hooks("iXBRLViewer.Generate"):
                                 generate(cntlr, dissemReportsFolder, "/arelleViewer-1.4.11/ixbrlviewer.js", useStubViewer="ixbrlviewer.xhtml.dissem", saveStubOnly=True)
                             self.logDebug("Arelle viewer for dissemination generated {:.3f} secs.".format(time.time() - _startedAt))
                     self.logDebug(Summary.FilingSummaryCompletionMessage)
@@ -1554,7 +1553,7 @@ class EdgarRenderer(Cntlr.Cntlr):
                             elif self.isWorkstationFirstPass:  # remove first pass excel report
                                 pass # no excel output if no disseminated reports
                         # generate supplemental AllReports and other such outputs at this time
-                        for supplReport in pluginClassMethods("EdgarRenderer.FilingEnd.SupplementalReport"):
+                        for supplReport in cntlr.plugins.hooks("EdgarRenderer.FilingEnd.SupplementalReport"):
                             supplReport(cntlr, filing, dissemReportsFolder, zipDir="dissem/")
                         if generateiXBRLViewerStub:
                             _startedAt = time.time()

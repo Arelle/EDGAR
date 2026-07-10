@@ -22,7 +22,6 @@ from arelle.ModelObject import ModelObject
 from arelle.ModelInstanceObject import ModelFact, ModelInlineFact, ModelInlineFootnote
 from arelle.ModelDtsObject import ModelConcept, ModelResource
 from arelle.ModelXbrl import NONDEFAULT
-from arelle.PluginManager import pluginClassMethods
 from arelle.PrototypeDtsObject import LinkPrototype, LocPrototype, ArcPrototype
 from arelle.PythonUtil import pyNamedObject, strTruncate, normalizeSpace, lcStr, flattenSequence, flattenToSet, OrderedSet
 from arelle.UrlUtil import isHttpUrl
@@ -145,8 +144,10 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
           modelXbrl.isLoggingEffectiveFor(level="WARNING-SEMANTIC") or
           modelXbrl.isLoggingEffectiveFor(level="ERROR-SEMANTIC"))
 
+    cntlr = modelXbrl.modelManager.cntlr
+
     if isEFM:
-        for pluginXbrlMethod in pluginClassMethods("Validate.EFM.Start"):
+        for pluginXbrlMethod in cntlr.plugins.hooks("Validate.EFM.Start"):
             pluginXbrlMethod(val)
 
     if "EFM/Filing.py#validateFiling_start" in val.modelXbrl.arelleUnitTests:
@@ -168,7 +169,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
     dqcRules = {}
     isInlineXbrl = modelXbrl.modelDocument.type in (ModelDocument.Type.INLINEXBRL, ModelDocument.Type.INLINEXBRLDOCUMENTSET)
     isXbrlInstance = isInlineXbrl or modelXbrl.modelDocument.type == ModelDocument.Type.INSTANCE
-    isFtJson = any(pluginXbrlMethod(modelXbrl) for pluginXbrlMethod in pluginClassMethods("FtJson.IsFtJsonDocument"))
+    isFtJson = any(pluginXbrlMethod(modelXbrl) for pluginXbrlMethod in cntlr.plugins.hooks("FtJson.IsFtJsonDocument"))
     if isEFM:
         if not attachmentDocumentType or not hasSubmissionType: # unspecified submission parameters (from cmd line or formula parameters dialog)
             isFeeTagging = any(doc.targetNamespace.startswith("http://xbrl.sec.gov/ffd/") for doc in modelXbrl.urlDocs.values() if doc.targetNamespace)
@@ -602,7 +603,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         extractedCoverFacts[f.qname.localName].append(f)
 
                 if isEFM: # note that this is in the "if context is not None" region.  It does receive nil facts.
-                    for pluginXbrlMethod in pluginClassMethods("Validate.EFM.Fact"):
+                    for pluginXbrlMethod in cntlr.plugins.hooks("Validate.EFM.Fact"):
                         pluginXbrlMethod(val, f)
             #6.5.17 facts with precision
             concept = f.concept
@@ -5753,7 +5754,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
         raise pyNamedObject(val.modelXbrl.arelleUnitTests["EFM/Filing.py#validateFiling_end"], "EFM/Filing.py#validateFiling_end")
 
     if isEFM:
-        for pluginXbrlMethod in pluginClassMethods("Validate.EFM.Finally"):
+        for pluginXbrlMethod in cntlr.plugins.hooks("Validate.EFM.Finally"):
             pluginXbrlMethod(val, conceptsUsed)
     val.modelXbrl.profileActivity("... plug in '.Finally' checks", minTimeToShow=1.0)
     val.modelXbrl.profileStat(_("validate{0}").format(modelXbrl.modelManager.disclosureSystem.validationType))
