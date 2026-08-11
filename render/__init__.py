@@ -1827,21 +1827,21 @@ def edgarRendererGuiViewMenuExtender(cntlr, viewMenu, *args, **kwargs):
         cntlr.saveConfig()
 
     cntlr.showFilingData = BooleanVar(value=cntlr.config.get("edgarRendererShowFilingData", True))
-    cntlr.showFilingData.trace("w", setShowFilingData)
+    cntlr.showFilingData.trace_add("write", setShowFilingData)
     erViewMenu.add_checkbutton(label=_("Show Filing Data"), underline=0, variable=cntlr.showFilingData, onvalue=True, offvalue=False)
     cntlr.redlineMode = BooleanVar(value=cntlr.config.get("edgarRendererRedlineMode", True))
-    cntlr.redlineMode.trace("w", setRedlineMode)
+    cntlr.redlineMode.trace_add("write", setRedlineMode)
     erViewMenu.add_checkbutton(label=_("Show Redlining and Redactions"), underline=0, variable=cntlr.redlineMode, onvalue=True, offvalue=False,
                                         state="normal" if cntlr.showFilingData.get() else "disabled")
     cntlr.showTablesMenu = BooleanVar(value=cntlr.config.get("edgarRendererShowTablesMenu", True))
-    cntlr.showTablesMenu.trace("w", setShowTablesMenu)
+    cntlr.showTablesMenu.trace_add("write", setShowTablesMenu)
     erViewMenu.add_checkbutton(label=_("Show Tables Menu"), underline=0, variable=cntlr.showTablesMenu, onvalue=True, offvalue=False)
     cntlr.validateBeforeRendering = BooleanVar(value=cntlr.config.get("edgarRendererValidateBeforeRendering", True))
-    cntlr.validateBeforeRendering.trace("w", setShowTablesMenu)
+    cntlr.validateBeforeRendering.trace_add("write", setShowTablesMenu)
     erViewMenu.add_checkbutton(label=_("Validate Before Rendering"), underline=0, variable=cntlr.validateBeforeRendering, onvalue=True, offvalue=False)
     if iXBRLViewerInterface.hasIXBRLViewerPlugin(cntlr):
         cntlr.showiXBRLViewer = BooleanVar(value=cntlr.config.get("edgarRendererShowiXBRLViewer", True))
-        cntlr.showiXBRLViewer.trace("w", setShowiXBRLViewer)
+        cntlr.showiXBRLViewer.trace_add("write", setShowiXBRLViewer)
         erViewMenu.add_checkbutton(label=_("Show iXBRL Viewer"), underline=0, variable=cntlr.showiXBRLViewer, onvalue=True, offvalue=False)
     else:
         cntlr.showiXBRLViewer = BooleanVar(value=False)
