@@ -1819,7 +1819,7 @@ def edgarRendererGuiViewMenuExtender(cntlr, viewMenu, *args, **kwargs):
         cntlr.saveConfig()
 
     def setValidateBeforeRendering(self, *args):
-        cntlr.config["edgarRendererValidateBeforeRendering"] = cntlr.showTablesMenu.get()
+        cntlr.config["edgarRendererValidateBeforeRendering"] = cntlr.validateBeforeRendering.get()
         cntlr.saveConfig()
 
     def setShowiXBRLViewer(self, *args):
@@ -1837,7 +1837,7 @@ def edgarRendererGuiViewMenuExtender(cntlr, viewMenu, *args, **kwargs):
     cntlr.showTablesMenu.trace_add("write", setShowTablesMenu)
     erViewMenu.add_checkbutton(label=_("Show Tables Menu"), underline=0, variable=cntlr.showTablesMenu, onvalue=True, offvalue=False)
     cntlr.validateBeforeRendering = BooleanVar(value=cntlr.config.get("edgarRendererValidateBeforeRendering", True))
-    cntlr.validateBeforeRendering.trace_add("write", setShowTablesMenu)
+    cntlr.validateBeforeRendering.trace_add("write", setValidateBeforeRendering)
     erViewMenu.add_checkbutton(label=_("Validate Before Rendering"), underline=0, variable=cntlr.validateBeforeRendering, onvalue=True, offvalue=False)
     if iXBRLViewerInterface.hasIXBRLViewerPlugin(cntlr):
         cntlr.showiXBRLViewer = BooleanVar(value=cntlr.config.get("edgarRendererShowiXBRLViewer", True))
