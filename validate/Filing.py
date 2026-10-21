@@ -2457,9 +2457,13 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             for name2 in referenceTag:
                                 for g in sevFacts(sev, name2, f, axisKey=sev.get("references-axes"), deduplicate=True, whereKey="references-where"):
                                     if "references-date-format" in sev:
-                                        referenceDate = datetime.datetime.strptime(g.xValue, sev.get("references-date-format"))
-                                        if "%y" not in sev.get("references-date-format").lower():
-                                            referenceDate = referenceDate.replace(year=f.xValue.year)
+                                        referenceDateString = g.xValue
+                                        referenceDateFormat = sev.get("references-date-format")
+                                        if "%y" not in referenceDateFormat.lower():
+                                            # Python 3.15 strptime rejects a day without a year since it can't parse leap days
+                                            referenceDateString = f"{f.xValue.year:04}/{referenceDateString}"
+                                            referenceDateFormat = f"%Y/{referenceDateFormat}"
+                                        referenceDate = datetime.datetime.strptime(referenceDateString, referenceDateFormat)
                                         if "%m" not in sev.get("references-date-format").lower():
                                             referenceDate = referenceDate.replace(year=f.xValue.month)
                                         if "%d" not in sev.get("references-date-format").lower():
