@@ -10,7 +10,6 @@ Saves extracted instance document.
 (c) Copyright 2013 Mark V Systems Limited, All rights reserved.
 '''
 from arelle import ModelXbrl, ValidateXbrlDimensions, XbrlConst
-from arelle.PluginManager import pluginClassMethods
 from arelle.PrototypeDtsObject import LocPrototype, ArcPrototype
 from arelle.ModelDocument import ModelDocument, ModelDocumentReference, Type, load
 from arelle.ModelInstanceObject import ModelInlineFootnote
@@ -114,7 +113,7 @@ def saveTargetDocument(filing, modelXbrl, targetDocumentFilename, targetDocument
     targetUrl = targetUrlParts[0] + suffix + targetUrlParts[2]
     if suplSuffix: targetUrl += suplSuffix
     modelXbrl.modelManager.showStatus(_("Extracting instance ") + os.path.basename(targetUrl))
-    for pluginXbrlMethod in pluginClassMethods("InlineDocumentSet.CreateTargetInstance"):
+    for pluginXbrlMethod in modelXbrl.modelManager.cntlr.plugins.hooks("InlineDocumentSet.CreateTargetInstance"):
         targetInstance = pluginXbrlMethod(modelXbrl, targetUrl, targetDocumentSchemaRefs, filingFiles,
                                           # no lang on xbrl:xbrl, specific xml:lang on elements which aren't en-US
                                           baseXmlLang=None, defaultXmlLang="en-US", skipInvalid=True)

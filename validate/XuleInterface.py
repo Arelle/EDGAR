@@ -39,8 +39,8 @@ import optparse, os, json
 import regex as re
 import traceback
 import sys
-from arelle import PluginManager
 from arelle.PythonUtil import attrdict, pyNamedObject
+from arelle.plugin_system.plugin_meta import PluginMeta
 from .Util import usgaapYear
 
 """ Xule validator specific variables."""
@@ -57,7 +57,7 @@ DQCRT_RUN_ONLY_PATTERN = (r"DQC\.US\.(" # separate rules 0000-0009, 0010-0099, 0
     ")")
 
 """Do not change anything below this line."""
-_xule_plugin_info = None
+_xule_plugin_info: PluginMeta | None = None
 xuleValidateFinally = None
 xulePluginDoesNotExist = False
 user_defined_xule_rule_set = False
@@ -92,8 +92,8 @@ def close(cntlr): # unhook Xule's 'Validate.Finally' from validate/EFM
     global xuleValidateFinally
     '''
     if xuleValidateFinally is not None:
-        PluginManager.modulePluginInfos[getXulePlugin(cntlr)["name"]]['Validate.Finally'] = xuleValidateFinally # restore original finally
-        PluginManager.reset()
+        cntlr._pluginManager.modulePluginInfos[getXulePlugin(cntlr).name]['Validate.Finally'] = xuleValidateFinally # restore original finally
+        cntlr._pluginManager.reset()
         xuleValidateFinally = None
     '''
 def blockXuleValidateFinally(val):
@@ -295,18 +295,17 @@ def cntrlrCmdLineUtilityRun(cntlr, options, **kwargs):
 
 def disableIncompatiblePlugin(cntlr, plugin_info):
     incompatible_plugin_msg = (
-        "The {plugin_name} plugin has been disabled because the EDGAR plugin is also enabled, "
+        "The {plugin_name} plugin must not be enabled when the EDGAR plugin is also enabled, "
         "wherein DQC rules are managed by the EDGAR workflow to provide integrated validation rule results."
     )
     incompatible_plugin_code = "arelle.edgarManagedDQCRules"
     moduleUrl = plugin_info.get('moduleURL', '')
     plugin_name = plugin_info.get('name')
     if incompatible_plugin_url_pattern.match(moduleUrl):
-        incompatible_plugin_module = PluginManager.pluginConfig["modules"].get(plugin_name)
-        if incompatible_plugin_module.get("status") != "disabled":
-            incompatible_plugin_module["status"] = "disabled"
-            PluginManager.pluginConfigChanged = True
-            PluginManager.pluginMethodsForClasses.clear()
+        incompatible_plugin_module = cntlr.plugins.handles.get_plugins().get(plugin_name)
+        if incompatible_plugin_module is None:
+            return
+        if incompatible_plugin_module.status != "disabled":
             cntlr.addToLog(_(incompatible_plugin_msg.format(plugin_name=plugin_name)),
                             messageCode=incompatible_plugin_code) 
 
@@ -317,12 +316,12 @@ def getXulePlugin(cntlr):
     """
     global _xule_plugin_info, xulePluginDoesNotExist
     if not xulePluginDoesNotExist:
-        for plugin_info in PluginManager.modulePluginInfos.values():
-            moduleUrl = plugin_info.get('moduleURL')
+        for plugin_meta in cntlr.plugins.get_plugins().values():
+            moduleUrl = plugin_meta.module_url
             if _xule_plugin_info is None and moduleUrl.endswith('xule'):
-                _xule_plugin_info = plugin_info
+                _xule_plugin_info = plugin_meta
             elif incompatible_plugin_url_pattern.match(moduleUrl):
-                disableIncompatiblePlugin(cntlr, plugin_info)
+                disableIncompatiblePlugin(cntlr, plugin_meta)
 
     if _xule_plugin_info is None and not xulePluginDoesNotExist:
         cntlr.addToLog(_("Xule plugin is not loaded. Xule plugin is required to run DQC rules. This plugin should be automatically loaded."),
@@ -337,10 +336,8 @@ def getXuleMethod(cntlr, class_name):
 
     Get a method/function from the Xule plugin. This is how this validator calls functions in the Xule plugin.
     """
-    xule_plugin = getXulePlugin(cntlr)
-    if xule_plugin is not None:
-        return xule_plugin.get(class_name)
-    return None
+    __ = getXulePlugin(cntlr)  # Triggers logs if xule plugin is not available.
+    return next(cntlr.plugins.hooks(class_name), None)
 
 def menuTools(cntlr, menu):
     # EDGAR manages xule validation directly; no DQC/XULE menu needed
