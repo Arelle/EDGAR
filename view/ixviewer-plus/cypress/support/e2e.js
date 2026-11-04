@@ -65,13 +65,15 @@ Cypress.Commands.add('loadByIndex', (index) => {
     else { console.error(`no filing matching accession number ${accessionNum}`) }
 })
 
+Cypress.Commands.add('waitForAppReady', (timeout = 12000) => {
+    cy.get(selectors.appReady, { timeout, log: false }).should('exist');
+})
+
 Cypress.Commands.add('loadFiling', (filing, urlParam = '') => {
     // It may be helpful to use this instead of cy.visit when iterating over a collection of filing objects 
     // ... as we can then leverage filing specific timeouts.
     return cy.visit(filing.docPath + urlParam, { timeout : Number(filing.timeout) }).then(browser => {
-        // Standard mode of waiting until the filing has completely loaded
-        //cy.get(selectors.factCountClock, { timeout: Number(filing.timeout) || 12000 }).should('not.exist');
-        cy.get('div[id="loading-animation"]', { timeout: Number(filing.timeout) || 12000 }).should('not.be.visible');
+        cy.waitForAppReady(Number(filing.timeout) || 12000);
         cy.get(selectors.factCountClock).should('not.exist');
     })
 })
@@ -173,6 +175,7 @@ Cypress.Commands.add('prepUrl', (url) => {
     url = url.replace('/iy?doc=', '')
     url = url.replace('/ix3/ixviewer3', '')
     url = url.replace('/ixviewer-ix-dev', '')
+    url = url.replace('/ixviewer-plus', '')
     return url;
 })
 

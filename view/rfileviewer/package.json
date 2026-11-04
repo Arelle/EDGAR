@@ -22,6 +22,11 @@
     "esbuild": "^0.20.2",
     "jest": "^29.7.0"
   },
+  "jest": {
+    "transform": { "\\.m?js$": "<rootDir>/test/esbuild-transformer.cjs" },
+    "modulePaths": ["<rootDir>/node_modules"],
+    "testMatch": ["**/test/**/*.test.{js,mjs}"]
+  },
   "description": "This project provides a **single code path** for rendering EDGAR filings in two environments:",
   "main": "build.js",
   "keywords": [],

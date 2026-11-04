@@ -1,0 +1,104 @@
+name: Sync common folder (from EDGAR)
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - 'view/viewer-common-src/**'
+  schedule:
+    - cron: '0 3 * * *'  # daily at 3am UTC — safety net
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout r-file-viewer (this repo)
+        uses: actions/checkout@v4
+        with:
+          path: r-file-viewer
+          ref: release
+          fetch-depth: 0
+
+      - name: Checkout ix-viewer
+        uses: actions/checkout@v4
+        with:
+          repository: SEC-DERA-GENERAL/idap-group2-ix-ix-viewer2
+          token: ${{ secrets.SYNC_PAT }}
+          path: ix-viewer
+          ref: ix-dev
+          fetch-depth: 0
+
+      - name: Compare and sync
+        id: sync
+        run: |
+          SRC="r-file-viewer/view/viewer-common-src"
+          DST="ix-viewer/src/ts/helpers/common-node-js"
+
+          if diff -rq "$SRC" "$DST" > /dev/null 2>&1; then
+            echo "In sync, nothing to do."
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Out of sync — determining direction..."
+            R_TIME=$(cd r-file-viewer && git log -1 --format=%ct -- view/viewer-common-src)
+            IX_TIME=$(cd ix-viewer && git log -1 --format=%ct -- src/ts/helpers/common-node-js)
+
+            if [ "$R_TIME" -gt "$IX_TIME" ]; then
+              echo "r-file-viewer is newer, syncing → ix-viewer"
+              rm -rf "$DST"
+              mkdir -p "$DST"
+              cp "$SRC"/* "$DST"/
+              echo "target=ix-viewer" >> $GITHUB_OUTPUT
+            else
+              echo "ix-viewer is newer, syncing → r-file-viewer"
+              rm -rf "$SRC"
+              mkdir -p "$SRC"
+              cp "$DST"/* "$SRC"/
+              echo "target=r-file-viewer" >> $GITHUB_OUTPUT
+            fi
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      # --- PR into ix-viewer ---
+      - name: Push branch and open PR (ix-viewer)
+        if: steps.sync.outputs.changed == 'true' && steps.sync.outputs.target == 'ix-viewer'
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_PAT }}
+        run: |
+          cd ix-viewer
+          git config user.name "sync-bot"
+          git config user.email "sync-bot@users.noreply.github.com"
+          git checkout -b sync/common-from-r-file-viewer
+          git add src/ts/helpers/common-node-js
+          git commit -m "sync: update common files from r-file-viewer"
+          git push -f origin sync/common-from-r-file-viewer
+
+          gh pr create \
+            --repo SEC-DERA-GENERAL/idap-group2-ix-ix-viewer2 \
+            --title "sync: update common files from r-file-viewer" \
+            --body "Automated sync of shared common folder from r-file-viewer (EDGAR)." \
+            --base ix-dev \
+            --head sync/common-from-r-file-viewer \
+            || echo "PR likely already exists, skipping"
+
+      # --- PR into r-file-viewer ---
+      - name: Push branch and open PR (r-file-viewer)
+        if: steps.sync.outputs.changed == 'true' && steps.sync.outputs.target == 'r-file-viewer'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd r-file-viewer
+          git config user.name "sync-bot"
+          git config user.email "sync-bot@users.noreply.github.com"
+          git checkout -b sync/common-from-ix-viewer
+          git add view/viewer-common-src
+          git commit -m "sync: update common files from ix-viewer"
+          git push -f origin sync/common-from-ix-viewer
+
+          gh pr create \
+            --title "sync: update common files from ix-viewer" \
+            --body "Automated sync of shared common folder from ix-viewer." \
+            --base release \
+            --head sync/common-from-ix-viewer \
+            || echo "PR likely already exists, skipping"

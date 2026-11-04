@@ -1,0 +1,42 @@
+//////////// Search & Filters ////////////
+
+#submit-search {
+  width: 42px;
+  border-radius: 0 4px 4px 0;
+}
+
+#global-search-options {
+  border-radius: 4px 0 0 4px;
+}
+
+#global-search-options.show {
+  color: white !important;
+  background-color: $blue-lighter-3 !important;
+}
+
+#global-search-options:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  outline: none;
+}
+
+.dropdown-menu-width {
+  width: 20rem;
+}
+
+.more-filters-dropdown-menu-width {
+  width: 24rem;
+}
+
+.suggestions {
+  z-index: 9999;
+  margin-top: 38px;
+  width: 332px;
+  max-height: 50vh;
+  overflow: auto;
+
+  // fact-details-btn belongs to the fact sidebar; hidden here since it's
+  // not applicable in the search suggestions context
+  .fact-details-btn {
+    display: none;
+  }
+}

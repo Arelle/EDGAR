@@ -69,11 +69,13 @@
     "css-minimizer-webpack-plugin": "4.2.2",
     "cypress": "^15.8.2",
     "cypress-plugin-tab": "^1.0.5",
+    "cypress-split": "^1.25.0",
     "eslint": "8.44.0",
     "eslint-webpack-plugin": "4.0.1",
     "fs-extra": "11.1.1",
     "html-loader": "4.2.0",
     "html-webpack-plugin": "5.5.3",
+    "http-server": "^14.1.1",
     "inquirer": "^12.9.4",
     "jasmine": "4.6.0",
     "karma": "6.4.2",
@@ -100,6 +102,7 @@
     "webpack-dev-server": "^5.2.2",
     "xml2js": "0.6.0"
   },
+  "overrides": { "postcss": "8.4.35" },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
     "plugins": [

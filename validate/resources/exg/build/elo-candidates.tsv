@@ -1,0 +1,15 @@
+efm	validation	axis	concept	tier	exgSection	candidates	concepts
+6.5.40	(elo)acceleratedFilerStatus			elo	3.1.13	3.1.13#4 Item 10 {1} Submission Value | 3.1.13#5 Item 11 {1} Submission Value | 3.1.13#6 Item 12 {1} Submission Value | 3.1.13#7 Item 13 {1} Unexpected	dei:EntityFilerCategory
+6.5.40	(elo)eligibleFundFlag			ruling	3.1.24.7		cef:IntervalFundFlag
+6.5.40	(elo)emergingGrowthCompanyFlag			elo	3.1.11	3.1.11#7 Item 6 {2} Submission Value	dei:EntityEmergingGrowthCompany
+6.5.40	(elo)entityRegistration.fyEnd			elo	3.1.12	3.1.12#3 Item 1 {1} Submission Value	dei:CurrentFiscalYearEndDate
+6.5.40	(elo)exTransitionPeriodFlag			elo	3.1.11	3.1.11#14 Item 7 {3} Submission Value	dei:EntityExTransitionPeriod
+6.5.40	(elo)filerNewRegistrantFlag			ruling	3.1.24.7		cef:NewCefOrBdcRegistrantFlag
+6.5.40	(elo)invCompanyType			elo	3.1.17	3.1.17#3 Item 8 {1} Value	dei:EntityInvCompanyType
+6.5.40	(elo)periodOfReport			elo	3.1.7	3.1.7#6 Item 2 {1} Value	dei:DocumentPeriodEndDate
+6.5.40	(elo)pursuantGeneralInstructionFlag			ruling	3.1.24.7		cef:PrimaryShelfQualifiedFlag
+6.5.40	(elo)shellCompanyFlag			elo	3.1.10	3.1.10#11 Item 5 {3} Value	dei:EntityShellCompany
+6.5.40	(elo)smallBusinessFlag			elo	3.1.11	3.1.11#3 Item 9 {1} Value	dei:EntitySmallBusiness
+6.5.40	(elo)submissionHeader.fyEnd			elo	3.1.12	3.1.12#3 Item 1 {1} Submission Value	dei:CurrentFiscalYearEndDate
+6.5.40	(elo)voluntaryFilerFlag			elo	3.1.10	3.1.10#3 Item 3 {1} Value	dei:EntityVoluntaryFilers
+6.5.40	(elo)wellKnownSeasonedIssuerFlag			elo	3.1.10	3.1.10#7 Item 4 {2} Value	dei:EntityWellKnownSeasonedIssuer

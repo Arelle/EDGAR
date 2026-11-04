@@ -94,7 +94,7 @@ describe(`Fact Hash`, () => {
                     .then(() => {
                         cy.reload()
                             .then(() => {
-                                cy.get('div[id="loading-animation"]').should('not.be.visible')
+                                cy.waitForAppReady()
                                     .then(() => {
                                         cy.hash().should('eq', '#fact-identifier-569')
                                         cy.wait(1000); // wait for scroll to fact
@@ -111,7 +111,7 @@ describe(`Fact Hash`, () => {
         cy.get('[ix="fact-identifier-569"]').click().then(() => {
             cy.visibleOnScreen('[ix="fact-identifier-569"]').then(() => {
                 cy.reload(true).then(() => {
-                    cy.get('div[id="loading-animation"]').should('not.be.visible').then(() => {
+                    cy.waitForAppReady().then(() => {
                         cy.hash().should('eq', '#fact-identifier-569')
                         cy.wait(2000); // wait for scroll to fact
                         cy.visibleOnScreen('[ix="fact-identifier-569"]')

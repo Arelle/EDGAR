@@ -1,7 +1,7 @@
 import { selectors } from "../../utils/selectors"
 
 describe(`Not Found warning`, () => {
-	it(`Should not appear when unhilighted fact is clicked`, () => {
+	it(`Should not appear when unhighlighted fact is clicked`, () => {
 		cy.loadByAccessionNum('000080786323000002');
 		// https://www.sec.gov/ix?doc=/Archives/edgar/data/807863/000080786323000002/mitk-20230104.htm
 
@@ -22,7 +22,7 @@ describe(`Not Found warning`, () => {
 
 	})
 
-	it(`Should not appear when unhilighted fact is clicked with fact list open`, () => {
+	it(`Should not appear when unhighlighted fact is clicked with fact list open`, () => {
 		cy.loadByAccessionNum('000080786323000002');
 		// https://www.sec.gov/ix?doc=/Archives/edgar/data/807863/000080786323000002/mitk-20230104.htm
 
@@ -46,7 +46,7 @@ describe(`Not Found warning`, () => {
 
 	})
 
-	it(`Should appear switching to list view while unhilighted fact is selected`, () => {
+	it(`Should not appear switching to list view while unhighlighted fact is selected`, () => {
 		cy.loadByAccessionNum('000080786323000002');
 		// https://www.sec.gov/ix?doc=/Archives/edgar/data/807863/000080786323000002/mitk-20230104.htm
 
@@ -61,11 +61,12 @@ describe(`Not Found warning`, () => {
 		cy.hash().should('eq', '#fact-identifier-5')
 
 		cy.get(selectors.factListDisplayBtn).click() 
-		cy.get('[id="error-container"]').children().should('have.length', 1)
+		cy.get(selectors.factSidebarListDisplay)
+		cy.get('[id="error-container"]').children().should('have.length', 0)
 	})
 
 
-	it(`Should appear switching to split while unhilighted fact is selected`, () => {
+	it(`Should not appear switching to split while unhighlighted fact is selected`, () => {
 		cy.loadByAccessionNum('000080786323000002');
 		// https://www.sec.gov/ix?doc=/Archives/edgar/data/807863/000080786323000002/mitk-20230104.htm
 
@@ -79,7 +80,20 @@ describe(`Not Found warning`, () => {
 		cy.get('#fact-identifier-5').click()
 		cy.hash().should('eq', '#fact-identifier-5')
 
-		cy.get('#fact-details-panel-toolbar button[data-view="split"]').click()
+		cy.get(selectors.factDetailsSplitBtn).click()
+		cy.get(selectors.factSidebarSplitDisplay)
+		cy.get('[id="error-container"]').children().should('have.length', 0)
+	})
+
+	it(`Should appear when unhighlighted fact is clicked in split view`, () => {
+		cy.loadByAccessionNum('000080786323000002');
+
+		cy.get(selectors.search).type('8-k{enter}')
+		cy.get('#fact-identifier-2').click()
+		cy.get(selectors.factDetailsSplitBtn).click()
+		cy.get(selectors.factSidebarSplitDisplay)
+
+		cy.get('#fact-identifier-5').click()
 		cy.get('[id="error-container"]').children().should('have.length', 1)
 	})
 

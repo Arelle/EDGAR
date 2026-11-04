@@ -76,16 +76,17 @@ describe(`Multi Doc filings`, () => {
     
     it('Switch docs via sections menu should load doc with fact highlighting', () => {
         cy.visit('/Archives/edgar/data/1837493/000101376223000425/ea185980ex99-1_inspiratech.htm')
+        cy.waitForAppReady();
         cy.get(selectors.sectionsHeader).click();
         cy.get('a[order="1"]').click();
+        cy.waitForAppReady();
         cy.get('[id="nav-filter-tags"]').should('have.css', 'border-top');
         cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top');
 
-        // reference for css within, closeTo
-        cy.get('[id="fact-identifier-3"]')
-            .invoke('css', 'border-top-width')
-            .then(parseFloat)
-            .should('be.closeTo', 2, 0.1);
+        // retryable: highlight attrs are applied asynchronously once the fact scrolls into view
+        cy.get('[id="fact-identifier-3"]').should(($el) => {
+            expect(parseFloat($el.css('border-top-width'))).to.be.closeTo(2, 0.2);
+        });
 
         cy.get('[id="fact-identifier-3"]').should('have.css', 'border-top-color', 'rgb(255, 102, 0)');
 

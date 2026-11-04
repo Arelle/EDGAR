@@ -5,8 +5,9 @@
 
 import { Constants } from "../constants/constants";
 // import { ErrorsMinor } from "../errors/minor";
-import { Facts } from "../facts/facts";
-import { SearchFunctions } from "../search/functions";
+
+// Empty object means no active search
+export type UserSearch = { clauses: string[][]; options: number[] } | Record<string, never>;
 
 export const UserFiltersState = {
     getAxes: [],
@@ -36,9 +37,9 @@ export const UserFiltersState = {
         }
     },
 
-    getUserSearch: {} as { options: { indexOf: (x: any) => number }, regex: RegExp },
+    getUserSearch: {} as UserSearch,
 
-    setUserSearch: (input: { options: { indexOf: (x: any) => number }, regex: RegExp }) => {
+    setUserSearch: (input: UserSearch) => {
         UserFiltersState.getUserSearch = input;
         Constants.getSearchCriteria = input; // this one not tied with UI and can be called from workers
     },
@@ -170,69 +171,4 @@ export const UserFiltersState = {
         }
         return enabledFact;
     },
-
-
-    search: (current: HTMLElement) => {
-        let fullContentToRegexAgainst = '';
-        let highlight = false;
-        if ((Object.keys(UserFiltersState.getUserSearch).length === 2)) {
-
-            if (UserFiltersState.getUserSearch['options'].indexOf(1) >= 0) {
-                // include fact name
-                fullContentToRegexAgainst += ' ' + SearchFunctions.elementNameForRegex(current);
-            }
-
-            if (UserFiltersState.getUserSearch['options'].indexOf(2) >= 0) {
-                // include fact content
-                fullContentToRegexAgainst += ' ' + SearchFunctions.elementContentForRegex(current);
-            }
-
-            if (UserFiltersState.getUserSearch['options'].indexOf(3) >= 0) {
-                // include labels
-                fullContentToRegexAgainst += ' ' + SearchFunctions.elementLabelForRegex(current);
-            }
-
-            if (UserFiltersState.getUserSearch['options'].indexOf(4) >= 0) {
-                // include definitions
-                fullContentToRegexAgainst += ' ' + SearchFunctions.elementDefinitionForRegex(current);
-            }
-
-            if (UserFiltersState.getUserSearch['options'].indexOf(5) >= 0) {
-                // include dimensions
-                fullContentToRegexAgainst += ' ' + SearchFunctions.elementDimensionsForRegex(current);
-            }
-
-            // currently hidden Since a Reference is split into parts, which isn't helpful.  e.g. (SX 210.5-02(27)(b)) could search b, but not (27)(b)
-            if (UserFiltersState.getUserSearch['options'].indexOf(6) >= 0
-                || UserFiltersState.getUserSearch['options'].indexOf(7) >= 0
-                || UserFiltersState.getUserSearch['options'].indexOf(9) >= 0
-                || UserFiltersState.getUserSearch['options'].indexOf(10) >= 0) {
-                // include references
-                fullContentToRegexAgainst += ' '
-                    + SearchFunctions.elementReferencesForRegex(current, UserFiltersState.getUserSearch);
-            }
-            highlight = UserFiltersState.getUserSearch.regex.test(fullContentToRegexAgainst);
-
-        }
-
-        if (Facts.isElementContinued(current)) {
-            UserFiltersState.setContinuedAtHighlight(current, highlight);
-        } else {
-            current.setAttribute('highlight-fact', highlight.toString());
-        }
-
-    },
-
-    setContinuedAtHighlight: (current: HTMLElement, highlight: boolean) => {
-        if (current) {
-            current.setAttribute('highlight-fact', highlight.toString());
-            if (current.hasAttribute('continuedat')) {
-
-                UserFiltersState.setContinuedAtHighlight((document.getElementById('dynamic-xbrl-form')?.querySelector(
-                    '[id="' + current.getAttribute('continuedat') + '"]') as HTMLElement), highlight);
-            }
-        }
-
-    }
-
 };

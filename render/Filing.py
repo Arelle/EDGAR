@@ -168,14 +168,14 @@ def mainFun(controller, report, outputFolderName, transform=None, suplSuffix=Non
             context = unusedFact.context
             baseSets = factAppearsInParentChildBaseSets(unusedFact)  # base sets are defined in XBRL 2.1.
             if len(context.segDimValues) == 0:
-                modelXbrl.warning(("EXG.7.3.UncategorizedFact")
+                modelXbrl.warning(("EXG.7.03.UncategorizedFact")
                                   , _(f"{concept.qname} in context {context.id} was not selected in any presentation group."
                                      +f" Ensure there is a default member for axes in presentation roles {baseSets}")
                                   , file=filing.entrypoint
                                   , modelObject=unusedFact)
             else:
                 dims = contextDims(context)
-                modelXbrl.warning(("EXG.7.3.UncategorizedDimensionedFact")
+                modelXbrl.warning(("EXG.7.03.UncategorizedDimensionedFact")
                                   , _(f"{concept.qname} in context {context.id} was not selected in any presentation group."
                                      +f" Ensure that its dimension members {dims} are presented in presentation roles {baseSets}.")
                                   , file=filing.entrypoint
@@ -751,9 +751,7 @@ class Filing(object):
                 errorStr = Utils.printErrorStringToDiscribeEmbeddedTextBlockFact(fact)
                 # message = ErrorMgr.getError('EMBEDDED_COMMAND_TOKEN_NOT_ROW_OR_COLUMN_ERROR').format(token0, tokenCounter, errorStr)
                 self.modelXbrl.error("EFM.6.26.04.embeddingCmdMalformedDirectionToken",
-                                     _("In ''%(linkroleName)s'', the embedded report created by the fact %(fact)s with the context "
-                                       "%(contextID)s, the token %(token)s, at position %(position)s in the list of tokens, is malformed. "
-                                       "Each iterator can only start with 'row' or 'column'."),
+                                     _("In '%(linkroleName)s', the embedded report created by the fact %(fact)s with the context %(contextID)s, the token %(token)s, at position %(position)s in the list of tokens, is malformed. Each iterator can only start with 'row' or 'column'."),
                                      edgarCode="rq-2604-Embedding-Command-Malformed-Direction-Token",
                                      modelObject=fact, linkrole=linkroleUri, fact=fact.qname, contextID=fact.contextID,
                                      linkroleDefinition=self.modelXbrl.roleTypeDefinition(linkroleUri), linkroleName=self.modelXbrl.roleTypeName(linkroleUri),
@@ -798,10 +796,7 @@ class Filing(object):
                 errorStr = Utils.printErrorStringToDiscribeEmbeddedTextBlockFact(fact)
                 # message = ErrorMgr.getError('EMBEDDED_COMMAND_INVALID_FIRST_TOKEN_ERROR').format(token1, tokenCounter, errorStr)
                 self.modelXbrl.error("EFM.6.26.04.embeddingCmdMalformedAxis",
-                                    _("In ''%(linkroleName)s'', the embedded report created by the fact %(fact)s with the context "
-                                      "%(contextID)s, the token %(token)s, at position %(position)s in the list of tokens, is malformed. "
-                                      "This token can only be 'period', 'unit', 'primary' or identify an Axis by its namespace prefix, "
-                                      "underscore, and element name."),
+                                    _("In '%(linkroleName)s', the embedded report created by the fact %(fact)s with the context %(contextID)s, the token %(token)s, at position %(position)s in the list of tokens, is malformed. This token can only be 'period', 'unit', 'primary' or identify an Axis by its namespace prefix, underscore, and element name."),
                                     edgarCode="rq-2604-Embedding-Command-Malformed-Axis",
                                     modelObject=fact, linkrole=linkroleUri, fact=fact.qname, contextID=fact.contextID,
                                     linkroleDefinition=self.modelXbrl.roleTypeDefinition(linkroleUri), linkroleName=self.modelXbrl.roleTypeName(linkroleUri),
@@ -833,8 +828,7 @@ class Filing(object):
                 errorStr = Utils.printErrorStringToDiscribeEmbeddedTextBlockFact(fact)
                 # message = ErrorMgr.getError('EMBEDDED_COMMAND_INVALID_SECOND_TOKEN_ERROR').format(token2, tokenCounter, errorStr)
                 self.modelXbrl.error("EFM.6.26.04.embeddingCmdMalformedStyleToken",
-                                     _("In ''%(linkroleName)s'', the embedded report created by the fact %(fact)s, with the context "
-                                       "%(contextID)s, the style keyword %(style)s is not one of 'compact' or 'nodisplay'."),
+                                     _("In '%(linkroleName)s', the embedded report created by the fact %(fact)s, with the context %(contextID)s, the style keyword %(style)s is not one of 'compact' or 'nodisplay'."),
                                      edgarCode="rq-2604-Embedding-Command-Malformed-Style-Token",
                                      modelObject=fact, linkrole=linkroleUri, fact=fact.qname, contextID=fact.contextID,
                                      linkroleDefinition=self.modelXbrl.roleTypeDefinition(linkroleUri), linkroleName=self.modelXbrl.roleTypeName(linkroleUri),
@@ -865,9 +859,7 @@ class Filing(object):
                 errorStr = Utils.printErrorStringToDiscribeEmbeddedTextBlockFact(fact)
                 # message = ErrorMgr.getError('EMBEDDED_COMMAND_INVALID_MEMBER_NAME_ERROR').format(tokenMember, tokenCounter, errorStr)
                 self.modelXbrl.error("EFM.6.26.04.embeddingCmdMalformedMember",
-                                     _("In ''%(linkroleName)s'', the embedded report created by the fact %(fact)s with the context "
-                                       "%(contextID)s, the keyword(s) %(tokenlist)s is not '*', a valid member qname or list of "
-                                       "valid member qnames."),
+                                     _("In '%(linkroleName)s', the embedded report created by the fact %(fact)s with the context %(contextID)s, the keyword(s) %(tokenlist)s is not '*', a valid member qname or list of valid member qnames."),
                                      edgarCode="rq-2604-Embedding-Command-Malformed-Member",
                                      modelObject=fact, linkrole=linkroleUri, fact=fact.qname, contextID=fact.contextID,
                                      linkroleDefinition=self.modelXbrl.roleTypeDefinition(linkroleUri), linkroleName=self.modelXbrl.roleTypeName(linkroleUri),
@@ -1182,8 +1174,8 @@ class Filing(object):
                 else:
                     word = 'Starting or Ending'
                 self.modelXbrl.warning("EFM.6.26.02",
-                               _('In "%(linkroleName)s", fact %(fact)s with value %(value)s and preferred label %(preferredLabelValue)s, '
-                                 'was not shown because there are no facts in a duration %(startOrEnd)s at %(date)s. Change the preferred label role or add facts.'),
+                               _("In '%(linkroleName)s', fact %(fact)s with value %(value)s and preferred label %(preferredLabelValue)s, was not shown because there are no facts in a duration %(startOrEnd)s at %(date)s. Change the preferred label role or add facts."),
+                                edgarCode="rq-2602-Instant-Without-Matching-Duration",
                                 modelObject=fact, fact=fact.qname, value=value, startOrEnd=word, date=endTime,
                                 preferredLabel=role, preferredLabelValue=role,
                                 linkrole=linkroleUri, linkroleDefinition=definitionText, linkroleName=shortName)

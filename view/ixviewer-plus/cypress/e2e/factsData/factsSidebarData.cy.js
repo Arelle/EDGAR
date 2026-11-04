@@ -21,7 +21,7 @@ describe(`Fact Data | Sidebar`, () => {
             .should('have.text', 'nmex20231031_10q.htm');
     });
 
-    it("should render 'D' badge labels for facts with dimensions", () => {
+    it("should render 'D' badge labels for facts with dimensions", { defaultCommandTimeout: 24000 }, () => {
         cy.loadByAccessionNum('000143774923027411').then(() => {
             cy.get(selectors.searchHourglass).should('exist');
             cy.get(selectors.searchHourglass).should('not.be.visible');

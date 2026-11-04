@@ -169,6 +169,62 @@ describe(`Filters | More (bulk - more selected should have more results)`, () =>
     })
 })
 
+describe('Filters | More (nav badge count)', () => {
+    const assertBadgeCleared = () => {
+        cy.get(selectors.moreFiltersBadge).should('have.text', '')
+        cy.get(selectors.moreFiltersHeader).should('not.have.class', 'text-warning')
+        cy.get('li#current-filters-reset').should('have.class', 'd-none')
+    }
+
+    beforeEach(() => {
+        cy.loadByAccessionNum('000090831524000023')
+        cy.get(selectors.searchHourglass, { timeout: 12000 }).should('not.be.visible')
+        cy.get(selectors.moreFiltersBadge).should('have.text', '')
+        cy.get(selectors.moreFiltersHeader).click()
+    })
+
+    it('Badge counts filters as they are added and removed, and empties when all are removed manually', () => {
+        cy.get(selectors.balanceFilterTagDrawer).click()
+        cy.get(selectors.balanceFilter1).click()
+        cy.get(selectors.moreFiltersBadge).should('have.text', '1')
+        cy.get(selectors.moreFiltersHeader).should('have.class', 'text-warning')
+
+        cy.get(selectors.balanceFilter2).click()
+        cy.get(selectors.moreFiltersBadge).should('have.text', '2')
+
+        cy.get(selectors.measuresFilterTagsDrawer).click()
+        cy.get(selectors.measure1Filter).click()
+        cy.get(selectors.moreFiltersBadge).should('have.text', '3')
+
+        cy.get(selectors.scaleFilterTagDrawer).click()
+        cy.get(selectors.scaleFilter1).click()
+        cy.get(selectors.moreFiltersBadge).should('have.text', '4')
+
+        cy.get(selectors.measure1Filter).click()
+        cy.get(selectors.moreFiltersBadge).should('have.text', '3')
+
+        cy.get(selectors.balanceFilter1).click()
+        cy.get(selectors.moreFiltersBadge).should('have.text', '2')
+
+        cy.get(selectors.balanceFilter2).click()
+        cy.get(selectors.moreFiltersBadge).should('have.text', '1')
+
+        cy.get(selectors.scaleFilter1).click()
+        assertBadgeCleared()
+    })
+
+    it('Badge empties after Reset All Filters', () => {
+        cy.get(selectors.balanceFilterTagDrawer).click()
+        cy.get(selectors.balanceFilter1).click()
+        cy.get(selectors.measuresFilterTagsDrawer).click()
+        cy.get(selectors.measure1Filter).click()
+        cy.get(selectors.moreFiltersBadge).should('have.text', '2')
+
+        cy.get(selectors.resetAllFilters).click()
+        assertBadgeCleared()
+    })
+})
+
 describe('Filters | multiple Axes', () => {
     // before fix, facts that had multiple axes would not show up in filter results / fact list
     it('Facts with multiple Axes should show up in filter results', () => {
@@ -196,5 +252,34 @@ describe('Filters | multiple Members', () => {
         cy.get(selectors.membersExplicitAccordion).click()
         cy.get('[name="srt:ChiefFinancialOfficerMember"]').click()
         cy.get(selectors.factCountBadge).should('contain.text', '2')
+    })
+})
+
+describe('Filters | Typed axis and member counts (large filing)', () => {
+    // kvp-20260630.htm: 14,671 facts have a typed member.
+    // There is one typed axis (us-gaap:InvestmentIdentifierAxis), so
+    // filtering by that axis and by all its typed members must give the same count.
+    const KVP_URL = '/Archives/edgar/data/no-cik/typed-members/kvp-20260630.htm'
+    const TYPED_FACT_COUNT = 14671
+
+    beforeEach(() => {
+        cy.visit(KVP_URL)
+        cy.get(selectors.searchHourglass, { timeout: 120000 }).should('not.be.visible')
+        cy.get(selectors.moreFiltersHeader).click()
+    })
+
+    it('Axis > Typed and Member > Typed should match all 14,671 typed member facts', () => {
+        // appy Axis filter
+        cy.get(selectors.axisFilterTagDrawer).click()
+        cy.get(selectors.axisTypedAll).click()
+        cy.get(selectors.factCountBadge, { timeout: 30000 })
+            .should('have.text', TYPED_FACT_COUNT.toLocaleString('en-US')) // "14,671"
+        cy.get(selectors.axisTypedAll).click() // clear axis filter
+
+        // apply member filter
+        cy.get(selectors.membersFilterTagDrawer).click()
+        cy.get(selectors.membersTypedAll).click()
+        cy.get(selectors.factCountBadge, { timeout: 30000 })
+            .should('have.text', TYPED_FACT_COUNT.toLocaleString('en-US'))
     })
 })

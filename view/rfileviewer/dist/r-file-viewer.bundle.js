@@ -2223,9 +2223,6 @@ async function parseFilingSummary(xmlInput, log_debug) {
 }
 
 // ../viewer-common-src/sanitize.js
-function secureField(input) {
-  return String(input).replace(/[^A-Za-z0-9,./?:#@\-_=+\s'"()$%]/g, "");
-}
 function escapeHtml(str) {
   const s = String(str);
   const map = {
@@ -3210,7 +3207,8 @@ function renderPage({
   log_debug = null,
   secws = false,
   // use SECWS DisplayDocument.do query
-  errors = []
+  errors = [],
+  noindex = false
 }) {
   if (!title) {
     title = "View Filing Data";
@@ -3232,6 +3230,8 @@ function renderPage({
     <title>${escapeHtml(title)}</title>
     <script type="text/javascript" src="${jQuery}"></script>
   `;
+  if (noindex)
+    head += `<meta name="robots" content="noindex" />`;
   const stylesheets = mode === "server" ? [
     ["/include/interactive2.css", "text/css", null],
     ["/edgar/search/global/css/bootstrap/bootstrap.min.css", "text/css", null]
@@ -3723,11 +3723,11 @@ function renderPage({
       </table>
     </div>
   `;
-  } else {
+  } else if (mode !== "server" || aliasPath) {
     table += `
       <div style="margin-top: 15px; margin: 15px 20px 10px 20px; color: red; text-align: center;">
         No rendered XBRL documents were found at
-        <a href="${aliasDir}">${aliasDir}</a> for this filing.
+        <a href="${escapeHtml(aliasDir)}">${escapeHtml(aliasDir)}</a> for this filing.
       </div>
     `;
   }
@@ -3880,7 +3880,7 @@ function renderPage({
             .inco { background-color: peachpuff; }
             .warn { background-color: lemonchiffon; }
 
-            table.report { width: auto; max-width: 100%; border-collapse: collapse; }`;
+            table.report { width: auto; max-width: 100%; border-collapse: separate; }`;
     if (mode === "transform")
       bootstrap += `
         h2 { font-family: sans-serif; }`;
@@ -3990,7 +3990,7 @@ function renderPage({
         safety.textContent = \`
           :host { display:block; width:auto; max-width:100%; }
           #rfv-shadow-host { display:block; width:auto; max-width:100%; overflow:visible; }
-          table.report { width:auto; max-width:100%; border-collapse: collapse; }
+          table.report { width:auto; max-width:100%; border-collapse: separate; }
           img { max-width:100%; height:auto; }
 
           /* Unbeatable forced ring (wins against report CSS with !important resets) */
@@ -4115,7 +4115,7 @@ function renderPage({
           safety.textContent = \`
             :host { display:block; width:auto; max-width:100%; }
             #rfv-shadow-host { display:block; width:auto; max-width:100%; overflow:visible; }
-            table.report { width:auto; max-width:100%; border-collapse: collapse; }
+            table.report { width:auto; max-width:100%; border-collapse: separate; }
             img { max-width:100%; height:auto; }
 
             /* Unbeatable forced ring (wins against report CSS with !important resets) */
@@ -4948,7 +4948,7 @@ function renderPage({
       }`;
   } else {
     bootstrap += `
-      var url_filing_dir = (('${aliasDir}') ? '${aliasDir}' : (location.pathname.replace(/\\/[^/]*$/, '/') || '/'))
+      var url_filing_dir = (window.SEC_ALIAS_DIR || (location.pathname.replace(/\\/[^/]*$/, '/') || '/'))
             .replace(/\\/$/,'');  // remove any trailing '/' for ix_viewer_url
       function ix_viewer_url(report_file) {
         // provide URL to initiate inline XBRL viewer for report_file
@@ -5126,12 +5126,27 @@ function buildRfvRouter({
   router.get(apiPath, async (req, res) => {
     try {
       log_debug(`RFV API query params ${JSON.stringify(req.query)}`);
-      let accessionNumberDashed = secureField(String(req.query.accession_number ?? ""));
-      if (accessionNumberDashed && !accessionNumberDashed.includes("-")) {
+      const rawCik = req.query.cik;
+      const rawAccessionNumber = req.query.accession_number;
+      if (typeof rawCik !== "string" || !/^\d{1,10}$/.test(rawCik) || typeof rawAccessionNumber !== "string" || !/^(?:\d{18}|\d{10}-\d{2}-\d{6})$/.test(rawAccessionNumber)) {
+        const errorPageHtml = renderPage({
+          accessionNumber: "",
+          fsParsed: { rfvMenu: [], log: [] },
+          mode: "server",
+          menuHtml: "",
+          filer_data: [],
+          log_debug,
+          errors: ["Invalid CIK or accession number"],
+          noindex: true
+        });
+        return res.status(400).type("text/html").send(errorPageHtml);
+      }
+      let accessionNumberDashed = rawAccessionNumber;
+      if (!accessionNumberDashed.includes("-")) {
         accessionNumberDashed = `${accessionNumberDashed.slice(0, 10)}-${accessionNumberDashed.slice(10, 12)}-${accessionNumberDashed.slice(12)}`;
       }
       const accessionNumber = accessionNumberDashed.replace(/-/g, "");
-      const cik = secureField(String(req.query.cik ?? "")).replace(/^0+/, "");
+      const cik = rawCik.replace(/^0+/, "");
       const envMode = Number(process.env.DEV_ENV_MODE ?? "0");
       const FILING_DATA_PATH = envMode === 0 ? `https://s3.amazonaws.com/${awsConfig?.buckets?.["archives.sec.gov"] ?? "archives.sec.gov"}/edgar/data` : `${req.protocol}://${req.get("host")}/Archives/edgar/data`;
       const aliasPath = `${FILING_DATA_PATH}/${cik}/${accessionNumber}`;

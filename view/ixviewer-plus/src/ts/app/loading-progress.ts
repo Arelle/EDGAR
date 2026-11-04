@@ -6,11 +6,26 @@
 
 let progress = 0;
 const MAX_PROGRESS = 5;
+let appReadyToken = 0;
 /*
 If progress does not reach level 5 and is not hidden, it will linger.
 */
 
+/** Sets/clears `data-app-ready` on <body> so e2e tests know when loading has fully finished. */
+export function setAppReady(ready = true) {
+    const token = ++appReadyToken;
+    document.body.removeAttribute('data-app-ready');
+    if (!ready) return;
+    // IntersectionObservers are notified in creation order, so this runs after the fact observers attach listeners
+    const observer = new IntersectionObserver(() => {
+        observer.disconnect();
+        if (token === appReadyToken) document.body.setAttribute('data-app-ready', 'true');
+    });
+    observer.observe(document.body);
+}
+
 export function startProgress() {
+    setAppReady(false);
     progress = 0;
     document.querySelector("#loading-animation")?.classList.remove("d-none");
     document.querySelector("#loading")?.classList.remove("d-none");

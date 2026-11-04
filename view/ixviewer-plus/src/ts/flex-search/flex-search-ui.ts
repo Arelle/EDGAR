@@ -9,7 +9,7 @@ export const searchUiUpdate = (searchResults = null) => {
     Facts.updateFactCounts();
     hideSearchingHourglass();
 
-    FactsMenu.updateFactMenuState('fact-list-display', false); 
+    FactsMenu.updateFactMenuState('fact-list-display'); 
 }
 
 export const filtersUiUpdate = () => {

@@ -11,7 +11,20 @@ that corresponds to the message code in the log file.  The text string contains
 replacement parameters based on named arguments in the message using
 org.apache.commons.lang3.text.StrSubstitutor.  
 
-(Duplicates with same code use only the first message of each code.)
+A message is looked up by the edgarCode argument of a log entry, and then by its code.  The same text is
+shown by EDGAR (ArelleValidationWrapper.java reads this file) and by Arelle itself whenever the EDGAR validate
+plugin runs (validate/MessageText.py applies it to Arelle's log in the same way), so a change here changes the
+message for both.  Messages coded by EDGAR XBRL Guide sections (the messageCodes parameter) take the text of
+their EFM code, so the codes here remain EFM codes.
+
+Only Arelle's own messages are here: those written in Arelle's modules (ValidateFilingText.py, ModelDocument.py),
+which other disclosure systems share.  The EDGAR plugin's messages are written in the plugin, in its Python
+templates, dei-validations.json and dqc-us-rules.json.  An entry's edgarCode attribute names the message in the
+log, which shows its code as section:name (for example [EXG.9.01:ProhibitedHtmlBody]); the text does not repeat
+it.  The log ends each message with its file and line, so a text names a location only where its sentence needs
+it.
+
+(Duplicates with same code use only the last message of each code.)
 
 With 
 Named parameters have the format {name}, (whereas within the Python code of Arelle they have the format %(name)s.
@@ -38,32 +51,32 @@ note: The special substitution $local-name() strips a prefix, if any, from a QNa
 
 <!-- general comment, those messages not providing reference to source lines should consider {refSources} -->
 
-<message code="EFM.6.22.00"
+<message code="EFM.6.22.00" edgarCode="cp-2200-Prohibited-Href-Or-Schema-Location"
          level="error"
          module="ModelDocument.py" line="50"
          args="url blockedIndicator referringUrl">
-[cp-2200-Prohibited-Href-Or-Schema-Location] File "{url}" referenced in {refUrl} is not supported. Please see http://www.sec.gov/info/edgar/edgartaxonomies.shtml for a listing of supported files.
+File "{url}" referenced in {refUrl} is not supported. Please see http://www.sec.gov/info/edgar/edgartaxonomies.shtml for a listing of supported files.
 </message>
 
-<message code="EFM.6.05.15"
+<message code="EFM.6.05.15" edgarCode="cp-0515-Text-Block-Not-Well-Formed-XML"
          level="error"
          module="ValidateFilingText.py" line="486"
          args="fact contextID error">
-[cp-0515-Text-Block-Not-Well-Formed-XML] A {fact} fact contains unbalanced tags, in {refSource}.  (For example, &lt;BR> must be followed by &lt;/BR>; values of attributes such as "align" must be quoted, as in align="center".)  XML parser messages: {error}.
+A {fact} fact contains unbalanced tags.  (For example, &lt;BR> must be followed by &lt;/BR>; values of attributes such as "align" must be quoted, as in align="center".)  XML parser messages: {error}.
 </message>
 
-<message code="EFM.6.05.15.dtdError"
+<message code="EFM.6.05.15.dtdError" edgarCode="cp-0515-Text-Block-Not-Well-Formed-XML"
          level="error"
          module="ValidateFilingText.py" line="486"
          args="fact contextID error">
-[cp-0515-Text-Block-Not-Well-Formed-XML] A {fact} fact contains unbalanced tags, in {refSource}.  (For example, &lt;BR> must be followed by &lt;/BR>; values of attributes such as "align" must be quoted, as in align="center".)  XML parser messages: {error}.
+A {fact} fact contains unbalanced tags.  (For example, &lt;BR> must be followed by &lt;/BR>; values of attributes such as "align" must be quoted, as in align="center".)  XML parser messages: {error}.
 </message>
 
-<message code="EFM.6.05.16"
+<message code="EFM.6.05.16" edgarCode="cp-0516-Prohibited-Html-Body"
          level="error"
          module="ValidateFilingText.py" line="486"
          args="fact contextID error">
-[cp-0516-Prohibited-Html-Body] A {fact} fact, in {refSource}, contains text that is not valid for the content of the HTML "body" tag: {error}.
+A {fact} fact contains text that is not valid for the content of the HTML "body" tag: {error}.
 </message>
 
 <!--
@@ -382,183 +395,85 @@ Link:{elementName} not child of link:linkbase or xbrli:instance
 -->
 
 <!--WcH 5.02.02.06 would be caught by EDGARLink but is useful for offline validation -->
-<message code="EFM.5.01.01"
-         level="error"
-         module="ValidateFilingDTS.py" line="67"
-         args="filename suffix">
-[cp-0501-File-Name] Document file name {filename} must start with a-z or 0-9, contain lower case letters, ., -, _, and end with {suffix}.
-</message>
 
 <!--WcH.5.02.02.06 would be caught by EDGARLink but is useful for offline validation -->
-<message code="EFM.5.01.01.tooManyCharacters"
-         level="error"
-         module="ValidateFilingDTS.py" line="63"
-         args="filename">
-[cp-0501-File-Name-Length] Document file name {filename} must not exceed 32 characters.
-</message>
 
 <!--WcH 5.02.02.06 would be caught by EDGARLink but is useful for offline validation -->
-<message code="EFM.5.02.01.01"
+<message code="EFM.5.02.01.01" edgarCode="cp-0501-File-Character"
          level="error"
          module="ValidateFilingText.py" line="403"
          args="modelDocument text file line column">
-[cp-0501-File-Character] Disallowed character '{text}' in file {file} at line {line} col {column}
+Disallowed character '{text}' in file {file} at line {line} col {column}
 </message>
 
 <!--WcH 5.02.02.06 would be caught by EDGARLink but is useful for offline validation -->
-<message code="EFM.5.02.02.06"
+<message code="EFM.5.02.02.06" edgarCode="cp-0502-File-Entity-Code"
          level="error"
          module="ValidateFilingText.py" line="399"
          args="modelDocument text file line column">
-[cp-0502-File-Entity-Code] Disallowed entity code {text} in file {file} line {line} column {column}
-</message>
-
-<message code="EFM.5.02.05.standardNamespacePrefix"
-         level="error"
-         module="ValidateFiling.py" line="1408"
-         args="submittedPrefix recommendedPrefix namespace">
-[ix-0502-Standard-Namespace-Prefix] The prefix {submittedPrefix} must be replaced by {recommendedPrefix} for standard namespace {namespace}
-</message>
-
-<message code="EFM.5.02.05.12.unupportedTransformationRegistry"
-         level="error"
-         module="ValidateFiling.py" line="1946"
-         args="unsupportedRegistries">
-[ix-0512-Unsupported-Transformation-Registry] Inline elements have disallowed transformation registries {unsupportedRegistries} -  {refSources}
-</message>
-
-<message code="EFM.5.02.05.14.hidden-fact-eligible-for-transform"
-         level="warning"
-         module="ValidateFiling.py" line="1439"
-         args="countEligible elements">
-[ix-0514-Hidden-Fact-Eligible-For-Transform] WARN: {countEligible} fact(s) appearing in ix:hidden were eligible for transformation: {elements} -  {refSources}
-</message>
-
-<message code="EFM.5.02.05.14.hidden-fact-not-referenced"
-         level="warning"
-         module="ValidateFiling.py" line="1458"
-         args="countUnreferenced elements">
-[ix-0514-Hidden-Fact-Not-Referenced] WARN: {countUnreferenced} fact(s) appearing in ix:hidden were not referenced by any -sec-ix-hidden style property: {elements} -  {refSources}
-</message>
-
-<message code="EFM.5.02.05.14.hidden-fact-multiple-references"
-         level="warning"
-         module="ValidateFiling.py" line="1448"
-         args="element id countReferences">
-[ix-0514-Hidden-Fact-Multiple-References] WARN: {element} is referenced by {countReferences} -sec-ix-hidden style properties: {id}.  {refSources}
-</message>
-
-<message code="EFM.5.02.05.14.hidden-fact-not-found"
-         level="error"
-         module="ValidateFiling.py" line="1448"
-         args="id">
-[ix-0514-Hidden-Fact-Not-Found] The value of the -sec-ix-hidden style property, {id}, does not correspond to the id of any hidden fact.  {refSources}
+Disallowed entity code {text} in file {file} line {line} column {column}
 </message>
 
 <!--  shared with EFM.6.05.34 code -->
 
-<message code="EFM.5.02.05.activeContent"
+<message code="EFM.5.02.05.activeContent" edgarCode="cp-0502-Prohibited-Html"
          level="error"
          module="ValidateFilingText.py" line="565"
          args="validatedObjectLabel attribute element">
-[cp-0502-Prohibited-Html] {validatedObjectLabel} contains text that is not valid for the content of the HTML "body" tag: javascript in '{attribute}' for &lt;{element}>. {refSources}
+{validatedObjectLabel} contains text that is not valid for the content of the HTML "body" tag: javascript in '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.5.02.05.dtdError"
-         level="error"
-         module="ValidateFilingText.py" line="555"
-         args="validatedObjectLabel error">
-[cp-0502-Prohibited-Html] {validatedObjectLabel} causes the XML error: {error}. {refSources}
-</message>
-
-<message code="EFM.5.02.05.disallowedMetaContent"
+<message code="EFM.5.02.05.disallowedMetaContent" edgarCode="cp-0502-Prohibited-Html"
          level="error"
          module="ValidateFilingText.py" line="578"
          args="validatedObjectLabel metaContent">
-[cp-0502-Prohibited-Html] {validatedObjectLabel} &lt;meta&gt; content is "{metaContent}" but must be "text/html". {refSources}
+{validatedObjectLabel} &lt;meta&gt; content is "{metaContent}" but must be "text/html".
 </message>
 
-<message code="EFM.5.02.05.externalReference"
+<message code="EFM.5.02.05.externalReference" edgarCode="cp-0502-Prohibited-Html"
          level="error"
          module="ValidateFilingText.py" line="572"
          args="validatedObjectLabel attribute element value">
-[cp-0502-Prohibited-Html] {validatedObjectLabel} contains text that is not valid for the content of the HTML "body" tag: invalid external reference in '{attribute}' for &lt;{element}>: {value}. {refSources}
+{validatedObjectLabel} contains text that is not valid for the content of the HTML "body" tag: invalid external reference in '{attribute}' for &lt;{element}>: {value}.
 </message>
 
-<message code="EFM.5.02.05.graphicDataUrl"
+<message code="EFM.5.02.05.graphicDataUrl" edgarCode="cp-0502-Prohibited-Html"
          level="error"
          module="ValidateFilingText.py" line="578"
          args="validatedObjectLabel attribute element">
-[cp-0502-Prohibited-Html] {validatedObjectLabel} references a graphics data URL which isn't accepted which isn't accepted '{attribute}' for &lt;{element}>. {refSources}
+{validatedObjectLabel} references a graphics data URL which isn't accepted which isn't accepted '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.5.02.05.graphicFileContent"
+<message code="EFM.5.02.05.graphicFileContent" edgarCode="cp-0502-Prohibited-Html"
          level="error"
          module="ValidateFilingText.py" line="585"
          args="validatedObjectLabel attribute element format">
-[cp-0502-Prohibited-Html] {validatedObjectLabel} references a graphics file which has invalid format '{format}' in '{attribute}' for &lt;{element}>. {refSources}
+{validatedObjectLabel} references a graphics file which has invalid format '{format}' in '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.5.02.05.graphicFileError"
+<message code="EFM.5.02.05.graphicFileError" edgarCode="cp-0502-Prohibited-Html"
          level="error"
          module="ValidateFilingText.py" line="590"
          args="validatedObjectLabel attribute element error">
-[cp-0502-Prohibited-Html] {validatedObjectLabel} references a graphics file which isn't openable '{attribute}' for &lt;{element}>, error: {error}. {refSources}
+{validatedObjectLabel} references a graphics file which isn't openable '{attribute}' for &lt;{element}>, error: {error}.
 </message>
 
-<message code="EFM.5.02.05.graphicFileType"
+<message code="EFM.5.02.05.graphicFileType" edgarCode="cp-0502-Prohibited-Html"
          level="error"
          module="ValidateFilingText.py" line="578"
          args="validatedObjectLabel attribute element">
-[cp-0502-Prohibited-Html] {validatedObjectLabel}  contains text that is not valid for the content of the HTML "body" tag: reference to a graphics file which isn't .gif or .jpg '{attribute}' for &lt;{element}>. {refSources}
+{validatedObjectLabel}  contains text that is not valid for the content of the HTML "body" tag: reference to a graphics file which isn't .gif or .jpg '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.5.02.05.nestedTable"
+<message code="EFM.5.02.05.nestedTable" edgarCode="cp-0502-Prohibited-Html"
          level="error"
          module="ValidateFilingText.py" line="595"
          args="validatedObjectLabel">
-[cp-0502-Prohibited-Html] {validatedObjectLabel} has nested &lt;table> elements. {refSources}
-</message>
-
-<message code="EFM.6.03.02.sdrHasNonSdrAttachment"
-         level="error"
-         module="EFM/__init__.py" line="309"
-         args="attachmentDocumentType deiDocumentType">
-[cp-0302-Sdr-Has-Non-Sdr-Attachment] An SDR filing contains non-SDR attachment document type {attachmentDocumentType} dei document type {deiDocumentType}.
-</message>
-
-<message code="EFM.6.03.02.sdrMissingFiles"
-         level="error"
-         module="EFM/__init__.py" line="297"
-         args="deiDocumentType missingFiles">
-[cp-0302-Sdr-Missing-Files] {deiDocumentType} report missing files: {missingFiles}.
-</message>
-
-<message code="EFM.6.03.02.sdrMissingStandardSchema"
-         level="error"
-         module="EFM/__init__.py" line="303"
-         args="deiDocumentType missingFiles">
-[cp-0302-Sdr-Missing-Standard-Schema] {deiDocumentType} submission must use a US GAAP standard schema.
+{validatedObjectLabel} has nested &lt;table> elements.
 </message>
 
 <!--WcH 6.03.03 would be caught by EDGARLink but is useful for offline validation -->
 <!-- the 6.03.03 messages are not indicative of the nature of the problems.  this whole section needs attention. -->
-<message code="EFM.6.03.03"
-         level="error"
-         module="ValidateFiling.py" line="104"
-         args="filename">
-[cp-0303-Valid-File-Extension] The document type and naming of "{filename}" naming is not consistent with one or more of the following:
-
-EX-101.INS - XBRL Instance document (Required) *.xml
-EX-101.SCH - XBRL Taxonomy Extension Schema document *.xsd
-EX-101.REF - XBRL Taxonomy Extension Reference Linkbase document *.xml
-EX-101.CAL - XBRL Taxonomy Extension Calculation Linkbase document *.xml
-EX-101.DEF - XBRL Taxonomy Extension Definition Linkbase document *.xml
-EX-101.LAB - XBRL Taxonomy Extension Labels Linkbase document *.xml
-EX-101.PRE - XBRL Taxonomy Extension Presentation Linkbase document *.xml
-
-Please ensure that you comply with the document type and naming provided.
-</message>
 
 <!-- these have to be given better text
 <message code="EFM.6.03.03"
@@ -598,54 +513,13 @@ Invalid linkbase file name: {filename}, expected {expectedFilename}
 -->
 
 <!--WcH 6.03.03.noLinkElement would be caught by EDGARLink but is useful for offline validation -->
-<message code="EFM.6.03.03.noLinkElement"
-         level="error"
-         module="ValidateFilingDTS.py" line="610"
-         args="filename">
-[cp-0303-Valid-File-Extension] Invalid linkbase file name: {filename}, has no extended link element, cannot determine link type.
-</message>
-
-<message code="EFM.6.03.06"
-         level="error"
-         module="ValidateXbrlDTS.py" line="90"
-         args="elementHref">
-[cp-0306-Href-Xpointers] Href {elementHref} may only have shorthand xpointers
-</message>
-
-<message code="EFM.6.03.08.moreThanOneIns"
-         level="error"
-         module="EFM/__init__.py" line="285"
-         args="attachmentDocumentType">
-[cp-0308-More-Than-One-Ins] The submission contains more than one instance for attachment document type {attachmentDocumentType}.  Remove all but one or change the attachment document types.
-</message>
-
-<message code="EFM.6.03.08.sdrHasMultipleKreports"
-         level="error"
-         module="EFM/__init__.py" line="268"
-         args="exhibitType">
-[cp-0308-Sdr-Has-Multiple-K-Reports] SDR filing has multiple K SDR reports for {entities}.
-</message>
-
-<message code="EFM.6.03.10"
-         level="error"
-         module="EFM/Filing.py" line="1925"
-         args="documentType">
-[cp-0310-Missing-Schema] The submission is missing required schema attachment {documentType}.
-</message>
 
 <!-- had inconsistent file/line number text order -->
-<message code="EFM.6.03.11"
+<message code="EFM.6.03.11" edgarCode="du-0311-Xml-Base-Used"
          level="error"
          module="ModelDocument.py" line="617"
          args="modelObejct element attribute">
-[du-0311-Xml-Base-Used] The attribute xml:base appears in on element {element} in {refSource}. Please remove the attribute.
-</message>
-
-<message code="EFM.6.05.01"
-         level="error"
-         module="ValidateFiling.py" line="125"
-         args="scheme context identifier">
-[cp-0501-Entity-Identifier-Scheme] Your identifier for the CIK code, {identifier}, or scheme {scheme}, in context {context}, did not adhere to the standard naming convention of &lt;identifier scheme="http://www.sec.gov/CIK">xxxxxxxxxx&lt;/identifier>.  Please recheck your submission and comply with the standard naming convention. {refSources}
+The attribute xml:base appears in on element {element}. Please remove the attribute.
 </message>
 
 <!--
@@ -657,183 +531,86 @@ Invalid entity identifier {entityIdentifierName}: {entityIdentifer}
 </message>
 -->
 
-<message code="EFM.6.05.03"
-         level="error"
-         module="ValidateFiling.py" line="139"
-         args="entityIdentifierName entityIdentifer entityIdentifer2 filerIdentifier">
-[cp-0503-Non-Matching-Cik] The submission CIK, {filerIdentifier} does not match either the EntityCentralIndexKey, {entityIdentifer}, or context identifier CIK(s) {entityIdentifer}, {entityIdentifer2}, or is not 10 digits, for required context(s).  Please include a correct matching EntityCentralIndexKey and context identifier CIK(s) in the filing. {refSources}
-</message>
-
-<message code="EFM.6.05.04"
-         level="error"
-         module="ValidateFiling.py" line="185"
-         args="elementName context count">
-[cp-0504-No-Scenario] There must be no contexts with scenarios, but {count} was(were) found: {context}.
-</message>
-
-<message code="EFM.6.05.05"
-         level="error"
-         module="ValidateFiling.py" line="197"
-         args="context content count">
-[cp-0505-Segment-Child-Not-Explicit-Member] There must be no segments with non-explicitDimension content, but {count} was(were) found: {content}.
-</message>
-
 <!-- note arelle identifies the duplicate context, original text didn't identify the other which was a duplicate -->
-<message code="EFM.6.05.07"
-         level="error"
-         module="ValidateFiling.py" line="157"
-         args="context context2">
-[du-0507-Duplicate-Contexts] The instance document contained more than one context equivalent to {context} ({context2}).  Please remove duplicate contexts from the instance.
-</message>
 
 <!-- note that arelle provides a list of unused context IDs, XPE may have done these one by one -->
-<message code="EFM.6.05.08"
-         level="error"
-         module="ValidateFiling.py" line="376"
-         args="modelXbrl contextIDs">
-[du-0508-Unused-Context] The instance document contained a context {contextIDs} that was not used in any fact. Please remove the context from the instance.
-</message>
 
 <!-- added the endDate which arelle reports, but XPE didn't -->
-<message code="EFM.6.05.09"
-         level="error"
-         module="ValidateFiling.py" line="431"
-         args="endDate startDate endContexts startContexts documentType">
-[fs-0509-Start-And-End-Dates-Not-Distinct-Inconsistent-With-Document-Type] Context {endContexts} endDate and {startContexts} startDate have a duration of one day; that is inconsistent with document type {documentType}.
-</message>
 
 <!-- added the endDate which arelle reports, but XPE didn't -->
-<message code="EFM.6.05.10"
-         level="error"
-         module="ValidateFiling.py" line="437"
-         args="endDate contexts documentType">
-[fs-0510-Start-And-Instant-Dates-Not-Distinct-Inconsistent-With-Document-Type]  Contexts {contexts} have an overlap of one day; that is inconsistent with document type {documentType}.
-</message>
 
 <!-- note that arelle has available the ID of the other unit -->
-<message code="EFM.6.05.11"
-         level="error"
-         module="ValidateFiling.py" line="464"
-         args="unitID unitID2">
-[du-0511-Duplicate-Units] There is more than one unit equivalent to {unitID} ({unitID2}).  Please remove all but one and resubmit.
-</message>
 
 <!-- note that arelle has available the ID of the other context -->
-<message code="EFM.6.05.12"
-         level="error"
-         module="ValidateFiling.py" line="523"
-         args="fact contextID contextID2">
-[du-0512-Duplicate-Facts] The instance document contained an element, {fact} that was used more than once in contexts equivalent to {contextID}.  Please ensure there are no duplicate combinations of concept and context in the instance.
-</message>
 
 <!-- added the nonenglish lang -->
-<message code="EFM.6.05.14"
-         level="error"
-         module="ValidateFiling.py" line="540"
-         args="fact contextID lang lang2">
-[du-0514-English-Text-Missing] Element {fact} in context {contextID} has text with xml:lang other than "en-US" without matching English text.  Please provide a fact with xml:lang equal to "en-US".
-</message>
 
 <!-- arelle has contextID available for message -->
-<message code="EFM.6.05.15"
+<message code="EFM.6.05.15" edgarCode="cp-0515-Text-Block-Not-Well-Formed-XML"
          level="error"
          module="ValidateFilingText.py" line="532"
          args="fact contextID error">
-[cp-0515-Text-Block-Not-Well-Formed-XML] A {fact} fact contains unbalanced tags, in {refSource}.  (For example, &lt;BR> must be followed by &lt;/BR>; values of attributes such as "align" must be quoted, as in align="center".)  XML parser messages: {error}.
+A {fact} fact contains unbalanced tags.  (For example, &lt;BR> must be followed by &lt;/BR>; values of attributes such as "align" must be quoted, as in align="center".)  XML parser messages: {error}.
 </message>
 
 <!-- arelle has contextID available for message -->
-<message code="EFM.6.05.16"
+<message code="EFM.6.05.16" edgarCode="cp-0516-Prohibited-Html-Body"
          level="error"
          module="ValidateFilingText.py" line="461"
          args="fact contextID error">
-[cp-0516-Prohibited-Html-Body] A {fact} fact, in {refSource}, contains text that is not valid for the content of the HTML 'body' tag: {error}.
+A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: {error}.
 </message>
 
-<message code="EFM.6.05.16.activeContent"
+<message code="EFM.6.05.16.activeContent" edgarCode="cp-0516-Prohibited-Html-Body"
          level="error"
          module="ValidateFilingText.py" line="496"
          args="fact contextID attribute element">
-[cp-0516-Prohibited-Html-Body] A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: javascript in '{attribute}' for &lt;{element}>. {refSources}
+A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: javascript in '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.6.05.16.externalReference"
+<message code="EFM.6.05.16.externalReference" edgarCode="cp-0516-Prohibited-Html-Body"
          level="error"
          module="ValidateFilingText.py" line="503"
          args="fact contextID attribute element">
-[cp-0516-Prohibited-Html-Body] A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: external reference in '{attribute}' for &lt;{element}>. {refSources}
+A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: external reference in '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.6.05.16.graphicDataUrl"
+<message code="EFM.6.05.16.graphicDataUrl" edgarCode="cp-0516-Prohibited-Html-Body"
          level="error"
          module="ValidateFilingText.py" line="516"
          args="fact contextID attribute element">
-[cp-0516-Prohibited-Html-Body] A {fact} fact references a graphics data URL which isn't accepted which isn't accepted '{attribute}' for &lt;{element}>. {refSources}
+A {fact} fact references a graphics data URL which isn't accepted which isn't accepted '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.6.05.16.graphicFileContent"
+<message code="EFM.6.05.16.graphicFileContent" edgarCode="cp-0516-Prohibited-Html-Body"
          level="error"
          module="ValidateFilingText.py" line="516"
          args="fact contextID attribute element format">
-[cp-0516-Prohibited-Html-Body] A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: reference to a graphics file which has invalid format '{format}' in '{attribute}' for &lt;{element}>. {refSources}
+A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: reference to a graphics file which has invalid format '{format}' in '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.6.05.16.graphicFileError"
+<message code="EFM.6.05.16.graphicFileError" edgarCode="cp-0516-Prohibited-Html-Body"
          level="error"
          module="ValidateFilingText.py" line="521"
          args="fact contextID attribute element error">
-[cp-0516-Prohibited-Html-Body] A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: reference to a graphics file which isn't openable '{attribute}' for &lt;{element}>, error: {error}. {refSources}
+A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: reference to a graphics file which isn't openable '{attribute}' for &lt;{element}>, error: {error}.
 </message>
 
-<message code="EFM.6.05.16.graphicFileType"
+<message code="EFM.6.05.16.graphicFileType" edgarCode="cp-0516-Prohibited-Html-Body"
          level="error"
          module="ValidateFilingText.py" line="509"
          args="fact contextID attribute element">
-[cp-0516-Prohibited-Html-Body] A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: reference to a graphics file which isn't .gif or .jpg '{attribute}' for &lt;{element}>. {refSources}
+A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: reference to a graphics file which isn't .gif or .jpg '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.6.05.16.nestedTable"
+<message code="EFM.6.05.16.nestedTable" edgarCode="cp-0516-Prohibited-Html-Body"
          level="error"
          module="ValidateFilingText.py" line="526"
          args="fact contextID">
-[cp-0516-Prohibited-Html-Body] A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: nested &lt;table> elements. {refSources}
-</message>
-
-<message code="EFM.6.05.17"
-         level="error"
-         module="ValidateFiling.py" line="348"
-         args="fact contextID precision">
-[fs-0517-Decimals-Not-Precision] Your filing contained elements using the precision attribute.  Please recheck your submission and replace the precision attribute with the decimals attribute.
-</message>
-
-<message code="EFM.6.05.19"
-         level="error"
-         module="ValidateFiling.py" line="454"
-         args="documentType">
-[cp-0519-Required-Context] Required context (no segment) not found for document type {documentType}.
+A {fact} fact contains text that is not valid for the content of the HTML 'body' tag: nested &lt;table> elements.
 </message>
 
 <!-- arelle has broken the three cases of identifier mismatch separately, tweaked the message text -->
-<message code="EFM.6.05.23"
-         level="error"
-         module="ValidateFiling.py" line="287"
-         args="elementName value entityIdentifier">
-[cp-0523-Non-Matching-Cik] The EntityCentralIndexKey, {value}, does not match the context identifier CIK {entityIdentifier}.  Please include a correct matching EntityCentralIndexKey and context identifier CIK(s) in the filing.
-</message>
-
-<message code="EFM.6.05.23.submissionIdentifier"
-         level="error"
-         module="ValidateFiling.py" line="292"
-         args="elementName value filerIdentifier">
-[cp-0523-Non-Matching-Cik] The submission CIK, {filerIdentifier} does not match the EntityCentralIndexKey.  Please include a correct matching EntityCentralIndexKey in the filing. {refSources}
-</message>
-
-<message code="EFM.6.05.23.cikValue"
-         level="error"
-         module="ValidateFiling.py" line="138"
-         args="entityIdentifier">
-[cp-0523-Non-Matching-Cik] The context identifier CIK {entityIdentifier} is not 10 digits, for required context(s).  Please include a correct context identifier CIK in the filing.
-</message>
 
 <!-- check that the wrapper parameters have same counts -->
 <!--WcH would indicate a wrapper bug not a user error 
@@ -846,34 +623,8 @@ parameters for cikList and cikNameList different list entry counts: {cikList}, {
 -->
 
 <!-- arelle is checking the prefix and list of names, not sure if this message text reflects that, and message text is not indicating the prefix (name) it is looking up -->
-<message code="EFM.6.05.24"
-         level="error"
-         module="ValidateFiling.py" line="301"
-         args="elementName prefix value">
-[cp-0524-Registrant-Name-Mismatch] The Official Registrant name, {prefix}, does not match the value {value} in the Required Context.  Please correct dei:EntityRegistrantName.
-</message>
-
-<message code="EFM.6.05.24.multipleLSdrReportsForEntity"
-         level="error"
-         module="ValidateFiling.py" line="301"
-         args="entity">
-[cp-0524-Multiple-L-Sdr-Reports-For-Entity] There is more than one L SDR Exhibit having EntityRegistrantName {entity}. Change one of the names or remove one of the L SDR exhibits.
-</message>
-
-<message code="EFM.6.05.25"
-         level="error"
-         module="ValidateFiling.py" line="354"
-         args="fact contextID">
-[du-0525-Domain-As-Fact] The domain item {fact} cannot appear as a fact, in {refSource}.  Please remove the fact from context {contextID}.
-</message>
 
 <!-- note that arelle has many variants of 6.05.26, wondering if they should be different messages -->
-<message code="EFM.6.05.26"
-         level="error"
-         module="ValidateFiling.py" line="666"
-         args="contextID documentType">
-[im-0526-Entity-Common-Shares-Outstanding]  An instance with dei:DocumentType of {documentType} must have one dei:EntityCommonStockSharesOutstanding fact for each class of stock or units outstanding.
-</message>
 
 <!-- second message of same code, can use above message
 <message code="EFM.6.05.26"
@@ -912,13 +663,6 @@ dei:EntityCommonStockSharesOutstanding is required for DocumentType '{documentTy
 </message>
 -->
 
-<message code="EFM.6.05.27"
-         level="error"
-         module="ValidateFiling.py" line="734"
-         args="footnoteLinkNumber elementName">
-[du-0527-Footnote-Substitution-Group]  Footnote link {footnoteLinkNumber} has a child element {elementName} that is not allowed.  Please remove it.
-</message>
-
 <!-- this is a footnote link role error, what messages should it have? -->
 <!--WcH this is not forbidden by EFM 22.  6.5.28 is only about the footnote element.
 <message code="EFM.6.05.28.linkrole"
@@ -929,368 +673,75 @@ FootnoteLink {footnoteLinkNumber} has disallowed role {linkrole}</message>
 -->
 
 <!-- arelle provides this, tweaked the above message -->
-<message code="EFM.6.05.28.missingRole"
-         level="error"
-         module="ValidateFiling.py" line="764"
-         args="xlinkLabel">
-[du-0528-Footnote-Role-Missing] Footnote {xlinkLabel} is missing a role. Please provide the default footnote role.
-</message>
 
-<message code="EFM.6.05.28"
-         level="error"
-         module="ValidateFiling.py" line="769"
-         args="xlinkLabel role">
-[du-0528-Footnote-Custom-Footnote-Role]  Footnote {xlinkLabel} has a role {role} that is not allowed. Please replace it with the default footnote role.
-</message>
-
-<message code="EFM.6.05.29"
-         level="error"
-         module="ValidateFiling.py" line="742"
-         args="footnoteLinkNumber locNumber xlinkLabel role">
-[du-0529-Footnote-Custom-Loc-Role] Footnote locator {xlinkLabel} has a custom role, {role} that is not allowed.  Please replace it with the default footnote role.
-</message>
-
-<message code="EFM.6.05.30"
-         level="error"
-         module="ValidateFiling.py" line="758"
-         args="footnoteLinkNumber arcNumber arcToLabel arcrole">
-[du-0530-Footnote-Custom-Arcrole] Footnote relationship {arcToLabel} has a custom arc role {arcrole} that is not allowed.  Please replace it with the default (fact-footnote) arcrole.
-</message>
-
-<message code="EFM.6.05.32"
-         level="error"
-         module="ValidateFiling.py" line="748"
-         args="footnoteLinkNumber locNumber locLabel locHref">
-[du-0532-Footnote-Locator-Portable]  Footnote {locLabel} refers to a location, {locHref}, that does not begin with '#' so that any change to the file name would render the XBRL invalid.
-</message>
-
-<message code="EFM.6.05.33"
-         level="error"
-         module="ValidateFiling.py" line="784"
-         args="footnoteLinkNumber footnoteLabel text">
-[cp-0533-Dangling-Footnote] The footnote with label {footnoteLabel} and text '{text}' is not connected to any fact.  Please remove the footnote, or link it to a fact.
-</message>
-
-<message code="EFM.6.05.34"
+<message code="EFM.6.05.34" edgarCode="cp-0534-Prohibited-Html-Footnote-Body"
          level="error"
          module="ValidateFilingText.py" line="601"
          args="validatedObjectLabel error">
-[cp-0534-Prohibited-Html-Footnote-Body] Footnote {xlinkLabel}, line {refLine}, contains text that is not valid for the content of the HTML "body" tag: {error}.
+Footnote {xlinkLabel}, line {refLine}, contains text that is not valid for the content of the HTML "body" tag: {error}.
 </message>
 
-<message code="EFM.6.05.34.activeContent"
+<message code="EFM.6.05.34.activeContent" edgarCode="cp-0534-Prohibited-Html-Footnote-Body"
          level="error"
          module="ValidateFilingText.py" line="565"
          args="xlinkLabel attribute element">
-[cp-0534-Prohibited-Html-Footnote-Body] {validatedObjectLabel} contains text that is not valid for the content of the HTML "body" tag: javascript in '{attribute}' for &lt;{element}>. {refSources}
+{validatedObjectLabel} contains text that is not valid for the content of the HTML "body" tag: javascript in '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.6.05.34.dtdError"
+<message code="EFM.6.05.34.dtdError" edgarCode="cp-0534-Prohibited-Html-Footnote-Body"
          level="error"
          module="ValidateFilingText.py" line="555"
          args="validatedObjectLabel error">
-[cp-0534-Prohibited-Html-Footnote-Body] {validatedObjectLabel} causes the XML error: {error}. {refSources}
+{validatedObjectLabel} causes the XML error: {error}.
 </message>
 
-<message code="EFM.6.05.34.disallowedMetaContent"
+<message code="EFM.6.05.34.disallowedMetaContent" edgarCode="cp-0534-Prohibited-Html-Footnote-Body"
          level="error"
          module="ValidateFilingText.py" line="578"
          args="validatedObjectLabel metaContent">
-[cp-0534-Prohibited-Html-Footnote-Body] {validatedObjectLabel} &lt;meta&gt; content is "{metaContent}" but must be "text/html". {refSources}
+{validatedObjectLabel} &lt;meta&gt; content is "{metaContent}" but must be "text/html".
 </message>
 
-<message code="EFM.6.05.34.externalReference"
+<message code="EFM.6.05.34.externalReference" edgarCode="cp-0534-Prohibited-Html-Footnote-Body"
          level="error"
          module="ValidateFilingText.py" line="572"
          args="validatedObjectLabel attribute element value">
-[cp-0534-Prohibited-Html-Footnote-Body] {validatedObjectLabel} contains text that is not valid for the content of the HTML "body" tag: invalid external reference in '{attribute}' for &lt;{element}>: {value}. {refSources}
+{validatedObjectLabel} contains text that is not valid for the content of the HTML "body" tag: invalid external reference in '{attribute}' for &lt;{element}>: {value}.
 </message>
 
-<message code="EFM.6.05.34.graphicDataUrl"
+<message code="EFM.6.05.34.graphicDataUrl" edgarCode="cp-0534-Prohibited-Html-Footnote-Body"
          level="error"
          module="ValidateFilingText.py" line="578"
          args="validatedObjectLabel attribute element">
-[cp-0534-Prohibited-Html-Footnote-Body] {validatedObjectLabel} references a graphics data URL which isn't accepted which isn't accepted '{attribute}' for &lt;{element}>. {refSources}
+{validatedObjectLabel} references a graphics data URL which isn't accepted which isn't accepted '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.6.05.34.graphicFileContent"
+<message code="EFM.6.05.34.graphicFileContent" edgarCode="cp-0534-Prohibited-Html-Footnote-Body"
          level="error"
          module="ValidateFilingText.py" line="585"
          args="validatedObjectLabel attribute element format">
-[cp-0534-Prohibited-Html-Footnote-Body] {validatedObjectLabel} references a graphics file which has invalid format '{format}' in '{attribute}' for &lt;{element}>. {refSources}
+{validatedObjectLabel} references a graphics file which has invalid format '{format}' in '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.6.05.34.graphicFileError"
+<message code="EFM.6.05.34.graphicFileError" edgarCode="cp-0534-Prohibited-Html-Footnote-Body"
          level="error"
          module="ValidateFilingText.py" line="590"
          args="validatedObjectLabel attribute element error">
-[cp-0534-Prohibited-Html-Footnote-Body] {validatedObjectLabel} references a graphics file which isn't openable '{attribute}' for &lt;{element}>, error: {error}. {refSources}
+{validatedObjectLabel} references a graphics file which isn't openable '{attribute}' for &lt;{element}>, error: {error}.
 </message>
 
-<message code="EFM.6.05.34.graphicFileType"
+<message code="EFM.6.05.34.graphicFileType" edgarCode="cp-0534-Prohibited-Html-Footnote-Body"
          level="error"
          module="ValidateFilingText.py" line="578"
          args="validatedObjectLabel attribute element">
-[cp-0534-Prohibited-Html-Footnote-Body] {validatedObjectLabel}  contains text that is not valid for the content of the HTML "body" tag: reference to a graphics file which isn't .gif or .jpg '{attribute}' for &lt;{element}>. {refSources}
+{validatedObjectLabel}  contains text that is not valid for the content of the HTML "body" tag: reference to a graphics file which isn't .gif or .jpg '{attribute}' for &lt;{element}>.
 </message>
 
-<message code="EFM.6.05.34.nestedTable"
+<message code="EFM.6.05.34.nestedTable" edgarCode="cp-0534-Prohibited-Html-Footnote-Body"
          level="error"
          module="ValidateFilingText.py" line="595"
          args="validatedObjectLabel">
-[cp-0534-Prohibited-Html-Footnote-Body] {validatedObjectLabel} has nested &lt;table> elements. {refSources}
-</message>
-
-<message code="EFM.6.05.36"
-         level="error"
-         module="ValidateFiling.py" line="474"
-         args="unitID measure length">
-[du-0536-Name-Length-Limit] Unit {unitID} contains a measure element whose local-name in UTF-8 has more than 200 bytes.  Shorten the measure name.
-</message>
-
-<message code="EFM.6.05.37"
-         level="error"
-         module="ValidateFiling.py" line="591"
-         args="fact contextID decimals value truncatedDigits insignificantDigits ">
-[du-0537-Nonzero-Digits-Truncated] Fact {fact} of context {contextID} decimals {decimals} value {value} has insignificant digits {insignificantDigits}.  Please correct the fact value and resubmit.
-</message>
-
-<message code="EFM.6.05.38"
-         level="error"
-         module="ValidateFiling.py" line="262"
-         args="contextID">
-[du-0538-Context-Has-Period-Forever] Context {contextID}s uses period &lt;xbrli:forever>. Please remove it and resubmit.</message>
-
-<message code="EFM.6.05.39"
-         level="error"
-         module="ValidateFiling.py" line="313"
-         args="contextIDs dimensions">
-[cp-0539-Typed-Dimension-Not-Standard] Typed dimensions must be defined in standard taxonomy schemas, contexts: {contextIDs} dimensions: {dimensions}.
-</message>
-
-
-<message code="EFM.6.05.41.seriesIdMemberNotAxisMember"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="1036"
-         args="edgarCode seriesIdMember submissionType">
-[dq-0541-Series-Id-Member-Not-Axis-Member] Submission type {subType} should have {seriesIdMember} as a member of the Legal Entity Axis. {refSources}
-</message>
-
-<message code="EFM.6.05.41.seriesIdMemberNotInContext"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="1051"
-         args="edgarCode seriesIdMember submissionType">
-[dq-0541-Series-Id-Member-Not-In-Context] Submission type {subType} should have a context with {seriesIdMember} as a member of the Legal Entity Axis. {refSources}
-</message>
-
-<message code="EFM.6.05.41.seriesIdMemberNotDeclared"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="1031"
-         args="edgarCode seriesIdMember submissionType">
-[dq-0541-Series-Id-Member-Not-Declared] Submission type {subType} should have {seriesIdMember} declared as a domainItemType element. {refSources}
-</message>
-
-<message code="EFM.6.05.42"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="682"
-         args="edgarCode element count date version1 version2">
-[dq-0542-Deprecated-Concept] Concept {element} in {version1} used in {count} facts was deprecated as of {date} and should not be used. {refSources}
-</message>
-
-<message code="EFM.6.05.43"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="407"
-         args="edgarCode element taxonomy value context">
-[dq-0543-Negative-Fact-Value] Concept {element} in {taxonomy} has a negative value {value} in context {context}.  Correct the sign, use a more appropriate concept, or change the context. {refSources}
-</message>
-
-<message code="EFM.6.05.44.customAxis"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="301"
-         args="edgarCode dimension namespace axis taxonomy contextIDs">
-[dq-0544-Custom-Axis] Contexts {contextIDs} use dimension {dimension} in namespace {namespace} but {axis} in {taxonomy} is preferred. {refSources}
-</message>
-
-<message code="EFM.6.05.44.customAxis"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="397"
-         args="edgarCode dimension namespace axis taxonomy contextIDs">
-[dq-0544-Custom-Axis] Contexts {contextIDs} use dimension {dimension} in namespace {namespace} but {axis} in {taxonomy} is preferred. {refSources}
-</message>
-
-<message code="EFM.6.05.45.cover-page-fact-not-visible"
-         level="(dynamic)"
-         module="plugin/validate/EFM/Filing.py" line="2717"
-         args="edgarCode subType countUnreferenced verb elements">
-[dq-0545-Cover-Page-Fact-Not-Visible] Submission type {subType} has {countUnreferenced} cover page fact(s) in ix:hidden that {verb} be visible or referenced by an -sec-ix-hidden style property: {elements}. {refSources}
-</message>
-
-<message code="EFM.6.05.57.classIdMemberNotAxisMember"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="1008"
-         args="edgarCode classIdMember subType">
-[dq-0557-Class-Id-Member-Not-Axis-Member] Submission type {subType} should have {classIdMember} as a member of the Class Axis. {refSources}
-</message>
-
-<message code="EFM.6.05.57.classIdMemberNotDeclared"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="999"
-         args="edgarCode classIdMember subType">
-[dq-0557-Class-Id-Member-Not-Declared] Submission type {subType} should have {classIdMember} declared as a domainItemType element.
-</message>
-
-<message code="EFM.6.05.57.classIdMemberNotInContext"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="1014"
-         args="edgarCode classIdMember subType">
-[dq-0557-Class-Id-Member-Not-In-Context] Submission type {subType} should have a context with {classIdMember} as a member of the Class Axis.
-</message>
-
-<message code="EFM.6.05.58.exhibitDocumentType"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="1024"
-         args="contextID documentType exhibitType">
-[rxp-0558-Exhibit-Document-Type] The value for dei:DocumentType, {deiDocumentType}, is not allowed for {exhibitDocumentType} attachments.
-</message>
-
-<message code="EFM.6.05.58.03"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="2296"
-         args="context fact1 fact2 fact2NotNil edgarCode">
-[rxp-0558-Context-Required-Facts] The Context {context} has a {fact1} and is missing required {fact2NotNil}fact {fact2}. {refSources}
-</message>
-
-<message code="EFM.6.05.58.04"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="2303"
-         args="edgarCode context currency">
-[rxp-055804-Conversion-Method-Value] A value cannot be given for rxp:Cm in context {context} because the payment is in the reporting currency {currency}.
-</message>
-
-<message code="EFM.6.05.58.05"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="2338"
-         args="edgarCode">
-[rxp-055805-Amount-For-Required-12-Months-Period] Amount rxp:A missing for reporting currency and matching 12 months preceding dei:DocumentPeriodEndDate.
-</message>
-
-<message code="EFM.6.05.58.07"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="2312"
-         args="edgarCode context paymentType">
-[rxp-055807-Category-Total-Existence] Payment type {paymentType} was reported in context {context} but there is no fact with element {paymentType} in the Required Context. {refSources}
-</message>
-
-<message code="EFM.6.05.58.09"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="2328"
-         args="edgarCode context dimension">
-[rxp-055809-Project-Payment-Amount-Existence] A payment for each project axis member is required.  Provide a value for element rxp:Pr with value {dimension} in context {context}. {refSources}
-</message>
-<message code="EFM.6.05.44.customAxis"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="397"
-         args="edgarCode dimension namespace axis taxonomy contextIDs">
-[dq-0544-Custom-Axis] Contexts {contextIDs} use dimension {dimension} in namespace {namespace} but {axis} in {taxonomy} is preferred. {refSources}
-</message>
-
-<message code="EFM.6.05.45.cover-page-fact-not-visible"
-         level="(dynamic)"
-         module="plugin/validate/EFM/Filing.py" line="2717"
-         args="edgarCode subType countUnreferenced verb elements">
-[dq-0545-Cover-Page-Fact-Not-Visible] Submission type {subType} has {countUnreferenced} cover page fact(s) in ix:hidden that {verb} be visible or referenced by an -sec-ix-hidden style property: {elements}. {refSources}
-</message>
-
-<message code="EFM.6.05.57.classIdMemberNotAxisMember"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="1008"
-         args="edgarCode classIdMember subType">
-[dq-0557-Class-Id-Member-Not-Axis-Member] Submission type {subType} should have {classIdMember} as a member of the Class Axis. {refSources}
-</message>
-
-<message code="EFM.6.05.57.classIdMemberNotDeclared"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="999"
-         args="edgarCode classIdMember subType">
-[dq-0557-Class-Id-Member-Not-Declared] Submission type {subType} should have {classIdMember} declared as a domainItemType element.
-</message>
-
-<message code="EFM.6.05.57.classIdMemberNotInContext"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="1014"
-         args="edgarCode classIdMember subType">
-[dq-0557-Class-Id-Member-Not-In-Context] Submission type {subType} should have a context with {classIdMember} as a member of the Class Axis.
-</message>
-
-<message code="EFM.6.05.58.exhibitDocumentType"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="1024"
-         args="contextID documentType exhibitType">
-[rxp-0558-Exhibit-Document-Type] The value for dei:DocumentType, {documentType}, is not allowed for {exhibitType} attachments.
-</message>
-
-<message code="EFM.6.05.58.03"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="2296"
-         args="context fact1 fact2 fact2NotNil edgarCode">
-[rxp-0558-Context-Required-Facts] The Context {context} has a {fact1} and is missing required {fact2NotNil}fact {fact2}. {refSources}
-</message>
-
-<message code="EFM.6.05.58.04"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="2303"
-         args="edgarCode context currency">
-[rxp-055804-Conversion-Method-Value] A value cannot be given for rxp:Cm in context {context} because the payment is in the reporting currency {currency}.
-</message>
-
-<message code="EFM.6.05.58.05"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="2338"
-         args="edgarCode">
-Amount rxp:A missing for reporting currency and matching 12 months preceding dei:DocumentPeriodEndDate.
-</message>
-
-<message code="EFM.6.05.58.07"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="2312"
-         args="edgarCode context paymentType">
-[rxp-055807-Category-Total-Existence] Payment type {paymentType} was reported in context {context} but there is no fact with element {paymentType} in the Required Context. {refSources}
-</message>
-
-<message code="EFM.6.05.58.09"
-         level="error"
-         module="plugin/validate/EFM/Filing.py" line="2328"
-         args="edgarCode context dimension">
-[rxp-055809-Project-Payment-Amount-Existence] A payment for each project axis member is required.  Provide a value for element rxp:Pr with value {dimension} in context {context}. {refSources}
-</message>
-
-<message code="EFM.6.07.01"
-         level="error"
-         module="ValidateFilingDTS.py" line="49"
-         args="schema include">
-[du-0701-Schema-Include-Present] The schema contains an 'include' element, in {refSource}.  Please remove it and resubmit.
-</message>
-
-<message code="EFM.6.07.03"
-         level="error"
-         module="ValidateFilingDTS.py" line="95"
-         args="schema targetNamespace targetNamespaceEffectiveAuthority">
-[fs-0703-Extension-Has-Standard-Namespace-Authority]  The target namespace, {targetNamespace} cannot have the same effective authority ({targetNamespaceEffectiveAuthority}) as a standard taxonomy, in {schema}.  Please change your target namespace.
-
-</message>
-
-<message code="EFM.6.07.04"
-         level="error"
-         module="ValidateFilingDTS.py" line="118"
-         args="schema targetNamespace">
-[cp-0704-Taxonomy-Valid-Target-Namespace] You did not adhere to the requirements for target namespace, for {targetNamespace} in {schema}.  Please recheck your submission and adhere to the target namespace requirements.
-</message>
-
-<message code="EFM.6.07.05"
-         level="error"
-         module="ValidateFilingDTS.py" line="131"
-         args="schema targetNamespace">
-[du-0705-Namespace-Authority] Taxonomy schema {schema} namespace {targetNamespace} must be a valid URI with a valid authority for the namespace.
+{validatedObjectLabel} has nested &lt;table> elements.
 </message>
 
 <!--WcH this makes no sense to test and should be removed from EFM
@@ -1302,205 +753,6 @@ Warning: Taxonomy schema {schema} namespace {targetNamespace} has date later tha
 </message>
 -->
 
-<message code="EFM.6.07.07"
-         level="error"
-         module="ValidateFilingDTS.py" line="136"
-         args="schema targetNamespace">
-[du-0707-Recommended-Prefix-Disallowed]  The schema does not supply a prefix for {targetNamespace} without an underscore character, in file {schema}. Please provide or change a prefix.
-</message>
-
-<message code="EFM.6.07.07.multipleRecommendedPrefixes"
-         level="error"
-         module="ValidateFilingDTS.py" line="136"
-         args="schema targetNamespace">
-[du-0707-Multiple-Recommended-Prefixes]  The schema must supply a single prefix for %(targetNamespace)s but there are %(count)s in file %(schema)s.
-</message>
-
-
-<message code="EFM.6.07.08"
-         level="error"
-         module="ValidateFilingDTS.py" line="402"
-         args="schema">
-[cp-0708-No-Embedded-Linkbases] Your filing contained embedded linkbases in {schema}.  Please recheck your submission and remove all embedded linkbases.
-</message>
-
-<message code="EFM.6.07.09"
-         level="error"
-         module="ValidateFilingDTS.py" line="422"
-         args="roleType targetNamespaceAuthority targetNamespace">
-[du-0709-Role-Namespace-Mismatch] Role {roleType} does not begin with {targetNamespace}'s scheme and authority, in {refSource}. Please change the role URI or target namespace URI.
-</message>
-
-<message code="EFM.6.07.09.roleEnding"
-         level="warning"
-         module="ValidateFilingDTS.py" line="427"
-         args="roleType">
-[du-0709-Role-Ending-Mismatch] RoleType {roleType} should end with /role/{mnemonic name}
-</message>
-
-<message code="EFM.6.07.10"
-         level="error"
-         module="ValidateFiling.py" line="975"
-         args="roleType numberOfDeclarations">
-[du-0710-Role-Type-Duplicates]  Role {roleType} was declared more than once ({numberOfDeclarations} times, in {refSources}).  Please remove all but one declaration.
-</message>
-
-<message code="EFM.6.07.11"
-         level="error"
-         module="ValidateFilingDTS.py" line="444"
-         args="roleType usedOn">
-[du-0711-Role-Type-Declaration-Incomplete] The role {roleType} did not provide a usedOn element for all three link types (presentation, calculation and definition), in {refSource}. Change the declaration to be for all three types of link, and resubmit.
-</message>
-
-<message code="EFM.6.07.12"
-         level="error"
-         module="ValidateFilingDTS.py" line="451"
-         args="roleType definition">
-[rq-0712-Role-Definition-Mismatch]  The definition "{definition}" of role {roleType} does not match the expected format, in {refSource}. Please check that the definition matches {{number}} - {{type}} - {{text}}.
-</message>
-
-<message code="EFM.6.07.12.presentationBaseSetOrder"
-         level="warning"
-         module="plugin/validate/EFM/Filing.py" line="1898"
-         args="edgarCode descriptionX levelX descriptionY levelY">
-[dq-0712-Presentation-Base-Set-Order] Role '{descriptionX}', a level {levelX} role, appears before '{descriptionY}', a level {levelY} role. {refSources}
-</message>
-
-<message code="EFM.6.07.13"
-         level="error"
-         module="ValidateFilingDTS.py" line="482"
-         args="arcroleType targetNamespaceAuthority targetNamespace">
-[du-0713-Arcrole-Namespace-Mismatch] Relationship role {arcroleType} does not begin with {targetNamespace}'s scheme and authority, in {refSource}.  Please change the relationship role URI or target namespace URI.
-</message>
-
-<message code="EFM.6.07.13.arcroleEnding"
-         level="warning"
-         module="ValidateFilingDTS.py" line="487"
-         args="arcroleType">
-[du-0713-Arcrole-Ending-Mismatch] ArcroleType {arcroleType} should end with /arcrole/{mnemonic name}
-</message>
-
-<message code="EFM.6.07.14"
-         level="error"
-         module="ValidateFiling.py" line="981"
-         args="arcroleType numberOfDeclarations">
-[du-0714-Arcrole-Type-Duplicates] Relationship arc role {arcroleType} is declared more than once ({numberOfDeclarations} duplicates, {refSources}).  Please remove all but one of them.
-</message>
-
-<message code="EFM.6.07.15"
-         level="error"
-         module="ValidateFilingDTS.py" line="501"
-         args="arcroleType">
-[du-0715-Arcrole-Definition-Missing]  Relationship role declaration {arcroleType} is missing a definition, in {refSource}.  Please provide a definition.
-</message>
-
-<message code="EFM.6.07.16"
-         level="error"
-         module="ValidateFilingDTS.py" line="158"
-         args="concept standardSchema standardConcept">
-[cp-0716-Element-Name-Same-As-Base] Your extension taxonomy contains an element, {concept}, which has the same name as an element in the base taxonomy, {standardConcept}.  Please ensure that this extension is appropriate and if so, please change the extension concept name.
-</message>
-
-<message code="EFM.6.07.17"
-         level="error"
-         module="ValidateFilingDTS.py" line="180"
-         args="concept id requiredId">
-[cp-0717-Element-Id]  You did not adhere to the declarations for concepts by containing an "id" attribute whose value begins with the recommended namespace prefix of the taxonomy, followed by an underscore, followed by an element name, for the concept {concept}.  Please recheck your submission.
-
-</message>
-
-<message code="EFM.6.07.18"
-         level="error"
-         module="ValidateFilingDTS.py" line="187"
-         args="schema concept nillable">
-[du-0718-Nillable-Not-True]  Element {concept} is declared without a "true" value for the nillable attribute, in {refSource}.  Please set the value to "true".
-</message>
-
-<message code="EFM.6.07.19"
-         level="error"
-         module="ValidateFilingDTS.py" line="195"
-         args="concept">
-[cp-0719-No-Tuple-Element] You provided an extension concept which is a tuple, {concept}.  Please remove tuples and check your submission.
-</message>
-
-<message code="EFM.6.07.20"
-         level="error"
-         module="ValidateFilingDTS.py" line="201"
-         args="concept typedDomainRef">
-[du-0720-Typed-Domain-Ref-Disallowed]  There is an xbrldt:typedDomainRef attribute on {concept}, in {refSource}. Please remove it.
-</message>
-
-<message code="EFM.6.07.21"
-         level="error"
-         module="ValidateFilingDTS.py" line="209"
-         args="schema concept">
-[du-0721-Abstract-Is-Instant]  Element {concept} is declared as an abstract item with period type "instant", in {refSource}.  Please change it to "duration" or make the element not abstract.
-</message>
-
-<message code="EFM.6.07.23"
-         level="error"
-         module="ValidateFilingDTS.py" line="223"
-         args="concept">
-[du-0723-Axis-Dimension-Name-Mismatch] The substitution group "xbrldt:dimensionItem" is only consistent with an element name that ends with "Axis".  Please change $local-name({concept}) or change the substitutionGroup, in {refSource}.
-</message>
-
-<message code="EFM.6.07.24"
-         level="error"
-         module="ValidateFilingDTS.py" line="229"
-         args="schema concept">
-[du-0724-Table-Hypercube-Name-Mismatch] The substitution group "xbrldt:hypercubeItem" is only allowed with an element name that ends with "Table".  Please change $local-name({concept}) or change the substitutionGroup, in {refSource}.
-
-</message>
-
-<message code="EFM.6.07.25"
-         level="error"
-         module="ValidateFilingDTS.py" line="238"
-         args="concept substitutionGroup">
-[du-0725-Substitution-Group-Custom] The substitution group attribute value {substitutionGroup} of element $local-name({concept}) is not allowed, in {refSource}.  Please change it to one of "xbrli:item", "xbrldt:dimensionItem" or "xbrldt:hypercubeItem".
-</message>
-
-<message code="EFM.6.07.26"
-         level="error"
-         module="ValidateFilingDTS.py" line="245"
-         args="concept">
-[du-0726-LineItems-Abstract-Name-Mismatch] The element $local-name({concept}) ends with "LineItems" but is not abstract. Please change $local-name({concept}) or the value of the "abstract" attribute, in {refSource}.
-</message>
-
-<message code="EFM.6.07.27"
-         level="error"
-         module="ValidateFilingDTS.py" line="254"
-         args="concept">
-[du-0727-Domain-Type-Name-Mismatch] The type "us-types:domainItemType" is only allowed with an element name that ends with "Domain" or "Member".  Please change $local-name({concept}) or change the type, in {refSource}.
-</message>
-
-<message code="EFM.6.07.28"
-         level="error"
-         module="ValidateFilingDTS.py" line="260"
-         args="concept">
-[du-0728-Domain-Member-Is-Instant] Element $local-name({concept}) is declared as a us-types:domainItemType with period type "instant", in {refSource}.  Please change it to "duration" or change the item type.
-</message>
-
-<message code="EFM.6.07.29"
-         level="error"
-         module="ValidateXbrlDTS.py" line="453"
-         args="element name length">
-[du-0729-Name-Length-Limit] Shorten this declaration name to 200 bytes or fewer in UTF-8: {name}
-</message>
-
-<message code="EFM.6.07.30"
-         level="error"
-         module="ValidateXbrlDTS.py" line="297 522"
-         args="length attribute roleURI targetNamespace value">
-[du-0730-Uri-Length-Limit]  Shorten this declaration URI to 255 bytes or fewer in UTF-8: {value}.
-</message>
-
-<message code="EFM.6.07.31"
-         level="error"
-         module="ValidateFilingDTS.py" line="276"
-         args="concept">
-[du-0731-Fraction-Item-Type] Element {concept} is declared as a fraction item type.  Change or remove the declaration and resubmit.
-</message>
-
 <!--  up to version 58 EFM.6.07.32 
 <message code="EFM.6.07.32"
          level="error"
@@ -1510,13 +762,6 @@ Warning: Taxonomy schema {schema} namespace {targetNamespace} has date later tha
 </message>
 -->
 <!--  after version 58 EFM.6.07.32 -->
-<message code="EFM.6.07.32"
-         level="error"
-         module="ValidateFilingDTS.py" line="281"
-         args="schema concept">
-[rq-0732-TextBlock-Must-Be-Duration] Declaration of element {concept} in {schema} must have xbrli:periodType of 'duration' because its type is a text block.
-</message>
-
 
 <!-- skip semantic messages
 <message code="EFM.6.08.03"
@@ -1590,20 +835,7 @@ Concept {concept} of type xbrli:stringItemType must have periodType duration
 </message>
 -->
 
-<message code="EFM.6.09.03"
-         level="error"
-         module="ValidateFiling.py" line="964"
-         args="arc linkrole linkroleDefinition arcrole conceptFrom conceptTo ineffectivity">
-[du-0903-Relationship-Ineffectual] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, in the submission is ineffectual.  Please remove or correct the relationship.
-</message>
-
 <!--WcH this message is redundant when the resource is in an instance. -->
-<message code="EFM.6.09.04"
-         level="error"
-         module="ValidateXbrlDTS.py" line="878"
-         args="element">
-[fs-0904-Resource-Role-Missing]  The {element} element requires an xlink:role such as the default, "http://www.xbrl.org/2003/role/label", in {refSource}.  Please recheck submission.
-</message>
 
 <!-- same code, same arguments
 <message code="EFM.6.09.04"
@@ -1614,41 +846,7 @@ Concept {concept} of type xbrli:stringItemType must have periodType duration
 </message>
 -->
 
-<message code="EFM.6.09.05"
-         level="error"
-         module="ValidateXbrlDTS.py" line="902"
-         args="xlinkLabel role roleDefinition element">
-[fs-0905-Custom-Resource-Role-Used]  The {element} element has a role, {roleDefinition}, that is not defined in a standard taxonomy, resource labeled {xlinkLabel}, in {refSource}.  Please recheck submission.
-</message>
-
-<message code="EFM.6.09.06"
-         level="error"
-         module="ValidateXbrlDTS.py" line="604"
-         args="refURI xlinkHref">
-[fs-0906-Custom-Arcrole-Referenced] An arcroleRef element refers to {xlinkHref}, an arcrole, {refURI}, that is not defined in a standard taxonomy, in {refSource}. Please recheck submission.
-</message>
-
 <!-- added $element2 to message text -->
-<message code="EFM.6.09.07"
-         level="error"
-         module="ValidateXbrlDTS.py" line="885"
-         args="element element2">
-[cp-0907-Linkbases-Distinct] Your filing contained extended type links with roles of different namespaces and local names, {element} and {element2} in the same linkbase, {refUrl}.  Please recheck your submission and ensure that all extended-type links in a single linkbase have the same namespace and local name.
-</message>
-
-<message code="EFM.6.09.09"
-         level="error"
-         module="ValidateXbrlDTS.py" line="942"
-         args="xlinkFrom xlinkTo priority arcElement">
-[du-0909-Relationship-Priority-Not-Less-Than-Ten]  The priority attribute {priority} has a value of ten or greater, on arc {arcElement}, in {refSource}. Please change the priority to value less than 10 and resubmit.
-</message>
-
-<message code="EFM.6.10.01"
-         level="error"
-         module="ValidateFiling.py" line="1339"
-         args="concept lang">
-[cp-1001-Element-Used-Standard-Label] You have submitted an instance using an element without an en-US standard label {concept} in {refSources2_n}. Please check your submission and correct the labels.
-</message>
 
 <!--WcH this is not mentioned in 6.10.01 and is not a standalone error anyway
 <message code="EFM.6.10.01.missingLabelLinkbase"
@@ -1659,42 +857,9 @@ A label linkbase is required but was not found
 </message>
 -->
 
-<message code="EFM.6.10.02"
-         level="error"
-         module="ValidateFiling.py" line="1320"
-         args="concept role lang">
-[cp-1002-Element-Used-Has-Duplicate-Label] Concept {concept} has duplicated labels for role {role} lang {lang}.
-</message>
-
 <!-- removed label linkbase file name, there may be multipls such files -->
-<message code="EFM.6.10.03"
-         level="error"
-         module="ValidateFiling.py" line="1352"
-         args="concept lang role">
-[cp-1003-Element-Used-Standard-English-Label] You have submitted an instance using an element {concept} with {lang} for role {role} in instance {refSource}. Labels are in {refSources2_n}. Please check your submission and correct the labels.
-</message>
-
-<message code="EFM.6.10.04"
-         level="error"
-         module="ValidateFiling.py" line="816"
-         args="concept concept2 lang text">
-[du-1004-English-Standard-Labels-Duplicated] More than one element has {text} as its English standard label ({concept} in {refSource} and {concept2} in {refSource3}).  Please change or remove all but one label.
-</message>
-
-<message code="EFM.6.10.05"
-         level="error"
-         module="ValidateFiling.py" line="809"
-         args="concept text">
-[cp-1005-Custom-Documentation-Standard-Element] Your filing attempted to add a new definition, "{text}", to an existing concept in the standard taxonomy, {concept}.  Please remove this definition.
-</message>
 
 <!-- these messages need text that reflects the EFM section, or breakdown and more text -->
-<message code="EFM.6.10.06"
-         level="error"
-         module="ValidateFiling.py" line="826"
-         args="concept role length text">
-[rq-1006-Label-Disallowed]  Element {concept} has more than 511 characters or contains a left-angle-bracket character in the label for role {role}, in {refSource}. Please correct the label.
-</message>
 
 <!-- SEC text doesn't distinguish these cases
 <message code="EFM.6.10.06"
@@ -1704,20 +869,6 @@ A label linkbase is required but was not found
 Label for concept {concept} role {role} has disallowed characters: "{text}"
 </message>
 -->
-
-<message code="EFM.6.10.08"
-         level="error"
-         module="ValidateFiling.py" line="838"
-         args="concept role lang text">
-[du-1008-Label-Not-Trimmed] The label {text} of element {concept} has leading or trailing white space, in {refSource}.  Please remove it.
-</message>
-
-<message code="EFM.6.10.09"
-         level="error"
-         module="ValidateFilingDTS.py" line="674"
-         args="concept role">
-[du-1009-Numeric-Label-Role] Non-numeric element {concept} has a label role for numeric elements: {role}. Please change the role attribute.
-</message>
 
 <!-- semantic check -->
 <!--WcH semantic check is incomplete because you cannot check what the wording says.
@@ -1729,164 +880,6 @@ Concept {concept} is monetary without a balance and must have a documentation la
 </message>
 -->
 
-<message code="EFM.6.12.01"
-         level="error"
-         module="ValidateXbrlDTS.py" line="957"
-         args="xlinkFrom xlinkTo conceptFrom conceptTo">
-[rq-1201-Presentation-Order-Missing] The presentation relationship from {conceptFrom} to {conceptTo} does not have an order attribute, in {refSource}.  Please provide a value.
-</message>
-
-<message code="EFM.6.12.02"
-         level="error"
-         module="ValidateFiling.py" line="1016"
-         args="conceptFrom order linkrole linkroleDefinition conceptTo conceptTo2">
-[rq-1202-Presentation-Order-Duplicates] More than one presentation relationship in role {linkroleDefinition} has order value {order}, in {refSources}.  Change all but one so they are distinct.
-</message>
-
-<message code="EFM.6.12.03"
-         level="error"
-         module="ValidateFiling.py" line="1167"
-         args="concept">
-[cp-1203-Element-Used-Not-Presented] Element {concept} is used in a fact or context in the instance, but is not in any presentation relationships.  Element is defined in {refSources2_n}.  Add the element to at least one presentation group.
-</message>
-
-<message code="EFM.6.12.04"
-         level="error"
-         module="ValidateFiling.py" line="1193"
-         args="concept fromConcept lang preferredLabel">
-[rq-1204-English-Preferred-Label-Missing]  Element {concept} has no English value for role {preferredLabel}, but there is a presentation relationship from {fromConcept} to {concept} that requires it, in {refSource}. Provide a label with xml:lang equal to "en-US".
-</message>
-
-<message code="EFM.6.12.05"
-         level="error"
-         module="ValidateFiling.py" line="1004"
-         args="concept fromConcept preferredLabel linkrole linkroleDefintion">
-[rq-1205-Preferred-Label-Duplicates] Relationships from {fromConcept} to {concept} in role {linkroleDefinition} do not have distinct values for the preferredLabel attribute, in {refSources}.  Change all but one value of preferredLabel.
-</message>
-
-<message code="EFM.6.12.06"
-         level="warning"
-         module="EdgarRenderer/Embedding.py" line="312"
-         args="linkrole linkroleDefinition linkroleName numberRootConcepts">
-[rq-1206-Multiple-Root-Nodes] Presentation group ''{linkroleName}'' has multiple root nodes. XBRL allows unordered root nodes, but rendering requires ordering.  They will instead be ordered by their labels.  To avoid undesirable ordering of axes and primary items across multiple root nodes, rearrange the presentation relationships to have only a single root node.
-</message>
-
-<message code="EFM.6.12.07"
-         level="warning"
-         module="EdgarRenderer/Embedding.py" line="393"
-         args="conceptTo conceptFrom linkrole linkroleDefinition linkroleName preferredLabel preferredLabelValue">
-[rq-1207-Period-Type-Preferred-Label-Mismatch] In ''{linkroleName}'', element {conceptTo} has period type 'duration' but is given a preferred label {preferredLabelValue} when shown under parent {conceptFrom}.  The preferred label will be ignored.
-</message>
-
-<message code="EFM.6.12.08"
-         level="warning"
-         module="EdgarRenderer/PresentationGroup.py" line="271"
-         args="axis linkrole linkroleDefinition linkroleName">
-[rq-1208-Axis-Requires-Domain-Child] The presentation group ''{linkroleName}'' contains an axis {axis} with no domain element children, which effectively filters out every fact
-</message>
-
-<message code="EFM.6.12.09"
-         level="warning"
-         module="EdgarRenderer/Embedding.py" line="512"
-         args="linkrole linkroleDefinition linkroleName foundMeasureSet missingMeasureSet">
-[rq-1209-Presented-Units-Incomplete-Order] Units of measure {foundMeasureSet} were found in ''{linkroleName}'' but the facts presented use these additional units of measure: {missingMeasureSet}.  Add presentation relationships to provide a definite ordering of these additional units in output.
-</message>
-
-<message code="EFM.6.12.10.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="2540"
-         args="arc arcrole linkrole linkroleDefinition conceptFrom conceptTo">
-[du-1210-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-
-<message code="EFM.6.12.11.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="2540"
-         args="arc arcrole linkrole linkroleDefinition conceptFrom conceptTo">
-[du-1211-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-
-<message code="EFM.6.12.12.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="2540"
-         args="arc arcrole linkrole linkroleDefinition conceptFrom conceptTo">
-[du-1212-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-
-<message code="EFM.6.14.01"
-         level="error"
-         module="ValidateXbrlDTS.py" line="964"
-         args="xlinkFrom xlinkTo conceptFrom conceptTo">
-[du-1401-Calculation-Relationship-Order-Missing] The calculation relationship from {conceptFrom} to {conceptTo} does not have an order attribute, in {refSource}.
-</message>
-
-<message code="EFM.6.14.02"
-         level="error"
-         module="ValidateXbrlDTS.py" line="972"
-         args="xlinkFrom xlinkTo conceptFrom conceptTo weight">
-[fs-1402-Calculation-Relationship-Weight-Not-Unitary] Weight value {weight} on the calculation relationship from {conceptFrom} to {conceptTo} must be equal to 1 or to -1, in {refSource}. Please recheck submission.
-</message>
-
-<message code="EFM.6.14.03"
-         level="error"
-         module="ValidateFiling.py" line="1051"
-         args="linkrole linkroleDefinition conceptFrom conceptTo">
-[fs-1403-Calculation-Relationship-Has-Different-Period-Types]  Element {conceptFrom} and element {conceptTo} have different period types, but there is a calculation relationship between them in role {linkroleDefinition}, in {refSource}. Please recheck submission calculation links.
-</message>
-
-<message code="EFM.6.14.04"
-         level="error"
-         module="ValidateFiling.py" line="1072"
-         args="linkrole linkroleDefinition concept path">
-[fs-1404-Circular-Calculation] Element {concept} is summed into itself in calculation group {linkroleDefinition}.  Please recheck submission.
-</message>
-
-<message code="EFM.6.14.05"
-         level="error"
-         module="ValidateFiling.py" line="1175"
-         args="conceptFrom conceptTo linkroleDefinition contextId">
-[du-1405-Facts-In-Calculations-Presentation-Missing] Context {contextId} has facts of elements {conceptFrom} and {conceptTo}, with a calculation relationship in {linkroleDefinition}, but these elements are not in any common corresponding presentation relationship group.  The calculation relationship is in {refSource}.
-</message>
-
-<message code="EFM.6.14.06.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="2552"
-         args="arc arcrole linkrole linkroleDefinition conceptFrom conceptTo">
-[du-1406-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-
-<message code="EFM.6.14.07.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="2552"
-         args="arc arcrole linkrole linkroleDefinition conceptFrom conceptTo">
-[du-1407-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.14.08.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="2552"
-         args="arc arcrole linkrole linkroleDefinition conceptFrom conceptTo">
-[du-1408-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.14.09.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="3196"
-         args="arcrole conceptFrom conceptTo linkroleDefinition">
-[du-1409-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.14.10.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="3196"
-         args="arcrole conceptFrom conceptTo linkroleDefinition">
-[du-1410-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.14.11.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="3196"
-         args="arcrole conceptFrom conceptTo linkroleDefinition">
-[du-1411-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-
-
 <!-- semantic error for now
 <message code="EFM.6.15.04"
          level="error"
@@ -1896,27 +889,7 @@ Calculation relationships have a same set of targets in {linkrole} and {linkrole
 </message>
 -->
 
-<message code="EFM.6.16.01"
-         level="error"
-         module="ValidateXbrlDTS.py" line="986"
-         args="xlinkFrom xlinkTo conceptFrom conceptTo">
-[du-1601-Definition-Relationship-Order-Missing] The Definition relationship from {conceptFrom} to {conceptTo} does not have an order attribute, in {refSource}.
-</message>
-
-<message code="EFM.6.16.03"
-         level="error"
-         module="ValidateFiling.py" line="1109"
-         args="conceptFrom conceptTo linkrole">
-[du-1603-Dimension-Domain-Target-Mismatch] There is a dimension-domain relationship from {conceptFrom} but its target element {conceptTo} is not a domain, in {refSource}.  Please change the relationship or change the type of the target element.
-</message>
-
 <!-- suggest showing path in the error message -->
-<message code="EFM.6.16.04"
-         level="error"
-         module="ValidateFilingDimensions.py" line="101"
-         args="linkrole linkroleDefinition hypercube dimension conceptFrom path">
-[fs-1604-Domain-Is-Tangled]  Element {conceptFrom} appears in overlapping sets of members in a Directed Relationship Set in role {linkroleDefinition}; remove it as a target of one of its domain-member relationships. Please recheck submission.
-</message>
 
 <!-- same EFM text as above
 <message code="EFM.6.16.04"
@@ -1930,40 +903,6 @@ path {path}
 -->
 
 <!-- reworded this message, the prior form was confusing and too XPE specific -->
-<message code="EFM.6.16.05"
-         level="error"
-         module="ValidateFilingDimensions.py" line="109"
-         args="hypercubeCount linkrole linkroleDefinition concept hypercubes">
-[fs-1605-Primary-Element-Has-Redundant-Tables]  Element {concept} is a primary element of more than one Table in relationship group {linkroleDefinition}, to tables {hypercubes} in {refSources2_n}. Please modify the "all" relationships that have the element as a source so that it has only one primary axis.
-</message>
-
-<message code="EFM.6.16.06"
-         level="error"
-         module="ValidateFilingDimensions.py" line="41"
-         args="hypercube linkrole primaryItem">
-[fs-1606-Not-All-Relationship-Is-Closed] The notAll relationship for table {hypercube} must have the closed attribute set to 'false' so that it can achieve its intended purpose of excluding combinations of domain values, on relationship from {primaryItem}, in {refSource}. Please recheck submission.
-</message>
-
-<message code="EFM.6.16.07"
-         level="error"
-         module="ValidateFilingDimensions.py" line="81"
-         args="dimension linkrole linkroleDefinition primaryItem">
-[fs-1607-Axis-Excluded-Not-In-Table] Members of axis {dimension} are excluded, in role {linkroleDefinition}, from primary item {primaryItem} but not included in any table.  Please modify the relationships to make it consistent.
-</message>
-
-<message code="EFM.6.16.08"
-         level="error"
-         module="ValidateFilingDimensions.py" line="45"
-         args="hypercube linkrole linkroleDefinition primaryItem">
-[fs-1608-Table-Excludes-Itself] Element {hypercube} is a table that negates itself in {linkroleDefinition} for primary item {primaryItem}.  Modify the "all" and "notAll" relationships that have the element as a target.  Please recheck submission.
-</message>
-
-<message code="EFM.6.16.09"
-         level="error"
-         module="ValidateFilingDimensions.py" line="136"
-         args="fromConcept toConcept linkrole linkroleDefinition arcroleURI arcrole">
-[fs-1609-Target-Role-With-No-Consecutive-Relationships]  A table is malformed because the {arcroleURI} from {fromConcept} to {toConcept} in link role {linkroleDefinition} has no consecutive relationships, in {refSource}.  Remove the targetRole attribute, or provide a consecutive relationship.
-</message>
 
 <!-- all 6.16.09's have same args for SEC message purposes, thus share code
 <message code="EFM.6.16.09"
@@ -1981,114 +920,7 @@ Axis {dimension} in DRS role {linkrole}, missing targetrole consecutive relation
 </message>
 -->
 
-<message code="EFM.6.16.10.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="2570"
-         args="arc arcrole linkrole linkroleDefinition conceptFrom conceptTo">
-[du-1610-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-
-<message code="EFM.6.16.11.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="2570"
-         args="arc arcrole linkrole linkroleDefinition conceptFrom conceptTo">
-[du-1611-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.16.12.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="2570"
-         args="arc arcrole linkrole linkroleDefinition conceptFrom conceptTo">
-[du-1612-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.16.13.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="3196"
-         args="arcrole conceptFrom conceptTo linkroleDefinition">
-[du-1613-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.16.14.04"
-         level="error"
-         module="validate/Filing.py" line="3467"
-         args="member roles taxonomy">
-[rxp-161404-Member-Multiple-RXP-Roles] Member concept {member} appears in more than one {taxonomy} role: {roles}. {refSources}
-</message>
-<message code="EFM.6.16.14.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="3196"
-         args="arcrole conceptFrom conceptTo linkroleDefinition">
-[du-1614-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.16.14.roleSourceNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="3190"
-         args="arcrole conceptFrom conceptTo linkroleDefinition">
-[du-1614-Role-Source-Not-Permitted] The {arcrole} relationship source, {conceptFrom}, to {conceptTo}, link role %{inkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.16.14.targetRoleNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="3196"
-         args="arcrole conceptFrom conceptTo linkroleDefinition">
-[du-1614-TargetRole-Not-Permitted] The {arcrole} relationship targetRole from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.16.15.01"
-         level="error"
-         module="validate/Filing.py" line="3467"
-         args="member roles taxonomy">
-[rxp-161501-Member-Multiple-SHR-Roles] Member concept {member} appears in more than one {taxonomy} role: {roles}. {refSources}
-</message>
-<message code="EFM.6.16.15.relationshipNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="3196"
-         args="arcrole conceptFrom conceptTo linkroleDefinition">
-[du-1615-Relationship-Not-Permitted] The {arcrole} relationship from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.16.15.roleSourceNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="3190"
-         args="arcrole conceptFrom conceptTo linkroleDefinition">
-[du-1615-Role-Source-Not-Permitted] The {arcrole} relationship source, {conceptFrom}, to {conceptTo}, link role %{inkroleDefinition}, is not permitted. {refSources}
-</message>
-<message code="EFM.6.16.15.targetRoleNotPermitted"
-         level="error"
-         module="validate/Filing.py" line="3196"
-         args="arcrole conceptFrom conceptTo linkroleDefinition">
-[du-1615-TargetRole-Not-Permitted] The {arcrole} relationship targetRole from {conceptFrom} to {conceptTo}, link role {linkroleDefinition}, is not permitted. {refSources}
-</message>
-
-
-<message code="EFM.6.18.01"
-         level="error"
-         module="ValidateFiling.py" line="846"
-         args="concept text xml">
-[cp-1801-Custom-Element-Has-Reference] Your filing provides a reference, "{xml}", for a custom concept in extension taxonomy, {concept}.  Please remove this reference.
-</message>
-
-<message code="EFM.6.18.02"
-         level="error"
-         module="ValidateFiling.py" line="851"
-         args="concept text xml">
-[cp-1802-Standard-Element-Has-Reference] Your filing attempted to add a new reference, "{xml}", to an existing concept in the standard taxonomy, {concept}.  Please remove this reference.
-</message>
-
 <!-- suggest adding {namespaceConflicts} which lists the namespaces that conflict -->
-<message code="EFM.6.22.03.incompatibleSchemas"
-         level="error"
-         module="ValidateFiling.py" line="1577"
-         args="namespaceConflicts conflictClass">
-[cp-2203-Incompatible-Schemas]  References for conflicting standard taxonomies {conflictClass} are not allowed in same DTS: {namespaceConflicts}. {refSources}
-</message>
-<message code="EFM.6.22.03.incompatibleTaxonomyDocumentType"
-         level="error"
-         module="ValidateFiling.py" line="1582"
-         args="documentType conflictClass">
-[cp-2203-Incompatible-Taxonomy-DocumentType]  DocumentType {documentType} is incompatible with the {conflictClass} taxonomy. {refSources}
-</message>
-<message code="EFM.6.22.03.incompatibleInlineDocumentType"
-         level="error"
-         module="ValidateFiling.py" line="1590"
-         args="documentType conflictClass">
-[cp-2203-Incompatible-Inline-DocumentType]  DocumentType {documentType} is incompatible with inline XBRL. {refSources}
-</message>
 
 <!-- this is not part of 6.5.40 or mentioned anywhere in EFM
 <message code="EFM.6.05.40.srtConceptsForIFRSConcepts"
@@ -2105,189 +937,15 @@ Axis {dimension} in DRS role {linkrole}, missing targetrole consecutive relation
 </message>
  -->
 
-<message code="EFM.6.26.01"
-         level="warning"
-         module="EdgarRenderer/Cube.py" line="145"
-         args="linkrole linkroleDefinition linkroleName axisSet">
-[rq-2601-All-Facts-Filtered] The presentation group ''{linkroleName}'' contains {axisSet}, which has (have) no default member in the presentation group. Since every fact in the group is defaulted on this (these) axis (axes), all facts have been filtered out.
-</message>
-
-<message code="EFM.6.26.02"
-         level="warning"
-         module="EdgarRenderer/Filing.py" line="949"
-         args="fact value preferredLabel preferredLabelValue startOrEnd date linkrole linkroleDefinition linkroleName">
-[rq-2602-Instant-Without-Matching-Duration] In ''{linkroleName}'', fact {fact} with value {value} and preferred label {preferredLabelValue}, was not shown because there are no facts in a duration {startOrEnd} at {date}. Change the preferred label role or add facts.
-</message>
-
-<message code="EFM.6.26.03"
-         level="warning"
-         module="EdgarRenderer/Cube.py" line="273"
-         args="linkrole linkroleDefinition linkroleName">
-[rq-2603-No-Matching-Durations] The presentation group ''{linkroleName}'' is a statement of changes in equity, but it has no duration-type facts matching the instant-type facts shown.  Add duration-type facts that represent the changes from instant to instant, or do not label the presentation group a statement of changes.
-</message>
-<message code="EFM.6.26.04.embeddingCmdInvalidMember"
-         level="error"
-         module="EdgarRenderer/Embedding.py" line="634"
-         args="linkrole linkroleDefinition linkroleName fact contextID members axis">
-[rq-2604-Embedding-Command-Invalid-Member] In ''{linkroleName}'', the embedded report created by the fact {fact} with the context {contextID}, the domain members {members} are not presentation descendants of {axis}.
-</message>
-
-<message code="EFM.6.26.04.embeddingCmdMalformedMember"
-         level="error"
-         module="EdgarRenderer/Filing.py" line="640"
-         args="linkrole fact contextID linkroleDefinition linkroleName tokenlist">
-[rq-2604-Embedding-Command-Malformed-Member] In ''{linkroleName}'', the embedded report created by the fact {fact} with the context {contextID}, the keyword(s) {tokenlist} is not '*', a valid member qname or list of valid member qnames.
-</message>
-
-<message code="EFM.6.26.04.embeddingCmdMalformedAxis"
-         level="error"
-         module="EdgarRenderer/Filing.py" line="576"
-         args="linkrole fact contextID linkroleDefinition linkroleName token position">
-[rq-2604-Embedding-Command-Malformed-Axis] In ''{linkroleName}'', the embedded report created by the fact {fact} with the context {contextID}, the token {token}, at position {position} in the list of tokens, is malformed. This token can only be 'period', 'unit', 'primary' or identify an Axis by its namespace prefix, underscore, and element name.
-</message>
-
-<message code="EFM.6.26.04.embeddingCmdMalformedDirectionToken"
-         level="error"
-         module="EdgarRenderer/Filing.py" line="533"
-         args="linkrole fact contextID linkroleDefinition linkroleName token position">
-[rq-2604-Embedding-Command-Malformed-Direction-Token] In ''{linkroleName}'', the embedded report created by the fact {fact} with the context {contextID}, the token {token}, at position {position} in the list of tokens, is malformed. Each iterator can only start with 'row' or 'column'.
-</message>
-
-<message code="EFM.6.26.04.embeddingCmdMalformedStyleToken"
-         level="error"
-         module="EdgarRenderer/Filing.py" line="609"
-         args="linkrole fact contextID linkroleDefinition linkroleName style">
-[rq-2604-Embedding-Command-Malformed-Style-Token] In ''{linkroleName}'', the embedded report created by the fact {fact}, with the context {contextID}, the style keyword {style} is not one of 'compact' or 'nodisplay'.
-</message>
-
-<message code="EFM.6.26.05.embeddingCmdMissingIterator"
-         level="error"
-         module="EdgarRenderer/Embedding.py" line="241"
-         args="linkrole linkroleDefinition linkroleName fact contextID iftransposed roworcol colorrow axes">
-[rq-2605-Embedding-Command-Missing-Iterator] In ''{linkroleName}'', the embedded report created by the fact {fact} with the context {contextID}, there are no valid {roworcol} commands{iftransposed}. Change one of the {axes} to a {colorrow} or add a {roworcol} command with an additional axis.
-</message>
-
-<message code="EFM.6.26.05.embeddingCmdMissingIteratorAfterTransposition"
-         level="error"
-         module="EdgarRenderer/Embedding.py" line="241"
-         args="linkrole linkroleDefinition linkroleName fact contextID iftransposed roworcol colorrow axes">
-[rq-2605-Embedding-Command-Missing-Iterator-After-Transposition] In ''{linkroleName}'', the embedded report created by the fact {fact} with the context {contextID}, there are no valid {roworcol} commands{iftransposed}. Change one of the {axes} to a {colorrow} or add a {roworcol} command with an additional axis.
-</message>
-
-<message code="EFM.6.26.06"
-         level="warning"
-         module="EdgarRenderer/Embedding.py" line="147"
-         args="linkrole linkroleDefinition linkroleName error axis embeddedCommand fact contextID">
-[rq-2606-Axis-Has-No-Order] In ''{linkroleName}'', the embedded report created by the fact {fact} with context {contextID}, the axis {axis} was not given an order in the presentation group {linkroleDefinition}. The axes are being sorted by their labels.
-</message>
-
-<message code="EFM.6.26.07"
-         level="warning"
-         module="EdgarRenderer/Report.py" line="1793"
-         args="linkrole linkroleDefinition linkroleName fact contextID">
-[rq-2607-Bar-Chart-Has-No-Facts] In ''{linkroleName}'', the embedded report created by the fact {fact} with context {contextID}, is a bar chart figure that has zero facts. If a bar chart figure is not wanted here, consider removing the text block fact; otherwise, determine why all its facts are being filtered out.
-</message>
-
-<message code="EFM.6.26.08"
-         level="error"
-         module="EdgarRenderer/Report.py" line="1194"
-         args="linkrole linkroleDefinition linkroleName fact contextID numYears">
-[rq-2608-Too-Many-Annual-Return-Facts] In ''{linkroleName}'', the embedded report created by the fact {fact} with context {contextID}, there are {numYears} Annual Return Facts, but there must not be more than 20.
-</message>
-
-<message code="EFM.6.26.09"
-         level="warning"
-         module="EdgarRenderer/Embedding.py" line="589"
-         args="linkrole linkroleDefinition linkroleName fact contextID">
-[rq-2609-Primary-Axis-On-Rows] In ''{linkroleName}'' the embedded report created by the fact {fact} with context {contextID} contains an iterator "column primary" even though the definition text of {linkroleDefinition} contains the "{{Elements}" qualifier. The primary axis will remain on the rows.
-</message>
-
 <!--  Templated messages 
 Example:
     <message code="dq-{efmSection}-{nameOfTag}-Blah-Blah">[dq-{efmSection}-{nameOfTag}-Blah-Blah] Submission type {subType} {severityVerb} blah blah blah in {context}. {refSources}</message>
 --> 
-<message code="dq-{efmSection}-{tag}-Missing">[dq-{efmSection}-{tag}-Missing] Submission type {subType} {severityVerb} have a non-empty value for {tag} in the {context}.{msgCoda} {refSources}</message>
-<message code="dq-{efmSection}-{tags}-Missing">[dq-{efmSection}-{tags}-Missing] Submission type {subType} {severityVerb} have a non-empty value for at least one of {tags} in the {context}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-Unexpected">[dq-{efmSection}-{tag}-Unexpected] Submission type {subType} {severityVerb} not have a value for {tag} in the {context}. {refSources}</message>
-<message code="dq-{efmSection}-{taxonomy}-Facts-Unexpected">[dq-{efmSection}-{taxonomy}-Facts-Unexpected]Submission type {subType} {severityVerb} not report {taxonomy} namespace facts. {refSources}</message>
-<message code="dq-{efmSection}-{taxonomy}-Version-Required">[dq-{efmSection}-{taxonomy}-Version-Required]Submission type {subType} {severityVerb} use {taxonomy} version {earliestTaxonomy} or later.</message>
-<message code="dq-{efmSection}-Taxonomy-Url-Required">[dq-{efmSection}-Taxonomy-Url-Required]Submission type {subType} document type {docType} {severityVerb} contain a taxonomy URL matching {taxonomyPattern} in its DTS.</message>
-<message code="dq-{efmSection}-Taxonomy-Url-Unexpected">[dq-{efmSection}-Taxonomy-Url-Unexpected]Submission type {subType} document type {docType} {severityVerb} contain a taxonomy URL matching {taxonomyPattern} in its DTS.{msgCoda} {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{value}">[dq-{efmSection}-{tag}-{value}] In submission type {subType}, {tag} value {severityVerb} have {value} in the {context}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{expectedValue}">[dq-{efmSection}-{tag}-{value}] In submission type {subType}, {tag} value, {value}, {severityVerb} have {expectedValue} in the {context}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-ExpectedValue">[dq-{efmSection}-{tag}-ExpectedValue]In submission type {subType}, {tag} value, {value}, {severityVerb} {qualifier}{expectedValue} in the {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-Value">[dq-{efmSection}-{tag}-Value] In submission type {subType}, {tag} value, {value}, {severityVerb} be {qualifier}{expectedValue} in the {context}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{otherTag}">[dq-{efmSection}-{tag}-{otherTag}] In submission type {subType}, {tag} value {severityVerb} have value {value} in the same context as {otherTag}, {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{otherTag}-Missing">[dq-{efmSection}-{tag}-{otherTag}-Missing] In submission type {subType}, {tag} requires {otherTag} in the same context, {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-Value-{otherTag}-Missing">[dq-{efmSection}-{tag}-Value-{otherTag}-Missing] In submission type {subType}, {tag} value, {value}, requires {otherTag} in the same context, {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{otherTags}-Missing">[dq-{efmSection}-{tag}-{otherTags}-Missing] In submission type {subType}, {tag} requires a non-empty value for at least one of {otherTags} in the same context, {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{otherTag}-Exclusive">[dq-{efmSection}-{tag}-{otherTag}-Exclusive] In submission type {subType}, either {tag} or {otherTag} {severityVerb} have a value, but not both, in context, {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tags}-Exclusive">[dq-{efmSection}-{tags}-Exclusive] In submission type {subType}, only one of {tags} {severityVerb} have a value, but not both, in context, {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tags}-Exclusive-Values">[dq-{efmSection}-{tags}-Exclusive-Values] In submission type {subType}, exactly one of {tags} {severityVerb} have the value {value} and the others {severityVerb} have the value {otherValue}.</message>
-<message code="dq-{efmSection}-{tags}-Exclusive-Value">[dq-{efmSection}-{tags}-Exclusive-Value] In submission type {subType}, only one of {tags} {severityVerb} have a value {value}.</message>
-<message code="dq-{efmSection}-{tags}-Exclusive-Presence">[dq-{efmSection}-{tags}-Exclusive-Presence] In submission type {subType}, one of {tags} {severityVerb} be present in context {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tags}-Inclusive">[dq-{efmSection}-{tags}-Inclusive] In submission type {subType}, at least one of {tags} {severityVerb} have a value. {refSources}</message>
-<message code="dq-{efmSection}-{tags}-Both">[dq-{efmSection}-{tags}-Both] In submission type {subType}, both or neither of {tags} {severityVerb} have a value. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{otherTag}-Dependency">[dq-{efmSection}-{tag}-{otherTag}-Dependency] In submission type {subType}, {tag} {severityVerb} have a value if and only if {otherTag} has a value in context {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{otherTag}-Value-Dependency">[dq-{efmSection}-{tag}-{otherTag}-Value-Dependency] In submission type {subType}, {tag} {severityVerb} have the value {value}  if and only if {otherTag} has the value {value} in context {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-Value-{otherTag}-Dependency">[dq-{efmSection}-{tag}-Value-{otherTag}-Dependency] In submission type {subType}, when {tag} has the value {value} {otherTag} {severityVerb} have a value in context {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{otherTags}-Dependency">[dq-{efmSection}-{tag}-{otherTags}-Dependency] In submission type {subType}, {tag} {severityVerb} have a value if one of {otherTags} has a value in context {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{otherTag}-Dependent-Value">[dq-{efmSection}-{tag}-{otherTag}-Dependent-Value] In submission type {subType}, {tag} {severityVerb} be provided if and only if {otherTag} has value {value} in context {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{otherTag}-Inclusive">[dq-{efmSection}-{tag}-{otherTag}-Inclusive] In submission type {subType}, either {tag} or {otherTag} should have a value, or both. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{otherTag}-Exclusive-Dependency">[dq-{efmSection}-{tag}-{otherTag}-Exclusive-Dependency] In submission type {subType}, {tag} {severityVerb} have a value if and only if {otherTag} has a value in context {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tags}-{otherTag}-Exclusive-Dependency">[dq-{efmSection}-{tags}-{otherTag}-Exclusive-Dependency] In submission type {subType}, one of {tags} {severityVerb} have a value if and only if {otherTag} has a value in context {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tags}-{otherTags}-Exclusive-Dependency">[dq-{efmSection}-{tags}-{otherTags}-Exclusive-Dependency] In submission type {subType}, one of {tags} {severityVerb} have a value if one of {otherTags} has a value in context {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tags}-Mutual-Dependency">[dq-{efmSection}-{tags}-Mutual-Dependency]In submission type {subType}, all of {tags} {severityVerb} have a value if any of them has a value in context {contextID}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{headerTag}-Dependency">[dq-{efmSection}-{tag}-{headerTag}-Dependency] In submission type {subType}, {tag} {severityVerb} have a value if and only if header element {headerTag} is provided. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-{headerTag}-Dependent-Value">[dq-{efmSection}-{tag}-{headerTag}-Dependent-Value] In submission type {subType}, when {tag} has a value {value}, header element {headerTag} {severityVerb} have a value {otherValue}. {refSources}</message>
-<message code="dq-{efmSection}-{tag}-Security-Axes">[dq-{efmSection}-{tag}-Security-Axes] In submission type {subType}, {tag} {severityVerb} have values without axes if a single non-ADR member, otherwise in separate contexts by axis member, but not both, in contexts {contextIDs}. {refSources}</message>
-<message code="dq-0514-Hidden-Cover-Page-Fact-Not-Referenced">[dq-0514-Hidden-Cover-Page-Fact-Not-Referenced] Submission type {subType} has {n} cover page fact(s) in ix:hidden that were not referenced by any -sec-ix-hidden style property: (namesOfTags). {refSources}</message>
-<message code="dq-0540-{tag}-Value">[dq-0540-{tag}-Value] In submission type {subType}, {tag} value {value}, is not equivalent to header element {headerTag} value, {valueOfHeaderTag}, in the {context}. {refSources}</message>
-<message code="dq-0540-CurrentFiscalYearEndDate-Registrant-Value">[dq-0540-CurrentFiscalYearEndDate-Registrant-Value] In submission type {subType}, {tag} value, {value}, {severityVerb} match the Entity Registrant Fiscal Year End Date {valueOfHeaderTag} on record within EDGAR. {refSources}</message>
-<message code="dq-0540-CurrentFiscalYearEndDate-Submission-Value">[dq-0540-CurrentFiscalYearEndDate-Submission-Value] In submission type {subType}, {tag} value, {value}, does not match the Submission Header Fiscal Year End Date {valueOfHeaderTag}. {refSources}</message>
-<message code="dq-0540-EntityExTransitionPeriod-EntityEmergingGrowthCompany-Dependency">[dq-0540-EntityExTransitionPeriod-EntityEmergingGrowthCompany-Dependency] In submission type {subType}, EntityExTransitionPeriod must have a value if EntityEmergingGrowthCompany has value &quot;true&quot; in context {contextID}, else it should not be provided. {refSources}</message>
-<message code="dq-0540-{headerTag}-Unexpected">[dq-0540-{headerTag}-Unexpected] Header element {headerTag} value {value} is not applicable for {subType} submission type. {refSources}</message>
-<message code="dq-sro-1yr-period">[dq-sro-1yr-period]In submission type {subType}, {tag} {severityVerb} have a one-year period ending on {otherTag} in context {contextID}. {refSources}</message>
-<message code="dq-sro-monthly-facts">[dq-sro-monthly-facts]In submission type {subType}, there {severityVerb} at least one fact per month of reporting year, missing months {missingMonths}. {refSources}</message>
 
 <!--  DQCRT templated messages -->
 <!-- template
 <message code="dqc-">[dqc-] ... The properties of this {name} fact are Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
 -->
-<message code="dqc-0001-Axis-With-Inappropriate-Members">[dqc-0001-Axis-With-Inappropriate-Members] The fact {name} with a value of {value} is dimensionally qualified with the {axis} and the unallowable member {member}. {issue} The properties of this {name} fact are Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0001-Axis-With-Inappropriate-Members-Unreported">[dqc-0001-Axis-With-Inappropriate-Members] Member defined for the axis {axis} was not reported with any fact: {member}. Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0001-Axis-With-Inappropriate-Members-Disallowed-Default">[dqc-0001-Axis-With-Inappropriate-Members] Default defined for the axis {axis}, {default}, should be {allowedDefault}. Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0004-Element-Values-Are-Equal">[dqc-0004-Element-Values-Are-Equal] {sumName} with a value of {sumValue} is not equal to the total of {itemNames} with a value of {itemValues}. These values should be equal. The properties of this {sumName} fact are Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0005-Context-Dates-After-Period-End-Date-17">[dqc-0005-Context-Dates-After-Period-End-Date] The date of {date} used for {name} with a value of {value} is earlier than the reporting period end date {endDate}.  The properties of this {name} fact are Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0005-Context-Dates-After-Period-End-Date-48">[dqc-0005-Context-Dates-After-Period-End-Date] The date of {date} used for {name} with a value of {value} and the {axis} is earlier than or the same as the reporting period end date {endDate}.  The properties of this {name} fact are Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0005-Context-Dates-After-Period-End-Date-49">[dqc-0005-Context-Dates-After-Period-End-Date] The date of {date} used for {name} with a value of {value} and the {axis} member {member} is earlier than or the same as the reporting period end date {endDate}.  The properties of this {name} fact are Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0006-Dei-And-Block-Tag-Date-Contexts">[dqc-0006-Dei-And-Block-Tag-Date-Contexts] The number of days, {durationDays}, in the date range reported for {name}, {startDate} to {endDate} is not consistent with the DocumentFiscalPeriodFocus value of {documentFiscalPeriodFocus}. The properties of this {name} fact are Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0008-Reversed-Calculation">[dqc-0008-Reversed-Calculation] The calculation in the extension taxonomy from {conceptFrom} to {conceptTo} in {linkroleDefinition} is the opposite of a calculation defined in the base US GAAP taxonomy. Check that the calculation is correct or that you have used the correct tag for the two elements identified in the calculation. It is possible that the calculation is correct in the case of a reconciliation calculation. Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0009-Element-A-Must-Be-Less-Than-Or-Equal-To-Element-B">[dqc-0009-Element-A-Must-Be-Less-Than-Or-Equal-To-Element-B] The value of {lesserName}, {lesserValue}, should be less than or equal to {greaterName}, {greaterValue}. The properties of this {lesserName} fact are:, Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0009-Element-A-Must-Be-Less-Than-Or-Equal-To-Element-B-Pension">[dqc-0009-Element-A-Must-Be-Less-Than-Or-Equal-To-Element-B] The value of {lesserName}, {lesserValue}, should be less than or equal to {greaterName}, {greaterValue}. {lesserName} is a subset of {greaterName}. The properties of this {lesserName} fact are: Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0009-Element-A-Must-Be-Less-Than-Or-Equal-To-Element-B-Future-Contributions">[dqc-0009-Element-A-Must-Be-Less-Than-Or-Equal-To-Element-B] The value of {lesserName}, {lesserValue}, should be less than or equal to {greaterName}, {greaterValue}. The value of the remaining contribution for the year should be less than or equal to the expected contributions for the entire year. The properties of this {lesserName} fact are: Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0009-Element-A-Must-Be-Less-Than-Or-Equal-To-Element-B-Benefit-Obligation">[dqc-0009-Element-A-Must-Be-Less-Than-Or-Equal-To-Element-B] The value of {lesserName}, {lesserValue}, should be less than or equal to {greaterName}, {greaterValue}. {lesserName} must be less than or equal to {greaterName}, as it does not include assumptions about future compensation levels. The properties of this {lesserName} fact are: Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0013-Negative-Values-With-Dependence">[dqc-0013-Negative-Values-With-Dependence] It is expected that {name} with a value of {value} will be reported with a value equal to or greater than zero if net income before tax is positive. In this case net income before tax is {incomeBeforeTax}. The value reported for the tax rate reconciliation item is less than zero. The preparer should consider if the value is input correctly for this assertion and, after considering the appropriateness of the input, if incorrect, input the amount as a positive (i.e., absolute) value and provide a negated label, if desired, for rendering purposes.  The properties of this {name} fact are: Context: {contextID}, Unit: {unitID}. {refSources}</message>
-<message code="dqc-0015-Negative-Values">[dqc-0015-Negative-Values] Fact {name} has a value of {value} which is less than zero. This element should not have a negative value. The preparer should consider if the value is input correctly for this assertion and, after considering the appropriateness of the input, if incorrect, input the amount as a positive (i.e., absolute) value and provide a negated label. The properties of this {name} fact are: Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0033-Document-Period-End-Date-Context">[dqc-0033-Document-Period-End-Date-Context] The ending date of {endDate} used for {name} must be the same as the Document Period End Date, {documentPeriodEndDate}. The properties of this {name} fact are Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0036-Document-Period-End-Date-Context-Fact-Value-Check">[dqc-0036-Document-Period-End-Date-Context-Fact-Value-Check] The ending date of {endDate} used for {name} must be the same as the Document Period End Date, {documentPeriodEndDate}. The properties of this {name} fact are Context: {contextID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0041-Axis-With-A-Default-Member-That-Differs-From-The-Base-Taxonomy">[dqc-0041-Axis-With-A-Default-Member-That-Differs-From-The-Base-Taxonomy] The dimension default defined for the axis in the base taxonomy should not be changed in a company extension taxonomy. The default for the {axisName} in the base taxonomy is {axisDefaultName}, but the default has been replaced with {extensionDefaultName}. Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0043-Incorrect-Calculation-Weights-In-Operating-Cash-Flows-credit">[dqc-0043-Incorrect-Calculation-Weights-In-Operating-Cash-Flows] The concept {bottomName} is included in the calculation of {topName}.{bottomName} is a credit balance type concept representing a natural cash outflow in the reconciliation of net income (loss) to {topName}. A credit balance type concept should always be assigned a negative one (-1) calculation weight as it is a deduction from net income (loss) to reconcile to {topName}.{bottomName} has been incorrectly provided a positive one (+1) calculation weight in the extension taxonomy. Correct the calculation weight to negative one (-1) and input the value as a positive amount if it is a deduction of a non-cash income or gain, an increase in an asset, or a decrease in a liability. If the value is an add-back of a non-cash expense or loss, decrease in an asset, or an increase in a liability and {bottomName} is the correct concept, input a negative value. Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0043-Incorrect-Calculation-Weights-In-Operating-Cash-Flows-debit">[dqc-0043-Incorrect-Calculation-Weights-In-Operating-Cash-Flows] The concept {bottomName} is included in the calculation of {topName}.{bottomName} is a debit balance type concept representing a natural cash inflow in the reconciliation of net income (loss) to {topName}. A debit balance type concept should always be assigned a positive one (+1) calculation weight as it is an addition to net income (loss) to reconcile to {topName}.{bottomName} has been incorrectly provided a negative one (-1) calculation weight in the extension taxonomy. Correct the calculation weight to positive one (+1) and input the value as a positive amount if it is an addition of a non-cash expense or loss, a decrease in an asset, or an increase in a liability. If the value is an increase in an asset or a decrease in a liability and {bottomName} is the correct concept, input a negative value. Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0043-Incorrect-Calculation-Weights-In-Operating-Cash-Flows-">[dqc0043-Incorrect-Calculation-Weights-In-Operating-Cash-Flows-] The concept {bottomName} is included in the calculation of {topName}.{bottomName} does not have a balance type attribute. If {bottomName}, by definition, represents a natural cash inflow (i.e., a non-cash add-back, decrease in an asset, or an increase in a liability) in the reconciliation of net income (loss) to {topName}, then the concept should be given a positive one (+1) calculation weight. If {bottomName}, by definition, represents a natural cash outflow (i.e., a non-cash reduction, an increase in an asset, or a decrease in a liability) in the reconciliation of net income (loss) to {topName}, then the concept should be given a negative one (-1) calculation weight. The significant portion of values input to the Instance are expected to be absolute; the values are debits or credits, not positive or negative. As there is no balance type attribute, the positive input would represent the value that is consistent with the substance of the concept, as defined. Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0044-Accrual-Items-Used-In-Investing-Or-Financing-Cash-Flow-Reconciliation">[dqc-0044-Accrual-Items-Used-In-Investing-Or-Financing-Cash-Flow-Reconciliation] The concept {name} with a value of {value} is an accrual-based item in the US GAAP taxonomy that is included in the sum of cash provided by (used in) investing activities in the cash flows of the extension taxonomy.  Accrual-based concepts do not belong and should not be included in the investing section of the cash flows statement of the extension taxonomy. The properties of this {name} fact are Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0047-Calculation-Descendants-with-No-Balance-Type">[dqc-0047-Calculation-Descendants-with-No-Balance-Type] In the company's extension taxonomy the concept {parentName} includes {childName} as a summation-child. The concept {childName}  should not appear as a child of {parentName} because it does not have a balance type. Increase (Decrease) items without balance attributes are used in a roll forward and should not be used in the cash flow statement as they represent the impact on the balance sheet item which is the opposite of the impact on cash. {refSources}</message>
-<message code="dqc-0048-Required-Calculation-Parent-Element-In-The-Cash-Flow-Statement">[dqc-0048-Required-Calculation-Parent-Element-In-The-Cash-Flow-Statement] The filing should include in the cash flow statement calculation linkbase(s) {linkRole} - {linkroleDefinition} one of the following elements as the root(first element) of the calculation tree to represent the aggregate change in cash for the period: CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect, CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect, NetCashProvidedByUsedInContinuingOperations (As long as the element NetCashProvidedByUsedInDiscontinuedOperations is also included the reconciliation between opening and closing cash). The calculation linkbase in the filing has the following root elements defined: {rootNames}. Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0048-Required-Calculation-Parent-Element-In-The-Cash-Flow-Statement-No-Roles">[dqc-0048-Required-Calculation-Parent-Element-In-The-Cash-Flow-Statement] The filing should include in the cash flow statement calculation linkbase(s) one of the following elements as the root(first element) of the calculation tree to represent the aggregate change in cash for the period: CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect, CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseExcludingExchangeRateEffect, NetCashProvidedByUsedInContinuingOperations (As long as the element NetCashProvidedByUsedInDiscontinuedOperations is also included the reconciliation between opening and closing cash). The calculation linkbase in the filing has no relationships for the role(s): {linkRoles}. Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0053-Excluded-Members-from-an-Axis">[dqc-0053-Excluded-Members-from-an-Axis] The member, {member} is used on the {axis} with element {factName} with a value of ${value}. The  {member} member should not be used with the {axis} in linkrole {linkRole}. {refSources}</message>
-<message code="dqc-0053-Excluded-Members-from-an-Axis-No-Facts">[dqc-0053-Excluded-Members-from-an-Axis-No-Facts] The member, {member} is used on the {axis}.  There are no facts associated with this member and axis. {member} members should not be used with the {axis} in linkrole {linkRole}. {refSources}</message>
-<message code="dqc-0057-Cash-Flow-Opening-and-Closing-Balances-7494">[dqc-0057-Cash-Flow-Opening-and-Closing-Balances-7494] One of the following elements {elementNames} should appear as the opening and closing balance in the cash flow statement using the group {role}. Instead the following balance items have been used in this statement {balanceElements}. Depending if ASU-2016-18 has been adopted at least one of the opening and closing balance items listed must be used in the cash flow statement. {refSources}</message>
-<message code="dqc-0057-Cash-Flow-Opening-and-Closing-Balances-9728">[dqc-0057-Cash-Flow-Opening-and-Closing-Balances-9728] One of the following elements {elementNames} should appear as the opening and closing balance in the cash flow statement using the group {role}. Instead the following balance items have been used in this statement {balanceElements}. Due to the implementaion of ASU-2016-18 at least one of the opening and closing balance items listed must be used in the cash flow statement. {refSources}</message>
-<message code="dqc-0060-Element-Dependence-For-Specific-Elements">[dqc-0060-Element-Dependence-For-Specific-Elements] The fact {name} has been reported with a value of {value}. However no value has been reported for dependent element(s): {dependentElements}. The properties of this {name} fact are Context: {contextID}, Unit: {unitID}, Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0071-Revenue/Cost-Single-Member">[dqc-0071-Revenue/Cost-Single-Member] The filing has reported a value for the element {name} with a value of {value} using the ProductOrServiceAxis in the role {role} on the table {table}. However, the only member used to disaggregate the total for {name} was the member {member}. If only one member is used on this axis then the filer should either: 1. Retag the filing using the element TypeOfRevenueExtensibleList/TypeOfCostGoodOrServiceExtensibleList with a value of {member} and the member {member} should be removed from the value as it represents the aggregate value of {name}; or, 2. Tag the aggregate value of {name} with a value of {value} without the product of service axis. This rule will not generate an error if the aggregate value of {name} is reported.  The properties of this {name} fact are: Context: {contextID}, Unit: {unitID}. {refSources}</message>
-<message code="dqc-0073-Plan-Asset-Categories-Permissible-Line-Items">[dqc-0073-Plan-Asset-Categories-Permissible-Line-Items] The concept {name} with a value of {value} is used with the DefinedBenefitPlanByPlanAssetCategoriesAxis. This element cannot be used with this axis.  The properties of this {name} fact are: Context: {contextID}, Unit: {unitID}.  The allowable list of elements that can be used are as follows: {allowableNames}. {refSources}</message>
-<message code="dqc-0079-Extension-Members">[dqc-0079-Extension-Members] {member} is an extension member on the axis {axis} that was reported in the extension taxonomy, but duplicates a concept, {replacement}, that exists in the SEC Non-GAAP taxonomies. Rule Element Id: {ruleElementId}. {refSources}</message>
-<message code="dqc-0084-Durational-Aggregation">[dqc-0084-Durational-Aggregation] Sum of the cumulative periods of {sumPeriods} for {name} does not match the reported total of {value}, a difference of {difference}. Period values are: {periods}. This rule takes into account possible rounding of values across periods and the decimals associated with each fact. This rule used a tolerance of {tolerance} which is calculated by taking the lowest decimal value used in the calculation of {minDecimals}. If there is a difference between the sum of the periods and the aggregate value reported the difference may be due to incorrect decimals associated with the individual fact values. The filer should check that the fact values do not have a decimal value that implies a higher level of accuracy than intended. In those rare cases where there are small immaterial differences that are less than 1% of the total and decimals are zero the rule can be overidden. This is performed by creating an extension element called ImmaterialDifferenceFlag. If this element has any value in any context in the instance then the immaterial difference will not result in an error. The rule excludes elements in the base taxonomy that cannot be aggregated such as an average, maximum or minimum value. The properties of this {name} fact are: Context: {contextID}, Unit: {unitID}. {refSources}</message>
 
 <!-- these need attention
 <message code="EFM.N/A"

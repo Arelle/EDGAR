@@ -40,6 +40,11 @@ Input file parameters may be in JSON (without newlines for pretty printing as be
    "rptSeriesClassInfo.classIds": ["C000000123", ...] # list of EDGAR classId values
    "newClass2.classIds": [] # //classId xpath result on submission headers
    "saveCoverFacts": test environment file into which to save JSON output
+    "messageCodes": ["EXG", "EFM"], # guides whose references form message codes, in priority order; default "EFM".
+                                    # "EXG" codes a message by its EDGAR XBRL Guide reference where it has one; "EFM"
+                                    # requests the legacy EDGAR Filer Manual codes.  Listing both also gives each message
+                                    # efmCode and exgCode arguments, for comparing runs coded differently.  A list in
+                                    # JSON, or one blank-separated string from formula or GUI parameters ("EXG EFM")
    # CEF forms
    "eligibleFundFlag": true/false, # JSON Boolean, string Yes/No, yes/no, Y/N, y/n or absent
    "pursuantGeneralInstructionFlag": true/false, # JSON Boolean, string Yes/No, yes/no, Y/N, y/n or absent
@@ -167,6 +172,10 @@ from .Consts import (feeTagEltsNotRelevelable, feeTagMessageCodesRelevelable, fe
                      exhibitTypesPrivateNotDisseminated, primaryAttachmentDocumentTypesPattern)
 from .Filing import validateFiling
 from .MessageNumericId import messageNumericId
+from .MessageText import installMessageTextFilter, namingEdgarCode
+from .MessageReferences import parseMessageCodes, messageConcepts, messageEdgarCode, directMsgSection, directCodeArgs, \
+                               retiredReference, exgMessageCode, exgNamedCode, edgarCodeName
+from .Util import loadEfmExgReferences
 from .XuleInterface import (menuTools as xuleMenuTools, validateMenuTools as xuleValidateMenuTools,
                             cntrlrCmdLineUtilityRun as xuleCntrlrCmdLineUtilityRun,
                             cmdOptions as xuleCmdOptions, init as xuleInit, close as xuleClose,
@@ -182,10 +191,22 @@ def dislosureSystemTypes(disclosureSystem, *args, **kwargs):
 def disclosureSystemConfigURL(disclosureSystem, *args, **kwargs):
     return os.path.join(os.path.dirname(__file__), "config.xml")
 
+def prepareLogging(cntlr):
+    # messages read as EDGAR shows them, from arelleMessagesText.xml (MessageText), and selected by code filters by their
+    # EFM codes (EfmCodeFilter); done at controller start and again before loads and validation, as a plugin may be
+    # loaded after the controller started and a disclosure system selected later sets a new code filter
+    installMessageTextFilter(cntlr)
+    if getattr(cntlr, "logger", None) is not None:
+        wrapMessageCodeFilter(cntlr.logger)
+
+def cntlrInit(cntlr, *args, **kwargs):
+    prepareLogging(cntlr)
+
 def validateXbrlStart(val, parameters=None, *args, **kwargs):
     val.validateEFMplugin = val.validateDisclosureSystem and getattr(val.disclosureSystem, "EFMplugin", False)
     if not (val.validateEFMplugin):
         return
+    prepareLogging(val.modelXbrl.modelManager.cntlr)
 
     val.params = {}
     parameterNames = {"CIK", "cik", "cikList", "cikNameList", "submissionType", "exhibitType", "attachmentDocumentType", # CIK or cik both allowed
@@ -196,7 +217,7 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
                       "rptIncludeAllSeriesFlag", "rptSeriesClassInfo.seriesIds", "newClass2.seriesIds",
                       "rptIncludeAllClassesFlag", "rptSeriesClassInfo.classIds", "newClass2.classIds",
                       "eligibleFundFlag", "pursuantGeneralInstructionFlag", "filerNewRegistrantFlag",
-                      "datetimeForTesting", "dqcRuleFilter", "saveCoverFacts",
+                      "datetimeForTesting", "dqcRuleFilter", "saveCoverFacts", "messageCodes",
                       "feeRate", "feeValuesFromFacts", "saveFeeFacts", "fiscalYearEnd", "intrstRate", "issrNm", "fileNumber", "closedEndedCompanyFlag"}
     boolParameterNames = {"voluntaryFilerFlag", "wellKnownSeasonedIssuerFlag", "shellCompanyFlag", "acceleratedFilerStatus",
                           "smallBusinessFlag", "emergingGrowthCompanyFlag", "exTransitionPeriodFlag", "rptIncludeAllSeriesFlag",
@@ -241,7 +262,7 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
                 if isinstance(v, str):
                     if paramName in boolParameterNames:
                         v = {"true":True, "false":False}.get(v, v)
-                    elif paramName in {"itemsList", "rptSeriesClassInfo.seriesIds", "newClass2.seriesIds", "rptSeriesClassInfo.classIds", "newClass2.classIds"}:
+                    elif paramName in {"itemsList", "rptSeriesClassInfo.seriesIds", "newClass2.seriesIds", "rptSeriesClassInfo.classIds", "newClass2.classIds", "messageCodes"}:
                         v = v.split()
                     elif paramName == "feeRate":
                         if isinstance(v, float):
@@ -304,6 +325,12 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
         val.params["cik"] = val.params["CIK"]
         del val.params["CIK"]
 
+    # for severityReleveler, which codes the messages of checks that log an EFM code directly (see directMessageCode),
+    # set before the checks of the parameters below log any
+    val.modelXbrl.efmMessageCodeGuides = parseMessageCodes(val.params.get("messageCodes"))
+    val.modelXbrl.efmExgReferences = loadEfmExgReferences(val.modelXbrl)
+    recodeLoadTimeErrors(val.modelXbrl)
+
     # attachmentType, if xBRL-XML, is suffixed ".INS", remove that
     if val.params.get("attachmentDocumentType", "").endswith(".INS"):
         val.params["attachmentDocumentType"] = val.params["attachmentDocumentType"][:-4]
@@ -349,6 +376,117 @@ def validateXbrlStart(val, parameters=None, *args, **kwargs):
 
     blockXuleValidateFinally(val) # block XULE Validate.Finally for RSS feed and testcases
 
+def loadTimeMessageCodeGuides(modelXbrl):
+    """The messageCodes guides for messages logged before validateXbrlStart sets them, while the instance loads (Arelle's
+    own file and DTS checks): from the entry point being loaded (EDGAR passes parameters there), else the formula
+    parameters (command line --parameters, as messageCodes or within ELOparams); ("EFM",) when neither has them.  A
+    testcase variation's parameters reach only validation; recodeLoadTimeErrors codes those messages' errors then."""
+    if not hasattr(modelXbrl, "efmLoadTimeMessageCodeGuides"):
+        value = None
+        entryPoint = getattr(getattr(modelXbrl.modelManager, "efmFiling", None), "loadingEntryPoint", None)
+        if isinstance(entryPoint, dict):
+            value = entryPoint.get("messageCodes")
+        if value is None:
+            for name, typedValue in (getattr(modelXbrl.modelManager.formulaOptions, "parameterValues", None) or {}).items():
+                localName = getattr(name, "localName", name)
+                paramValue = typedValue[1] if isinstance(typedValue, tuple) and len(typedValue) == 2 else typedValue
+                if localName == "messageCodes":
+                    value = paramValue
+                elif localName == "ELOparams" and value is None and isinstance(paramValue, str):
+                    try:
+                        value = json.loads(paramValue).get("messageCodes")
+                    except (ValueError, AttributeError):
+                        pass
+        modelXbrl.efmLoadTimeMessageCodeGuides = parseMessageCodes(value)
+    return modelXbrl.efmLoadTimeMessageCodeGuides
+
+def recodeLoadTimeErrors(modelXbrl):
+    """The codes recorded in modelXbrl.errors (which testcase results compare) for messages logged with their EFM codes
+    while the instance loaded, before the guides were known, as directMessageCode would have coded them.  Their log
+    entries keep the EFM code; such a message has no concept to tell checks apart, so a code's own row decides.  The
+    code of a check retired from EXG mode is removed when EXG leads.  A code that is a section only takes the name
+    severityReleveler kept for it when it was logged (exgNamedCode), in the order its messages were logged."""
+    guides = modelXbrl.efmMessageCodeGuides
+    if guides == getattr(modelXbrl, "efmLoadTimeMessageCodeGuides", parseMessageCodes(None)):
+        return
+    errors = modelXbrl.errors
+    codeNames = getattr(modelXbrl, "efmLoadTimeCodeNames", {})
+    recoded = []
+    for code in errors:
+        if isinstance(code, str) and code.startswith("EFM."):
+            msgSection = directMsgSection(modelXbrl.efmExgReferences, code)
+            if msgSection == retiredReference:
+                if guides[0] != "EFM":
+                    continue
+            elif msgSection:
+                names = codeNames.get(code)
+                name = (names.pop(0) if len(names) > 1 else names[0]) if names else None
+                code = directCodeArgs(code, msgSection, guides)[0]
+                if name:
+                    code = exgNamedCode(code, name=name)
+        recoded.append(code)
+    errors[:] = recoded
+
+def directMessageCode(modelXbrl, messageCode, args):
+    """The code of a message from a check that logs an EFM code directly (modelXbrl.error("EFM.6.05.38", ...)), by
+    the messageCodes parameter, with its efmSection and exgSection (and efmCode and exgCode) arguments added to args,
+    as sevMessage codes a table-driven message (MessageReferences).  Messages sevMessage has coded (arelleCode) and
+    codes with no EXG reference are left as they are.  None for a check retired from EXG mode when EXG leads, so that
+    its message is not logged."""
+    if not (isinstance(messageCode, str) and messageCode.startswith("EFM.")) or "arelleCode" in args or "exgSection" in args:
+        return messageCode
+    index = getattr(modelXbrl, "efmExgReferences", None)
+    if index is None: # a model whose validation did not start here, such as one loaded during rendering
+        index = modelXbrl.efmExgReferences = loadEfmExgReferences(modelXbrl)
+    concepts = messageConcepts(args, ())
+    if not concepts:
+        modelObjects = args.get("modelObject")
+        concepts = [str(f.qname) for f in (modelObjects if isinstance(modelObjects, (list, tuple, set)) else (modelObjects,))
+                    if isinstance(f, ModelFact) and f.qname is not None]
+    msgSection = directMsgSection(index, messageCode, concepts, args.get("edgarCode"))
+    if not msgSection:
+        return messageCode
+    guides = getattr(modelXbrl, "efmMessageCodeGuides", None) or loadTimeMessageCodeGuides(modelXbrl)
+    if msgSection == retiredReference:
+        return messageCode if guides[0] == "EFM" else None
+    code, codeArgs = directCodeArgs(messageCode, msgSection, guides)
+    for name, value in codeArgs.items():
+        if name != "efmSection" or name not in args: # a check's own efmSection argument may form its edgarCode
+            args[name] = value
+    if isinstance(args.get("edgarCode"), str):
+        args["edgarCode"] = messageEdgarCode(args["edgarCode"], code)
+    return code
+
+class EfmCodeFilter:
+    """A logger's message code filter (a disclosure system's logCodeFilter, --logCodeFilter) that selects a message
+    coded by another guide by its EFM code, the code the filter is written for, so that a message the filter hides in
+    EFM mode stays hidden in EXG mode.  Arelle applies the filter after severityReleveler gives the message its code;
+    severityReleveler tells it (expect) which EFM code the code it gave stands for."""
+    isEfmCodeFilter = True
+
+    def __init__(self, pattern):
+        self.pattern = pattern
+        self.expected = None
+
+    def expect(self, code, efmCode):
+        self.expected = (code, efmCode)
+
+    def match(self, code, *args, **kwargs):
+        expected, self.expected = self.expected, None
+        if expected is not None and code == expected[0]:
+            code = expected[1]
+        return self.pattern.match(code, *args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self.pattern, name)
+
+def wrapMessageCodeFilter(logger):
+    """Makes the logger's message code filter, if any, an EfmCodeFilter; Arelle sets a new one when a disclosure system
+    is selected, so this is done again before each load and validation."""
+    codeFilter = getattr(logger, "messageCodeFilter", None)
+    if codeFilter is not None and not getattr(codeFilter, "isEfmCodeFilter", False):
+        logger.messageCodeFilter = EfmCodeFilter(codeFilter)
+
 def severityReleveler(modelXbrl, level, messageCode, args, **kwargs):
     if getattr(modelXbrl.modelManager.disclosureSystem, "EFMplugin", False):
         if messageCode and feeTagMessageCodesRelevelable.match(messageCode) and level == "ERROR":
@@ -363,13 +501,41 @@ def severityReleveler(modelXbrl, level, messageCode, args, **kwargs):
             level = "WARNING"
             if args.get("severity") == "error":
                 args["severity"] = "warning"
+        # a check that logs an EFM code directly takes its EXG code and references as sevMessage gives table-driven ones
+        messageCode = directMessageCode(modelXbrl, messageCode, args)
+        if messageCode is None: # a check retired from EXG mode: Arelle does not log a message with no code
+            return level, None
+        # an EXG code, whichever check logs it, has two-digit levels and a PascalCase name (EXG.3.01.18.EntityFileNumberMissing),
+        # a section only taking the name of its edgarCode, as the log shows it (EXG.3.01.02.RequiredContext)
+        if isinstance(messageCode, str) and (messageCode.startswith("EXG.") or isinstance(args.get("exgCode"), str)):
+            edgarCode = namingEdgarCode(messageCode, args)
+            messageCode = exgNamedCode(messageCode, edgarCode, args)
+            if isinstance(args.get("exgCode"), str):
+                args["exgCode"] = exgNamedCode(args["exgCode"], edgarCode, args)
+        elif (isinstance(messageCode, str) and messageCode.startswith("EFM.")
+              and getattr(modelXbrl, "efmMessageCodeGuides", None) is None):
+            # logged while the instance loads, before the guides are known: the name recodeLoadTimeErrors gives its code
+            name = edgarCodeName(namingEdgarCode(messageCode, args), args)
+            if name:
+                if not hasattr(modelXbrl, "efmLoadTimeCodeNames"):
+                    modelXbrl.efmLoadTimeCodeNames = defaultdict(list)
+                modelXbrl.efmLoadTimeCodeNames[messageCode].append(name)
         # add message number
         messageCode, msgNum = messageNumericId(modelXbrl, level, messageCode, args)
+        # messageNumericId rewrites fee-tagging codes (EFM.ft.dbtVal4 -> EFM.FT.2.3.1.dbtVal4); an efmCode argument
+        # (messageCodes listing more than one guide) takes the same rewrite, so it equals the code an EFM-coded run logs
+        if isinstance(args.get("efmCode"), str) and args["efmCode"].startswith("EFM.ft."):
+            args["efmCode"] = messageNumericId(modelXbrl, level, args["efmCode"], args)[0]
         if msgNum:
             args["edgarMessageNumericId"] = msgNum
         if getattr(modelXbrl, "loadedFromFtJson", False) and level == "ERROR":
             # demote to warning for EFMS call
             level = "WARNING"
+        # a message coded by another guide is filtered by its EFM code, as the code filter is written
+        efmCode = args.get("efmCode")
+        codeFilter = getattr(getattr(modelXbrl, "logger", None), "messageCodeFilter", None)
+        if isinstance(efmCode, str) and efmCode != messageCode and getattr(codeFilter, "isEfmCodeFilter", False):
+            codeFilter.expect(messageCode, efmCode)
     return level, messageCode
 
 def isolateSeparateIXDSes(modelXbrl, primaryIxdsDocument, *args, **kwargs):
@@ -420,6 +586,7 @@ def validateXbrlDtsDocument(val, modelDocument, isFilingDocument, *args, **kwarg
 
 def filingStart(cntlr, options, filesource, entrypointFiles, sourceZipStream=None, responseZipStream=None, *args, **kwargs):
     modelManager = cntlr.modelManager
+    prepareLogging(cntlr)
     # cntlr.addToLog("TRACE EFM filing start val={} plugin={}".format(modelManager.validateDisclosureSystem, getattr(modelManager.disclosureSystem, "EFMplugin", False)))
     if modelManager.validateDisclosureSystem and (getattr(modelManager.disclosureSystem, "EFMplugin", False) or
                                                   getattr(modelManager.disclosureSystem, "ESEFplugin", False)):
@@ -491,7 +658,9 @@ def testcasesStart(cntlr, options, modelXbrl, *args, **kwargs):
 
 def xbrlLoad(modelManager, filesource, entrypoint=None, **kwargs):
     # starting to load an instance
+    prepareLogging(modelManager.cntlr)
     if hasattr(modelManager, "efmFiling"):
+        modelManager.efmFiling.loadingEntryPoint = entrypoint # its messageCodes code messages logged while loading
         if entrypoint:
             attachmentDocumentType = entrypoint.get("attachmentDocumentType")
             if feeTaggingAttachmentDocumentTypePattern.match(attachmentDocumentType or ""):
@@ -546,10 +715,7 @@ def filingValidate(cntlr, options, filesource, entrypointFiles, sourceZipStream=
 
         hasInline = False
         hasInstance = False
-        _attachmentDocumentTypeReports = defaultdict(list)
         for r in reports:
-            if hasattr(r, "attachmentDocumentType") and r.attachmentDocumentType and not supplementalAttachmentDocumentTypesPattern.match(r.attachmentDocumentType):
-                _attachmentDocumentTypeReports[r.attachmentDocumentType.partition(".")[0]].append(r)
             if r.isInline:
                 hasInline = True
             else:
@@ -558,18 +724,7 @@ def filingValidate(cntlr, options, filesource, entrypointFiles, sourceZipStream=
         # EDGAR will not accept an Inline XBRL document that includes a separate instance document in the submission process.
         if hasInline and hasInstance:
             efmFiling.error("EFM.5.02.05", "You can not attach an Instance XBRL document and an Inline XBRL document on the same Submission.")
-
-        if len(_attachmentDocumentTypeReports) > 1:
-            efmFiling.error("EFM.6.03.08",
-                            _("A filling contains multiple attachment document types %(attachmentDocumentType)s."),
-                            {"attachmentDocumentTypes": ", ".join(_attachmentDocumentTypeReports.keys())},
-                            [r.url for r in reports])
-        for _attachmentDocumentType, _exhibitReports in _attachmentDocumentTypeReports.items():
-            if _attachmentDocumentType not in ("EX-99",) and len(_attachmentDocumentTypeReports) > 1:
-                efmFiling.error("EFM.6.03.08.moreThanOneIns",
-                                _("A filing contains more than one instance for attachment document type %(attachmentDocumentType)s."),
-                                {"attachmentDocumentType": _attachmentDocumentType},
-                                [r.url for r in _attachmentDocumentTypeReports])
+        # EFM v68 § 6.3.8 (attachment document types and instances per submission) is Reserved: no longer checked
 
 def roleTypeName(modelXbrl, roleURI, *args, **kwargs):
     modelManager = modelXbrl.modelManager
@@ -597,7 +752,7 @@ def filingEnd(cntlr, options, filesource, entrypointFiles, sourceZipStream=None,
 
 def rssItemXbrlLoaded(modelXbrl, rssWatchOptions, rssItem, *args, **kwargs):
     # Validate of RSS feed item (simulates filing & cmd line load events
-    if not hasattr(rssItem.modelXbrl, "efmOptions"): # may have already been set by EdgarRenderer in gui startup
+    if not hasattr(rssItem.modelXbrl, "efmOptions") and rssWatchOptions: # may have already been set by EdgarRenderer in gui startup
         rssItem.modelXbrl.efmOptions = rssWatchOptions  # save options in rss's modelXbrl
     testcaseVariationXbrlLoaded(rssItem.modelXbrl, modelXbrl, None)
 
@@ -654,7 +809,7 @@ def testcaseVariationValidated(testcaseModelXbrl, instanceModelXbrl, errors=None
         if isinstance(errors, list):
             errors.extend(efmFiling.errors)
         # simulate filingEnd
-        filingEnd(modelManager.cntlr, efmFiling.options, modelManager.filesource, [])
+        filingEnd(modelManager.cntlr, efmFiling.options, efmFiling.filesource, [])
         # flush logfile (assumed to be buffered, empty the buffer for next filing)
         testcaseModelXbrl.modelManager.cntlr.logHandler.flush()
         xuleClose(modelManager.cntlr)
@@ -893,7 +1048,7 @@ class Report:
 __pluginInfo__ = {
     # Do not use _( ) in pluginInfo itself (it is applied later, after loading
     'name': 'Validate EFM',
-    'version': '1.26.3', # SEC EDGAR release 26.3
+    'version': '1.26.4', # SEC EDGAR release 26.4
     'description': '''EFM Validation.''',
     'license': 'Apache-2',
     'import': ('EDGAR/transform', 'xule'), # SEC inline can use SEC transformations
@@ -901,6 +1056,7 @@ __pluginInfo__ = {
     'copyright': copyrightLabel,
     'aliases': ('validate/EFM', ),
     # classes of mount points (required)
+    'Cntlr.Init': cntlrInit,
     'DisclosureSystem.Types': dislosureSystemTypes,
     'DisclosureSystem.ConfigURL': disclosureSystemConfigURL,
     'Validate.XBRL.Start': validateXbrlStart,

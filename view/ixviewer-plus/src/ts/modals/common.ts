@@ -10,6 +10,7 @@ import { FactMap } from "../facts/map";
 import { ConstantsFunctions } from "../constants/functions";
 import { ErrorsMinor } from "../errors/minor";
 import { actionKeyHandler } from "../helpers/utils";
+import { FactsDock } from "../facts/dock";
 
 export const ModalsCommon = {
 	currentDetailTab: 0,
@@ -34,7 +35,7 @@ export const ModalsCommon = {
 
 		// Open fact sidebar
 		const sidebar = document.getElementById('facts-menu')
-		if (sidebar && !sidebar?.classList.contains("show")) {
+		if (sidebar && !sidebar.classList.contains("show") && !FactsDock.isDocked()) {
 			bootstrap.Collapse.getOrCreateInstance(sidebar).show();
 		}
 

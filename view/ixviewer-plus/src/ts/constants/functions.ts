@@ -19,7 +19,9 @@ import { FactsGeneral } from "../facts/general";
 import { Pagination } from "../pagination/sideBarPagination";
 import { SideBarPaginationPrevNext } from "../pagination/sideBarPaginationPrevNext";
 import { UserFiltersState } from "../user-filters/state";
-import { incrementProgress, startProgress } from "../app/loading-progress";
+import { UserFiltersDropdown } from "../user-filters/dropdown";
+import { UserFiltersGeneral } from "../user-filters/general";
+import { incrementProgress, setAppReady, startProgress } from "../app/loading-progress";
 
 export const ConstantsFunctions = {
 
@@ -121,8 +123,19 @@ export const ConstantsFunctions = {
 	},
 
 	changeInstance: (instanceIndex: number, targetInstanceFile: string | null, onBack = false): Promise<boolean> => {
+		setAppReady(false);
 		return new Promise<boolean>((resolve) => {
 			Modals.close(new Event(''));
+			if (!Constants.getInstances[instanceIndex]?.current) {
+				UserFiltersDropdown.resetState();
+				UserFiltersGeneral.resetMoreFiltersOptions();
+				UserFiltersState.setUserSearch({});
+				(document.getElementById('global-search-form') as HTMLFormElement | null)?.reset();
+				ConstantsFunctions.emptyHTMLByID('suggestions');
+				FactMap.resetEnabledFacts();
+				FactMap.setHighlightedFacts([]);
+				UserFiltersDropdown.init();
+			}
 
 			Constants.getInstances.forEach((instanceFile) => {
 				instanceFile.current = instanceFile.instanceIndex === instanceIndex ? true : false;
@@ -150,12 +163,18 @@ export const ConstantsFunctions = {
 						console.error('Failed to Load Instance.')
 						resolve(false);
 					}
+					setAppReady();
 				});
 			} else {
 				// already loaded, just update the DOM and update FlexSearch
 				const activeInstance = Constants.getInstances.find(element => element.current);
 				const inlineFileSlug = activeInstance?.docs.find(element => element.current)?.slug;
-				if (inlineFileSlug == null || activeInstance == null) return;
+				if (inlineFileSlug == null || activeInstance == null) {
+					console.error('Failed to Re-Load Instance: no current doc found.');
+					resolve(false);
+					setAppReady();
+					return;
+				}
 
 				HelpersUrl.init(inlineFileSlug, onBack).then((success) => {
 					if (success) {
@@ -165,6 +184,7 @@ export const ConstantsFunctions = {
 						console.error('Failed to Re-Load Instance.')
 						resolve(false);
 					}
+					setAppReady();
 				})
 			}
 		})
@@ -224,6 +244,7 @@ export const ConstantsFunctions = {
 			.then(() => switchTabs())
 			.then(() => incrementProgress(true))
 			.then(() => HelpersUrl.handleHash())
+			.then(() => setAppReady())
 	},
 
 	runNestedAccordionTest: () => {

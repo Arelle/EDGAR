@@ -1,0 +1,161 @@
+//////////// Sections Sidebar ////////////
+
+.sidebar-container-left {
+  border-right-width: var(--bs-border-width);
+  border-right-style: var(--bs-border-style);
+  border-right-color: var(--bs-border-color);
+}
+
+#menuContents a:active {
+  background-color: #bbe6ff;
+}
+
+#sections-menu * {
+  font-size: .9rem;
+}
+
+#sections-menu .sections-header-label {
+  font-size: 1.2rem;
+}
+
+h5.sections-header-label {
+  margin: .5rem 0;
+}
+
+.sections-settings-btn {
+  padding: 4px 10px;
+  margin-left: 10px;
+}
+
+.sections-settings-btn.show {
+  padding: 4px 10px;
+  margin-left: 10px;
+  border-color: rgba(0, 0, 0, 0.176)
+}
+
+.sections-header {
+  padding-bottom: 0.5rem;
+}
+
+.sections-hr,
+#sections-menu>div.offcanvas-body>hr {
+  width: 89%;
+  margin: 3px auto 16px;
+  color: #ccc;
+}
+
+#sections-menu [selected-fact="true"] {
+  border: 3px solid #003768;
+}
+
+// Menu Categories (accordion groups)
+.menu-cat-header * {
+  border: none !important;
+}
+
+.menu-cat {
+  position: relative;
+}
+
+.menu-cat:not(:last-child)>.menu-cat-header:before {
+  content: "";
+  position: absolute;
+  left: 2.5%;
+  top: 36px;
+  height: 1px;
+  width: 95%;
+  border-bottom: 1px solid #d8dac8;
+}
+
+.menu-cat:last-child>.menu-cat-body:before {
+  content: "";
+  position: absolute;
+  left: 2.5%;
+  top: 36px;
+  height: 1px;
+  width: 95%;
+  border-bottom: 1px solid #d8dac8;
+}
+
+.menu-cat:hover {
+  background-color: #f6f9e8;
+}
+
+.menu-cat-name {
+  font-weight: bold;
+}
+
+.menu-cat,
+.menu-cat-header button {
+  width: 100%;
+  text-align: left;
+}
+
+.menu-cat-header>h6>button {
+  padding: 4px 12px;
+}
+
+.menu-cat-body {
+  padding: 4px 24px;
+  width: 100%;
+  text-align: left;
+}
+
+span.open-indicator {
+  color: #979797;
+  margin-right: 10px;
+}
+
+.menu-cat-header:hover span.open-indicator {
+  color: #777;
+}
+
+// Section instances (within a menu-cat)
+.section-active {
+  box-shadow: rgba(0, 0, 0, .3) 2px 2px 4px;
+  transition: all .5s;
+  border: 1px solid #2e88d9;
+  border-top: 1px solid #2e88d9 !important;
+}
+
+.section-not-active {
+  box-shadow: rgba(0, 0, 0, .3) 0px 0px 0px;
+  transition: all .5s;
+}
+
+.section-link {
+  margin-bottom: 10px;
+}
+
+div.section-link {
+  // not a link
+  cursor: default;
+  opacity: .7;
+}
+
+div.section-link:hover {
+  text-decoration: none;
+}
+
+.section-link:hover {
+  text-decoration: underline;
+}
+
+.section-instance-header .badge {
+  color: #427ab1;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+div#tagged-sections button.section-instance-header {
+  background-color: $blue-lighter-2;
+}
+
+// NOTE: button.fact-detail-header is shared with the Facts sidebar
+// (used on the fact-details accordion headers), grouped here since it
+// shares the same background-color rule as tagged-sections.
+div#tagged-sections .section-active button.section-instance-header,
+button.fact-detail-header {
+  background-color: $blue-lighter-2 !important;
+  font-weight: 700;
+}

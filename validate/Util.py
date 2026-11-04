@@ -11,6 +11,7 @@ from arelle import XbrlConst, UrlUtil
 from arelle.PythonUtil import attrdict, flattenSequence, pyObjectSize, OrderedSet
 from arelle.ValidateXbrlCalcs import inferredDecimals, floatINF
 from arelle.XmlValidateConst import VALID
+from .MessageReferences import referencesIndex
 from .Consts import standardNamespacesPattern, latestTaxonomyDocs, latestEntireUgt, attachmentDocumentTypeValidationRulesFiles, feeTaggingAttachmentDocumentTypePattern
 
 EMPTY_DICT = {}
@@ -320,6 +321,17 @@ def loadDeprecatedConceptDates(val, deprecatedConceptDates):
                 _file.close()
                 for localName, date in _deprecatedConceptDates.items():
                     deprecatedConceptDates[qname(ns, localName)] = date
+
+_efmExgReferencesCache = {}
+def loadEfmExgReferences(modelXbrl):
+    """EXG references for legacy checks with only an EFM reference (resources/efm-exg-references.json, generated; see
+    MessageReferences.inferredMsgSection), indexed and loaded once."""
+    path = resourcesFilePath(modelXbrl.modelManager, "efm-exg-references.json")
+    if path not in _efmExgReferencesCache:
+        _file = openFileStream(modelXbrl.modelManager.cntlr, path, 'rt', encoding='utf-8')
+        _efmExgReferencesCache[path] = referencesIndex(json.load(_file))
+        _file.close()
+    return _efmExgReferencesCache[path]
 
 def resourcesFilePath(modelManager, *paths):
     # resourcesDir can be in cache dir (production) or in validate/EFM/resources (for development)

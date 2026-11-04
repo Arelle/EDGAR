@@ -322,7 +322,7 @@ export const Facts = {
 			Pagination.findFactAndGoTo(id, showNotFoundError);
 
 			//
-			FactsMenu.updateFactMenuDisplay(event)
+			FactsMenu.updateFactMenuDisplay(event, element)
 		}
 	},
 

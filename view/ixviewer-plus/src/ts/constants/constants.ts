@@ -7,12 +7,13 @@ import { Reference } from "../interface/fact";
 import { FormInformation } from "../interface/form-information";
 import { InlineFileMeta, InstanceFile } from "../interface/instance-file";
 import { Section } from "../interface/meta";
+import type { UserSearch } from "../user-filters/state";
 
 //Not really used (see comment below)
 type MetaDocument = any;
 
 export const Constants = {
-	version: "26.3",
+	version: "26.4",
 	featureSet: "plus",
 	appStart: 0,
 	loadPhaseComplete: 0,
@@ -46,9 +47,9 @@ export const Constants = {
 	unused: 'test',
 	axesCount: 0,
 	membersCount: 0,
-	memberLimit: 750, // too many affects search index performance and eats a lot of mem
+	memberLimit: 20000, // remove?  too many affects search index performance and eats a lot of mem
 
-	getSearchCriteria: {} as { options: { indexOf: (x: any) => number }, regex: RegExp },
+	getSearchCriteria: {} as UserSearch,
 
 	isNcsr: false,
 	sumOfDocsSizes: 0,

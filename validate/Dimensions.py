@@ -33,16 +33,12 @@ def checkFilingDimensions(val, drsELRs):
                     elif hasHypercubeArcrole == XbrlConst.notAll:
                         if hasHcRel.isClosed:
                             val.modelXbrl.error(("EFM.6.16.06", "GFM.1.08.06"),
-                                _("The notAll relationship for table %(hypercube)s must have the closed attribute set to 'false' "
-                                  "so that it can achieve its intended purpose of excluding combinations of domain values, on "
-                                  "relationship from %(primaryItem)s, in role %(linkrole)s. Please recheck submission."),
+                                _("The notAll relationship for table %(hypercube)s must have the closed attribute set to 'false' so that it can achieve its intended purpose of excluding combinations of domain values, on relationship from %(primaryItem)s. Please recheck submission."),
                                 edgarCode="fs-1606-Not-All-Relationship-Is-Closed",
                                 modelObject=hasHcRel, hypercube=hc.qname, linkrole=ELR, primaryItem=sourceConcept.qname)
                         if hc in positiveHypercubes:
                             val.modelXbrl.error(("EFM.6.16.08", "GFM.1.08.08"),
-                                _("Element %(hypercube)s is a table that negates itself in %(linkroleDefinition)s for primary item "
-                                  "%(primaryItem)s.  Modify the 'all' and 'notAll' relationships that have the element as a target.  "
-                                  "Please recheck submission."),
+                                _("Element %(hypercube)s is a table that negates itself in %(linkroleDefinition)s for primary item %(primaryItem)s.  Modify the \"all\" and \"notAll\" relationships that have the element as a target.  Please recheck submission."),
                                 edgarCode="fs-1608-Table-Excludes-Itself",
                                 modelObject=hasHcRel, hypercube=hc.qname, linkrole=ELR, linkroleDefinition=val.modelXbrl.roleTypeDefinition(ELR), primaryItem=sourceConcept.qname)
                     dimELR = hasHcRel.targetRole
@@ -101,9 +97,7 @@ def checkFilingDimensions(val, drsELRs):
                             if cycleCausingConcept is not None:
                                 cycleCausingConcept.append(hcDimRel)
                                 val.modelXbrl.error(("EFM.6.16.04", "GFM.1.08.04"),
-                                    _("Element %(conceptFrom)s appears in overlapping sets of members in a Directed Relationship "
-                                      "Set in role %(linkroleDefinition)s, axis %(dimension)s, path %(path)s.  "
-                                      "Remove it as a target of one of its domain-member relationships. Please recheck submission."),
+                                    _("Element %(conceptFrom)s appears in overlapping sets of members in a Directed Relationship Set in role %(linkroleDefinition)s; remove it as a target of one of its domain-member relationships. Please recheck submission."),
                                     edgarCode="fs-1604-Domain-Is-Tangled",
                                     modelObject=[hc, dim] + [rel for rel in cycleCausingConcept if not isinstance(rel, bool)],
                                     linkrole=ELR, linkroleDefinition=val.modelXbrl.roleTypeDefinition(ELR),
@@ -112,9 +106,7 @@ def checkFilingDimensions(val, drsELRs):
                             fromConceptELRs.clear()
                 if hasHypercubeArcrole == XbrlConst.all and len(hasHcRels) > 1:
                     val.modelXbrl.error(("EFM.6.16.05", "GFM.1.08.05"),
-                        _("Element %(concept)s is a primary element of more than one Table in relationship group %(linkroleDefinition)s, "
-                          "to tables %(hypercubes)s. Please modify the 'all' relationships that have the element as a source so that "
-                          "it has only one primary axis."),
+                        _("Element %(concept)s is a primary element of more than one Table in relationship group %(linkroleDefinition)s, to tables %(hypercubes)s. Please modify the \"all\" relationships that have the element as a source so that it has only one primary axis."),
                         edgarCode="fs-1605-Primary-Element-Has-Redundant-Tables",
                         modelObject=[sourceConcept] + hasHcRels,
                         hypercubeCount=len(hasHcRels), linkrole=ELR, linkroleDefinition=val.modelXbrl.roleTypeDefinition(ELR),
@@ -132,9 +124,7 @@ def checkFilingDimensions(val, drsELRs):
                 cycleCausingConcept = undirectedFwdCycle(val, ELR, rels, ELR, drsRelsFrom, drsRelsTo, fromConceptELRs)
                 if cycleCausingConcept is not None:
                     val.modelXbrl.error(("EFM.6.16.04", "GFM.1.08.04"),
-                        _("Element %(conceptFrom)s appears in overlapping sets of members in a Directed Relationship Set in "
-                          "role %(linkroleDefinition)s, from %(conceptFrom)s, path %(path)s.  "
-                          "Remove it as a target of one of its domain-member relationships. Please recheck submission."),
+                        _("Element %(conceptFrom)s appears in overlapping sets of members in a Directed Relationship Set in role %(linkroleDefinition)s; remove it as a target of one of its domain-member relationships. Please recheck submission."),
                         edgarCode="fs-1604-Domain-Is-Tangled",
                         modelObject=[relFrom] + [rel for rel in cycleCausingConcept if not isinstance(rel, bool)],
                         linkrole=ELR, conceptFrom=relFrom.qname, path=cyclePath(relFrom, cycleCausingConcept),

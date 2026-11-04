@@ -43,7 +43,7 @@ function findMatchingMetaReport(fsReport, metaLinksReportsInput) {
     const fs = addDerivedFieldsToFs(fsReport);
 
     // 1) Strong match by exact role
-    let candidates = mlReports.filter(ml => equalsIgnoreCase(ml.role, fs.role) && ml.instanceHtm === fs.instance);
+    let candidates = mlReports.filter(ml => equalsIgnoreCase(ml.role, fs.role) && ml.instanceHtm.split(' ').includes(fs.instance));
     if (candidates.length === 1) return candidates[0];
 
     // 1b) If FS is a child role (Tables/Details), its ParentRole may match ml.role
@@ -267,7 +267,7 @@ export function enrichWithMetalinks(
     metaLinksReports,           // ← IX metalinks.json
     fsInputFiles,
 ) {
-    const enriched = [];
+    const enriched: Section[] = [];
 
     // Loop through mustard's reports in menuCats so IX matches mustard ordering EXACTLY
     for (const [catName, fsReports] of fsReportsData.menuCats.entries()) {
@@ -282,14 +282,21 @@ export function enrichWithMetalinks(
                 continue;
             }
 
-            const section = {
+            const section: Section = {
                 shortName: fsReport.ShortName,
                 menuCat: catName,               // ← FROM MUSTARD, NOT metalinks
                 position: fsReport.Position,    // ← FROM MUSTARD, NOT FilingSummary
-                instanceHtm: meta?.instanceHtm, // <-- IX-specific
-                meta,                           // optional: raw meta for debugging
-                instanceDocName: null,
-                normalizedCategory: fsReport.normalizedCategory
+                instanceHtm: meta?.instanceHtm || '', // <-- IX-specific
+                role: meta.role || fsReport.Role || '',
+                longName: meta.longName || fsReport.LongName || '',
+                groupType: meta.groupType || '',
+                subGroupType: meta.subGroupType || '',
+                order: meta.order ?? (meta as any).rNumber ?? fsReport.Position ?? 0,
+                isDefault: (meta.isDefault === 'true' || meta.isDefault === true) as any,
+                instanceIndex: (meta as any).instanceIndex ?? 0,
+                normalizedCategory: fsReport.normalizedCategory || '',
+                instanceDocName: null as any,
+                meta,
             };
 
             // Instance doc name → domId

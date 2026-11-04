@@ -1,14 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { transform } from '../dist/viewer.bundle.js';
+import { transform } from '../src/transform.js';
+import { parseFilingSummary } from '../../viewer-common-src/parser.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const testDir = path.dirname(fileURLToPath(import.meta.url));
 
 describe('Interactive Data Menu parity (EER-817)', () => {
   test('Fixture FilingSummary produces stable categories & order', async () => {
-    const xml = fs.readFileSync(path.join(__dirname, '../fixtures/FilingSummary_sample.xml'), 'utf-8');
-    const html = await transform(xml, 'TEST-ACCESSION');
+    const xml = fs.readFileSync(path.join(testDir, '../samples/FilingSummary_sample.xml'), 'utf-8');
+    const fsJson = await parseFilingSummary(xml, () => {});
+    const html = transform(fsJson, 'TEST-ACCESSION');
     expect(html).toMatchSnapshot();
   });
 });

@@ -876,7 +876,8 @@ var RFileViewer = (() => {
     log_debug = null,
     secws = false,
     // use SECWS DisplayDocument.do query
-    errors = []
+    errors = [],
+    noindex = false
   }) {
     if (!title) {
       title = "View Filing Data";
@@ -898,6 +899,8 @@ var RFileViewer = (() => {
     <title>${escapeHtml(title)}</title>
     <script type="text/javascript" src="${jQuery}"></script>
   `;
+    if (noindex)
+      head += `<meta name="robots" content="noindex" />`;
     const stylesheets = mode === "server" ? [
       ["/include/interactive2.css", "text/css", null],
       ["/edgar/search/global/css/bootstrap/bootstrap.min.css", "text/css", null]
@@ -1389,11 +1392,11 @@ var RFileViewer = (() => {
       </table>
     </div>
   `;
-    } else {
+    } else if (mode !== "server" || aliasPath) {
       table += `
       <div style="margin-top: 15px; margin: 15px 20px 10px 20px; color: red; text-align: center;">
         No rendered XBRL documents were found at
-        <a href="${aliasDir}">${aliasDir}</a> for this filing.
+        <a href="${escapeHtml(aliasDir)}">${escapeHtml(aliasDir)}</a> for this filing.
       </div>
     `;
     }
@@ -1546,7 +1549,7 @@ var RFileViewer = (() => {
             .inco { background-color: peachpuff; }
             .warn { background-color: lemonchiffon; }
 
-            table.report { width: auto; max-width: 100%; border-collapse: collapse; }`;
+            table.report { width: auto; max-width: 100%; border-collapse: separate; }`;
       if (mode === "transform")
         bootstrap += `
         h2 { font-family: sans-serif; }`;
@@ -1656,7 +1659,7 @@ var RFileViewer = (() => {
         safety.textContent = \`
           :host { display:block; width:auto; max-width:100%; }
           #rfv-shadow-host { display:block; width:auto; max-width:100%; overflow:visible; }
-          table.report { width:auto; max-width:100%; border-collapse: collapse; }
+          table.report { width:auto; max-width:100%; border-collapse: separate; }
           img { max-width:100%; height:auto; }
 
           /* Unbeatable forced ring (wins against report CSS with !important resets) */
@@ -1781,7 +1784,7 @@ var RFileViewer = (() => {
           safety.textContent = \`
             :host { display:block; width:auto; max-width:100%; }
             #rfv-shadow-host { display:block; width:auto; max-width:100%; overflow:visible; }
-            table.report { width:auto; max-width:100%; border-collapse: collapse; }
+            table.report { width:auto; max-width:100%; border-collapse: separate; }
             img { max-width:100%; height:auto; }
 
             /* Unbeatable forced ring (wins against report CSS with !important resets) */
@@ -2614,7 +2617,7 @@ var RFileViewer = (() => {
       }`;
     } else {
       bootstrap += `
-      var url_filing_dir = (('${aliasDir}') ? '${aliasDir}' : (location.pathname.replace(/\\/[^/]*$/, '/') || '/'))
+      var url_filing_dir = (window.SEC_ALIAS_DIR || (location.pathname.replace(/\\/[^/]*$/, '/') || '/'))
             .replace(/\\/$/,'');  // remove any trailing '/' for ix_viewer_url
       function ix_viewer_url(report_file) {
         // provide URL to initiate inline XBRL viewer for report_file

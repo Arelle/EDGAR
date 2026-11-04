@@ -10,7 +10,7 @@
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="https://www.sec.gov/favicon.ico" />
     <title>Inline Viewer</title>
-<link href="/ixviewer-plus/styles.e088c16bbe2479049726.min.css" rel="stylesheet"/></head>
+<link href="/ixviewer-plus/styles.a11da91194352b71fa23.min.css" rel="stylesheet"/></head>
 
 <body class="overflow-hidden ix-body">
     <noscript>
@@ -945,6 +945,20 @@
 
                 </div>
 
+                <!-- Docked Fact Details - content is moved here from #fact-details-panel-data VIA JS -->
+                <div id="fact-details-dock" class="fact-details-dock d-none" data-cy="fact-details-dock">
+                    <div class="dock-resizer" role="separator" aria-orientation="horizontal"></div>
+                    <div class="dock-header d-flex align-items-center flex-shrink-0">
+                        <div id="fact-details-dock-toolbar" class="flex-grow-1"></div>
+                        <div class="view-toggle">
+                            <button id="fact-details-undock-btn" class="view-btn" type="button"
+                                data-cy="fact-details-undock-btn"><i class="fas fa-right-from-bracket"
+                                    title="Undock - Return Fact Details to Facts Sidebar"></i></button>
+                        </div>
+                    </div>
+                    <div id="fact-details-dock-body" class="dock-body"></div>
+                </div>
+
 
                 <div id="fact-table-container" class="offcanvas offcanvas-bottom" data-bs-scroll="true"
                     data-bs-backdrop="false">
@@ -1037,7 +1051,7 @@
                                 <button id="fact-list-display-btn" class="tab active" data-tab="list"><i
                                         class="bi bi-list-ul"></i>List <span id="tab-count"
                                         class="tab-badge fact-total-count"></span></button>
-                                <button id="fact-detail-display-btn" class="tab" data-tab="list"><i
+                                <button id="fact-detail-display-btn" class="tab" data-tab="details"><i
                                         class="bi bi-info-circle"></i>Details</button>
                             </div>
                         <!-- Fact Details View -->
@@ -1050,14 +1064,20 @@
                                                 class="fas fa-copy" title="Show Copy-able Fact Text"></i></button>
                                     </div>
                                     <div class="view-toggle">
-                                        <button class="view-btn active" data-view="detail"><i
+                                        <button class="view-btn active" data-view="detail" data-cy="fact-details-detail-btn"><i
                                                 class="fas fa-eye" title="Show Full Detail View"></i></button>
-                                        <button class="view-btn" data-view="split"><i
+                                        <button class="view-btn" data-view="split" data-cy="fact-details-split-btn"><i
                                                 class="fas fa-columns" title="Show Split Detail-List View"></i></button>
+                                        <button id="fact-details-dock-btn" class="view-btn" type="button" data-view="dock"
+                                            data-cy="fact-details-dock-btn"><i class="fas fa-window-maximize fa-rotate-180"
+                                                title="Dock Fact Details below Inline Document"></i></button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="px-3">
+                            <div id="fact-details-docked-msg" class="m-4 text-center d-none">
+                                Fact details are displayed below inline document
+                            </div>
+                            <div class="px-3" data-dockable="true">
                                 <p id="fact-detail-label" class="text-center font-weight-bold mb-0"><span></span>
                                 </p>
 
@@ -1067,7 +1087,7 @@
                                         id="fact-copy-content-textarea" readonly="readonly"></textarea>
                                 </div>
                             </div>
-                            <div id="fact-details-panel" class="facts-scrollable px-2">
+                            <div id="fact-details-panel" class="facts-scrollable px-2" data-dockable="true">
                                 <!-- Attributes -->
                                 <div class="detail-item accordion">
                                     <div class="accordion-item">
@@ -1130,7 +1150,7 @@
                                 <div class="detail-item accordion">
                                     <div class="accordion-item">
                                         <div class="accordion-header">
-                                            <h5 class="mb-0 h5-override">
+                                            <h5 class="mb-0 h5-override" data-cy="fact-details-calculations-header">
                                                 <button class="fact-detail-header accordion-button btn"
                                                     data-bs-toggle="collapse" data-bs-target="#calculations-body">
                                                     <span>Calculations</span>
@@ -1425,6 +1445,6 @@
         </div>
         <div class="dialog-footer d-flex justify-content-around"></div>
     </div>
-<script defer="defer" src="/ixviewer-plus/ix-viewer.bundle.ca23d2efe47cd289dd6d.min.js"></script></body>
+<script defer="defer" src="/ixviewer-plus/ix-viewer.bundle.228a8c89025d57cb44d2.min.js"></script></body>
 
 </html>

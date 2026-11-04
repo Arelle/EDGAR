@@ -130,6 +130,7 @@ describe('Fact Attrs: Implicit Members', () => {
         // /Archives/edgar/data/wh-sections/out/sbsef03exq-20231231.htm
         // cy.loadByAccessionNum('sbsef03');
         cy.visit('/Archives/edgar/data/wh-sections/out/sbsef03exq-20231231.htm');
+        cy.waitForAppReady();
 
         // /*
         // XML FILE
@@ -188,6 +189,7 @@ describe('Fact Attrs: More/Less Expansion', () => {
     it('should expand fact text', () => {
         cy.loadByAccessionNum('000121390021056659');
         cy.get(selectors.docTab1).click();
+        cy.waitForAppReady();
         cy.get('#fact-identifier-572').click();
         cy.get(selectors.factDetailDisplayBtn).click()
         cy.get('[data-cy="Fact-value"]').invoke('height').should('be.lessThan', 50);

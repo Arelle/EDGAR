@@ -1,0 +1,90 @@
+.main-navbar {
+  z-index: 11; // at smaller screen widths nav dropdown is under inline doc
+}
+
+.navbar {
+  z-index: 9500;
+}
+
+.navbar-height {
+  height: 45px;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: #fff;
+}
+
+// nav font color during load
+.btn-outline-light.disabled {
+  color: #487fab;
+}
+
+.navbar-dark .navbar-nav .nav-link.disabled {
+  color: #487fab;
+}
+
+.nav-item {
+  cursor: pointer;
+}
+
+.nav-link.not-ready {
+  color: #cccccc !important;
+  cursor: not-allowed, auto !important;
+}
+
+.nav-pills .nav-link.active {
+  background-color: #003768;
+  color: #fff;
+  font-weight: var(--bs-nav-link-font-weight);
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+// nav dropdown/filter buttons
+#menu-dropdown-link,
+#sections-dropdown-link,
+#nav-filter-data,
+#nav-filter-tags,
+#nav-filter-more,
+a#facts-menu-button {
+  border-radius: 3px;
+}
+
+#menu-dropdown-link:hover,
+#sections-dropdown-link:hover,
+#nav-filter-data:hover,
+#nav-filter-tags:hover,
+#nav-filter-more:hover,
+button.nav-search-btn:hover,
+a#facts-menu-button:hover {
+  color: white !important;
+  background-color: $blue-lighter-1 !important;
+}
+
+#menu-dropdown-link:active,
+#sections-dropdown-link:active,
+#nav-filter-data:active,
+#nav-filter-tags:active,
+#nav-filter-more:active,
+button.nav-search-btn:active {
+  color: white !important;
+  background-color: $blue-lighter-2 !important;
+}
+
+#menu-dropdown-link:focus-visible,
+#sections-dropdown-link:focus-visible,
+button.nav-search-btn:focus-visible,
+#nav-filter-data:focus-visible,
+#nav-filter-tags:focus-visible,
+#nav-filter-more:focus-visible,
+#current-filters-reset-all:focus-visible,
+a#facts-menu-button:focus-visible {
+  box-shadow: inset 0 0 0 2px rgb(89 156 255 / 50%);
+  outline: none;
+}
+
+button.nav-search-btn:focus-visible {
+  box-shadow: 0 0 2px 2px rgb(151 203 255 / 50%);
+  color: rgb(248, 249, 250);
+  background-color: rgb(0, 55, 104);
+}

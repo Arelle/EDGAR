@@ -1,6 +1,4 @@
-
-
-export function attachSidebarRezier(sidebar, { min = 340, maxRatio = .90, growRight = true } = {}) {
+export function attachSidebarResizer(sidebar, { min = 340, maxRatio = .90, growRight = true } = {}) {
     if (!sidebar) return;
 
     const handle = sidebar.parentElement.querySelector(".sidebar-resizer")
@@ -51,11 +49,12 @@ export function attachSidebarRezier(sidebar, { min = 340, maxRatio = .90, growRi
     observer.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
 }
 
+export function attachDockResizer(dock: HTMLElement | null, { min = 120, maxRatio = .85 } = {}) {
+    if (!dock) return;
 
-export function attachDockRezier({ min = 340, maxRatio = .50 } = {}) {
-    const dock = document.getElementById("dock");
-    const handle = dock && dock.querySelector(".dock-resizer")
-    if (!dock || !handle) return;
+    const handle = dock.querySelector(".dock-resizer") as HTMLElement | null;
+    if (!handle) return;
+
     let dragging = false, startY = 0, startH = 0;
 
     handle.addEventListener("mousedown", (event: MouseEvent) => {
@@ -69,11 +68,12 @@ export function attachDockRezier({ min = 340, maxRatio = .50 } = {}) {
         event.preventDefault()
     });
 
-
     document.addEventListener("mousemove", (event: MouseEvent) => {
         if (!dragging) return;
-        const h = startH + (startY - event.clientY)
-        dock.style.height = `${Math.max(min, Math.min(window.innerWidth * maxRatio, h))}px`
+        const h = startH + (startY - event.clientY);
+        const maxH = (dock.parentElement?.getBoundingClientRect().height || window.innerHeight) * maxRatio;
+
+        dock.style.height = `${Math.max(min, Math.min(maxH, h))}px`;
     });
 
     document.addEventListener("mouseup", () => {
@@ -83,5 +83,4 @@ export function attachDockRezier({ min = 340, maxRatio = .50 } = {}) {
         document.body.style.cursor = "";
         document.body.style.userSelect = "";
     });
-
 }

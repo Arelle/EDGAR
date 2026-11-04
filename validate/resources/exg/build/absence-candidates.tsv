@@ -1,0 +1,133 @@
+efm	validation	axis	concept	tier	exgSection	candidates	legacyAxes
+6.5.20	(unexpected)		dei:DocumentType	absence	3.1.5	3.1.5#7 c=r	
+6.5.20	(unexpected)		dei:AmendmentFlag	absence	3.1.6	3.1.6#2 c=r	
+6.5.20	(unexpected)		dei:AmendmentDescription	home	3.1.6		
+6.5.20	(unexpected)		dei:DocumentPeriodEndDate	absence	3.1.7	3.1.7#7 c=r	
+6.5.20	(unexpected)		dei:DocumentFiscalYearFocus	absence	3.1.8	3.1.8#3 c=r	
+6.5.20	(unexpected)		dei:DocumentFiscalPeriodFocus	absence	3.1.8	3.1.8#5 c=r	
+6.5.21	(unexpected)		dei:EntityRegistrantName	home	3.1.4		
+6.5.21	(unexpected)		dei:EntityCentralIndexKey	home	3.1.3		
+6.5.21	(unexpected)		dei:CurrentFiscalYearEndDate	absence	3.1.12	3.1.12#4 c=r	
+6.5.40	(unexpected)		dei:EntitySmallBusiness	absence	3.1.11	3.1.11#5 c=r	
+6.5.40	(unexpected)		dei:EntityShellCompany	absence	3.1.10	3.1.10#12 c=r	
+6.5.21	(unexpected)		dei:EntityVoluntaryFilers	absence	3.1.10	3.1.10#4 c=r	
+6.5.21	(unexpected)		dei:EntityWellKnownSeasonedIssuer	absence	3.1.10	3.1.10#8 c=r	
+6.5.21	(unexpected)		dei:EntityShellCompany	absence	3.1.10	3.1.10#12 c=r	
+6.5.21	(unexpected)		dei:EntityFilerCategory	absence	3.1.13	3.1.13#3 c=r	
+6.5.40	(unexpected)		dei:EntityEmergingGrowthCompany	absence	3.1.11	3.1.11#9 c=r	
+6.5.40	(unexpected)		dei:EntityExTransitionPeriod	absence	3.1.11	3.1.11#13 c=r	
+6.5.21	(unexpected)		dei:EntityInteractiveDataCurrent	absence	3.1.9	3.1.9#6 c=r	
+6.5.21	(unexpected)		dei:EntityCurrentReportingStatus	absence	3.1.9	3.1.9#3 c=r	
+6.5.21	(unexpected)		dei:EntityPublicFloat	absence	3.1.15	3.1.15#3 c=se	
+6.5.26	(unexpected)		dei:EntityCommonStockSharesOutstanding	home	3.2.3		c-or-required-context
+6.5.40	(unexpected)		dei:EntityInvCompanyType	absence	3.1.17	3.1.17#2 c=r	
+6.5.46	(unexpected)		dei:Security12bTitle	ruling	3.2.4.1		c-or-required-context
+6.5.46	(unexpected)		dei:Security12gTitle	ruling	3.2.4.1		c-or-required-context
+6.5.46	(unexpected)		dei:SecurityExchangeName	ruling	3.2.4.3		c-or-required-context
+6.5.46	(unexpected)		dei:TradingSymbol	absence	3.2.4.4	3.2.4.4#3 c=r	c-or-required-context
+6.5.46	(unexpected)		dei:NoTradingSymbolFlag	absence	3.2.4.4	3.2.4.4#2 c=r	c-or-required-context
+6.5.46	(unexpected)		dei:SecurityReportingObligation	absence	3.2.4.5	3.2.4.5#2 c=r	c-or-required-context
+6.5.47	(unexpected)		dei:EntityFileNumber	absence	3.1.18	3.1.18#2 c=r	
+6.5.47	(unexpected)		dei:EntityIncorporationStateCountryCode	absence	3.1.19	3.1.19#3 c=r	
+6.5.48	(unexpected)		dei:EntityAddressAddressLine1	absence	3.1.22.1	3.1.22.1#3 c=r	
+6.5.48	(unexpected)		dei:EntityAddressCityOrTown	absence	3.1.22.1	3.1.22.1#6 c=r	
+6.5.48	(unexpected)		dei:EntityAddressPostalZipCode	absence	3.1.22.1	3.1.22.1#9 c=r	
+6.5.48	(unexpected)		dei:EntityAddressAddressLine2	absence	3.1.22.2	3.1.22.2#3 c=r	
+6.5.48	(unexpected)		dei:EntityAddressAddressLine3	absence	3.1.22.2	3.1.22.2#6 c=r	
+6.5.48	(unexpected)		dei:EntityAddressStateOrProvince	absence	3.1.22.3	3.1.22.3#5 c=r	
+6.5.48	(unexpected)		dei:EntityAddressCountry	absence	3.1.22.3	3.1.22.3#6 c=r	
+6.5.47	(unexpected)		dei:EntityTaxIdentificationNumber	absence	3.1.20	3.1.20#3 c=r	
+6.5.47	(unexpected)		dei:EntityPrimarySicNumber	absence	3.1.21	3.1.21#2 c=r	
+6.5.47	(unexpected)		dei:EntityAddressCountry	absence	3.1.22.3	3.1.22.3#6 c=r	
+6.5.48	(unexpected)		dei:CityAreaCode	absence	3.1.22.4	3.1.22.4#4 c=r	
+6.5.48	(unexpected)		dei:LocalPhoneNumber	absence	3.1.22.4	3.1.22.4#7 c=r	
+6.5.49	(unexpected)		dei:AnnualInformationForm	absence	3.1.23.3	3.1.23.3#3 c=r	
+6.5.49	(unexpected)		dei:AuditedAnnualFinancialStatements	absence	3.1.23.3	3.1.23.3#6 c=r	
+6.5.49	(unexpected)		dei:DocumentAnnualReport	absence	3.1.23.1	3.1.23.1#13 c=r	
+6.5.49	(unexpected)		dei:DocumentFinStmtErrorCorrectionFlag	absence	3.1.23.2	3.1.23.2#3 c=r	
+6.5.49	(unexpected)		dei:DocumentFinStmtRestatementRecoveryAnalysisFlag	absence	3.1.23.2	3.1.23.2#7 c=r	
+6.5.49	(unexpected)		dei:DocumentTransitionReport	absence	3.1.23.1	3.1.23.1#14 c=r	
+6.5.49	(unexpected)		dei:DocumentShellCompanyReport	home	3.1.23.1		
+6.5.49	(unexpected)		dei:DocumentQuarterlyReport	absence	3.1.23.1	3.1.23.1#22 c=r	
+6.5.49	(unexpected)		dei:DocumentPeriodStartDate	absence	3.1.23.4	3.1.23.4#4 c=r	
+6.5.49	(unexpected)		dei:DocumentShellCompanyEventDate	absence	3.1.23.1	3.1.23.1#18 c=r	
+6.5.49	(unexpected)		dei:DocumentRegistrationStatement	absence	3.1.23.3	3.1.23.3#17 c=r	
+6.5.55	(unexpected)		dei:DocumentRegistrationStatement	absence	3.1.23.3	3.1.23.3#17 c=r	
+6.5.49	(unexpected)		dei:EntityBankruptcyProceedingsReportingCurrent	absence	3.1.23.5	3.1.23.5#2 c=r	
+6.5.49	(unexpected)		dei:DocumentsIncorporatedByReferenceTextBlock	absence	3.1.23.6	3.1.23.6#2 c=r	
+6.5.50	(unexpected)		dei:DocumentAccountingStandard	absence	3.1.23.3	3.1.23.3#9 c=r	
+6.5.50	(unexpected)		dei:OtherReportingStandardItemNumber	absence	3.1.23.3	3.1.23.3#13 c=r	
+6.5.51	(unexpected)		dei:ContactPersonnelName	absence	3.2.1.1	3.2.1.1#3 c=bc	a
+6.5.51	(unexpected)		dei:EntityAddressAddressLine1	absence	3.2.1.2	3.2.1.2#3 c=bc	a
+6.5.51	(unexpected)		dei:EntityAddressCityOrTown	absence	3.2.1.2	3.2.1.2#6 c=bc	a
+6.5.51	(unexpected)		dei:EntityAddressPostalZipCode	absence	3.2.1.2	3.2.1.2#9 c=bc	a
+6.5.51	(unexpected)		dei:EntityAddressAddressLine2	absence	3.1.22.2	3.1.22.2#3 c=r	a
+6.5.51	(unexpected)		dei:EntityAddressAddressLine3	absence	3.1.22.2	3.1.22.2#6 c=r	a
+6.5.51	(unexpected)		dei:EntityAddressStateOrProvince	absence	3.2.1.3	3.2.1.3#5 c=bc	a
+6.5.51	(unexpected)		dei:EntityAddressCountry	absence	3.2.1.3	3.2.1.3#7 c=bc	a
+6.5.51	(unexpected)		dei:LocalPhoneNumber	absence	3.2.1.4	3.2.1.4#6 c=bc	a
+6.5.51	(unexpected)		dei:ContactPersonnelFaxNumber	ruling	3.2.1.1		a
+6.5.51	(unexpected)		dei:ContactPersonnelEmailAddress	absence	3.2.1.1	3.2.1.1#11 c=bc	a
+6.5.51	(unexpected)		dei:CityAreaCode	absence	3.2.1.4	3.2.1.4#3 c=bc	a
+6.5.52	(unexpected)		dei:WrittenCommunications	absence	3.1.23.7	3.1.23.7#3 c=r	
+6.5.52	(unexpected)		dei:SolicitingMaterial	absence	3.1.23.7	3.1.23.7#6 c=r	
+6.5.52	(unexpected)		dei:PreCommencementTenderOffer	absence	3.1.23.7	3.1.23.7#9 c=r	
+6.5.52	(unexpected)		dei:PreCommencementIssuerTenderOffer	absence	3.1.23.7	3.1.23.7#12 c=r	
+6.5.52	(unexpected)		dei:EntityInformationFormerLegalOrRegisteredName	absence	3.1.23.7	3.1.23.7#14 c=r	
+6.5.53	(unexpected)		dei:EntityAddressAddressLine1	absence	3.2.2.1	3.2.2.1#2 c=fa	f
+6.5.53	(unexpected)		dei:EntityAddressAddressLine2	absence	3.2.2.1	3.2.2.1#5 c=fa	f
+6.5.53	(unexpected)		dei:EntityAddressCityOrTown	absence	3.2.2.1	3.2.2.1#11 c=fa	f
+6.5.53	(unexpected)		dei:EntityAddressPostalZipCode	absence	3.2.2.1	3.2.2.1#13 c=fa	f
+6.5.53	(unexpected)		dei:EntityAddressAddressLine3	absence	3.2.2.1	3.2.2.1#8 c=fa	f
+6.5.53	(unexpected)		dei:EntityAddressStateOrProvince	absence	3.2.2.2	3.2.2.2#5 c=fa	f
+6.5.53	(unexpected)		dei:EntityAddressCountry	absence	3.2.2.2	3.2.2.2#7 c=fa	f
+6.5.21	(unexpected)		dei:IcfrAuditorAttestationFlag	absence	3.1.14	3.1.14#3 c=a	
+6.5.54	(unexpected)		dei:AuditorName	absence	3.1.16	3.1.16#3 c=r | 3.1.16#3 c=r | 3.1.16#3 c=r	 auditor-axes non-auditor-axis
+6.5.54	(unexpected)		dei:AuditorLocation	absence	3.1.16	3.1.16#6 c=r | 3.1.16#6 c=r | 3.1.16#6 c=r	 auditor-axes non-auditor-axis
+6.5.54	(unexpected)		dei:AuditorFirmId	absence	3.1.16	3.1.16#9 c=r | 3.1.16#9 c=r | 3.1.16#9 c=r	 auditor-axes non-auditor-axis
+6.5.55	(unexpected)		dei:EntityFileNumber	absence	3.1.18	3.1.18#2 c=r	
+6.5.55	(unexpected)		dei:InvestmentCompanyActFileNumber	home	3.1.24.1		
+6.5.55	(unexpected)		cef:BdcFileNumber	home	3.1.24.1		
+6.5.55	(unexpected)		dei:InvestmentCompanyActRegistration	ruling	3.1.24.1		
+6.5.55	(unexpected)		dei:PreEffectiveAmendment	home	3.1.24.2		
+6.5.55	(unexpected)		dei:PostEffectiveAmendment	home	3.1.24.2		
+6.5.55	(unexpected)		dei:PreEffectiveAmendmentNumber	home	3.1.24.2		
+6.5.55	(unexpected)		dei:PostEffectiveAmendmentNumber	home	3.1.24.2		
+6.5.55	(unexpected)		dei:DividendOrInterestReinvestmentPlanOnly	home	3.1.24.4		
+6.5.55	(unexpected)		dei:DelayedOrContinuousOffering	home	3.1.24.4		
+6.5.55	(unexpected)		cef:PrimaryShelfFlag	home	3.1.24.4		
+6.5.55	(unexpected)		dei:EffectiveUponFiling462e	home	3.1.24.4		
+6.5.55	(unexpected)		dei:AdditionalSecuritiesEffective413b	home	3.1.24.4		
+6.5.55	(unexpected)		dei:EffectiveWhenDeclaredSection8c	home	3.1.24.5		
+6.5.55	(unexpected)		dei:EffectiveUponFiling486b	home	3.1.24.5		
+6.5.55	(unexpected)		dei:EffectiveAfter60Days486a	home	3.1.24.5		
+6.5.55	(unexpected)		dei:NewEffectiveDateForPreviousFiling	home	3.1.24.6		
+6.5.55	(unexpected)		dei:AdditionalSecurities462b	home	3.1.24.6		
+6.5.55	(unexpected)		dei:AdditionalSecurities462bFileNumber	home	3.1.24.6		
+6.5.55	(unexpected)		cef:RegisteredClosedEndFundFlag	home	3.1.24.7		
+6.5.55	(unexpected)		cef:BusinessDevelopmentCompanyFlag	home	3.1.24.7		
+6.5.55	(unexpected)		cef:IntervalFundFlag	home	3.1.24.7		
+6.5.55	(unexpected)		cef:PrimaryShelfQualifiedFlag	home	3.1.24.7		
+6.5.55	(unexpected)		cef:NewCefOrBdcRegistrantFlag	home	3.1.24.7		
+6.5.55	(unexpected)		dei:ApproximateDateOfCommencementOfProposedSaleToThePublic	home	3.1.24.3		
+6.5.55	(unexpected)		dei:InvestmentCompanyRegistrationAmendment	home	3.1.24.2		
+6.5.55	(unexpected)		dei:InvestmentCompanyRegistrationAmendmentNumber	home	3.1.24.2		
+6.5.55	(unexpected)		dei:EffectiveOnDate486b	home	3.1.24.5		
+6.5.55	(unexpected)		dei:EffectiveOnDate486a	home	3.1.24.5		
+6.5.55	(unexpected)		dei:NoSubstantiveChanges462cFileNumber	home	3.1.24.6		
+6.5.55	(unexpected)		dei:ExhibitsOnly462dFileNumber	ruling	3.1.24.6		
+6.5.57	(unexpected)		oef:ShareholderReportAnnualOrSemiAnnual	absence	3.2.6	3.2.6#3 c=r	 oef:class
+6.5.57	(unexpected)		oef:FundName	absence	3.2.6	3.2.6#8 c=cc	oef:class
+6.5.57	(unexpected)		oef:ClassName	absence	3.2.6	3.2.6#11 c=cc	oef:class
+6.5.57	(unexpected)		dei:NoTradingSymbolFlag	absence	3.2.6		oef:class
+6.5.57	(unexpected)		dei:TradingSymbol	absence	3.2.6		oef:class
+6.5.57	(unexpected)		dei:SecurityExchangeName	ruling	3.2.6		oef:class
+6.5.57	(unexpected)		dei:EntityCentralIndexKey	home	3.1.3		
+6.5.58	(unexpected)		dei:EntityReportingCurrencyISOCode	absence	3.3.2	3.3.2#2 c=r	
+6.5.58	(unexpected)		rxp:TotalPayments	absence	3.3.2	3.3.2#4 c=r	
+6.5.58.10	(unexpected)		rxp:AlternativeReportingRegime	absence	3.3.1	3.3.1#2 c=r	
+6.5.59.02	(unexpected)		sro:CmspStpPlcyPrcdrSmryTextBlock	home	3.4		
+6.5.59.02	(unexpected)		sro:CmspStpPrgrsTextBlock	ruling	3.4		
+6.5.59.02	(unexpected)		sro:CmspActnIntdsToTakeForStpTextBlock	ruling	3.4		
+6.5.59.03	(unexpected)		sro:CmspStpPrgrsTextBlock	ruling	3.4		
+6.5.59.04	(unexpected)		dei:DocumentPeriodEndDate	absence	3.1.7	3.1.7#7 c=r	

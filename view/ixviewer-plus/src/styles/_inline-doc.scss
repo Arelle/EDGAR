@@ -1,0 +1,86 @@
+// ─── Styles scoped to the filer's rendered HTML ───────────────────
+// All rules here relate to #dynamic-xbrl-form and its children
+
+#dynamic-xbrl-form {
+  content-visibility: auto;
+  height: 100%;
+  overflow: auto;
+  padding: 0 15px !important;
+
+  * {
+    box-sizing: initial;
+  }
+
+  // css reset 'fixes' to overwrite bootstrap stuff
+  section {
+    all: initial;
+    padding: 0 5px;
+    position: relative;
+    z-index: 0;
+
+    table {
+      p {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      tr, th, td, p {
+        // height: inherit;
+      }
+    }
+
+    * {
+      font-weight: revert-layer;
+    }
+  }
+
+  hr {
+    margin-top: revert-layer;
+    margin-bottom: revert-layer;
+    margin-left: revert-layer;
+    margin-right: revert-layer;
+  }
+
+  a {
+    color: revert-layer;
+  }
+
+  [hover-fact="true"],
+  [continued-main-fact-id],
+  [contextref]:hover {
+    cursor: pointer;
+  }
+
+  [inside-table="true"] {
+    text-indent: initial;
+  }
+
+  [redline="true"] {
+    color: #ff0099;
+    text-decoration: underline;
+  }
+
+  [redact="true"] {
+    color: #c0c0c0;
+    text-decoration: underline;
+  }
+
+  .text-block-fact-hover {
+    background-color: rgba(249, 237, 237);
+    cursor: pointer;
+  }
+
+  .nested-continued-fact {
+    background-color: white !important;
+  }
+
+  .continued-fact {
+    background-color: rgba(249, 237, 237);
+    cursor: pointer;
+
+    > * {
+      background-color: rgba(249, 237, 237);
+      cursor: pointer;
+    }
+  }
+}

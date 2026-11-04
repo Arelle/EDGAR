@@ -143,7 +143,7 @@ Language of labels:
     GUI may use tools->language labels setting to override system language for labels
 
 """
-VERSION = '3.26.3'
+VERSION = '3.26.4'
 
 from collections import defaultdict
 from arelle import PythonUtil
@@ -954,8 +954,9 @@ class EdgarRenderer(Cntlr.Cntlr):
         _text = logHandler.format(logRec)  # sets logRec.file
         if hasattr(logHandler.formatter, "fileLines"):
             _fileLines = logHandler.formatter.fileLines(logRec)
-            if _fileLines:
-                _text += " - " + _fileLines  # default if no {refSources} or other in the ArelleMessagesText
+            # default if no {refSources} or other in the ArelleMessagesText, unless the log format already has %(file)s
+            if _fileLines and "%(file)s" not in (getattr(logHandler.formatter, "_fmt", None) or ""):
+                _text += " - " + _fileLines
         try:
             # try edgarCode and if not there, try messageCode
             if isinstance(logRec.args, dict) and logRec.args.get("edgarCode") in self.logMessageText:
@@ -971,7 +972,7 @@ class EdgarRenderer(Cntlr.Cntlr):
             for _ref in logRec.refs:
                 _href = _ref.get("href")
                 if _href:
-                    _hrefUrlParts = href.split("#")
+                    _hrefUrlParts = _href.split("#")
                     if len(_hrefUrlParts) > 0:
                         _refNum += 1
                         _fileName = _hrefUrlParts[0].rpartition("/")[2]
@@ -1895,6 +1896,9 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
         isNonEFMorGFMinline = (not getattr(cntlr.modelManager.disclosureSystem, "EFMplugin", False) and
                                modelXbrl.modelDocument.type in (ModelDocument.Type.INLINEXBRL, ModelDocument.Type.INLINEXBRLDOCUMENTSET))
         showViewer = cntlr.showFilingData.get() or cntlr.showiXBRLViewer.get()
+        isRssFeed = modelXbrl.modelDocument.type == ModelDocument.Type.RSSFEED
+        if isRssFeed:
+            showViewer = False
         # may use GUI mode to process a single instance or test suite
         options = PythonUtil.attrdict(# simulate options that CntlrCmdLine provides
             configFile=os.path.join(os.path.dirname(__file__), 'conf', 'config_for_instance.xml'),
@@ -1940,10 +1944,11 @@ def edgarRendererGuiRun(cntlr, modelXbrl, *args, **kwargs):
             logFile=None,  # from cntlrCmdLine but need to simulate for GUI operation
             labelLang=cntlr.labelLang,  # emulate cmd line labelLang
             keepFilingOpen=True,  # closed by CntrlWinMain
-            iXBRLViewerStub=cntlr.showiXBRLViewer.get(),  # generates iXBRLViewerStub
+            iXBRLViewerStub=cntlr.showiXBRLViewer.get() and not isRssFeed,  # generates iXBRLViewerStub
             confidentialityDocList=parameters.get("confidentialityDocList", [None, None])[1],
         )
-        if modelXbrl.modelDocument.type in ModelDocument.Type.TESTCASETYPES:
+        if (modelXbrl.modelDocument.type in ModelDocument.Type.TESTCASETYPES
+                or modelXbrl.modelDocument.type == ModelDocument.Type.RSSFEED):
             modelXbrl.efmOptions = options  # save options in testcase's modelXbrl
         if modelXbrl.modelDocument.type not in (ModelDocument.Type.INLINEXBRL, ModelDocument.Type.INSTANCE, ModelDocument.Type.INLINEXBRLDOCUMENTSET):
             return

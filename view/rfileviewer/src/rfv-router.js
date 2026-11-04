@@ -73,7 +73,6 @@ import { getFilerData } from './db.js';
 import { renderAccordionMenu } from './transform-menu.js';
 import { transformXmlToHtml } from './transform-xml-to-html.js';
 import { renderPage, toRootRelative } from './transform-page.js';
-import { secureField } from '../../viewer-common-src/sanitize.js';
 import fs from 'fs/promises';
 import path from 'node:path';
 
@@ -102,11 +101,28 @@ export function buildRfvRouter({
         try {
             log_debug(`RFV API query params ${JSON.stringify(req.query)}`);
 
-            let accessionNumberDashed =
-                secureField(String(req.query.accession_number ?? ''));
+            const rawCik = req.query.cik;
+            const rawAccessionNumber = req.query.accession_number;
+            if (typeof rawCik !== 'string' || !/^\d{1,10}$/.test(rawCik) ||
+                typeof rawAccessionNumber !== 'string' ||
+                !/^(?:\d{18}|\d{10}-\d{2}-\d{6})$/.test(rawAccessionNumber)) {
+                const errorPageHtml = renderPage({
+                    accessionNumber: '',
+                    fsParsed: { rfvMenu: [], log: [] },
+                    mode: 'server',
+                    menuHtml: '',
+                    filer_data: [],
+                    log_debug,
+                    errors: ['Invalid CIK or accession number'],
+                    noindex: true
+                });
+                return res.status(400).type('text/html').send(errorPageHtml);
+            }
 
-            // normalize 20-digit accession → dashed format
-            if (accessionNumberDashed && !accessionNumberDashed.includes('-')) {
+            let accessionNumberDashed = rawAccessionNumber;
+
+            // normalize 18-digit accession to dashed format
+            if (!accessionNumberDashed.includes('-')) {
                 accessionNumberDashed =
                     `${accessionNumberDashed.slice(0,10)}-` +
                     `${accessionNumberDashed.slice(10,12)}-` +
@@ -114,7 +130,7 @@ export function buildRfvRouter({
             }
 
             const accessionNumber = accessionNumberDashed.replace(/-/g, '');
-            const cik = secureField(String(req.query.cik ?? '')).replace(/^0+/, '');
+            const cik = rawCik.replace(/^0+/, '');
 
             // Determine S3 vs local path
             const envMode = Number(process.env.DEV_ENV_MODE ?? '0');

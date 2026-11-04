@@ -203,6 +203,7 @@ export const Tabs = {
 
 	clickEventInstance: (event: MouseEvent | KeyboardEvent, instance: number) => {
 		event.preventDefault();
+		if (Constants.getInstances[instance]?.current) return;
 		ConstantsFunctions.changeInstance(+instance as number, null).then((success) => {
 			if (success) {
 				Sections.highlightInstanceInSidebar();
