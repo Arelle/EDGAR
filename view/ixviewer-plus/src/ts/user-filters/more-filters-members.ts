@@ -11,10 +11,10 @@ export const UserFiltersMoreFiltersMembers = {
     clickEvent: (input: string) => {
         const tempSet = new Set(UserFiltersState.getMembers);
         if (tempSet.has(input)) {
-            (document.getElementById('user-filters-members')?.querySelector(`[name='${input}']`) as HTMLInputElement).checked = false;
+            (document.getElementById('user-filters-members')?.querySelector(`[name='${CSS.escape(input)}']`) as HTMLInputElement).checked = false;
             tempSet.delete(input)
         } else {
-            (document.getElementById('user-filters-members')?.querySelector(`[name='${input}']`) as HTMLInputElement).checked = true;
+            (document.getElementById('user-filters-members')?.querySelector(`[name='${CSS.escape(input)}']`) as HTMLInputElement).checked = true;
             tempSet.add(input);
         }
 
@@ -30,10 +30,10 @@ export const UserFiltersMoreFiltersMembers = {
         memberInputs.forEach((input) => {
             if (addIfTrue) {
                 tempSet.add(input.value);
-                (document.getElementById('user-filters-members')?.querySelector(`[name='${input.value}']`) as HTMLInputElement).checked = true;
+                (document.getElementById('user-filters-members')?.querySelector(`[name='${CSS.escape(input.value)}']`) as HTMLInputElement).checked = true;
             } else {
                 tempSet.delete(input.value);
-                (document.getElementById('user-filters-members')?.querySelector(`[name='${input.value}']`) as HTMLInputElement).checked = false;
+                (document.getElementById('user-filters-members')?.querySelector(`[name='${CSS.escape(input.value)}']`) as HTMLInputElement).checked = false;
             }
         });
 

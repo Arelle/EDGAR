@@ -40,5 +40,18 @@ describe(`Filter - Amounts Only`, () => {
         cy.get(selectors.dataFiltersButton).click()
         cy.get(selectors.dataAmountsOnlyFilter).click()
         cy.get(selectors.factCountBadge).should('have.text', '183') // 182 on legacy for some reason
+    }) 
+})
+
+describe(`Filter - Calculations Only`, () => {
+    it('Fact badge count', () => {
+        cy.visit('/Archives/edgar/data/1465369/000110465926019148/none-20260224xf4.htm');     
+        cy.waitForAppReady();
+
+        cy.get(selectors.dataFiltersButton).click()
+        cy.get(selectors.dataCalcOnlyFilter).click()
+
+
+        cy.get(selectors.factCountBadge).should('have.text', '73') 
     })
 })

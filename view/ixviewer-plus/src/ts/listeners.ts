@@ -6,6 +6,7 @@ import * as bootstrap from "bootstrap";
 
 import { FactsChart } from "./facts/chart";
 import { FactsMenu } from "./facts/menu";
+import { FactsDock } from "./facts/dock";
 import { FactsGeneral } from "./facts/general";
 import { FactsTable } from "./facts/table";
 import { FormInformation } from "./form-information/form-information";
@@ -23,7 +24,8 @@ import { actionKeyHandler, stopPropPrevDefault } from "./helpers/utils";
 import { Constants } from "./constants/constants";
 import { ConstantsFunctions } from "./constants/functions";
 import { HelpersUrl } from "./helpers/url";
-import { attachSidebarRezier } from "./resizer/resizers"
+import { attachDockResizer, attachSidebarResizer } from "./resizer/resizers"
+import { FactsViewPreference } from "./facts/factsViewPreference";
 
 export class Listeners {
     constructor() {
@@ -167,6 +169,25 @@ export class Listeners {
             FactsMenu.updateFactDetailDisplay(event);
         });
 
+        document.getElementById('fact-details-undock-btn')?.addEventListener("click", () => {
+            FactsDock.undock();
+            FactsMenu.updateFactMenuState('fact-detail-display');
+        });
+        document.getElementById('fact-details-undock-btn')?.addEventListener("keyup", (event: KeyboardEvent) => {
+            if (!actionKeyHandler(event)) return;
+            FactsDock.undock();
+            FactsMenu.updateFactMenuState('fact-detail-display');
+        });
+        document.getElementById('fact-details-undock-btn')?.addEventListener("click", () => {
+            FactsMenu.setFactsView('detail');
+            FactsViewPreference.save('detail');
+        });
+        document.getElementById('fact-details-undock-btn')?.addEventListener("keyup", (event: KeyboardEvent) => {
+            if (!actionKeyHandler(event)) return;
+            FactsMenu.setFactsView('detail');
+            FactsViewPreference.save('detail');
+        });
+
         // Suggestion List Item handlers
         const handleSuggestionsClick = (event: MouseEvent) => {
             const aElement = event.target instanceof HTMLElement ? event.target?.closest('a.sidebar-fact') : null
@@ -297,9 +318,10 @@ export class Listeners {
         })
 
         // Resizer listeners 
-        attachSidebarRezier(document.getElementById('facts-menu'), {growRight: false})
-        attachSidebarRezier(document.getElementById('sections-menu'))
-        attachSidebarRezier(document.getElementById('help-menu'))
+        attachSidebarResizer(document.getElementById('facts-menu'), {growRight: false})
+        attachSidebarResizer(document.getElementById('sections-menu'))
+        attachSidebarResizer(document.getElementById('help-menu'))
+        attachDockResizer(document.getElementById('fact-details-dock'))
 
 
 

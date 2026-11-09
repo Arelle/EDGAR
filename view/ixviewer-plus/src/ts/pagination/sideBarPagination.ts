@@ -398,6 +398,10 @@ export const Pagination = {
 		})
 	},
 	clearSidebarSelectedFact: () => {
-		document.querySelector(Pagination.getPaginationSelector)?.querySelectorAll('a.sidebar-fact').forEach((a) => a.setAttribute('selected-fact', 'false'));
+		// [id="fact-detail-display-btn"] check if .active first
+		const factsInDetailsView = document.querySelector('#facts-menu-list-pagination .list-group')?.querySelectorAll('a.sidebar-fact');
+		if (factsInDetailsView && factsInDetailsView.length > 0) {
+			factsInDetailsView.forEach((a) => a.setAttribute('selected-fact', 'false'));
+		}	
 	}
 };

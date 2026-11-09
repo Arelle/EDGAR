@@ -219,54 +219,47 @@ describe("UI Basic checkup", () => {
                 // Store the full fact count for later use
                 const fullCount = Number($fullCount.text().replace(/,/g, ''))
                 // Open the Data Filter dropdown
-                cy.get(selectors.dataFiltersButton).click().then(() => {
+                cy.get(selectors.dataFiltersButton).click()
 
-                    // Apply the "Amounts Only" filter
-                    cy.get(selectors.dataAmountsOnlyFilter).click().then(() => {
-                        cy.get(selectors.factCountBadge).then(($nowCount) => {
-                            // Fact Count should be less than or equal to the full count
-                            let nowCount = Number($nowCount.text().replace(/,/g, ''))
-                            cy.wrap(nowCount).should('be.lte', fullCount)
-                        })
-                    })
+                // Apply the "Amounts Only" filter
+                cy.get(selectors.dataAmountsOnlyFilter).click()
+                cy.get(selectors.factCountBadge).then(($nowCount) => {
+                    // Fact Count should be less than or equal to the full count
+                    let nowCount = Number($nowCount.text().replace(/,/g, ''))
+                    cy.wrap(nowCount).should('be.lte', fullCount)
+                })
 
-                    // Apply the "Calculations Only" filter
-                    cy.get(selectors.dataCalcOnlyFilter).click().then(() => {
-                        cy.get(selectors.factCountBadge).then(($nowCount) => {
-                            // Fact Count should be less than or equal to the full count
-                            let nowCount = Number($nowCount.text().replace(/,/g, ''))
-                            cy.wrap(nowCount).should('be.lte', fullCount)
-                        })
-                    })
+                // Apply the "Calculations Only" filter
+                cy.get(selectors.dataCalcOnlyFilter).click()
+                cy.get(selectors.factCountBadge).then(($nowCount) => {
+                    // Fact Count should be less than or equal to the full count
+                    let nowCount = Number($nowCount.text().replace(/,/g, ''))
+                    cy.wrap(nowCount).should('be.lte', fullCount)
+                })
 
-                    // Apply the "Negatives Only" filter
-                    cy.get(selectors.dataNegOnlyFilter).click().then(() => {
-                        cy.get(selectors.factCountBadge).then(($nowCount) => {
-                            // Fact Count should be less than or equal to the full count
-                            let nowCount = Number($nowCount.text().replace(/,/g, ''))
-                            cy.wrap(nowCount).should('be.lte', fullCount)
-                        })
-                    })
+                // Apply the "Negatives Only" filter
+                cy.get(selectors.dataNegOnlyFilter).click()
+                cy.get(selectors.factCountBadge).then(($nowCount) => {
+                    // Fact Count should be less than or equal to the full count
+                    let nowCount = Number($nowCount.text().replace(/,/g, ''))
+                    cy.wrap(nowCount).should('be.lte', fullCount)
+                })
 
-                    // Apply the "Additional Items Only" filter
-                    cy.get(selectors.dataAdditionalOnlyFilter).click().then(() => {
-                        cy.get(selectors.factCountBadge).then(($nowCount) => {
-                            // Fact Count should be less than or equal to the full count
-                            let nowCount = Number($nowCount.text().replace(/,/g, ''))
-                            cy.wrap(nowCount).should('be.lte', fullCount)
-                        })
-                    })
+                // Apply the "Additional Items Only" filter
+                cy.get(selectors.dataAdditionalOnlyFilter).click()
+                cy.get(selectors.factCountBadge).then(($nowCount) => {
+                    // Fact Count should be less than or equal to the full count
+                    let nowCount = Number($nowCount.text().replace(/,/g, ''))
+                    cy.wrap(nowCount).should('be.lte', fullCount)
+                })
 
-                    // Hit the "Reset Filters" button
-                    cy.get(selectors.resetAllFilters).click().then(() => {
-                        // Data Filter dropdown should vanish
-                        cy.get(selectors.dataFilterDropdown).should('not.be.visible')
-                        cy.get(selectors.factCountBadge).then(($nowCount) => {
-                            // Fact Count should be back up to the full count
-                            let nowCount = Number($nowCount.text().replace(/,/g, ''))
-                            cy.wrap(nowCount).should('equal', fullCount)
-                        })
-                    })
+                // Hit the "Reset Filters" button
+                cy.get(selectors.resetAllFilters).click()
+                cy.get(selectors.dataFilterDropdown).should('not.be.visible')
+                cy.get(selectors.factCountBadge).then(($nowCount) => {
+                    // Fact Count should be back up to the full count
+                    let nowCount = Number($nowCount.text().replace(/,/g, ''))
+                    cy.wrap(nowCount).should('equal', fullCount)
                 })
             })
         })
@@ -360,7 +353,7 @@ describe("UI Basic checkup", () => {
                     cy.get(selectors.nextFact).should('be.visible').contains('Next Fact')
 
                     // Page Select Dropdown
-                    cy.get(selectors.sidebarPaginationSelect).contains('Page 1') 
+                    cy.get(selectors.sidebarPaginationSelect).contains('Page 1')
 
                     // Close Sidebar button should be functional
                     cy.get(selectors.factSideBarClose).should('be.visible').then(($closeBtn) => {

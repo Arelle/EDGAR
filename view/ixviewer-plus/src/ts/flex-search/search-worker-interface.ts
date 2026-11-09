@@ -7,8 +7,11 @@ import { hideSearchingHourglass } from "./flex-search-ui";
 import { Constants } from "../constants/constants";
 
 let worker: Worker;
+let generation = 0;
 
 export const initSearch = (factMap: any) => {
+    worker?.terminate();
+    generation++;
     if (typeof window !== 'undefined' && window.Worker) {
         const searchStart = performance.now();
         worker = new Worker(
@@ -44,6 +47,8 @@ export const initSearch = (factMap: any) => {
 export const callSearch = (query: { clauses: string[][]; options: any[]; }) => {
     return new Promise<void>((resolve) => {
         const listener = (e: MessageEvent) => {
+            const myGen = generation;
+            if (myGen !== generation) return;
             if (e.data.type === 'searchComplete') {
                 worker.removeEventListener('message', listener);
                 resolve(e.data.results);
@@ -76,6 +81,8 @@ export const callFilter = () => {
     };
     return new Promise<void>((resolve) => {
         const listener = (e: MessageEvent) => {
+            const myGen = generation;
+            if (myGen !== generation) return;
             if (e.data.type === 'filterComplete') {
                 worker.removeEventListener('message', listener);
 

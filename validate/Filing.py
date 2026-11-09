@@ -43,8 +43,10 @@ from .Consts import submissionTypesAllowingSeriesClasses, \
                     nsPatternNotAllowedinxBRLXML, subTypesWarningforxBRLXml
 
 from .Dimensions import checkFilingDimensions
+from .MessageReferences import messageSectionArgs, messageEdgarCode, messageCode, parseMessageCodes, messageGuideCodes, \
+                               messageConcepts, inferredMsgSection, eloEfmSection, eloMsgSection
 from .PreCalAlignment import checkCalcsTreeWalk
-from .Util import conflictClassFromNamespace, abbreviatedNamespace, NOYEAR, WITHYEARandWILD, loadDeprecatedConceptDates, \
+from .Util import loadEfmExgReferences, conflictClassFromNamespace, abbreviatedNamespace, NOYEAR, WITHYEARandWILD, loadDeprecatedConceptDates, \
                     loadCustomAxesReplacements, loadNonNegativeFacts, loadDeiValidations, loadOtherStandardTaxonomies, \
                     loadUgtRelQnames, loadDqcRules, factBindings, leastDecimals, axisMemQnames, memChildQnames, \
                     loadTaxonomyCompatibility, loadIxTransformRegistries, ValueRange, loadXuleConstantsForPythonRules
@@ -110,7 +112,6 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
     styleIxHiddenPattern = re.compile(r"(.*[^\w]|^)-sec-ix-hidden\s*:\s*([\w.-]+).*")
     styleIxRedactPattern = re.compile(r"(.*;)?\s*-sec-ix-redact\s*:\s*true(?:\s*;)?\s*([\w.-].*)?$")
     efmRoleDefinitionPattern = re.compile(r"([0-9]+) - (Statement|Disclosure|Schedule|Document) - (.+)")
-    messageKeySectionPattern = re.compile(r"(.*[{]efmSection[}]|[a-z]{2}-[0-9]{4}|dq-)(.*)")
     secDomainPattern = re.compile(r"(fasb\.org|xbrl\.sec\.gov)")
 
     val._isStandardUri = {}
@@ -158,6 +159,9 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
     val.entityRegistrantName = None
     val.requiredContext = None
     deiDocumentType = None # needed for non-instance validation too
+    # guides whose references form message codes, in priority order (messageCodes parameter; see MessageReferences)
+    messageCodeGuides = parseMessageCodes(val.params.get("messageCodes"))
+    efmExgReferences = loadEfmExgReferences(modelXbrl) # EXG references for legacy checks with only an EFM one
     # efmSubmissionType and efmIxdsType are already set when re-validating after redaction/redline removal
     submissionType = getattr(modelXbrl,'efmSubmissionType', val.params.get("submissionType", ""))
     attachmentDocumentType = getattr(modelXbrl,'efmIxdsType', val.params.get("attachmentDocumentType", "")) # this is different from dei:documentType
@@ -186,10 +190,23 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         if not attachmentDocumentType: # infer attachmentDocumentType parameter from dei:DocumentType
                             attachmentDocumentType = docTypesAttachmentDocumentType.get(f.xValue, f.xValue)
                         if not hasSubmissionType: # infer submissionType parameter from dei:DocumentType
-                            # The primary document will be processed first and the efmSubmissionType
-                            # would have been set based on the primary document.
+                            # If this instance is a secondary report within the same filing, the
+                            # primary report is processed first and its efmSubmissionType can be
+                            # reused here. Scope the lookup to this filing's own reports
+                            # (efmFiling.reports) rather than modelManager.modelXbrl, which is a
+                            # single session-wide "most recently loaded" pointer - using it here
+                            # would leak the submissionType of an unrelated filing left open (or a
+                            # different RSS/testcase item) into this one.
                             # otherwise we fallback to docTypesSubType or the dei:DocumentType value
-                            submissionType = getattr(modelXbrl.modelManager.modelXbrl,'efmSubmissionType', docTypesSubType.get(f.xValue, f.xValue))
+                            primarySubmissionType = None
+                            efmFiling = getattr(modelXbrl.modelManager, "efmFiling", None)
+                            if efmFiling is not None:
+                                for report in efmFiling.reports:
+                                    if report.modelXbrl is not modelXbrl:
+                                        primarySubmissionType = getattr(report.modelXbrl, "efmSubmissionType", None)
+                                        if primarySubmissionType:
+                                            break
+                            submissionType = primarySubmissionType or docTypesSubType.get(f.xValue, f.xValue)
                         break
         matchResult = attachmentDocumentTypeReqSubDocTypePattern.match(attachmentDocumentType)
         if matchResult and "§" not in submissionType: # ensure we haven't already added it. eg. before revalidating
@@ -281,15 +298,14 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             except AttributeError:
                                 contextId = "not available"
                             modelXbrl.error(("EFM.6.05.01", "GFM.1.02.01"),
-                                _("Your identifier for the CIK code, %(identifier)s, or scheme %(scheme)s, in context %(context)s, did not adhere "
-                                  "to the standard naming convention of <identifier scheme='http://www.sec.gov/CIK'>xxxxxxxxxx</identifier>'.  "
-                                  "Please recheck your submission and comply with the standard naming convention."),
+                                _("Your identifier for the CIK code, %(identifier)s, or scheme %(scheme)s, in context %(context)s, did not adhere to the standard naming convention of <identifier scheme=\"http://www.sec.gov/CIK\">xxxxxxxxxx</identifier>.  Please recheck your submission and comply with the standard naming convention."),
                                 edgarCode="cp-0501-Entity-Identifier-Scheme",
                                 modelObject=entityIdentifierElt, scheme=schemeAttr,
                                 context=contextId, identifier=entityIdentifier)
                         if not disclosureSystem.identifierValuePattern.match(entityIdentifier):
                             modelXbrl.error(("EFM.6.05.02", "GFM.1.02.02"),
                                 _("Invalid entity identifier %(entityIdentifierName)s: %(entityIdentifer)s"),
+                                edgarCode="Entity-Identifier-Value",
                                 modelObject=entityIdentifierElt,
                                 entityIdentifierName=disclosureSystem.identifierValueName,
                                 entityIdentifer=entityIdentifier)
@@ -315,13 +331,19 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 filerIdentifier=",".join(sorted(val.params["cikNameList"].keys()) if "cikNameList" in val.params else []))
             val.modelXbrl.profileActivity("... filer identifier checks", minTimeToShow=1.0)
 
-        # taxonomy not allowed in xml-XBRL
+        # taxonomy not allowed in xml-XBRL (XBRL Guide 1.4 Attachment types)
         if not isInlineXbrl:
             for prefix, nsURL in modelXbrl.prefixedNamespaces.items():
                 if nsPatternNotAllowedinxBRLXML.match(nsURL):
-                    modelXbrl.error("EXG.12.08", f"The namespace \"{nsURL}\" is not allowed when the document is in xBRL-XML format.")
+                    modelXbrl.error("EXG.1.04",
+                        _("The namespace \"%(namespace)s\" is not allowed when the document is in xBRL-XML format."),
+                        edgarCode="Inline-Xbrl-Required",
+                        namespace=nsURL)
             if submissionType in subTypesWarningforxBRLXml:
-                modelXbrl.warning("EXG.12.08", f"Submission type {submissionType}, only allows Inline XBRL filing.")
+                modelXbrl.warning("EXG.1.04",
+                    _("Submission type %(submissionType)s, only allows Inline XBRL filing."),
+                    edgarCode="Inline-Xbrl-Required",
+                    submissionType=submissionType)
 
         #6.5.7 duplicated contexts
         contexts = modelXbrl.contexts.values()
@@ -372,7 +394,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     contextsWithDisallowedOCEs.append(context)
                 else:
                     modelXbrl.error(("EFM.6.05.04", "GFM.1.02.04"),
-                        _("There must be no contexts with %(elementName)s, but %(count)s was(were) found: %(context)s."),
+                        _("There must be no contexts with scenarios, but %(count)s was(were) found: %(context)s."),
                         edgarCode="cp-0504-No-Scenario",
                         modelObject=context, elementName=notAllowed, context=contextID, count=1)
 
@@ -395,7 +417,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 contextsWithDisallowedOCEcontent.append(context)
                             else:
                                 modelXbrl.error(("EFM.6.05.05", "GFM.1.02.05"),
-                                                _("There must be no %(elementName)s with non-explicitDimension content, but %(count)s was(were) found: %(content)s."),
+                                                _("There must be no segments with non-explicitDimension content, but %(count)s was(were) found: %(content)s."),
                                                 edgarCode="cp-0505-Segment-Child-Not-Explicit-Member",
                                                 modelObject=context, context=contextID, content=childTags, count=len(_childTagNames),
                                                 elementName=contextName.partition("}")[2].title())
@@ -417,13 +439,13 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
         if validateEFMpragmatic: # output combined count message
             if contextsWithDisallowedOCEs:
                 modelXbrl.error(("EFM.6.05.04", "GFM.1.02.04"),
-                    _("There must be no contexts with %(elementName)s, but %(count)s was(were) found: %(context)s."),
+                    _("There must be no contexts with scenarios, but %(count)s was(were) found: %(context)s."),
                     edgarCode="cp-0504-No-Scenario",
                     modelObject=contextsWithDisallowedOCEs, elementName=notAllowed,
                     count=len(contextsWithDisallowedOCEs), context=', '.join(c.id for c in contextsWithDisallowedOCEs))
             if contextsWithDisallowedOCEcontent:
                 modelXbrl.error(("EFM.6.05.05", "GFM.1.02.05"),
-                    _("There must be no %(elementName)s with non-explicitDimension content, but %(count)s was(were) found: %(context)s."),
+                    _("There must be no segments with non-explicitDimension content, but %(count)s was(were) found: %(context)s."),
                     edgarCode="cp-0505-Segment-Child-Not-Explicit-Member",
                     modelObject=contextsWithDisallowedOCEcontent, elementName=disclosureSystem.contextElement,
                     count=len(contextsWithDisallowedOCEcontent), context=', '.join(c.id for c in contextsWithDisallowedOCEcontent))
@@ -680,8 +702,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             value=value, filerIdentifier=",".join(sorted(val.params["cikNameList"].keys())))
                 elif val.params.get("cik") and value != val.params["cik"]:
                     val.modelXbrl.error(("EFM.6.05.23.submissionIdentifier", "GFM.3.02.02"),
-                        _("The submission CIK, %(filerIdentifier)s does not match the %(elementName)s.  "
-                          "Please include a correct matching %(elementName)s in the filing."),
+                        _("The submission CIK, %(filerIdentifier)s does not match the EntityCentralIndexKey.  Please include a correct matching EntityCentralIndexKey in the filing."),
                         edgarCode="cp-0523-Non-Matching-Cik",
                         modelObject=deiFilerIdentifierFact, elementName=disclosureSystem.deiFilerIdentifierElement,
                         value=value, filerIdentifier=val.params["cik"])
@@ -694,8 +715,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                                           cleanedCompanyName(value), flags=re.IGNORECASE)) or
                             (not isInlineXbrl and not value.casefold().startswith(prefix.casefold()))): # casefold needed for some non-en languages
                             val.modelXbrl.error(("EFM.6.05.24", "GFM.3.02.02"),
-                                _("The Official Registrant name, %(prefix)s, does not match the value %(value)s in the Required Context.  "
-                                  "Please correct dei:%(elementName)s."),
+                                _("The Official Registrant name, %(prefix)s, does not match the value %(value)s in the Required Context.  Please correct dei:EntityRegistrantName."),
                                 edgarCode="cp-0524-Registrant-Name-Mismatch",
                                 modelObject=deiFilerNameFact, elementName=disclosureSystem.deiFilerNameElement,
                                 prefix=prefix, value=value)
@@ -837,7 +857,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         l = len(measureElt.xValue.localName.encode("utf-8"))
                         if l > 200:
                             modelXbrl.error("EFM.6.05.36",
-                                _("Unit %(unitID)s contains a measure element whose local-name in UTF-8, length %(length)s, has more than 200 bytes:  %(measure)s.  Shorten the measure name."),
+                                _("Unit %(unitID)s contains a measure element whose local-name in UTF-8 has more than 200 bytes.  Shorten the measure name."),
                                 edgarCode="du-0536-Name-Length-Limit",
                                 modelObject=measureElt, unitID=unit.id, measure=measureElt.xValue.localName, length=l)
         del uniqueUnitHashes
@@ -935,8 +955,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         _inConsistent = any(not f.isVEqualTo(f0) for f in fList[1:])
                     if _inConsistent:
                         modelXbrl.error(("EFM.6.05.12", "GFM.1.02.11"),
-                            "The instance document contained an element, %(fact)s that was used more than once in contexts equivalent to %(contextID)s: values %(values)s.  "
-                            "Please ensure there are no duplicate combinations of concept and context in the instance.",
+                            "The instance document contained an element, %(fact)s that was used more than once in contexts equivalent to %(contextID)s.  Please ensure there are no duplicate combinations of concept and context in the instance.",
                             edgarCode="du-0512-Duplicate-Facts",
                             modelObject=fList, fact=f0.qname, contextID=f0.contextID, values=", ".join(strTruncate(f.value, 128) for f in fList))
                 aspectEqualFacts.clear()
@@ -952,8 +971,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     break
             if not anyDefaultLangFact:
                 val.modelXbrl.error(("EFM.6.05.14", "GFM.1.02.13"),
-                    _("Element %(fact)s in context %(contextID)s has text with xml:lang other than '%(lang2)s' (%(lang)s) without matching English text.  "
-                      "Please provide a fact with xml:lang equal to '%(lang2)s'."),
+                    _("Element %(fact)s in context %(contextID)s has text with xml:lang other than \"en-US\" without matching English text.  Please provide a fact with xml:lang equal to \"en-US\"."),
                     edgarCode="du-0514-English-Text-Missing",
                     modelObject=factNotDefaultLang, fact=factNotDefaultLang.qname, contextID=factNotDefaultLang.contextID,
                     lang=factNotDefaultLang.xmlLang, lang2=disclosureSystem.defaultXmlLang) # report lexical format default lang
@@ -1120,55 +1138,32 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     if n.lower().endswith("tag"):
                         if isinstance(v, list):
                             logArgs[n] = "".join(v)
-                if "efmSection" not in logArgs and not sev.get("msgSection"):
-                    logArgs["efmSection"] = sev.get("efm")
-                if logArgs.get("efmSection"):
-                    efm = logArgs["efmSection"].split(".")
-                    logArgs["efmSection"] = ""
-                    logArgs["arelleCode"] = "EFM"
-                    for i, e in enumerate(efm):
-                        if i > 0 :
-                            if e.isnumeric(): # e.g. [6,5,2] -> "6.05.02"
-                                e = e.zfill(2)
-                        logArgs["efmSection"] += e
-                        logArgs["arelleCode"] += "." + e
-
-                # replacement for efmSection. Based on sev msgSection
-                if sev.get("msgSection"):
-                    msgPrefix, _sep, msgSectionNumber = sev["msgSection"].partition(":")
-                    logArgs["arelleCode"] = msgPrefix
-                    section = f"{msgPrefix.lower()}Section"
-                    logArgs[section] = ""
-                    for i, e in enumerate(msgSectionNumber.split(".")):
-                        if i > 0 :
-                            if e.isnumeric(): # e.g. [6,5,2] -> "6.05.02"
-                                e = e.zfill(2)
-                        logArgs["arelleCode"] += "." + e
-                        logArgs[section] += e
-
-                logArgs["edgarCode"] = messageKey # edgar code is the un-expanded key for message with {...}'s
-                if "-{efmSection}" in logArgs["edgarCode"] and not logArgs.get("efmSection") and logArgs.get("exgSection"):
-                    logArgs["edgarCode"] = logArgs["edgarCode"].replace("-{efmSection}", "")
-
-                try:
-                    m = messageKeySectionPattern.match(messageKey or "")
-                    if m:
-                        keyAfterSection = m.group(2)
+                # the entry's EFM and other-guide (msgSection) references, as arguments and as the code (see MessageReferences)
+                _efm, _msgSection = logArgs.get("efmSection", sev.get("efm")), sev.get("msgSection")
+                if _efm and not _msgSection: # a legacy check: its EXG reference, if efm-exg-references.json gives one
+                    if _efm == eloEfmSection and logArgs.get("headerTag"): # a submission header parameter check
+                        _msgSection = eloMsgSection(efmExgReferences, logArgs["headerTag"])
+                    elif sev.get("validation") in ("(blank)", "(blank-error)"): # the implicit unexpected-fact check
+                        _msgSection = inferredMsgSection(efmExgReferences, _efm, "(unexpected)", "",
+                                                         messageConcepts(logArgs, ()))
                     else:
-                        keyAfterSection = ""
-                    arelleCode = "{arelleCode}.".format(**logArgs) + keyAfterSection.format(**logArgs) \
-                                  .replace(",", "").replace(".","").replace(" ","") # replace commas in names embedded in message code portion
-                    if arelleCode.endswith("."):
-                        arelleCode = arelleCode[:-1]
+                        concepts = messageConcepts(logArgs, sev.get("xbrl-names"))
+                        if logArgs.get("tag") and logArgs["tag"] in (sev.get("references") or ()):
+                            # the message's tag names the entry's condition fact (ra, f2, t); its check is of the other tag(s)
+                            concepts = messageConcepts({"tags": logArgs.get("otherTag") or logArgs.get("otherTags")},
+                                                       sev.get("xbrl-names"))
+                        _msgSection = inferredMsgSection(efmExgReferences, _efm, sev.get("validation"), sev.get("axis", ""),
+                                                         concepts)
+                logArgs.update(messageSectionArgs(_efm, _msgSection, messageCodeGuides))
+                logArgs["edgarCode"] = messageEdgarCode(messageKey, logArgs.get("arelleCode")) # edgar code is the un-expanded key for message with {...}'s
+                try:
+                    arelleCode = messageCode(messageKey, logArgs)
+                    logArgs.update(messageGuideCodes(messageKey, logArgs, _efm, _msgSection, messageCodeGuides))
                 except KeyError as err:
                     modelXbrl.error("arelle:loadDeiValidations",
                                     _("Missing field %(field)s from messageKey %(messageKey)s, validation %(validation)s."),
                                     field=err, messageKey=messageKey, validation=sev)
                     return
-                arelleCodeSections = arelleCode.split("-")
-                if len(arelleCodeSections) > 1 and arelleCodeSections[1]:
-                    arelleCodeSections[1] = arelleCodeSections[1][0].lower() + arelleCodeSections[1][1:] # start with lowercase
-                arelleCode = "".join(arelleCodeSections)
                 axisKey = sev.get("axis","")
                 axesValidations = deiValidations["axis-validations"][axisKey]
                 logArgs["axis"] = " or ".join(axesValidations.get("names") or axesValidations.get("axes")) # names in ft-validations axes in dei-validations
@@ -2457,9 +2452,13 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             for name2 in referenceTag:
                                 for g in sevFacts(sev, name2, f, axisKey=sev.get("references-axes"), deduplicate=True, whereKey="references-where"):
                                     if "references-date-format" in sev:
-                                        referenceDate = datetime.datetime.strptime(g.xValue, sev.get("references-date-format"))
-                                        if "%y" not in sev.get("references-date-format").lower():
-                                            referenceDate = referenceDate.replace(year=f.xValue.year)
+                                        referenceDateString = g.xValue
+                                        referenceDateFormat = sev.get("references-date-format")
+                                        if "%y" not in referenceDateFormat.lower():
+                                            # Python 3.15 strptime rejects a day without a year since it can't parse leap days
+                                            referenceDateString = f"{f.xValue.year:04}/{referenceDateString}"
+                                            referenceDateFormat = f"%Y/{referenceDateFormat}"
+                                        referenceDate = datetime.datetime.strptime(referenceDateString, referenceDateFormat)
                                         if "%m" not in sev.get("references-date-format").lower():
                                             referenceDate = referenceDate.replace(year=f.xValue.month)
                                         if "%d" not in sev.get("references-date-format").lower():
@@ -2685,14 +2684,6 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                            setattr(self, name, qname(f"rxp:{name}", deiDefaultPrefixedNamespaces))
 
                 rxp = Rxp()
-                f1 = deiFacts.get(disclosureSystem.deiCurrentFiscalYearEndDateElement)
-                if f1 is not None and documentPeriodEndDateFact is not None and f1.xValid >= VALID and documentPeriodEndDateFact.xValid >= VALID:
-                    d = ModelValue.dateunionDate(documentPeriodEndDateFact.xValue)# is an end date, convert back to a start date without midnight part
-                    if f1.xValue.month != d.month or f1.xValue.day != d.day:
-                        modelXbrl.warning("EFM.6.05.58",
-                            _("The financial period %(reportingPeriod)s does not match the fiscal year end %(fyEndDate)s."),
-                            edgarCode="rxp-0558-Fiscal-Year-End-Date-Value",
-                            modelObject=(f1,documentPeriodEndDateFact), fyEndDate=f1.value, reportingPeriod=documentPeriodEndDateFact.value)
 
                 val.modelXbrl.profileActivity("... SD checks 6-13, 26-27", minTimeToShow=1.0)
                 dimDefRelSet = modelXbrl.relationshipSet(XbrlConst.dimensionDefault)
@@ -2804,7 +2795,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 modelObject=context, context=context.id, member=contextDims[rxp.ProjectAxis].memberQname)
                 if not isAlternativeReportingRegime and hasRxpAwithCurAndYr == False and bool(qnCurrencyMeasure): # do not report this if there was reporting currency (error 6.05.58.02)
                     modelXbrl.warning("EFM.6.05.58.05",
-                            _("Amount rxp:A missing for reporting currency %(currency)s and matching 12 months preceding dei:DocumentPeriodEndDate."),
+                            _("Amount rxp:A missing for reporting currency and matching 12 months preceding dei:DocumentPeriodEndDate."),
                             edgarCode="rxp-055805-Amount-For-Required-12-Months-Period",
                             modelObject=documentPeriodEndDateFact, currency=qnCurrencyMeasure.localName)
 
@@ -3067,7 +3058,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 for _prefix, _ns in ixdsHtmlRootElt.nsmap.items():
                     if _ns == ns and _prefix != prefix:
                         modelXbrl.error("EFM.5.02.05.standardNamespacePrefix",
-                            _("The prefix %(submittedPrefix)s must be replaced by %(recommendedPrefix)s for standard namespace %(namespace)s."),
+                            _("The prefix %(submittedPrefix)s must be replaced by %(recommendedPrefix)s for standard namespace %(namespace)s"),
                             edgarCode="ix-0502-Standard-Namespace-Prefix",
                             modelObject=ixdsHtmlRootElt, submittedPrefix=_prefix, recommendedPrefix=prefix, namespace=ns)
             ixNStag = ixdsHtmlRootElt.modelDocument.ixNStag
@@ -3091,13 +3082,13 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 elif format.prefix != ixTrRegistries[format.namespaceURI]:
                                     unsupportedNamespacePrefixes[(format.prefix,format.namespaceURI)].add(ixElt)
             if unsupportedTrFacts:
-                modelXbrl.error("EFM.5.02.05.12.unupportedTransformationRegistry",
-                    _("Inline elements have disallowed transformation registries %(unsupportedRegistries)s."),
+                modelXbrl.error("EFM.5.02.05.12.unsupportedTransformationRegistry",
+                    _("Inline elements have disallowed transformation registries %(unsupportedRegistries)s"),
                     edgarCode="ix-0512-Unsupported-Transformation-Registry",
                     modelObject=unsupportedTrFacts, unsupportedRegistries=", ".join(sorted(unsupportedTrNamespaces)))
             for (pfx,ns),facts in unsupportedNamespacePrefixes.items():
                 modelXbrl.error("EFM.5.02.05.standardNamespacePrefix",
-                    _("The prefix %(submittedPrefix)s must be replaced by %(recommendedPrefix)s for standard namespace %(namespace)s."),
+                    _("The prefix %(submittedPrefix)s must be replaced by %(recommendedPrefix)s for standard namespace %(namespace)s"),
                     edgarCode="ix-0502-Standard-Namespace-Prefix",
                     modelObject=facts, submittedPrefix=pfx, recommendedPrefix=ixTrRegistries[ns], namespace=ns)
 
@@ -3149,7 +3140,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             text=ixElt.stringValue[:100])
         if eligibleForTransformHiddenFacts:
             modelXbrl.warning("EFM.5.02.05.14.hidden-fact-eligible-for-transform",
-                _("%(countEligible)s fact(s) appearing in ix:hidden were eligible for transformation: %(elements)s"),
+                _("WARN: %(countEligible)s fact(s) appearing in ix:hidden were eligible for transformation: %(elements)s"),
                 edgarCode="ix-0514-Hidden-Fact-Eligible-For-Transform",
                 modelObject=eligibleForTransformHiddenFacts,
                 countEligible=len(eligibleForTransformHiddenFacts),
@@ -3175,7 +3166,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             if len(ixElts) > 1 and hiddenFactRef in hiddenEltIds:
                 fact = hiddenEltIds[hiddenFactRef]
                 modelXbrl.warning("EFM.5.02.05.14.hidden-fact-multiple-references",
-                    _("Fact %(element)s, id %(id)s, is referenced from %(countReferences)s elements."),
+                    _("WARN: %(element)s is referenced by %(countReferences)s -sec-ix-hidden style properties: %(id)s."),
                     edgarCode="ix-0514-Hidden-Fact-Multiple-References",
                     modelObject=ixElts + [fact], id=hiddenFactRef, element=fact.qname, countReferences=len(ixElts))
         for hiddenEltId, ixElt in hiddenEltIds.items():
@@ -3192,7 +3183,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
             requiredToDisplayFacts.remove(f)
         if requiredToDisplayFacts:
             modelXbrl.warning("EFM.5.02.05.14.hidden-fact-not-referenced",
-                _("%(countUnreferenced)s fact(s) appearing in ix:hidden were not referenced by any -sec-ix-hidden style property: %(elements)s"),
+                _("WARN: %(countUnreferenced)s fact(s) appearing in ix:hidden were not referenced by any -sec-ix-hidden style property: %(elements)s"),
                 edgarCode="ix-0514-Hidden-Fact-Not-Referenced",
                 modelObject=requiredToDisplayFacts,
                 countUnreferenced=len(requiredToDisplayFacts),
@@ -3226,7 +3217,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 if role == XbrlConst.documentationLabel:
                     if concept.modelDocument.targetNamespace in disclosureSystem.standardTaxonomiesDict:
                         modelXbrl.error(("EFM.6.10.05", "GFM.1.05.05"),
-                            _("Your filing attempted to add a new definition, '%(text)s', to an existing concept in the standard taxonomy, %(concept)s.  Please remove this definition."),
+                            _("Your filing attempted to add a new definition, \"%(text)s\", to an existing concept in the standard taxonomy, %(concept)s.  Please remove this definition."),
                             edgarCode="cp-1005-Custom-Documentation-Standard-Element",
                             modelObject=modelLabel, concept=concept.qname, text=text)
                 elif text and lang and disclosureSystem.defaultXmlLang and lang.startswith(disclosureSystem.defaultXmlLang):
@@ -3246,21 +3237,21 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                         # conceptHasDefaultLangStandardLabel = True
                     if len(text) > 511:
                         modelXbrl.error(("EFM.6.10.06", "GFM.1.05.06"),
-                            _("Element %(concept)s, label length %(length)s, has more than 511 characters or contains a left-angle-bracket character in the label for role %(role)s. "
-                              "Please correct the label."),
+                            _("Element %(concept)s has more than 511 characters or contains a left-angle-bracket character in the label for role %(role)s. Please correct the label."),
                             edgarCode="rq-1006-Label-Disallowed",
                             modelObject=modelLabel, concept=concept.qname, role=role, length=len(text), text=text[:80])
                     match = modelXbrl.modelManager.disclosureSystem.labelCheckPattern.search(text)
                     if match:
                         modelXbrl.error(("EFM.6.10.06", "GFM.1.05.07"),
                             'Label for concept %(concept)s role %(role)s has disallowed characters: "%(text)s"',
+                            edgarCode="rq-1006-Label-Disallowed",
                             modelObject=modelLabel, concept=concept.qname, role=role, text=match.group())
                 if (text is not None and len(text) > 0 and
                     modelXbrl.modelManager.disclosureSystem.labelTrimPattern and
                    (modelXbrl.modelManager.disclosureSystem.labelTrimPattern.match(text[0]) or \
                     modelXbrl.modelManager.disclosureSystem.labelTrimPattern.match(text[-1]))):
                     modelXbrl.error(("EFM.6.10.08", "GFM.1.05.08"),
-                        _("The label %(text)s of element %(concept)s has leading or trailing white space in role %(role)s for lang %(lang)s.  Please remove it."),
+                        _("The label %(text)s of element %(concept)s has leading or trailing white space.  Please remove it."),
                         edgarCode="du-1008-Label-Not-Trimmed",
                         modelObject=modelLabel, concept=concept.qname, role=role, lang=lang, text=text)
         for modelRefRel in referencesRelationshipSetWithProhibits.fromModelObject(concept):
@@ -3271,15 +3262,13 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                 if (concept.modelDocument.targetNamespace not in disclosureSystem.standardTaxonomiesDict and
                     concept.modelDocument.targetNamespace not in val.otherStandardTaxonomies):
                     modelXbrl.error(("EFM.6.18.01", "GFM.1.9.1"),
-                        _("Your filing provides a reference, '%(xml)s', for an custom concept in extension taxonomy, %(concept)s.  "
-                          "Please remove this reference."),
+                        _("Your filing provides a reference, \"%(xml)s\", for a custom concept in extension taxonomy, %(concept)s.  Please remove this reference."),
                         edgarCode="cp-1801-Custom-Element-Has-Reference",
                         modelObject=modelReference, concept=concept.qname, text=text, xml=XmlUtil.xmlstring(modelReference, stripXmlns=True, contentsOnly=True))
                 elif isEFM and not isStandardUri(val, modelRefRel.modelDocument.uri) and concept.modelDocument.targetNamespace not in val.otherStandardTaxonomies:
                     #6.18.2 no extension to add or remove references to standard concepts
                     modelXbrl.error(("EFM.6.18.02"),
-                        _("Your filing attempted to add a new reference, '%(xml)s', to an existing concept in the standard taxonomy, %(concept)s.  "
-                          "Please remove this reference."),
+                        _("Your filing attempted to add a new reference, \"%(xml)s\", to an existing concept in the standard taxonomy, %(concept)s.  Please remove this reference."),
                         edgarCode="cp-1802-Standard-Element-Has-Reference",
                         modelObject=modelReference, concept=concept.qname, text=text, xml=XmlUtil.xmlstring(modelReference, stripXmlns=True, contentsOnly=True))
 
@@ -3289,8 +3278,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
         countInDTS = sum(1 for m in modelRoleTypes if m.modelDocument.inDTS)
         if countInDTS > 1:
             modelXbrl.error(("EFM.6.07.10", "GFM.1.03.10"),
-                _("Role %(roleType)s was declared more than once (%(numberOfDeclarations)s times.).  "
-                  "Please remove all but one declaration."),
+                _("Role %(roleType)s was declared more than once (%(numberOfDeclarations)s times).  Please remove all but one declaration."),
                 edgarCode="du-0710-Role-Type-Duplicates",
                 modelObject=modelRoleTypes, roleType=roleURI, numberOfDeclarations=countInDTS)
     # 6.7.14 only one arcrole type declaration in DTS
@@ -3339,20 +3327,20 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     conflictClass = "-".join(conflictClasses)
         if conflictClass:
             modelXbrl.error("EFM.6.22.03.incompatibleSchemas",
-                _("References for conflicting standard taxonomies %(conflictClass)s are not allowed in same DTS %(namespaceConflicts)s"),
+                _("References for conflicting standard taxonomies %(conflictClass)s are not allowed in same DTS: %(namespaceConflicts)s."),
                 edgarCode="cp-2203-Incompatible-Taxonomy-Versions", conflictClass=conflictClass,
                 modelObject=elementsReferencingTxClass(conflictClasses), namespaceConflicts=", ".join(sorted(t)))
         if any(ti.startswith("rr/") for ti in t) and deiDocumentType not in docTypesRequiringRrSchema:
             modelXbrl.error("EFM.6.22.03.incompatibleTaxonomyDocumentType",
-                _("Taxonomy class %(conflictClass)s may not be used with document type %(documentType)s"),
+                _("DocumentType %(documentType)s is incompatible with the %(conflictClass)s taxonomy."),
                 modelObject=elementsReferencingTxClass("rr/*"), conflictClass="rr/*", documentType=deiDocumentType)
         if any(ti.startswith("ifrs/") for ti in t) and deiDocumentType in docTypesNotAllowingIfrs:
             modelXbrl.error("EFM.6.22.03.incompatibleTaxonomyDocumentType",
-                _("Taxonomy class %(conflictClass)s may not be used with document type %(documentType)s"),
+                _("DocumentType %(documentType)s is incompatible with the %(conflictClass)s taxonomy."),
                 modelObject=elementsReferencingTxClass("ifrs/*"), conflictClass="ifrs/*", documentType=deiDocumentType)
         if isInlineXbrl and deiDocumentType in docTypesNotAllowingInlineXBRL:
             modelXbrl.error("EFM.6.22.03.incompatibleInlineDocumentType",
-                _("Inline XBRL may not be used with document type %(documentType)s"),
+                _("DocumentType %(documentType)s is incompatible with inline XBRL."),
                 modelObject=modelXbrl, conflictClass="inline XBRL", documentType=deiDocumentType)
         ''' removed by EER-434
         if deiDocumentType is not None and not val.hasExtensionSchema and deiDocumentType != "L SDR": # and disclosureSystemVersion[0] <= 58:
@@ -3446,8 +3434,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     else:
                                         rel2 = relTo2 = None
                                     modelXbrl.error(("EFM.6.12.05", "GFM.1.06.05"),
-                                        _("Relationships from %(fromConcept)s to %(concept)s in role %(linkroleDefinition)s do not have distinct values for "
-                                          "the preferredLabel attribute, %(preferredLabel)s.  Change all but one value of preferredLabel."),
+                                        _("Relationships from %(fromConcept)s to %(concept)s in role %(linkroleDefinition)s do not have distinct values for the preferredLabel attribute.  Change all but one value of preferredLabel."),
                                         edgarCode="rq-1205-Preferred-Label-Duplicates",
                                         modelObject=(rel, relTo, rel2, relTo2),
                                         concept=relTo.qname, fromConcept=rel.fromModelObject.qname,
@@ -3461,8 +3448,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             order = rel.order
                             if order in orderRels and relTo is not None:
                                 modelXbrl.error(("EFM.6.12.02", "GFM.1.06.02"),
-                                    _("More than one presentation relationship in role %(linkroleDefinition)s has order value %(order)s, from concept %(conceptFrom)s.  "
-                                      "Change all but one so they are distinct."),
+                                    _("More than one presentation relationship in role %(linkroleDefinition)s has order value %(order)s.  Change all but one so they are distinct."),
                                     edgarCode="rq-1202-Presentation-Order-Duplicates",
                                     modelObject=(rel, orderRels[order]), conceptFrom=relFrom.qname, order=rel.arcElement.get("order"), linkrole=rel.linkrole,
                                     linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole), linkroleName=modelXbrl.roleTypeName(rel.linkrole),
@@ -3472,8 +3458,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                             if isinstance(relTo, ModelConcept):
                                 if relTo.periodType == "duration" and instantPreferredLabelRolePattern.match(preferredLabel or ""):
                                     modelXbrl.warning("EFM.6.12.07",
-                                        _("In \"%(linkrole)s\", element %(conceptTo)s has period type 'duration' but is given a preferred label %(preferredLabel)s "
-                                          "when shown under parent %(conceptFrom)s.  The preferred label will be ignored."),
+                                        _("In '%(linkroleName)s', element %(conceptTo)s has period type 'duration' but is given a preferred label %(preferredLabelValue)s when shown under parent %(conceptFrom)s.  The preferred label will be ignored."),
+                                        edgarCode="rq-1207-Period-Type-Preferred-Label-Mismatch",
                                         modelObject=(rel, relTo), conceptTo=relTo.qname, conceptFrom=relFrom.qname, order=rel.arcElement.get("order"), linkrole=rel.linkrole, linkroleDefinition=modelXbrl.roleTypeDefinition(rel.linkrole),
                                         linkroleName=modelXbrl.roleTypeName(rel.linkrole),
                                         conceptTo2=orderRels[order].toModelObject.qname,
@@ -3482,14 +3468,16 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                     isinstance(_rel.toModelObject, ModelConcept) and _rel.toModelObject.type is not None and _rel.toModelObject.type.isDomainItemType
                                     for _rel in parentChildRels.fromModelObject(relTo))):
                                         modelXbrl.warning("EFM.6.12.08",
-                                            _("In \"%(linkrole)s\" axis %(axis)s has no domain element children, which effectively filters out every fact."),
+                                            _("The presentation group '%(linkroleName)s' contains an axis %(axis)s with no domain element children, which effectively filters out every fact"),
+                                            edgarCode="rq-1208-Axis-Requires-Domain-Child",
                                             modelObject=(relFrom,relTo), axis=relTo.qname,
                                             linkrole=ELR, linkroleDefinition=modelXbrl.roleTypeDefinition(ELR), linkroleName=modelXbrl.roleTypeName(ELR))
                                 if (relFrom.isExplicitDimension and not any(
                                     isinstance(_rel.toModelObject, ModelConcept) and _rel.toModelObject.type is not None and _rel.toModelObject.type.isDomainItemType
                                     for _rel in siblingRels)):
                                         modelXbrl.warning("EFM.6.12.08",
-                                            _("In \"%(linkrole)s\" axis %(axis)s has no domain element children, which effectively filters out every fact."),
+                                            _("The presentation group '%(linkroleName)s' contains an axis %(axis)s with no domain element children, which effectively filters out every fact"),
+                                            edgarCode="rq-1208-Axis-Requires-Domain-Child",
                                             modelObject=relFrom, axis=relFrom.qname,
                                             linkrole=ELR, linkroleDefinition=modelXbrl.roleTypeDefinition(ELR), linkroleName=modelXbrl.roleTypeName(ELR))
                         targetConceptPreferredLabels.clear()
@@ -3513,9 +3501,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                     # 6.12.6
                     if len(parentChildRels.rootConcepts) > 1:
                         val.modelXbrl.warning("EFM.6.12.06",
-                            _("Presentation relationship set role %(linkrole)s has multiple (%(numberRootConcepts)s) root nodes.  "
-                              "XBRL allows unordered root nodes, but rendering requires ordering.  They will instead be ordered by their labels.  "
-                              "To avoid undesirable ordering of axes and primary items across multiple root nodes, rearrange the presentation relationships to have only a single root node."),
+                            _("Presentation group '%(linkroleName)s' has multiple root nodes. XBRL allows unordered root nodes, but rendering requires ordering.  They will instead be ordered by their labels.  To avoid undesirable ordering of axes and primary items across multiple root nodes, rearrange the presentation relationships to have only a single root node."),
+                            edgarCode="rq-1206-Multiple-Root-Nodes",
                             modelObject=(rel,parentChildRels.rootConcepts), linkrole=ELR, linkroleDefinition=val.modelXbrl.roleTypeDefinition(ELR),
                             linkroleName=val.modelXbrl.roleTypeName(ELR),
                             numberRootConcepts=len(parentChildRels.rootConcepts))
@@ -3567,6 +3554,7 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
                                 otherELR = otherRels[0].linkrole
                                 val.modelXbrl.log("WARNING-SEMANTIC", ("EFM.6.15.04", "GFM.2.06.04"),
                                     _("Calculation relationships should have a same set of targets in %(linkrole)s and %(linkrole2)s starting from %(concept)s"),
+                                    edgarCode="fs-1504-Calculation-Relationships-Redundant",
                                     modelObject=[relFrom] + rels + otherRels, linkrole=ELR, linkrole2=otherELR, concept=relFrom.qname)
                             else:
                                 usedCalcFromTosELR[relFromAndTos] = rels
@@ -3798,7 +3786,8 @@ def validateFiling(val, modelXbrl, isEFM=False, isGFM=False):
     # DQC.US rules
     if dqcRules:
         try:
-            if "EFM.6.05.20.documentTypeValue" in modelXbrl.errors:
+            # the DocumentType value check failed, whichever guide codes it (EFM.6.05.20, EXG.3.01.05)
+            if any(isinstance(e, str) and e.endswith(".documentTypeValue") for e in modelXbrl.errors):
                 dqcRules = {} # block dqc due to invalid docType
             elif xuleValidate(val): # true if there was a Xule validation
                 dqcRules = {} # block built-in rules
@@ -5844,7 +5833,7 @@ def checkConceptLabels(val, modelXbrl, labelsRelationshipSet, disclosureSystem, 
     #6 10.1 en-US standard label
     if not hasDefaultLangStandardLabel:
         modelXbrl.error(("EFM.6.10.01", "GFM.1.05.01"),
-            _("You have submitted an instance using an element without an %(lang)s standard label %(concept)s. Please check your submission and correct the labels."),
+            _("You have submitted an instance using an element without an en-US standard label %(concept)s. Please check your submission and correct the labels."),
             # concept must be the first referenced modelObject
             edgarCode="cp-1001-Element-Used-Standard-Label",
             modelObject=[concept] + list(modelXbrl.factsByQname[concept.qname]), concept=concept.qname,

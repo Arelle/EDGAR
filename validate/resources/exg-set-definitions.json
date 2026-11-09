@@ -1,0 +1,917 @@
+{
+ "comment": "EXG 1.1 Set Definitions, generated from the EDGAR XBRL Guide, November 2026, Tables 6-1 to 6-4, by extractSets.py (validate/resources/exg/build). Do not edit by hand: regenerate.",
+ "edition": "November 2026",
+ "submissionSets": {
+  "6K": {
+   "definition": "Report of FPI",
+   "submissionTypes": [
+    "6-K",
+    "6-K/A"
+   ]
+  },
+  "8K": {
+   "definition": "Current Report",
+   "submissionTypes": [
+    "8-K",
+    "8-K/A",
+    "8-K12B",
+    "8-K12B/A",
+    "8-K12G3",
+    "8-K12G3/A",
+    "8-K15D5",
+    "8-K15D5/A"
+   ]
+  },
+  "AF": {
+   "definition": "Annual Financial",
+   "submissionTypes": [
+    "10-K",
+    "10-K/A",
+    "10-KT",
+    "10-KT/A",
+    "20-F",
+    "20-F/A",
+    "40-F",
+    "40-F/A",
+    "N-CSR",
+    "N-CSR/A",
+    "SP 15D2",
+    "SP 15D2/A"
+   ]
+  },
+  "AM": {
+   "definition": "Amending",
+   "submissionTypes": [
+    "6-K/A",
+    "8-K/A",
+    "8-K12B/A",
+    "8-K12G3/A",
+    "8-K15D5/A",
+    "10-K/A",
+    "10-KT/A",
+    "11-K/A",
+    "11-KT/A",
+    "20-F/A",
+    "20FR12B/A",
+    "20FR12G/A",
+    "40-F/A",
+    "N-CSR/A",
+    "SP 15D2/A",
+    "N-CSRS/A",
+    "17AD-27/A",
+    "SD/A%201",
+    "424H/A",
+    "10-Q/A",
+    "10-QT/A",
+    "F-1/A",
+    "F-10/A",
+    "F-3/A",
+    "F-4/A",
+    "N-14 8C/A",
+    "S-1/A",
+    "S-11/A",
+    "S-3/A",
+    "S-4/A",
+    "S-6/A",
+    "SF-1/A",
+    "SF-3/A",
+    "10-12B/A",
+    "10-12G/A",
+    "40FR12B/A",
+    "40FR12G/A",
+    "SC 13E1/A",
+    "SC 13E3/A",
+    "SC TO-I/A",
+    "SC TO-T/A",
+    "SC13E4F/A",
+    "SC14D1F/A",
+    "N-8B-2/A",
+    "N-1A/A",
+    "N-2/A",
+    "N-3/A",
+    "N-4/A",
+    "N-6/A",
+    "SBSEF/A",
+    "SDR/A",
+    "SBSEF-CCO-RPT/A",
+    "SBSEF-FIN-QTR/A",
+    "SBSEF-FIN-REQ/A",
+    "SC 14D9/A"
+   ]
+  },
+  "EBP": {
+   "definition": "Employee Benefit Plan Annual",
+   "submissionTypes": [
+    "11-K",
+    "11-K/A",
+    "11-KT",
+    "11-KT/A"
+   ]
+  },
+  "FAST": {
+   "definition": "FAST Act covered",
+   "submissionTypes": [
+    "8-K",
+    "8-K/A",
+    "8-K12B",
+    "8-K12B/A",
+    "8-K12G3",
+    "8-K12G3/A",
+    "8-K15D5",
+    "8-K15D5/A",
+    "10-K",
+    "10-K/A",
+    "10-KT",
+    "10-KT/A",
+    "20-F",
+    "20-F/A",
+    "40-F",
+    "40-F/A",
+    "10-Q",
+    "10-Q/A",
+    "10-QT",
+    "10-QT/A"
+   ]
+  },
+  "FE": {
+   "definition": "Fee Exhibit",
+   "submissionTypes": [
+    "POS AM",
+    "F-1",
+    "F-1/A",
+    "F-10",
+    "F-10/A",
+    "F-10EF",
+    "F-1MEF",
+    "F-3",
+    "F-3/A",
+    "F-3ASR",
+    "F-3D",
+    "F-3MEF",
+    "F-4",
+    "F-4/A",
+    "F-4MEF",
+    "N-14 8C",
+    "N-14 8C/A",
+    "N-14MEF",
+    "N-2",
+    "N-2 POSASR",
+    "N-2/A",
+    "N-2ASR",
+    "N-2MEF",
+    "POSASR",
+    "S-1",
+    "S-1/A",
+    "S-11",
+    "S-11/A",
+    "S-11MEF",
+    "S-1MEF",
+    "S-3",
+    "S-3/A",
+    "S-3ASR",
+    "S-3D",
+    "S-3MEF",
+    "S-4",
+    "S-4/A",
+    "S-4EF",
+    "S-4MEF",
+    "S-8",
+    "SF-1",
+    "SF-1/A",
+    "SF-1MEF",
+    "SF-3",
+    "SF-3/A",
+    "SF-3MEF",
+    "PREM14A",
+    "PREM14C",
+    "PRER14A",
+    "PRER14C",
+    "424B1",
+    "424B2",
+    "424B3",
+    "424B4",
+    "424B5",
+    "424B7",
+    "424B8",
+    "424H",
+    "424H/A",
+    "424I",
+    "SC 13E1",
+    "SC 13E1/A",
+    "SC 13E3",
+    "SC 13E3/A",
+    "SC TO-I",
+    "SC TO-I/A",
+    "SC TO-T",
+    "SC TO-T/A",
+    "SC13E4F",
+    "SC13E4F/A",
+    "SC14D1F",
+    "SC14D1F/A"
+   ]
+  },
+  "HF": {
+   "definition": "Semi-annual (half year) Financial",
+   "submissionTypes": [
+    "N-CSRS",
+    "N-CSRS/A"
+   ]
+  },
+  "OA": {
+   "definition": "Other Annual",
+   "submissionTypes": [
+    "17AD-27",
+    "17AD-27/A",
+    "SD%201",
+    "SD/A%201",
+    "SDR%KL",
+    "SDR/A%KL",
+    "SBSEF-CCO-RPT",
+    "SBSEF-CCO-RPT/A"
+   ]
+  },
+  "PRO": {
+   "definition": "Prospectus",
+   "submissionTypes": [
+    "424A",
+    "424B1",
+    "424B2",
+    "424B3",
+    "424B4",
+    "424B5",
+    "424B7",
+    "424B8",
+    "424H",
+    "424I",
+    "425"
+   ]
+  },
+  "PX": {
+   "definition": "Proxy",
+   "submissionTypes": [
+    "DEF 14A",
+    "DEF 14C",
+    "DEFA14A",
+    "DEFA14C",
+    "DEFC14A",
+    "DEFC14C",
+    "DEFM14A",
+    "DEFM14C",
+    "DEFR14A",
+    "DEFR14C",
+    "PRE 14A",
+    "PRE 14C",
+    "PREC14A",
+    "PREC14C",
+    "PREM14A",
+    "PREM14C",
+    "PRER14A",
+    "PRER14C"
+   ]
+  },
+  "QF": {
+   "definition": "Quarterly Financial",
+   "submissionTypes": [
+    "10-Q",
+    "10-Q/A",
+    "10-QT",
+    "10-QT/A",
+    "SBSEF-FIN-QTR",
+    "SBSEF-FIN-QTR/A"
+   ]
+  },
+  "R33": {
+   "definition": "33 Act Registration Only",
+   "submissionTypes": [
+    "F-1",
+    "F-1/A",
+    "F-10",
+    "F-10/A",
+    "F-10EF",
+    "F-1MEF",
+    "F-3",
+    "F-3/A",
+    "F-3ASR",
+    "F-3D",
+    "F-3MEF",
+    "F-4",
+    "F-4/A",
+    "F-4MEF",
+    "N-14 8C",
+    "N-14 8C/A",
+    "N-14MEF",
+    "POS AM#S1",
+    "POS AM#S3",
+    "POS462B#S1",
+    "POS462B#S3",
+    "POS462C#S1",
+    "POS462C#S3",
+    "POSASR#F3",
+    "POSASR#S3",
+    "S-1",
+    "S-1/A",
+    "S-11",
+    "S-11/A",
+    "S-11MEF",
+    "S-1MEF",
+    "S-3",
+    "S-3/A",
+    "S-3ASR",
+    "S-3D",
+    "S-3MEF",
+    "S-4",
+    "S-4/A",
+    "S-4EF",
+    "S-4MEF",
+    "S-6",
+    "S-6/A",
+    "S-8",
+    "SF-1",
+    "SF-1/A",
+    "SF-1MEF",
+    "SF-3",
+    "SF-3/A",
+    "SF-3MEF"
+   ]
+  },
+  "R34": {
+   "definition": "34 Act Registration Only",
+   "submissionTypes": [
+    "10-12B",
+    "10-12B/A",
+    "10-12G",
+    "10-12G/A",
+    "20FR12B",
+    "20FR12B/A",
+    "20FR12G",
+    "20FR12G/A",
+    "40FR12B",
+    "40FR12B/A",
+    "40FR12G",
+    "40FR12G/A",
+    "SC 13E1",
+    "SC 13E1/A",
+    "SC 13E3",
+    "SC 13E3/A",
+    "SC TO-I",
+    "SC TO-I/A",
+    "SC TO-T",
+    "SC TO-T/A",
+    "SC13E4F",
+    "SC13E4F/A",
+    "SC14D1F",
+    "SC14D1F/A",
+    "1",
+    "1AA",
+    "1AC",
+    "1/A",
+    "1/A-A",
+    "1/A-T",
+    "1/S-M",
+    "1/S-R",
+    "1W"
+   ]
+  },
+  "R40": {
+   "definition": "40 Act Registration Only",
+   "submissionTypes": [
+    "N-8B-2",
+    "N-8B-2/A"
+   ]
+  },
+  "RD": {
+   "definition": "33 and/or 40 Act (dual) registration",
+   "submissionTypes": [
+    "485APOS#N1",
+    "485APOS#N3",
+    "485APOS#N4",
+    "485APOS#N6",
+    "485BPOS#N1",
+    "485BPOS#N3",
+    "485BPOS#N4",
+    "485BPOS#N6",
+    "485BXT#N1",
+    "485BXT#N3",
+    "485BXT#N4",
+    "485BXT#N6",
+    "486APOS#N2",
+    "486BPOS#N2",
+    "486BXT#N2",
+    "497#N1",
+    "497#N3",
+    "497#N4",
+    "497#N6",
+    "N-1A",
+    "N-1A/A",
+    "N-2",
+    "N-2 POSASR",
+    "N-2/A",
+    "N-2ASR",
+    "N-2MEF",
+    "N-3",
+    "N-3/A",
+    "N-4",
+    "N-4/A",
+    "N-6",
+    "N-6/A",
+    "POS 8C#N1",
+    "POS 8C#N2",
+    "POS 8C#N3",
+    "POS 8C#N4",
+    "POS 8C#N6",
+    "POS AMI#N1",
+    "POS AMI#N2",
+    "POS AMI#N3",
+    "POS AMI#N4",
+    "POS AMI#N6"
+   ]
+  },
+  "RF": {
+   "definition": "Requested Financial",
+   "submissionTypes": [
+    "SBSEF-FIN-REQ",
+    "SBSEF-FIN-REQ/A"
+   ]
+  },
+  "SE": {
+   "definition": "Reg. SE Registration",
+   "submissionTypes": [
+    "SBSEF",
+    "SBSEF/A"
+   ]
+  },
+  "TF": {
+   "definition": "Transitional Financial",
+   "submissionTypes": [
+    "10-KT",
+    "10-KT/A",
+    "10-QT",
+    "10-QT/A",
+    "11-KT",
+    "11-KT/A"
+   ]
+  },
+  "TO": {
+   "definition": "Tender Offer",
+   "submissionTypes": [
+    "SC14D1F",
+    "SC14D1F/A",
+    "SC 14D9",
+    "SC 14D9/A",
+    "SC14D9C",
+    "SC13E4F",
+    "SC13E4F/A",
+    "SC TO-I",
+    "SC TO-I/A",
+    "SC TO-C",
+    "SC TO-C/A",
+    "SC TO-T",
+    "SC TO-T/A"
+   ]
+  }
+ },
+ "submissionSetSuffixes": {
+  "#N1": "The Form is an N-1A.",
+  "#N2": "The Form is an N-2.",
+  "#N3": "The Form is an N-3.",
+  "#N4": "The Form is an N-4.",
+  "#N6": "The Form is an N-6.",
+  "#S1": "The Form is an S-1.",
+  "#S3": "The Form is an S-3.",
+  "#F1": "The Form is an F-1.",
+  "#F3": "The Form is an F-3.",
+  "%201": "There is an Exhibit 2.01 in the submission.",
+  "%KL": "There is an exhibit K SDR or L SDR in the submission.",
+  "%98": "There is an Exhibit 98 in the submission."
+ },
+ "entitySets": {
+  "ALL": "Any registrant",
+  "BDC": "Business Development Company",
+  "CA": "Canadian Issuer",
+  "FPI": "Foreign Private Issuer",
+  "OEF": "Open-end Fund",
+  "CEF": "Closed-end Fund",
+  "V3": "Separate Account Registered as Open-end Fund",
+  "V4": "Variable Annuity UIT Separate Account",
+  "V6": "Variable Life UIT Separate Account",
+  "RT": "Real Estate Investment Trust",
+  "SBSEF": "Security-based Swap Execution Facility",
+  "SDR": "Security-based Swap Data Repository",
+  "SF": "Structured Finance Company",
+  "SPAC": "Special Purpose Acquisition Company",
+  "SRO": "Self-regulatory Organization",
+  "UIT": "Unit Investment Trust",
+  "US": "US Operating Company"
+ },
+ "instanceTypes": [
+  {
+   "submissionSet": "6K",
+   "includedEntitySet": "FPI",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "6K.FPI"
+  },
+  {
+   "submissionSet": "8K",
+   "includedEntitySet": "ALL",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "8K.A"
+  },
+  {
+   "submissionSet": "8K",
+   "includedEntitySet": "SPAC",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-98",
+   "instanceType": "EX98.SPAC"
+  },
+  {
+   "submissionSet": "AF",
+   "includedEntitySet": "BDC",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "AF.BDC"
+  },
+  {
+   "submissionSet": "AF",
+   "includedEntitySet": "CA",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "AF.CA"
+  },
+  {
+   "submissionSet": "AF",
+   "includedEntitySet": "CEF",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "AF.CEF"
+  },
+  {
+   "submissionSet": "AF",
+   "includedEntitySet": "FPI",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "AF.FPI"
+  },
+  {
+   "submissionSet": "AF",
+   "includedEntitySet": "OEF",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "AF.OEF"
+  },
+  {
+   "submissionSet": "AF",
+   "includedEntitySet": "US",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "AF.US"
+  },
+  {
+   "submissionSet": "EBP",
+   "includedEntitySet": "ALL",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "EBP.A"
+  },
+  {
+   "submissionSet": "FE",
+   "includedEntitySet": "ALL",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-FILING FEES",
+   "instanceType": "FE.A"
+  },
+  {
+   "submissionSet": "HF",
+   "includedEntitySet": "OEF",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "HF.OEF"
+  },
+  {
+   "submissionSet": "OA",
+   "includedEntitySet": "CA",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-2.01",
+   "instanceType": "RXP.CA"
+  },
+  {
+   "submissionSet": "OA",
+   "includedEntitySet": "FPI",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-2.01",
+   "instanceType": "RXP.FPI"
+  },
+  {
+   "submissionSet": "OA",
+   "includedEntitySet": "SDR",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.L SDR",
+   "instanceType": "L.SDR"
+  },
+  {
+   "submissionSet": "OA",
+   "includedEntitySet": "SDR",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.K SDR",
+   "instanceType": "K.SDR"
+  },
+  {
+   "submissionSet": "OA",
+   "includedEntitySet": "SRO",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "OA.SRO"
+  },
+  {
+   "submissionSet": "OA",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "CCO.SEF"
+  },
+  {
+   "submissionSet": "OA",
+   "includedEntitySet": "US",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-2.01",
+   "instanceType": "RXP.US"
+  },
+  {
+   "submissionSet": "PRO",
+   "includedEntitySet": "ALL",
+   "excludedEntitySets": [
+    "CEF"
+   ],
+   "exhibitType": null,
+   "instanceType": "PRO.ANC"
+  },
+  {
+   "submissionSet": "PRO",
+   "includedEntitySet": "CEF",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "PRO.CEF"
+  },
+  {
+   "submissionSet": "PX",
+   "includedEntitySet": "ALL",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "PX.A"
+  },
+  {
+   "submissionSet": "PX",
+   "includedEntitySet": "SPAC",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-98",
+   "instanceType": "EX98.SPAC"
+  },
+  {
+   "submissionSet": "QF",
+   "includedEntitySet": "BDC",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "QF.BDC"
+  },
+  {
+   "submissionSet": "QF",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "QF.SEF"
+  },
+  {
+   "submissionSet": "QF",
+   "includedEntitySet": "US",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "QF.US"
+  },
+  {
+   "submissionSet": "R33",
+   "includedEntitySet": "FPI",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "R33.FPI"
+  },
+  {
+   "submissionSet": "R33",
+   "includedEntitySet": "RT",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "R33.RT"
+  },
+  {
+   "submissionSet": "R33",
+   "includedEntitySet": "SPAC",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-98",
+   "instanceType": "EX98.SPAC"
+  },
+  {
+   "submissionSet": "R33",
+   "includedEntitySet": "UIT",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "R33.UIT"
+  },
+  {
+   "submissionSet": "R33",
+   "includedEntitySet": "US",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "R33.US"
+  },
+  {
+   "submissionSet": "R34",
+   "includedEntitySet": "CA",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "R34.CA"
+  },
+  {
+   "submissionSet": "R34",
+   "includedEntitySet": "FPI",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "R34.FPI"
+  },
+  {
+   "submissionSet": "R34",
+   "includedEntitySet": "SPAC",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-98",
+   "instanceType": "EX98.SPAC"
+  },
+  {
+   "submissionSet": "R34",
+   "includedEntitySet": "SRO",
+   "excludedEntitySets": [],
+   "exhibitType": "EX.I.FORM1",
+   "instanceType": "AF.SRO"
+  },
+  {
+   "submissionSet": "R40",
+   "includedEntitySet": "UIT",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "R40.UIT"
+  },
+  {
+   "submissionSet": "R34",
+   "includedEntitySet": "US",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "R34.US"
+  },
+  {
+   "submissionSet": "RD",
+   "includedEntitySet": "CEF",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "RD.CEF"
+  },
+  {
+   "submissionSet": "RD",
+   "includedEntitySet": "OEF",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "RD.OEF"
+  },
+  {
+   "submissionSet": "RD",
+   "includedEntitySet": "V3",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "RD.V3"
+  },
+  {
+   "submissionSet": "RD",
+   "includedEntitySet": "V4",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "RD.V4"
+  },
+  {
+   "submissionSet": "RD",
+   "includedEntitySet": "V4",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.4r HISTORIC",
+   "instanceType": "RD.H99"
+  },
+  {
+   "submissionSet": "RD",
+   "includedEntitySet": "V6",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "RD.V6"
+  },
+  {
+   "submissionSet": "RF",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": null,
+   "instanceType": "RF.SEF"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.C.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.D.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.E.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.F.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.H.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.I.SBSEF",
+   "instanceType": "SE.FEX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.J.SBSEF",
+   "instanceType": "SE.FEX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.K.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.L.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.P.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.Q.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.R.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "SE",
+   "includedEntitySet": "SBSEF",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-99.S.SBSEF",
+   "instanceType": "SE.OCX"
+  },
+  {
+   "submissionSet": "TO",
+   "includedEntitySet": "SPAC",
+   "excludedEntitySets": [],
+   "exhibitType": "EX-98",
+   "instanceType": "EX98.SPAC"
+  }
+ ],
+ "corrections": []
+}

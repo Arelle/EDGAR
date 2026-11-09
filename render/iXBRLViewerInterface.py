@@ -11,7 +11,7 @@ Interface to Arelle.org iXBRLViewerPlugin
 Subclasses operation for use as Python Classes (not plugin operation) under EdgarRenderer workflow
 """
 
-import io, os, sys, zipfile
+import inspect, io, os, sys, zipfile
 from arelle.PluginManager import pluginClassMethods
 from arelle import PluginManager
 
@@ -26,12 +26,14 @@ def hasIXBRLViewerPlugin(cntlr):
     global _iXBRLViewerPlugin
     if _iXBRLViewerPlugin is not None:
         return True
-    if "ixbrl-viewer" not in PluginManager.pluginConfig["modules"]:
-        return False
+    # availability depends on the viewer being installed, not on it being registered in the plugin config
     try:
         from arelle.plugin import iXBRLViewerPlugin as _iXBRLViewerPlugin
     except ImportError:
-        return False
+        try:  # pip-installed ixbrl-viewer package (top-level module)
+            import iXBRLViewerPlugin as _iXBRLViewerPlugin
+        except ImportError:
+            return False
     disableiXBRLViewerPluginInfo(cntlr)
     return True
 
@@ -44,22 +46,27 @@ def generateViewer(cntlr, stubDir):
         securityIsActive = pluginMethod(self)  # must be active for the save method to save encrypted files
     _iXBRLViewerPlugin.pluginData(cntlr).builder = _iXBRLViewerPlugin.IXBRLViewerBuilder(cntlr, useStubViewer = True)
     _iXBRLViewerPlugin.processModel(cntlr, cntlr.modelManager.modelXbrl)
-    with io.BytesIO() as fZip:
-        _iXBRLViewerPlugin.generateViewer(
+    generateKwargs = dict(
                                 cntlr=cntlr,
-                                saveViewerDest=fZip,
                                 viewerURL=JS_PATH,
                                 showValidationMessages=False,
                                 zipViewerOutput=True,
-                                features=None,
                                 packageDownloadURL=None,
-                                copyScript=False
-            )
+                                copyScript=False)
+    # older iXBRLViewerPlugin versions accept features in generateViewer, newer ones (e.g. 1.5.x) do not
+    if "features" in inspect.signature(_iXBRLViewerPlugin.generateViewer).parameters:
+        generateKwargs["features"] = None
+    with io.BytesIO() as fZip:
+        _iXBRLViewerPlugin.generateViewer(saveViewerDest=fZip, **generateKwargs)
         fZip.seek(0)
         with zipfile.ZipFile(fZip) as zF:
             stubBytes = zF.read("ixbrlviewer.html")
     if not stubBytes:
         return
+    # ixbrlviewer.js >= 1.5.5 adds a non-self-closed viewport <meta> via innerHTML when none exists,
+    # which is invalid XML and aborts loading in this XHTML stub; supplying a well-formed one avoids that
+    if b'name="viewport"' not in stubBytes:
+        stubBytes = stubBytes.replace(b"</head>", b'<meta name="viewport" content="width=device-width, initial-scale=1"/></head>', 1)
     if securityIsActive:
         for pluginMethod in pluginClassMethods("Security.Crypt.Write"):
             securityHasWritten = pluginMethod(self, stubPath, stubBytes)

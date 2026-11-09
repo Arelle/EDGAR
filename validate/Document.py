@@ -28,7 +28,7 @@ def checkDTSdocument(val, modelDocument, isFilingDocument):
             l = len(modelDocument.targetNamespace.encode("utf-8"))
             if l > 255:
                 val.modelXbrl.error("EFM.6.07.30",
-                    _("Shorten this declaration URI from %(length)s to 255 bytes or fewer in UTF-8: %(value)s."),
+                    _("Shorten this declaration URI to 255 bytes or fewer in UTF-8: %(value)s."),
                     edgarCode="du-0730-uri-length-limit",
                     modelObject=modelDocument.xmlRootElement, length=l, targetNamespace=modelDocument.targetNamespace, value=modelDocument.targetNamespace)
 
@@ -44,7 +44,7 @@ def checkDTSdocument(val, modelDocument, isFilingDocument):
                             l = len(name.encode("utf-8"))
                             if l > 200:
                                 val.modelXbrl.error("EFM.6.07.29",
-                                    _("Shorten this declaration name from %(length)s to 200 bytes or fewer in UTF-8: %(name)s"),
+                                    _("Shorten this declaration name to 200 bytes or fewer in UTF-8: %(name)s"),
                                     edgarCode="du-0729-name-length-limit",
                                     modelObject=elt, element=localName, name=name, length=l)
 
@@ -61,7 +61,7 @@ def checkDTSdocument(val, modelDocument, isFilingDocument):
                         l = len(roleURI.encode("utf-8"))
                         if l > 255:
                             val.modelXbrl.error("EFM.6.07.30",
-                                _("Shorten this declaration URI from %(length)s to 255 bytes or fewer in UTF-8: %(value)s."),
+                                _("Shorten this declaration URI to 255 bytes or fewer in UTF-8: %(value)s."),
                                 edgarCode="du-0730-uri-length-limit",
                                 modelObject=elt, element=elt.qname, attribute=uriAttr, length=l, roleURI=roleURI, value=roleURI)
 
@@ -94,24 +94,20 @@ def checkDTSdocument(val, modelDocument, isFilingDocument):
             if xlinkType == "extended":
                 if not xlinkRole or xlinkRole == "":
                     val.modelXbrl.error(("EFM.6.09.04", "GFM.1.04.04"),
-                        "The %(element)s element requires an xlink:role such as the default, 'http://www.xbrl.org/2003/role/label'.  "
-                        "Please recheck submission.",
+                        "The %(element)s element requires an xlink:role such as the default, \"http://www.xbrl.org/2003/role/label\".  Please recheck submission.",
                         edgarCode="fs-0904-Resource-Role-Missing",
                         modelObject=elt, element=elt.qname)
                 if not val.extendedElementName:
                     val.extendedElementName = elt.qname
                 elif val.extendedElementName != elt.qname and modelDocument.type == ModelDocument.Type.LINKBASE:
                     val.modelXbrl.error(("EFM.6.09.07", "GFM:1.04.07"),
-                        _("Your filing contained extended type links with roles of different namesapces and local names, %(element)s "
-                          "and %(element2)s in the same linkbase, %(refUrl)s.  Please recheck your submission and ensure that all "
-                          "extended-type links in a single linkbase have the same namespace and local name."),
+                        _("Your filing contained extended type links with roles of different namespaces and local names, %(element)s and %(element2)s in the same linkbase.  Please recheck your submission and ensure that all extended-type links in a single linkbase have the same namespace and local name."),
                         edgarCode="cp-0907-Linkbases-Distinct", refUrl=elt.modelDocument.basename,
                         modelObject=elt, element=elt.qname, element2=val.extendedElementName)
             elif xlinkType == "resource":
                 if not xlinkRole:
                     val.modelXbrl.error(("EFM.6.09.04", "GFM.1.04.04"),
-                        _("The %(element)s element requires an xlink:role such as the default, 'http://www.xbrl.org/2003/role/label'.  "
-                          "Please recheck submission."),
+                        _("The %(element)s element requires an xlink:role such as the default, \"http://www.xbrl.org/2003/role/label\".  Please recheck submission."),
                         edgarCode="fs-0904-Resource-Role-Missing",
                         modelObject=elt, element=elt.qname)
                 elif not XbrlConst.isStandardRole(xlinkRole):
@@ -130,8 +126,7 @@ def checkDTSdocument(val, modelDocument, isFilingDocument):
                     try:
                         if int(priority) >= 10:
                             val.modelXbrl.error(("EFM.6.09.09", "GFM.1.04.08"),
-                                _("The priority attribute %(priority)s has a value of ten or greater, on arc %(arcElement)s from %(xlinkFrom)s to %(xlinkTo)s. "
-                                  "Please change the priority to value less than 10 and resubmit."),
+                                _("The priority attribute %(priority)s has a value of ten or greater, on arc %(arcElement)s. Please change the priority to value less than 10 and resubmit."),
                                 edgarCode="du-0909-Relationship-Priority-Not-Less-Than-Ten",
                                 modelObject=elt,
                                 arcElement=elt.qname,
@@ -140,8 +135,7 @@ def checkDTSdocument(val, modelDocument, isFilingDocument):
                                 priority=priority)
                     except (ValueError) :
                         val.modelXbrl.error(("EFM.6.09.09", "GFM.1.04.08"),
-                            _("The priority attribute %(priority)s has a value of ten or greater, on arc %(arcElement)s from %(xlinkFrom)s to %(xlinkTo)s. "
-                              "Please change the priority to value less than 10 and resubmit."),
+                            _("The priority attribute %(priority)s has a value of ten or greater, on arc %(arcElement)s. Please change the priority to value less than 10 and resubmit."),
                             edgarCode="du-0909-Relationship-Priority-Not-Less-Than-Ten",
                             modelObject=elt,
                             arcElement=elt.qname,

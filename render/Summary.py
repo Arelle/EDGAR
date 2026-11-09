@@ -462,10 +462,11 @@ class InstanceSummary(object):
             doctype = 'supplemental'
             if doc.xmlRootElement.localName == 'xbrl':
                 doctype = 'instance'
-                self.instanceFiles += [f]
+                # always use the basename here. Even for remote/RSS-loaded doc
+                self.instanceFiles += [os.path.basename(f)]
             elif doc.xmlRootElement.localName == 'html':
                 doctype = 'inline'
-                self.inlineFiles += [f]
+                self.inlineFiles += [os.path.basename(f)]
             elif doc.xmlRootElement.localName == 'schema':
                 doctype = 'schema'
                 self.otherXbrlFiles += [f]

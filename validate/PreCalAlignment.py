@@ -240,6 +240,7 @@ def checkForCalculations(val, parentChildRels, siblingRels, iSibling, totalConce
                 msgCode = "ERROR-SEMANTIC"
                 if isStatementSheet:
                     errs = ("EFM.6.15.02,6.13.02,6.13.03", "GFM.2.06.02,2.05.02,2.05.03")
+                    edgarCode = "fs-1502-Required-Calculation-Missing"
                     msg = _("Financial statement calculation relationship missing from total concept to item concepts, based on required presentation of line items and totals.  "
                             "%(reasonIssueIsWarning)s"
                             "\n\nPresentation link role: \n%(linkrole)s \n%(linkroleDefinition)s. "
@@ -250,6 +251,7 @@ def checkForCalculations(val, parentChildRels, siblingRels, iSibling, totalConce
                             "\n\nCorresponding facts in contexts: \n%(contextIDs)s\n")
                 else:
                     errs = ("EFM.6.15.03,6.13.02,6.13.03", "GFM.2.06.03,2.05.02,2.05.03")
+                    edgarCode = "fs-1503-Required-Calculation-Missing"
                     msg = _("Notes calculation relationship missing from total concept to item concepts, based on required presentation of line items and totals. "
                             "%(reasonIssueIsWarning)s"
                             "\n\nPresentation link role: \n%(linkrole)s \n%(linkroleDefinition)s."
@@ -312,6 +314,7 @@ Expected item concepts
 Corresponding facts in contexts:
 %(contextIDs)s"]]"""
                 val.modelXbrl.log(msgCode, errs, msg,
+                    edgarCode=edgarCode,
                     modelObject=[totalConcept, totalRel, siblingConcept, contributingRel] + [f for f in compatibleFacts],
                     reasonIssueIsWarning=reasonIssueIsWarning,
                     conceptSum=totalConcept.qname, linkrole=contributingRel.linkrole, linkroleDefinition=linkroleDefinition,

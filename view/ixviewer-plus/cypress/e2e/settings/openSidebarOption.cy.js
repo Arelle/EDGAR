@@ -12,7 +12,7 @@ describe(`Settings: Select Open Sidebar Options`, () => {
             },
             timeout: Number(filing.timeout)
         }).then(browser => {
-            cy.get('div[id="loading-animation"]', { timeout: Number(filing.timeout) || 12000 }).should('not.be.visible');
+            cy.waitForAppReady(Number(filing.timeout) || 12000);
             cy.get(selectors.factCountClock).should('not.exist');
         })
 

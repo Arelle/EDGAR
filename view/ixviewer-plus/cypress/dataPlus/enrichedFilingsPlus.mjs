@@ -3757,7 +3757,7 @@ export const filings = [
 	},
 	{
 		"accessionNum": "000117625625000090",
-		"docPath": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1011509/000117625625000090/aumn-20250930.htm.htm",
+		"docPath": "/Archives/edgar/data/1011509/000117625625000090/aumn-20250930.htm.htm",
 		"timeout": "40000",
 		"multiInstance": false,
 		"multiDoc": false,
@@ -3769,7 +3769,7 @@ export const filings = [
 	},
 	{
 		"accessionNum": "000120677425000099",
-		"docPath": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/1090009/000120677425000099/sfst4401651-10k.htm",
+		"docPath": "/Archives/edgar/data/1090009/000120677425000099/sfst4401651-10k.htm",
 		"timeout": "20000",
 		"multiInstance": false,
 		"multiDoc": false,
@@ -3781,7 +3781,7 @@ export const filings = [
 	},
 	{
 		"accessionNum": "000110465925020739",
-		"docPath": "http://localhost:3000/ix.xhtml?doc=/Archives/edgar/data/813900/000110465925020739/tm255536d1_ncsr.htm",
+		"docPath": "/Archives/edgar/data/813900/000110465925020739/tm255536d1_ncsr.htm",
 		"timeout": "400000",
 		"multiInstance": false,
 		"multiDoc": false,

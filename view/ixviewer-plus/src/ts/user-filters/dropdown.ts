@@ -57,21 +57,23 @@ export const UserFiltersDropdown = {
         moreFiltersCount += UserFiltersState.getPeriod.length;
         moreFiltersCount += UserFiltersState.getScale.length;
 
+        const moreFiltersBadge = document.getElementById('nav-filter-more')?.querySelector<HTMLElement>('.badge');
         if (moreFiltersCount > 0) {
-            document.getElementById('nav-filter-more').querySelector('.badge').innerText ??= moreFiltersCount;
+            if (moreFiltersBadge) moreFiltersBadge.innerText = `${moreFiltersCount}`;
             document.getElementById('nav-filter-more')?.setAttribute('title', 'This filter is in use.');
             document.getElementById('nav-filter-more')?.classList.add('text-warning');
             UserFiltersDropdown.filterActive = true;
         } else {
-            document.getElementById('nav-filter-more').querySelector('.badge').innerText ??= '';
+            if (moreFiltersBadge) moreFiltersBadge.innerText = '';
             document.getElementById('nav-filter-more')?.removeAttribute('title');
             document.getElementById('nav-filter-more')?.classList.remove('text-warning');
         }
     },
 
-    resetAll: () => {
+    resetState: () => {
         UserFiltersDropdown.filterActive = false;
 
+        UserFiltersState.getType = [];
         UserFiltersState.getDataRadios = 0;
         (document.querySelector('input[name="data-radios"]') as HTMLInputElement).checked = true;
 
@@ -119,8 +121,10 @@ export const UserFiltersDropdown = {
         foundScalesArray.forEach((current) => {
             current.checked = false;
         });
+    },
 
-        // FlexSearch.filterFacts();
+    resetAll: () => {
+        UserFiltersDropdown.resetState();
         callFilter();
     },
 

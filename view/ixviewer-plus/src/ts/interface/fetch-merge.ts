@@ -17,4 +17,5 @@ export type FetchMergeArgs = {
     customPrefix?: string,
     std_ref: { [key: string]: Reference },
     docSizeFallbackLimit: number,
+    sections?: Section[],
 };

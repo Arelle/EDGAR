@@ -48,6 +48,7 @@ export class FetchAndMerge {
         this.params = input.params;
         this.customPrefix = input.customPrefix || null;
         this.instances = input.instance ?? [];
+        this.sections = input.sections ?? [];
         this.std_ref = input.std_ref;
         this.sumOfDocsSizes = 0;
         this.docSizeFallbackLimit = input.docSizeFallbackLimit
@@ -725,8 +726,8 @@ export class FetchAndMerge {
                     const tempFactCalculation = factObjectMl.calculation;
                     currentFact.calculations = [];
                     for (const factCalculationProp in tempFactCalculation) {
-                        const result: Calculation[] = this.sections?.map(sectionElement => {
-                            if (sectionElement.role === factCalculationProp) {
+                        const result: Calculation[] = (this.sections ?? []).map(sectionElement => {
+                            if ((sectionElement.role || sectionElement.meta?.role) === factCalculationProp) {
                                 /*
                                     Walter comment: "Although I traced the root cause to a problem in entry point sbsef-fex, still, 
                                     user actions can cause this.sections to be unbound when switching from one instance to another via the “instance” menu.  
@@ -735,7 +736,7 @@ export class FetchAndMerge {
                                 return [
                                     {
                                         label: 'Section',
-                                        value: sectionElement.longName,
+                                        value: sectionElement.longName ?? sectionElement.meta?.longName,
                                     },
                                     {
                                         label: 'Weight',

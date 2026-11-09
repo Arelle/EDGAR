@@ -69,6 +69,7 @@ export const App = {
                 params: HelpersUrl.getAllParams,
                 absolute: HelpersUrl.getFolderAbsUrl,
                 instance: changeInstance ? Constants.getInstances : null,
+                sections: changeInstance ? Constants.sections : undefined,
                 std_ref: Constants.getStdRef,
                 docSizeFallbackLimit: Constants.docSizeFallbackLimit,
             };

@@ -18,6 +18,7 @@ xml1Start = 51000000 # XML value
 xml2Start = 52000000 # XML element issue in traditional XML (Python check)
 xml3Start = 52000000 # XML element issue in inline XML (LXML schema check)
 unknown   = 60000000 # no pattern match
+exgStart  = 100000000 # EDGAR XBRL Guide (EXG) messages: PROVISIONAL base, to be agreed with SEC, who consume these IDs
 
 ignoredCodes = {
     "debug", "info", "info:profileStats", None}
@@ -30,6 +31,19 @@ codesPatterns = (
     (xml2Start, re_compile(r"xmlSchema"), "."),
     (xml3Start, re_compile(r"lxml.SCHEMA[A-Za-z_]*([0-9]+(_[0-9]+)*).*"), "_"),
     )
+# EXG sections have two to four levels (1.04, 3.1.5, 3.1.24.2), so the EFM formula, which aligns from the right
+# because every EFM code has three levels, would put a four-level section in the hundreds of millions.  EXG IDs
+# align from the left instead: exgStart + chapter x 10^6 + section x 10^4 + subsection x 10^2 + item,
+# e.g. EXG.3.01.05 -> 103,010,500 and EXG.1.04 -> 101,040,000.
+exgCodePattern = re_compile(r"EXG\.([0-9]+(?:\.[0-9]+)*)(?![0-9])")
+
+def exgNumericId(section):
+    """Numeric ID of an EXG section number such as "3.01.05"; unknown if it has more than four levels or a level over 99."""
+    levels = [int(level) for level in section.split(".")]
+    if len(levels) > 4 or any(level > 99 for level in levels):
+        return unknown
+    return exgStart + sum(level * 10**(6 - 2*i) for i, level in enumerate(levels))
+
 deiSubTblCodes = {"DocumentType": 26052000, "EntityRegistrantName": 26052400, "EntityCentralIndexKey": 26052300}
 ftSubTbl = ["RegnFileNb", "FormTp", "SubmissnTp", "FeeExhibitTp", "IssrNm", "IssrBizAdrStrt1", "IssrBizAdrStrt2", "IssrBizAdrCity", "IssrBizAdrStatOrCtryCd", "IssrBizAdrZipCd", "CeasedOprsDt", "RptgFsclYrEndDt", "OfferingTableNa", "OffsetTableNa", "CombinedProspectusTableNa", "Securities424iNa"]
 ftSumTbl = ["TtlOfferingAmt", "TtlPrevslyPdAmt", "TtlFeeAmt", "TtlTxValtn", "FeeIntrstAmt", "TtlOffsetAmt", "NrrtvDsclsr", "NetFeeAmt", "NrrtvMaxAggtOfferingPric", "NrrtvMaxAggtAmt", "FnlPrspctsFlg", "TtlFeeAndIntrstAmt"]
@@ -167,6 +181,9 @@ def messageNumericId(modelXbrl, level, messageCode, args):
                 messageCode = messageCode.replace(".ft.", messageCodeId)
             msgNumId += ftValidations.get(messageCode.split(".")[-1], 0)
             return messageCode, msgNumId
+    m = exgCodePattern.match(messageCode)
+    if m:
+        return messageCode, exgNumericId(m.group(1))
     for code, pattern, splitChar in codesPatterns:
         m = pattern.match(messageCode)
         if m and m.lastindex is not None and m.lastindex >= 1:

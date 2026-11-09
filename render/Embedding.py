@@ -215,9 +215,7 @@ class Embedding(object):
                             printThisTextIfTrue = ' or by an embedded command'
                         # message = ErrorMgr.getError('DIMENSION_AXIS_ORDER_WARNING').format(self.cube.shortName, errorStr, str(axisQname), printThisTextIfTrue)
                         self.filing.modelXbrl.warning("EFM.6.26.06",
-                                _("In ''%(linkroleName)s'', the embedded report created by the fact %(fact)s with context %(contextID)s, "
-                                  "the axis %(axis)s was not given an order in the presentation group %(linkroleDefinition)s. "
-                                  "The axes are being sorted by their labels."),
+                                _("In '%(linkroleName)s', the embedded report created by the fact %(fact)s with context %(contextID)s, the axis %(axis)s was not given an order in the presentation group %(linkroleDefinition)s. The axes are being sorted by their labels."),
                                 edgarCode="rq-2606-Axis-Has-No-Order",
                                 modelObject=self.factThatContainsEmbeddedCommand,
                                 fact=self.factThatContainsEmbeddedCommand.qname, contextID=self.factThatContainsEmbeddedCommand.contextID,
@@ -320,9 +318,7 @@ class Embedding(object):
             # beginMessage = ErrorMgr.getError('EMBEDDED_COMMANDS_ALL_ROWS_OR_ALL_COLUMNS_ERROR').format(self.cube.shortName, errorStr, missingRowOrColStr)
             _msgCodes = ("EFM.6.26.05.embeddingCmdMissingIterator", "EFM.6.26.05.embeddingCmdMissingIteratorAfterTransposition")
             self.filing.modelXbrl.error(_msgCodes[self.cube.isTransposed],
-                _("In \"%(linkroleName)s\", the embedded report created by the fact %(fact)s with the context %(contextID)s, "
-                  "there are no valid %(roworcol)s commands%(iftransposed)s. Change one of the %(axes)s to a %(colorrow)s or add a %(roworcol)s "
-                  "command with an additional axis."),
+                _("In '%(linkroleName)s', the embedded report created by the fact %(fact)s with the context %(contextID)s, there are no valid %(roworcol)s commands%(iftransposed)s. Change one of the %(axes)s to a %(colorrow)s or add a %(roworcol)s command with an additional axis."),
                 modelObject=self.factThatContainsEmbeddedCommand,
                 linkrole=self.cube.linkroleUri, linkroleDefinition=self.cube.definitionText, linkroleName=self.cube.shortName,
                 fact=self.factThatContainsEmbeddedCommand.qname,
@@ -408,10 +404,8 @@ class Embedding(object):
                     if numUsedRootNodes == 2:  # we've used two different root nodes, so we issue the multiple root node warning
                         if not self.filing.validatedForEFM:
                             self.filing.modelXbrl.warning("EFM.6.12.06",
-                                _("Presentation group \"%(linkroleName)s\" has multiple (%(numberRootConcepts)s) root nodes. "
-                                  "XBRL allows unordered root nodes, but rendering requires ordering.  They will instead be ordered by their labels.  "
-                                  "To avoid undesirable ordering of axes and primary items across multiple root nodes, rearrange the presentation "
-                                  "relationships to have only a single root node."),
+                                _("Presentation group '%(linkroleName)s' has multiple root nodes. XBRL allows unordered root nodes, but rendering requires ordering.  They will instead be ordered by their labels.  To avoid undesirable ordering of axes and primary items across multiple root nodes, rearrange the presentation relationships to have only a single root node."),
+                                edgarCode="rq-1206-Multiple-Root-Nodes",
                                 modelObject=self.factThatContainsEmbeddedCommand, linkrole=self.cube.linkroleUri, linkroleDefinition=self.cube.definitionText,
                                 linkroleName=self.cube.shortName, numberRootConcepts=numUsedRootNodes)
                         break
@@ -613,9 +607,8 @@ class Embedding(object):
             missingUnitOrderingsStr = ', '.join(sorted(list(set(self.unitsWeAreKeepingSet) - set(unitOrderDict))))
             # message = ErrorMgr.getError('PRESENTATION_LINKBASE_UNIT_ORDERING_INCOMPLETE_WARNING').format(self.cube.shortName, unitOrderingsFromPGStr, missingUnitOrderingsStr)
             self.filing.modelXbrl.warning("EFM.6.12.09",
-                    _('Units of measure %(foundMeasureSet)s were found in "%(linkroleName)s" but the facts presented use '
-                      'these additional units of measure: %(missingMeasureSet)s.  Add presentation relationships to provide '
-                      'a definite ordering of these additional units in the output.'),
+                    _("Units of measure %(foundMeasureSet)s were found in '%(linkroleName)s' but the facts presented use these additional units of measure: %(missingMeasureSet)s.  Add presentation relationships to provide a definite ordering of these additional units in output."),
+                    edgarCode="rq-1209-Presented-Units-Incomplete-Order",
                     modelObject=self.factThatContainsEmbeddedCommand or self.filing.modelXbrl,
                     linkrole=self.cube.linkroleUri, linkroleDefinition=self.cube.definitionText,
                     linkroleName=self.cube.shortName,
@@ -710,9 +703,7 @@ class Command(object):
             errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(self.embedding.factThatContainsEmbeddedCommand)
             # message = ErrorMgr.getError('ELEMENTS_USED_PRIMARY_ON_COLUMNS_WARNING').format(self.cube.shortName, errorStr)
             self.filing.modelXbrl.warning("EFM.6.26.09",
-                    _("In ''%(linkroleName)s'' the embedded report created by the fact %(fact)s with context %(contextID)s "
-                      "contains an iterator \"column primary\" even though the definition text of %(linkroleDefinition)s "
-                      "contains the \"{Elements}\" qualifier. The primary axis will remain on the rows."),
+                    _("In '%(linkroleName)s' the embedded report created by the fact %(fact)s with context %(contextID)s contains an iterator \"column primary\" even though the definition text of %(linkroleDefinition)s contains the \"{Elements}\" qualifier. The primary axis will remain on the rows."),
                     edgarCode="rq-2609-Primary-Axis-On-Rows",
                     modelObject=self.embedding.factThatContainsEmbeddedCommand, fact=self.embedding.factThatContainsEmbeddedCommand, contextID=self.embedding.factThatContainsEmbeddedCommand.contextID,
                     linkrole=self.cube.linkroleUri, linkroleDefinition=self.cube.definitionText,
@@ -757,8 +748,7 @@ class Command(object):
                 errorStr = Utils.printErrorStringToDisambiguateEmbeddedOrNot(self.embedding.factThatContainsEmbeddedCommand)
                 # message = ErrorMgr.getError('EMBEDDED_COMMAND_INVALID_MEMBER_NAME_ERROR').format(self.cube.shortName, errorStr, str(mem))
                 self.filing.modelXbrl.error("EFM.6.26.04.embeddingCmdInvalidMember",
-                        _('In "%(linkroleName)s", the embedded report created by the fact %(fact)s '
-                          'with the context %(contextID)s, the domain members %(members)s are not presentation descendants of %(axis)s.'),
+                        _("In '%(linkroleName)s', the embedded report created by the fact %(fact)s with the context %(contextID)s, the domain members %(members)s are not presentation descendants of %(axis)s."),
                         modelObject=self.embedding.factThatContainsEmbeddedCommand,
                         linkrole=self.cube.linkroleUri, linkroleDefinition=self.cube.definitionText,
                         linkroleName=self.cube.shortName,

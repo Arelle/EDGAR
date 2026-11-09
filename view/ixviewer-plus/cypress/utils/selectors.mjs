@@ -11,6 +11,7 @@ export const selectors = {
     tableTab: 'a[data-cy="factTableTab"]',
     tableTabFactCount: 'a[data-cy="factTableTab > span',
     factCountClock: '[data-cy="fact-clock"]',
+    appReady: 'body[data-app-ready="true"]',
 
     menuButton: 'button[data-test="menu-dropdown-link"]',
     menuDropdown: 'div[id="menuContents"]',
@@ -89,6 +90,7 @@ export const selectors = {
     customTagsRadio: 'form[data-name="tags-dropdown"] div input[aria-label*="Custom"]',
 
     moreFiltersHeader: 'button[id="nav-filter-more"]',
+    moreFiltersBadge: 'button[id="nav-filter-more"] .badge',
     periodFilterTagsDrawer: 'form[data-test="more-filters-form"] button[data-test="Period"]',
     period1FilterDrawer: '[data-bs-target="#period-filters-accordion-0"]',
     period1Filter: '#user-filters-periods > div > div:nth-child(1) input',
@@ -104,11 +106,13 @@ export const selectors = {
     axisFilterTagDrawer: 'form button[data-test="Axis"]',
     axisExplicitTagDrawer: 'button[data-bs-target="#axes-filters-accordion-0"]',
     axis1Filter: '#user-filters-axis > div:nth-child(1) button',
+    axisTypedAll: '[id="axes-all-1"]',
 
     membersFilterTagDrawer: 'form button[data-test="Members"]',
     membersExplicitTagDrawer: 'button[data-bs-target="#members-filters-accordion-0"]',
     membersFilter1: 'form input[id="members-all-0"]',
     membersExplicitAccordion: 'button[data-bs-target="#members-filters-accordion-0"]',
+    membersTypedAll: '[id="members-all-1"]',
 
     scaleFilterTagDrawer: 'form button[data-test="Scale"]',
     scaleFilter1: '#user-filters-scales > div:nth-child(2) input',
@@ -153,8 +157,14 @@ export const selectors = {
     factModalClose: 'i#fact-modal-close',
     factExpandMoreLess: 'a[data-cy="factExpandMoreLess"]',
 
+    factList: '[id="fact-list"]',
+    factDetailsTab: '[id="fact-detail-display-btn"]',
     factListDisplayBtn: '#fact-list-display-btn',
     factDetailDisplayBtn: '#fact-detail-display-btn',
+    factDetailsDetailBtn: '[data-cy="fact-details-detail-btn"]',
+    factDetailsSplitBtn: '[data-cy="fact-details-split-btn"]',
+    factDetailsDockBtn: '[data-cy="fact-details-dock-btn"]',
+    factViewUndockBtn: '[data-cy="fact-details-undock-btn"]',
 
     labelsHeader: '#labelsHeader',
 

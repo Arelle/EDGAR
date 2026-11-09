@@ -1,4 +1,4 @@
-import "../styles.scss";
+import "../styles/styles.scss";
 import { Constants } from "./constants/constants";
 import { ErrorsMajor } from "./errors/major";
 import { Listeners } from "./listeners";
@@ -6,8 +6,8 @@ import { SetCustomCSS } from "./settings";
 import { App } from "./app/app";
 import { addToJsPerfTable } from "./helpers/ixPerformance";
 import { HelpersUrl } from "./helpers/url";
-import { FactMap } from "./facts/map";
-import { initSearch } from "./flex-search/search-worker-interface";
+import { setAppReady } from "./app/loading-progress";
+import { FactsMenu } from "./facts/menu";
 
 /* Created by staff of the U.S. Securities and Exchange Commission.
  * Data and content created by government employees within the scope of their employment
@@ -44,6 +44,7 @@ import { initSearch } from "./flex-search/search-worker-interface";
             HelpersUrl.addHashChangeListener();
             HelpersUrl.handleHash();
 
+            FactsMenu.applySavedView()
 
             if (DEBUGCSS) {
                 ErrorsMajor.debug();
@@ -59,6 +60,7 @@ import { initSearch } from "./flex-search/search-worker-interface";
                 ErrorsMajor.formNotLoaded();
             }
         }
+        setAppReady();
     });
 
     const removeHideClassFromSidebars = () => {
